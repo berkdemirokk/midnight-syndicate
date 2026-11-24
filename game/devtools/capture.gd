@@ -50,6 +50,11 @@ func _parse_args() -> void:
 				push_warning("Capture: bad --size, expected WxH")
 		elif arg.begins_with(ARG_PRESET):
 			_preset = arg.trim_prefix(ARG_PRESET)
+		elif arg.begins_with("--timeout="):
+			# Long scenarios (a full 2-lap race) need more than the default; still capped by the export range.
+			var t: String = arg.trim_prefix("--timeout=")
+			if t.is_valid_float():
+				timeout_s = clampf(float(t), 5.0, 600.0)
 	if not scenario_name.is_empty() and not scenario_name.is_valid_identifier():
 		push_error("Capture: scenario name must be an identifier")
 		scenario_name = ""
