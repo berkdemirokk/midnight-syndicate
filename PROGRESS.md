@@ -37,5 +37,20 @@ c0c065d (see `git log`).
 - Police pursuit, traffic, career, audio: later milestones (ROADMAP.md).
 - No GitHub remote, CI never executed, no export templates, no Windows .exe, no iOS build.
 
+### Later the same session (rounds 2-4 of the quality gate)
+- Test runner hardening: crashed tests fail, leaked nodes are freed (root cause of the
+  order-dependent failures). 124 tests pass.
+- Public repo https://github.com/berkdemirokk/midnight-syndicate (owner decision); cloud CI green
+  (logic tests + asset validation on Linux); tools/ci_local.ps1 runs the same locally.
+- Engine city look fixed by the lead (glass windows, impostors, paint, ambient, reflections, sign
+  overlaps); wet reflections and a car-only fill light in the real race.
+- Real 2-lap race with the real car and track, earned nitro shot (flames + speed lines), rewards.
+- Per-preset draw-call budgets met on the dev PC (Low 253 / Medium 255 / High 458 vs 250/350/500).
+- Quality gate recorded with two review stages in GRAPHICS_BENCHMARK.md: lead 6.25 average,
+  not passed for commercial quality.
+- Commits up to 53a5fad.
+
 ### Next
-Finish the look pass and race evidence, score the quality gate, then M2 (game loop, audio).
+1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
+   waterfront light. 2. M2 game loop: career, audio (needs CC0 download approval), onboarding.
+3. Owner decisions: export templates (Windows .exe), macOS/Xcode access for iOS.

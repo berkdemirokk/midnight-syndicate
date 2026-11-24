@@ -226,3 +226,21 @@ only (the garage shows it). **Police pursuit: not built (M3) — not evaluated.*
 at an indie level (average 6.1 lead, 5.5 independent). Scaling content is still on hold.
 Next fixes, in order: nitro flame + speed lines (effects 5), car paint readability in the race,
 waterfront and establishing light, greenhouse/wing geometry.
+
+### Round 4 — 2026-11-24 (after nitro/speed-line, paint and canopy fixes)
+
+| criterion | stage 1 (independent, before the lead's paint and speed-line fixes) | stage 2 (lead, final captures) |
+|---|---|---|
+| vehicle geometry | 6 | 6 — continuous canopy and lower roof help; side glass still reads flat, small step at the rear of the greenhouse |
+| materials | 6 | 6 — rivals now in distinct metallic colours (`race_city/pack.png`) |
+| lighting | 6 | 7 |
+| environment detail | 6 | 6 |
+| camera | 5 | 6 |
+| UI | 6 | 7 — speed lines reach into the HUD centre a little (`race_city/racing_nitro.png`) |
+| effects | 5 | 6 — blue-white exhaust flames and speed lines now visible in the real race at 180 km/h |
+| performance | 5 | 6 (desktop only) |
+
+Verdict: **still not passed for commercial quality** (lead average 6.25). Earned evidence now covers
+every vertical-slice item except police pursuit (not built). Remaining work toward 7+: car canopy
+and side-glass shaping, pack-race traffic avoidance (stuck counts react chaotically to small AI
+changes), speed-line mask over the HUD centre, waterfront and establishing light.
