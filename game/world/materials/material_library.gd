@@ -194,6 +194,8 @@ static func _build(mat_name: String) -> Material:
 		return _emissive_atlas(mat_name, BUILDING_TEX + "shop_interior_basecolor.png", BUILDING_TEX + "shop_interior_emissive.png", tuning.shop_energy_scale)
 	if mat_name == "M_ShopGlass":
 		return _glass(mat_name, r)
+	if mat_name == "M_Skyline":
+		return _skyline(r)
 	if mat_name == "M_TunnelLight":
 		return _tunnel_light(r)
 	if _is_neon(mat_name):
@@ -257,6 +259,8 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		m.albedo_color = tuning.tunnel_stripe_colour
 		m.roughness = tuning.tunnel_stripe_roughness
 		return m
+	if mat_name == "M_Roof_Bitumen":
+		m.albedo_color = _scale_rgb(m.albedo_color, tuning.roof_albedo_scale)
 	if mat_name == "M_Curb":
 		m.albedo_color = _scale_rgb(m.albedo_color, tuning.kerb_albedo_scale)
 	if mat_name == "M_Paving":
@@ -329,6 +333,15 @@ static func _emissive_atlas(mat_name: String, base_path: String, emit_path: Stri
 	sm.set_shader_parameter("glow_energy", float(r["emit_strength"]) * scale)
 	sm.set_shader_parameter("glow_threshold", tuning.window_glow_threshold)
 	sm.set_shader_parameter("glow_saturation", tuning.window_glow_saturation)
+	return sm
+
+
+## Far bay skyline card: dark silhouette, only the lit windows above the threshold emit (was a white slab).
+static func _skyline(r: Dictionary) -> ShaderMaterial:
+	var sm: ShaderMaterial = _emissive_atlas("M_Skyline", r["texture"], r["texture"], tuning.skyline_window_energy)
+	sm.set_shader_parameter("tint", tuning.skyline_tint)
+	sm.set_shader_parameter("albedo_scale", 1.0)
+	sm.set_shader_parameter("roughness_value", 0.9)
 	return sm
 
 

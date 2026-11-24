@@ -46,7 +46,7 @@ extends Resource
 @export var water_scroll: Vector2 = Vector2(0.012, 0.007)
 ## Multiplies the window and shop atlas albedo tint. The JSON base colour (#202838) is near black, so unlit
 ## facades read as black slabs under the night ambient. Raised so walls read as dark blue-grey.
-@export_range(1.0, 4.0) var facade_albedo_scale: float = 2.2
+@export_range(1.0, 4.0) var facade_albedo_scale: float = 3.0
 ## Colour of the window glow (sodium-warm). Cool and magenta come from the neon signs, not the windows.
 @export var window_glow_tint: Color = Color(1.0, 0.78, 0.5)
 ## Multiplies the energy of ceiling strips and tunnel lights (JSON energy 5 blew out to white bands).
@@ -65,3 +65,8 @@ extends Resource
 @export_range(0.5, 3.0) var sidewalk_albedo_scale: float = 1.2
 ## Far skyline card (M_Skyline): its emissive texture is a whole night skyline at 1.6, which blew out to white across the bay.
 @export_range(0.0, 2.0) var skyline_emission_scale: float = 0.35
+## M_Skyline now runs through window_atlas.gdshader: dark card, lit windows above the threshold.
+@export var skyline_tint: Color = Color(0.42, 0.45, 0.55)
+@export_range(0.0, 8.0) var skyline_window_energy: float = 2.2
+## Roof bitumen albedo multiplier: near-black roofs under the night ambient read as holes in the skyline.
+@export_range(1.0, 4.0) var roof_albedo_scale: float = 2.0

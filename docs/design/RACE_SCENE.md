@@ -48,8 +48,24 @@ The player takes grid slot `opponent_count`, the last one used.
 2. Car: import it as `res://vehicles/noctra_sable/noctra_sable.tscn` or set `RaceConfig.car_scene`, with the names above.
    The dev mule is used only while the file is missing. Then re-run `test_race_scene` and `race_dev`.
 
+## Visuals (night look)
+- Render layers: bit 1 (layer 2) = wet road, meshes with an `M_Asphalt` ShaderMaterial on `wet_asphalt.gdshader`
+  (set in `_collect_road`); bit 9 = rain (set in `fx/rain.gd`); bit 19 (layer 20) = car fill, added to every car
+  `MeshInstance3D` in `_add_car`. The planar mirror leaves out bits 1 and 9.
+- Wet road mirror: `PlanarReflection` is created in `_apply_reflection` only when the track has wet asphalt and the
+  preset is not Low. High uses `RaceConfig.reflection_fraction_high`, Medium `reflection_fraction_medium`, Low has
+  no node. Re-applied on every `Settings.changed("graphics")`. The mirror plane eases (`PLANE_FOLLOW_RATE`) to the road
+  height under the car: a ray from 1 m above the car origin, 6 m down, world layer, car excluded.
+- Car fill: one `OmniLight3D` (`CarFillLight`) child of the chase camera. `light_cull_mask` is only bit 19, no shadow,
+  colour, energy and range from `RaceConfig` (`car_fill_*`). It lights cars and nothing else. Energy 1.6 chosen from
+  `race_city` captures (0.8 left the body too dark).
+
 ## Behaviour
 - Grid: 1.5 s beat, then `start_countdown()` (3, 2, 1, GO). Camera ORBITs on the grid, CHASEs at GO. Results pay via `GameState.record_result`.
+- Rewards are the `GameState` table, top 4 only (1000/600/300/100 cash, 100/60/30/10 rep). A 5th place or lower
+  pays 0 by design; the `race_city` run finished 6th, so its results screen read CASH 0 / REP 0.
+- Capture only: `RaceConfig.force_nitro_above_kmh` (default -1, off). Above that speed the autopilot's nitro gate
+  opens (`force_player_nitro`). Autopilot path only.
 - Reset (`reset_car` action, handled once in `RaceScene._unhandled_input`, both driver paths): back to the last progress on the line, facing forward, zero speed.
 - Capture `racing_20s_nitro` waits for 150 km/h first, because the flame strength scales with speed (`car_fx.gd`).
 - RETRY and pause restart rebuild in place, keeping the config (not `Router.reload()`: lead decision). MENU goes to `main_menu.tscn`.

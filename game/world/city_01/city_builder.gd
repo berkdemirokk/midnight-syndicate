@@ -19,6 +19,12 @@ const ACCENT_SPOT_ANGLE_DEG: float = 35.0
 const GRID_REST_M: float = 0.47  ## car origin height above the road, as in the vehicle tests
 const FALL_FLOOR_Y_M: float = -30.0
 const FALL_FLOOR_SIZE_M: float = 6000.0
+const CENTRE_PATH: String = "res://assets/world/city_01/city_01_centerline.json"
+const CORRIDOR_MARGIN_M: float = 0.5  ## corridor = kerb line + this, per centreline sample
+const CORRIDOR_SEARCH: int = 40  ## centreline samples either side of a building's lap offset searched for its nearest sample
+const CORRIDOR_NEAR_M: float = 12.0  ## footprint points further than this from every sample are not in the corridor
+const PUSH_STEP_M: float = 0.25
+const PUSH_MAX_M: float = 40.0
 
 @export var lod0_end_m: float = 70.0  ## first-row building LOD0 up to here, LOD1 to lod1_end_m, LOD2 beyond
 @export var lod1_end_m: float = 180.0
@@ -28,7 +34,7 @@ const FALL_FLOOR_SIZE_M: float = 6000.0
 @export var prop_far_end_m: float = 250.0  ## circuit, lamps, signs, overhead; bay backdrop is unlimited (0)
 @export var sign_gap_m: float = 0.4  ## minimum free space between two signs on a facade
 @export var sign_overlap_height_m: float = 1.5  ## signs further apart vertically never collide
-@export var chunk_m: float = 120.0  ## road chunk length for prop MultiMeshes, merged colliders and light budget
+@export var chunk_m: float = 240.0  ## road chunk length for prop MultiMeshes, merged colliders and light budget
 @export var light_energy_scale: float = 0.6  ## layout energies are Blender-scale; tuned in the capture
 ## Street lamp spot energy multiplier per district. Waterfront and market lamps had no visible pool at 0.6 x 14.
 @export var lamp_district_scale: Dictionary = {"neon": 1.0, "downtown": 4.0, "waterfront": 8.0, "market": 4.0, "underpass": 1.0}
@@ -47,6 +53,8 @@ const FALL_FLOOR_SIZE_M: float = 6000.0
 @export var flip_signs: bool = false  ## turn sign props 180 degrees if their text reads mirrored in a capture
 @export var ambient_color: Color = Color("#1E2740")  ## night fill for unlit walls; was #1B2B4D, walls read black
 @export_range(0.0, 4.0) var ambient_energy: float = 1.2  ## was 0.6: facades away from lamps were black slabs
+@export_range(0.0, 1.0) var moon_energy: float = 0.25  ## weak cool directional fill for far facades and roofs, no shadows
+@export var moon_color: Color = Color("#8FA8D8")
 
 var stats: Dictionary = {}  ## counts recorded for the tests and the engine report
 var light_report: Dictionary = {}  ## CityLights.budget summary (counts, log lines)
@@ -60,6 +68,10 @@ var _grid_root: Node3D
 var _packed: Dictionary = {}  ## res path -> PackedScene
 var _proto: Dictionary = {}  ## "path|owner" -> {meshes: Array, shapes: Array}
 var _bodies: Dictionary = {}  ## chunk index -> merged StaticBody3D of props with colliders
+var _c_pos: PackedVector2Array = PackedVector2Array()  ## centreline samples (x, z), 2 m apart
+var _c_right: PackedVector2Array = PackedVector2Array()  ## unit right vector per sample (x, z)
+var _c_half: PackedFloat32Array = PackedFloat32Array()  ## corridor half width per sample: kerb + margin
+var _c_spacing: float = 2.0
 
 
 func _ready() -> void:
@@ -77,7 +89,7 @@ func _ready() -> void:
 	var lap: float = float(d["lap_length"])
 	stats ={"first_row": 0, "second_row_instances": 0, "second_row_multimeshes": 0, "prop_instances": 0,
 		"prop_multimeshes": 0, "prop_colliders": 0, "missing_props": 0, "occluders": 0, "lights": 0,
-		"lights_dropped": 0, "probes": 0, "road_surfaces": 0, "road_colliders": 0}
+		"lights_dropped": 0, "probes": 0, "road_surfaces": 0, "road_colliders": 0, "corridor_pushes": []}
 	_build_racing_line(racing["racing_line"])
 	_build_line()  # Track: samples the line and the speed profile
 	_build_start_grid(racing["grid_slots"])
@@ -86,6 +98,7 @@ func _ready() -> void:
 	var n_chunks: int = maxi(1, ceili(lap / chunk_m))
 	var inst: Array = d["instances"]
 	_build_road()
+	_load_corridor()
 	_build_buildings(inst, lap)
 	_build_props(inst, lap, n_chunks)
 	_build_lights(d["lights"])
@@ -202,6 +215,8 @@ func _build_buildings(inst: Array, lap: float) -> void:
 		var kind: String = String(d["kind"])
 		var asset: String = String(d["asset"])
 		var xf := Transform3D(Basis(Vector3.UP, float(d["yaw"])), _vec(d["position"]))
+		if kind == "building" and colliders.has(asset):
+			xf = _clear_corridor(xf, asset, float(d.get("s_offset_m", 0.0)), lap, colliders[asset])
 		if kind == "building_lod2_only":
 			if not lod2_xfs.has(asset):
 				lod2_xfs[asset] = []
@@ -262,6 +277,94 @@ func _set_lod_ranges(n: Node) -> void:
 				mi.visibility_range_end_margin = 0.0
 	for c: Node in n.get_children():
 		_set_lod_ranges(c)
+
+
+## Reads the centreline file: per sample position, right vector and corridor half width (kerb line + margin).
+func _load_corridor() -> void:
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(CENTRE_PATH))
+	if not data is Dictionary:
+		push_error("CityBuilder: cannot parse " + CENTRE_PATH)
+		return
+	var samples: Array = (data as Dictionary)["samples"]
+	var edges: Array = (data as Dictionary)["edges"]
+	_c_spacing = float((data as Dictionary)["lap_length"]) / float(samples.size())
+	for i: int in samples.size():
+		var s: Dictionary = samples[i]
+		var e: Dictionary = edges[i]
+		var p: Vector3 = _vec(s["pos"])
+		var r: Vector3 = _vec(s["right"])
+		var lk: Vector3 = _vec(e["left_kerb"]) - p
+		var rk: Vector3 = _vec(e["right_kerb"]) - p
+		_c_pos.append(Vector2(p.x, p.z))
+		_c_right.append(Vector2(r.x, r.z).normalized())
+		_c_half.append(maxf(Vector2(lk.x, lk.z).length(), Vector2(rk.x, rk.z).length()) + CORRIDOR_MARGIN_M)
+
+
+## Signed margin of point q (x, z) inside the corridor: positive = inside kerb line + margin.
+## Points further than CORRIDOR_NEAR_M from the centreline are reported as -INF (not in the corridor).
+func _corridor_margin(q: Vector2, hint: int) -> float:
+	var n: int = _c_pos.size()
+	var best_d2: float = INF
+	var best: int = -1
+	for k: int in range(-CORRIDOR_SEARCH, CORRIDOR_SEARCH + 1):
+		var i: int = posmod(hint + k, n)
+		var d2: float = q.distance_squared_to(_c_pos[i])
+		if d2 < best_d2:
+			best_d2 = d2
+			best = i
+	if best < 0 or best_d2 > CORRIDOR_NEAR_M * CORRIDOR_NEAR_M:
+		return -INF
+	var lat: float = (q - _c_pos[best]).dot(_c_right[best])
+	return _c_half[best] - absf(lat)
+
+
+## Largest corridor margin over the footprint boundary (0.5 m steps): above 0 means the footprint enters the corridor.
+func _footprint_margin(xf: Transform3D, centre: Vector3, size: Vector3, hint: int) -> float:
+	var worst: float = -INF
+	var hx: float = size.x * 0.5
+	var hz: float = size.z * 0.5
+	var corners: Array[Vector2] = []
+	for c: Vector3 in [Vector3(-hx, 0.0, -hz), Vector3(hx, 0.0, -hz), Vector3(hx, 0.0, hz), Vector3(-hx, 0.0, hz)]:
+		var w: Vector3 = xf * (centre + c)
+		corners.append(Vector2(w.x, w.z))
+	for k: int in 4:
+		var a: Vector2 = corners[k]
+		var b: Vector2 = corners[(k + 1) % 4]
+		var steps: int = maxi(1, ceili(a.distance_to(b) / 0.5))
+		for j: int in steps + 1:
+			worst = maxf(worst, _corridor_margin(a.lerp(b, float(j) / float(steps)), hint))
+	return worst
+
+
+## Pushes a first-row building straight back along its facing normal until its footprint clears the corridor.
+## Every correction is logged in stats["corridor_pushes"] and printed.
+func _clear_corridor(xf: Transform3D, asset: String, s: float, lap: float, c: Dictionary) -> Transform3D:
+	if _c_pos.is_empty():
+		return xf
+	var hint: int = roundi(fposmod(s, lap) / _c_spacing)
+	var centre: Vector3 = c["center"]
+	var size: Vector3 = c["size"]
+	if _footprint_margin(xf, centre, size, hint) <= 0.0:
+		return xf
+	var ci: int = hint % _c_pos.size()
+	var front: Vector3 = xf.basis.z.normalized()
+	var front2: Vector2 = Vector2(front.x, front.z)
+	var world_c: Vector3 = xf * centre
+	var lat_c: float = (Vector2(world_c.x, world_c.z) - _c_pos[ci]).dot(_c_right[ci])
+	# Away from the road: the push must increase the lateral offset of the building centre.
+	var sign_dir: float = signf(lat_c) * signf(front2.dot(_c_right[ci]))
+	if sign_dir == 0.0:
+		sign_dir = 1.0
+	var dir: Vector3 = front * sign_dir
+	var moved: float = 0.0
+	var out: Transform3D = xf
+	while moved < PUSH_MAX_M and _footprint_margin(out, centre, size, hint) > 0.0:
+		moved += PUSH_STEP_M
+		out.origin = xf.origin + dir * moved
+	var log_line: String = "CityBuilder: corridor push %s s=%.1f by %.2f m (%s)" % [asset, s, moved, "clear" if moved < PUSH_MAX_M else "NOT CLEAR"]
+	print(log_line)
+	(stats["corridor_pushes"] as Array).append({"asset": asset, "s": s, "push_m": moved, "position": out.origin})
+	return out
 
 
 ## One box per first-row building, inside its collider box. Blocks the view of the buildings behind it.
@@ -549,6 +652,13 @@ func _build_environment() -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
 	env.tonemap_exposure = 1.0
 	env.tonemap_white = 1.0
+	var moon := DirectionalLight3D.new()
+	moon.name = "Moon"
+	moon.light_color = moon_color
+	moon.light_energy = moon_energy
+	moon.shadow_enabled = false
+	moon.rotation_degrees = Vector3(-35.0, 140.0, 0.0)
+	_lighting.add_child(moon)
 	var we := WorldEnvironment.new()
 	we.name = "WorldEnvironment"
 	we.environment = env

@@ -15,6 +15,7 @@ const WALL_RUN_S: float = 2.0
 const CORRIDOR_MAX_M: float = 22.0  ## building line about 10.5 m out; waterfront quay railings about 19.8 m out
 const CORRIDOR_FALL_M: float = 2.0  ## a body this far below the line has fallen off the circuit
 const CENTRE_PATH: String = "res://assets/world/city_01/city_01_centerline.json"
+const CATALOG_PATH: String = "res://assets/world/kits/buildings/catalog.json"
 const CENTRE_SEARCH: int = 40  ## samples either side of the progress index searched for the nearest centre point
 const LAP_LIMIT_S: float = 150.0
 const LATERAL_MAX_M: float = 7.0
@@ -234,9 +235,11 @@ func test_single_ai_lap() -> void:
 	manager.setup(city, cars, null, PackedStringArray(["Solo"]))
 	manager.start_countdown()
 	var max_lat: float = 0.0  ## from the road centreline: the road is 14 m wide
+	var max_lat_s: float = 0.0
 	var max_line: float = 0.0  ## from the racing line, which is shifted up to 3.5 m from the centre
 	var ticks: int = 0
 	var stuck_seen: int = 0
+	var stuck_at: Array = []
 	var centre: Array = _load_centre()
 	while manager.state != RaceManager.State.FINISHED and ticks < roundi(LAP_LIMIT_S * HZ):
 		await frames(1)
@@ -245,11 +248,13 @@ func test_single_ai_lap() -> void:
 		var lat: float = absf(_centre_lateral(city, centre, p))
 		if lat > max_lat:
 			max_lat = lat
-			metric("ai_max_lat_at_s", snappedf(city.get_progress(p), 0.1))
+			max_lat_s = city.get_progress(p)
+			metric("ai_max_lat_at_s", snappedf(max_lat_s, 0.1))
 		max_line = maxf(max_line, absf(city.get_lateral_offset(p)))
 		if d.stuck_count > stuck_seen:
 			stuck_seen = d.stuck_count
 			metric("ai_stuck_at_s_%d" % stuck_seen, snappedf(city.get_progress(p), 0.1))
+			stuck_at.append(snappedf(city.get_progress(p), 0.1))
 	check(manager.state == RaceManager.State.FINISHED, "AI car did not finish a lap in %.0f s" % LAP_LIMIT_S)
 	var lap_time: float = float(_lap_log[0]["time"]) if _lap_log.size() > 0 else 0.0
 	metric("ai_lap_time_s", snappedf(lap_time, 0.01))
@@ -257,8 +262,8 @@ func test_single_ai_lap() -> void:
 	metric("ai_max_abs_line_offset_m", snappedf(max_line, 0.01))
 	metric("ai_stuck_events", d.stuck_count)
 	check(_lap_log.size() == 1, "AI lap count %d, expected 1" % _lap_log.size())
-	check(max_lat < LATERAL_MAX_M, "AI car left the road: max lateral %.2f m from the centre" % max_lat)
-	check(d.stuck_count == 0, "AI car was stuck %d times" % d.stuck_count)
+	check(max_lat < LATERAL_MAX_M, "AI car left the road: max lateral %.2f m from the centre at s=%.1f" % [max_lat, max_lat_s])
+	check(d.stuck_count == 0, "AI car was stuck %d times at s=%s" % [d.stuck_count, str(stuck_at)])
 	var nodes: Array[Node] = [manager, car, city]
 	await cleanup(nodes)
 
@@ -297,4 +302,80 @@ func test_eight_cars_on_grid() -> void:
 	var nodes: Array[Node] = [manager, city]
 	for car: ArcadeCar in cars:
 		nodes.append(car)
+	await cleanup(nodes)
+
+
+## Every building footprint and every box collider of the props must stay outside the corridor (kerb line + 0.5 m).
+## Sampled every 2 m along the centreline and across the corridor in 0.5 m steps, at car height.
+func test_no_collider_in_corridor() -> void:
+	var city: CityBuilder = await _load_city()
+	var catalog: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CATALOG_PATH))
+	var sizes: Dictionary = {}
+	for b: Variant in catalog["buildings"]:
+		var bd: Dictionary = b
+		sizes[String(bd["id"])] = bd["collider"]
+	# Boxes as {xf: inverse world transform, half: half size, skip: false}. Buildings from the built nodes.
+	var boxes: Array[Dictionary] = []
+	for n: Node in city.get_node("Geometry/FirstRow").get_children():
+		var asset: String = String(n.name).left(-4)
+		if not sizes.has(asset):
+			continue
+		var c: Dictionary = sizes[asset]
+		var cen: Vector3 = _v3(c["center"])
+		var sz: Vector3 = _v3(c["size"])
+		var g: Transform3D = (n as Node3D).global_transform * Transform3D(Basis(), cen)
+		boxes.append({"inv": g.affine_inverse(), "half": sz * 0.5, "pos": g.origin, "name": String(n.name)})
+	var prop_boxes: int = 0
+	var prop_skipped: int = 0
+	for body: Node in city.get_node("Geometry").get_children():
+		if not String(body.name).begins_with("Colliders_"):
+			continue
+		for cs: Node in body.get_children():
+			if not cs is CollisionShape3D:
+				continue
+			var shape: Shape3D = (cs as CollisionShape3D).shape
+			if not shape is BoxShape3D:
+				prop_skipped += 1
+				continue
+			var g: Transform3D = (cs as Node3D).global_transform
+			boxes.append({"inv": g.affine_inverse(), "half": (shape as BoxShape3D).size * 0.5, "pos": g.origin, "name": "prop " + String(cs.name)})
+			prop_boxes += 1
+	var cdata: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CENTRE_PATH))
+	var samples: Array = cdata["samples"]
+	var edges: Array = cdata["edges"]
+	var hits: int = 0
+	var first_hit: String = ""
+	var checked: int = 0
+	for i: int in samples.size():
+		var sp: Vector3 = _v3((samples[i] as Dictionary)["pos"])
+		var sr: Vector3 = _v3((samples[i] as Dictionary)["right"])
+		var e: Dictionary = edges[i]
+		var half: float = maxf(Vector2(_v3(e["left_kerb"]).x - sp.x, _v3(e["left_kerb"]).z - sp.z).length(),
+			Vector2(_v3(e["right_kerb"]).x - sp.x, _v3(e["right_kerb"]).z - sp.z).length()) + 0.5
+		var near: Array[Dictionary] = []
+		for b: Dictionary in boxes:
+			var bp: Vector3 = b["pos"]
+			if Vector2(bp.x - sp.x, bp.z - sp.z).length() < 40.0:
+				near.append(b)
+		var t: float = -half
+		while t <= half:
+			var p: Vector3 = sp + sr * t
+			p.y = sp.y + 0.5
+			checked += 1
+			for b: Dictionary in near:
+				var l: Vector3 = (b["inv"] as Transform3D) * p
+				var h: Vector3 = b["half"]
+				if absf(l.x) <= h.x and absf(l.y) <= h.y and absf(l.z) <= h.z:
+					hits += 1
+					if first_hit == "":
+						first_hit = "%s at sample %d, lateral %.1f m" % [String(b["name"]), i, t]
+					break
+			t += 0.5
+	metric("corridor_points_checked", checked)
+	metric("corridor_hits", hits)
+	metric("corridor_pushes", (city.stats["corridor_pushes"] as Array).size())
+	metric("prop_box_colliders", prop_boxes)
+	metric("prop_nonbox_colliders_skipped", prop_skipped)
+	check(hits == 0, "%d corridor samples inside a collider, first: %s" % [hits, first_hit])
+	var nodes: Array[Node] = [city]
 	await cleanup(nodes)

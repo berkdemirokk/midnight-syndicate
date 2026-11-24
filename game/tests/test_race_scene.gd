@@ -5,6 +5,7 @@ extends "res://tests/test_case.gd"
 const SCENE_PATH: String = "res://race/race_scene.tscn"
 const SPEC_PATH: String = "res://vehicles/specs/noctra_sable.tres"
 const MISSING_PATH: String = "res://does_not_exist/none.tscn"
+const CITY_TRACK_PATH: String = "res://world/city_01/city_01.tscn"
 const GRID_WAIT_FRAMES: int = 60 * 6  ## 1.5 s grid beat plus 3 s countdown, with margin
 const RACE_MAX_FRAMES: int = 60 * 240  ## a one-lap race on the dev circuit ends well inside this
 const WHEEL_TOL_M: float = 0.001
@@ -190,6 +191,123 @@ func test_paint_sets_body_albedo() -> void:
 	if mat != null:
 		check(mat.albedo_color.r > 0.99 and mat.albedo_color.g < 0.01, "paint not applied to body")
 	await cleanup([scene])
+
+
+## Real city track, dev car, so the wet road and the car fill light are the real ones.
+func _cfg_city(autopilot: bool, opponents: int) -> RaceConfig:
+	var c := RaceConfig.new()
+	c.autopilot = autopilot
+	c.laps = 1
+	c.opponent_count = opponents
+	c.track_scene = CITY_TRACK_PATH
+	c.car_scene = MISSING_PATH
+	return c
+
+
+func test_planar_reflection_bound_on_real_track_by_preset() -> void:
+	var prev_preset: String = Settings.get_preset_id()
+	var prev_autosave: bool = Settings.autosave
+	Settings.autosave = false
+	Settings.set_preset("high")
+	var cfg: RaceConfig = _cfg_city(true, 1)
+	var scene: RaceScene = _make_scene(cfg)
+	await frames(3)
+	check(not scene.dev_track_used, "city_01 did not load, so the reflection test would use the dev circuit")
+	check(scene._road_mats.size() > 0, "no M_Asphalt wet_asphalt material found on the city road")
+	var refl: PlanarReflection = scene.find_child(RaceScene.REFLECTION_NAME, true, false) as PlanarReflection
+	check(refl != null, "High: planar reflection node missing on the real track")
+	if refl != null:
+		check(refl.is_enabled(), "High: planar reflection not enabled")
+		check(absf(refl.resolution_fraction - cfg.reflection_fraction_high) < 0.0001, "High: mirror fraction %.3f" % refl.resolution_fraction)
+	for m: ShaderMaterial in scene._road_mats:
+		check(m.get_shader_parameter("planar_reflection") != null, "High: road material not bound to the mirror texture")
+		check(m.get_shader_parameter("planar_enabled") == 1.0, "High: road material mirror flag off")
+	var road_meshes: int = 0
+	for n: Node in scene.track.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi.mesh != null and _has_asphalt(mi):
+			road_meshes += 1
+			check(mi.layers == RaceScene.ROAD_LAYER_BIT, "road mesh %s is not on the road layer" % mi.name)
+	check(road_meshes > 0, "no road mesh carries the wet asphalt material")
+	Settings.set_preset("medium")
+	await frames(1)
+	refl = scene.find_child(RaceScene.REFLECTION_NAME, true, false) as PlanarReflection
+	check(refl != null and absf(refl.resolution_fraction - cfg.reflection_fraction_medium) < 0.0001, "Medium: mirror missing or wrong size")
+	Settings.set_preset("low")
+	await frames(1)
+	check(scene.find_child(RaceScene.REFLECTION_NAME, true, false) == null, "Low: planar reflection must be absent")
+	for m: ShaderMaterial in scene._road_mats:
+		check(m.get_shader_parameter("planar_enabled") == 0.0, "Low: road material mirror flag still on")
+	Settings.set_preset(prev_preset)
+	Settings.autosave = prev_autosave
+	await cleanup([scene])
+
+
+func test_car_fill_light_reaches_only_the_car_layer() -> void:
+	var scene: RaceScene = _make_scene(_cfg_city(true, 2))
+	await frames(3)
+	var fill_bit: int = 1 << RaceScene.CAR_FILL_LAYER
+	var fill: OmniLight3D = scene.camera.get_node_or_null(RaceScene.FILL_LIGHT_NAME) as OmniLight3D
+	check(fill != null, "car fill light missing under the chase camera")
+	if fill != null:
+		check(fill.light_cull_mask == fill_bit, "fill light mask %d, expected only the car layer %d" % [fill.light_cull_mask, fill_bit])
+		check(not fill.shadow_enabled, "fill light must not cast shadows")
+	var car_meshes: int = 0
+	for car: ArcadeCar in scene.cars:
+		for n: Node in car.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = n as MeshInstance3D
+			car_meshes += 1
+			check((mi.layers & fill_bit) != 0, "car mesh %s is not on the car fill layer" % mi.name)
+			check((mi.layers & 1) != 0, "car mesh %s lost its default layer" % mi.name)
+	check(car_meshes > 0, "no car meshes found")
+	var track_meshes: int = 0
+	for n: Node in scene.track.find_children("*", "MeshInstance3D", true, false):
+		var tm: MeshInstance3D = n as MeshInstance3D
+		track_meshes += 1
+		check((tm.layers & fill_bit) == 0, "track mesh %s is on the car fill layer" % tm.name)
+	check(track_meshes > 0, "no track meshes found")
+	await cleanup([scene])
+
+
+func test_finished_race_pays_table_rewards() -> void:
+	var prev_path: String = GameState.save_path
+	GameState.open_profile(SAVE_TEST_PATH)
+	var scene: RaceScene = _make_scene(_cfg(true, 1, 3))
+	await frames(2)
+	var cash0: int = GameState.get_cash()
+	var rep0: int = GameState.get_rep()
+	scene._on_race_finished(_results(1, 4))
+	check(GameState.get_cash() - cash0 == GameState.REWARD_CASH[0], "1st paid %d cash, table says %d" % [GameState.get_cash() - cash0, GameState.REWARD_CASH[0]])
+	check(GameState.get_rep() - rep0 == GameState.REWARD_REP[0], "1st paid %d rep, table says %d" % [GameState.get_rep() - rep0, GameState.REWARD_REP[0]])
+	check(scene.results_screen.visible, "results screen not shown after the finish")
+	cash0 = GameState.get_cash()
+	scene._on_race_finished(_results(6, 6))
+	check(GameState.get_cash() == cash0, "6th place is past the table and must pay no cash")
+	GameState.open_profile(prev_path)
+	await cleanup([scene])
+
+
+func test_nitro_capture_hook_is_off_by_default() -> void:
+	check(RaceConfig.new().force_nitro_above_kmh <= 0.0, "force_nitro_above_kmh must default to off")
+
+
+func _has_asphalt(mi: MeshInstance3D) -> bool:
+	for s: int in mi.mesh.get_surface_count():
+		var mat: Material = mi.get_surface_override_material(s)
+		if mat == null:
+			mat = mi.mesh.surface_get_material(s)
+		if mat is ShaderMaterial and mat.resource_name == "M_Asphalt":
+			return true
+	return false
+
+
+## Finish rows for the reward test: the player takes player_pos, rows in finishing order.
+func _results(player_pos: int, rows: int) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for i: int in rows:
+		var pos: int = i + 1
+		out.append({"name": "Driver %d" % pos, "position": pos, "total_time": 60.0 + float(i), "best_lap": 60.0 + float(i), "is_player": pos == player_pos})
+	return out
 
 
 ## Worst difference between each wheel node's car-space origin and CarFactory-independent get_wheel_local_position.

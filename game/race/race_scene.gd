@@ -30,6 +30,22 @@ const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const FX_CAR_SCENE: String = "res://fx/car_fx.tscn"
 const FX_SPEED_SCENE: String = "res://fx/speed_lines.tscn"
 const FX_RAIN_SCENE: String = "res://fx/rain.tscn"
+## Render layers (see also PlanarReflection.excluded_layers, rain.gd):
+##   bit 0 (layer 1)  default: everything, incl. cars, track props, the wet road is also on bit 1 only
+##   bit 1 (layer 2)  wet road (M_Asphalt meshes only): the planar mirror leaves it out
+##   bit 9 (layer 10) rain particles: the planar mirror leaves them out
+##   bit 19 (layer 20) car fill: every car mesh also has it; only the car fill light sees it, so the fill
+##                     lights cars and nothing else (no road, no buildings).
+const ROAD_LAYER_BIT: int = 1 << 1
+const CAR_FILL_LAYER: int = 19
+const ASPHALT_MATERIAL_NAME: String = "M_Asphalt"
+const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
+const FILL_LIGHT_NAME: String = "CarFillLight"
+const REFLECTION_NAME: String = "PlanarReflection"
+const WORLD_LAYER_MASK: int = 1  ## physics layer 1: world and static, the road surface
+const PLANE_PROBE_UP_M: float = 1.0  ## the road probe starts this far above the car origin...
+const PLANE_PROBE_DOWN_M: float = 6.0  ## ...and looks this far down
+const PLANE_FOLLOW_RATE: float = 12.0  ## 1/s: the mirror plane eases to the road height under the car
 
 @export var config: RaceConfig  ## null = Router params, else the default RaceConfig
 
@@ -57,11 +73,15 @@ var _last_s: float = -1.0
 var _names: PackedStringArray = PackedStringArray()
 var _default_nitro_gap: float = 0.0
 var _default_nitro_curvature: float = 0.0
+var _reflection: PlanarReflection = null  ## wet road mirror; null on Low or when the track has no wet asphalt
+var _road_mats: Array[ShaderMaterial] = []
+var _nitro_forced: bool = false
 
 
 func _ready() -> void:
 	config_used = config if config != null else _config_from_router()
 	Settings.attach_viewport(get_viewport())
+	Settings.changed.connect(_on_settings_changed)
 	_build_chrome()
 	_build_race()
 
@@ -84,11 +104,13 @@ func _process(delta: float) -> void:
 			race.start_countdown()
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if race == null or track == null or player == null:
 		return
 	if race.state == RaceManager.State.RACING and player.is_grounded and not wrong_way:
 		_last_s = track.get_progress(player.global_position, _last_s)
+	_follow_road_height(delta)
+	_force_nitro_gate()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -110,6 +132,7 @@ func reset_player() -> void:
 
 ## Fresh race from the grid with the same config. Used by RETRY and by the pause menu's restart.
 func retry() -> void:
+	_release_reflection()
 	if _world != null:
 		_world.queue_free()
 	_world = null
@@ -170,11 +193,15 @@ func _build_race() -> void:
 	_grid_t = 0.0
 	_last_s = -1.0
 	wrong_way = false
+	_nitro_forced = false
+	_reflection = null
+	_road_mats.clear()
 	_world = Node3D.new()
 	_world.name = "World"
 	add_child(_world)
 	track = _load_track()
 	_world.add_child(track)
+	_collect_road()
 	_ensure_environment()
 	_spawn_cars()
 	race = RaceManager.new()
@@ -185,6 +212,7 @@ func _build_race() -> void:
 	_apply_opponent_skills()
 	_setup_player_driver()
 	_make_camera()
+	_apply_reflection()
 	race.race_started.connect(_on_race_started)
 	race.race_finished.connect(_on_race_finished)
 	race.wrong_way_changed.connect(_on_wrong_way)
@@ -248,6 +276,9 @@ func _spawn_cars() -> void:
 func _add_car(car: ArcadeCar) -> void:
 	_world.add_child(car)
 	cars.append(car)
+	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		mi.layers = mi.layers | (1 << CAR_FILL_LAYER)
 	if ResourceLoader.exists(FX_CAR_SCENE):
 		car.add_child((load(FX_CAR_SCENE) as PackedScene).instantiate())
 
@@ -296,6 +327,97 @@ func _make_camera() -> void:
 	camera.set_target(player)
 	camera.set_mode(ChaseCamera.Mode.ORBIT)
 	camera.make_current()
+	# Cars are dark silhouettes at night without this. Cool, low, no shadow; it sees only the car layer.
+	var fill := OmniLight3D.new()
+	fill.name = FILL_LIGHT_NAME
+	fill.light_color = config_used.car_fill_color
+	fill.light_energy = config_used.car_fill_energy
+	fill.omni_range = config_used.car_fill_range_m
+	fill.light_cull_mask = 1 << CAR_FILL_LAYER
+	fill.shadow_enabled = false
+	camera.add_child(fill)
+
+
+## Wet road meshes (M_Asphalt on wet_asphalt.gdshader) go on the road layer, which the mirror skips.
+func _collect_road() -> void:
+	for n: Node in track.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		var mesh: Mesh = mi.mesh
+		if mesh == null:
+			continue
+		var is_road: bool = false
+		for s: int in mesh.get_surface_count():
+			var mat: Material = mi.get_surface_override_material(s)
+			if mat == null:
+				mat = mesh.surface_get_material(s)
+			if _is_asphalt(mat):
+				is_road = true
+				if not _road_mats.has(mat):
+					_road_mats.append(mat as ShaderMaterial)
+		if is_road:
+			mi.layers = ROAD_LAYER_BIT
+
+
+func _is_asphalt(mat: Material) -> bool:
+	var sm: ShaderMaterial = mat as ShaderMaterial
+	return sm != null and sm.resource_name == ASPHALT_MATERIAL_NAME and sm.shader != null and sm.shader.resource_path == ASPHALT_SHADER_PATH
+
+
+## Settings decide the mirror: none on Low, a smaller one on Medium, the full one on High.
+func _apply_reflection() -> void:
+	var preset_id: String = Settings.get_preset_id()
+	if preset_id == "low" or _road_mats.is_empty():
+		_release_reflection()
+		return
+	if _reflection == null:
+		_reflection = PlanarReflection.new()
+		_reflection.name = REFLECTION_NAME
+		_world.add_child(_reflection)
+		for m: ShaderMaterial in _road_mats:
+			_reflection.add_target_material(m)
+	_reflection.resolution_fraction = config_used.reflection_fraction_high if preset_id == "high" else config_used.reflection_fraction_medium
+	_reflection.set_enabled(true)
+
+
+func _release_reflection() -> void:
+	for m: ShaderMaterial in _road_mats:
+		if is_instance_valid(m):
+			m.set_shader_parameter("planar_enabled", 0.0)
+	if _reflection != null:
+		_reflection.set_enabled(false)
+		_reflection.get_parent().remove_child(_reflection)  ## out of the tree now, so it is gone at once
+		_reflection.queue_free()
+	_reflection = null
+
+
+func _on_settings_changed(section: String) -> void:
+	if section == Settings.SECTION_GRAPHICS and track != null and _world != null:
+		_apply_reflection()
+
+
+## Mirror plane eases to the road height under the car (ray down from the car, world layer only).
+func _follow_road_height(delta: float) -> void:
+	if _reflection == null:
+		return
+	var from: Vector3 = player.global_position + Vector3.UP * PLANE_PROBE_UP_M
+	var q := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * PLANE_PROBE_DOWN_M, WORLD_LAYER_MASK)
+	q.exclude = [player.get_rid()]
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(q)
+	if hit.is_empty():
+		return
+	var k: float = 1.0 - exp(-PLANE_FOLLOW_RATE * delta)
+	_reflection.plane_height = lerpf(_reflection.plane_height, (hit["position"] as Vector3).y, k)
+
+
+## Capture only: with force_nitro_above_kmh set, the autopilot's nitro gate opens once the car is that fast.
+func _force_nitro_gate() -> void:
+	var threshold: float = config_used.force_nitro_above_kmh
+	if threshold <= 0.0 or player_ai == null:
+		return
+	var want: bool = player.speed_kmh >= threshold
+	if want != _nitro_forced:
+		_nitro_forced = want
+		force_player_nitro(want)
 
 
 func _attach_optional() -> void:

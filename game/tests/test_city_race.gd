@@ -1,6 +1,6 @@
 extends "res://tests/test_case.gd"
 ## Racing on the real city track (world/city_01): a 6-car one-lap race must finish with every car
-## classified, at most one stuck event in total and no car upside down; a single car over two laps must
+## classified, no stuck event in total and no car upside down; a single car over two laps must
 ## keep each lap within 5 % of the earlier 63.9 s lap. Causes and numbers: docs/design/AI_AND_RACE.md.
 
 const SCENE_PATH: String = "res://world/city_01/city_01.tscn"
@@ -9,7 +9,7 @@ const HZ: float = 60.0
 var CAR_SKILLS: PackedFloat32Array = PackedFloat32Array([1.0, 0.97, 0.94, 0.91, 0.88, 0.85])
 const RACE_LIMIT_S: float = 150.0  ## simulated time a 6-car one-lap race may take
 const WALL_LIMIT_S: float = 120.0  ## wall-clock time the 6-car race may take on the dev PC at --fixed-fps 60
-const MAX_STUCK_TOTAL: int = 1
+const MAX_STUCK_TOTAL: int = 0  ## reached in round 2 (progress-based detector, slide braking, car following)
 const MIN_UPRIGHT_Y: float = 0.5  ## basis.y.y below this counts as upside down
 const BASELINE_LAP_S: float = 63.9  ## solo AI lap before the AI changes of this task
 const LAP_LIMIT_S: float = BASELINE_LAP_S * 1.05  ## a lap may be up to 5 % slower than the baseline

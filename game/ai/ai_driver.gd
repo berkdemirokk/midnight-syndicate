@@ -44,12 +44,17 @@ const AI_PHYSICS_PRIORITY: int = -1  ## runs before ArcadeCar (priority 0) so th
 @export var steer_noise: float = 0.03  ## steering input units, smooth noise so drivers differ
 @export var noise_rate: float = 0.7  ## 1/s
 @export var noise_seed: int = 1  ## set per driver (RaceManager uses the grid slot) so the noise phases differ
-@export var stuck_speed_kmh: float = 5.0
-@export var stuck_time: float = 2.5  ## s under stuck_speed_kmh while racing before recovery starts
+@export var stuck_progress_m: float = 2.0  ## m of forward progress along the line that counts as moving
+@export var stuck_time: float = 2.0  ## s without stuck_progress_m of forward progress while racing before recovery starts
 @export var reverse_time: float = 1.5  ## s of reversing before checking whether the car is free
+@export var reset_yaw_deg: float = 40.0  ## heading error still above this after a reverse: teleport back onto the line
+@export var follow_range: float = 18.0  ## m, a slower car this close ahead in our lane caps our speed
+@export var follow_gap: float = 6.0  ## m, the gap at which we match the speed of the car ahead
+@export var follow_gain: float = 0.6  ## m/s allowed per m of gap beyond follow_gap
 @export var reset_height: float = 0.47  ## car origin height used when placing it back on the line
 @export var slide_lift_ms: float = 2.5  ## m/s sideways speed across the track where the throttle starts to ease off (sliding)
 @export var slide_cut_ms: float = 4.0  ## m/s sideways speed at which the throttle is fully lifted; ramps in between (no step)
+@export var slide_brake_gain: float = 0.15  ## brake per m/s of sideways speed above slide_lift_ms (full brake at about 9 m/s)
 
 var stuck_count: int = 0  ## recovery starts so far
 
@@ -59,7 +64,8 @@ var _traffic: Array[ArcadeCar] = []
 var _racing: bool = false
 var _mode: Mode = Mode.RACE
 var _mode_t: float = 0.0
-var _stuck_t: float = 0.0
+var _idle_t: float = 0.0  ## s since the car last gained stuck_progress_m of forward progress
+var _anchor_s: float = -1.0  ## track progress at the last forward gain (or at recovery start)
 var _shift: float = 0.0
 var _last_s: float = -1.0
 var _time: float = 0.0
@@ -87,7 +93,8 @@ func setup(track: Track) -> void:
 	_last_s = -1.0
 	_shift = 0.0
 	_mode = Mode.RACE
-	_stuck_t = 0.0
+	_idle_t = 0.0
+	_anchor_s = -1.0
 
 
 ## Cars around this one, for overtaking and side clearance.
@@ -106,7 +113,8 @@ func set_reference_gap(gap: float) -> void:
 func set_racing(on: bool) -> void:
 	_racing = on
 	_mode = Mode.RACE
-	_stuck_t = 0.0
+	_idle_t = 0.0
+	_anchor_s = -1.0
 
 
 func _physics_process(delta: float) -> void:
@@ -128,11 +136,19 @@ func _physics_process(delta: float) -> void:
 	var pos: Vector3 = _car.global_position
 	var s: float = _track.get_progress(pos, _last_s)
 	_last_s = s
-	_stuck_t = _stuck_t + delta if _car.speed_kmh < stuck_speed_kmh else 0.0
-	if _stuck_t >= stuck_time:
+	if _anchor_s < 0.0:
+		_anchor_s = s
+	# Progress-based stuck check: no forward progress along the line for stuck_time while racing.
+	if _wrap_signed(s - _anchor_s) >= stuck_progress_m:
+		_anchor_s = s
+		_idle_t = 0.0
+	else:
+		_idle_t += delta
+	if _idle_t >= stuck_time:
 		_mode = Mode.REVERSE
 		_mode_t = 0.0
-		_stuck_t = 0.0
+		_idle_t = 0.0
+		_anchor_s = s
 		stuck_count += 1
 		_tick_reverse(delta)
 		return
@@ -169,19 +185,22 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	var ahead: float = s + clampf(target_look_ahead_time * v, 0.0, target_look_ahead_max)
 	var want: float = minf(_track.get_target_speed(s), _track.get_target_speed(ahead)) * skill * get_rubber_band()
 	want *= 1.0 + brake_noise * _noise(NOISE_BRAKE)
+	want = minf(want, _follow_cap(s, lane))
 	want = minf(want, top_ms)
 	var err: float = want - v
 	inp.steer = steer
 	inp.handbrake = false
+	var lat_v: float = _car.linear_velocity.dot(Vector3(-tg.z, 0.0, tg.x))
 	if err >= 0.0:
 		inp.throttle = clampf(err * throttle_gain, 0.0, 1.0)
 		inp.brake = 0.0
-		var lat_v: float = _car.linear_velocity.dot(Vector3(-tg.z, 0.0, tg.x))
 		var ease: float = clampf((slide_cut_ms - absf(lat_v)) / maxf(slide_cut_ms - slide_lift_ms, 0.01), 0.0, 1.0)
 		inp.throttle *= ease
 	else:
 		inp.throttle = 0.0
 		inp.brake = clampf(-err * brake_gain, 0.0, 1.0)
+	# Sliding sideways: brake too, so the tyres get back the grip the lateral slide is using.
+	inp.brake = maxf(inp.brake, clampf((absf(lat_v) - slide_lift_ms) * slide_brake_gain, 0.0, 1.0))
 	inp.nitro = err > nitro_min_gap_ms \
 		and absf(_track.get_curvature(ahead)) < nitro_max_curvature \
 		and _car.nitro_amount > NITRO_MIN_AMOUNT
@@ -197,10 +216,40 @@ func _tick_reverse(delta: float) -> void:
 	inp.nitro = false
 	if _mode_t < reverse_time:
 		return
-	if _car.speed_kmh < stuck_speed_kmh:
-		_reset_to_line()
+	# Free only if it gained progress since the recovery started and faces along the line.
+	var s: float = _track.get_progress(_car.global_position, _last_s)
+	var free: bool = _wrap_signed(s - _anchor_s) >= stuck_progress_m and _heading_error_deg(s) <= reset_yaw_deg
+	if not free:
+		_reset_to_line()  # last resort: teleport back onto the line
 	_mode = Mode.RACE
-	_stuck_t = 0.0
+	_idle_t = 0.0
+	_anchor_s = -1.0
+
+
+func _heading_error_deg(s: float) -> float:
+	var b: Basis = _car.global_transform.basis
+	var fwd: Vector3 = Vector3(-b.z.x, 0.0, -b.z.z).normalized()
+	var t: Vector3 = _track.get_tangent_at(s).normalized()
+	return rad_to_deg(acos(clampf(fwd.dot(t), -1.0, 1.0)))
+
+
+## Speed cap from the nearest slower car ahead in our lane: its speed at follow_gap, plus follow_gain per m beyond.
+func _follow_cap(s: float, lane: float) -> float:
+	var limit: float = INF
+	if absf(_shift) > 0.05:
+		return limit  # already passing: the lane shift is the answer, not braking behind the car
+	for other: ArcadeCar in _traffic:
+		if other == _car or not is_instance_valid(other):
+			continue
+		var op: Vector3 = other.global_position
+		var so: float = _track.get_progress(op, s)
+		var along: float = _wrap_signed(so - s)
+		if along <= 0.0 or along > follow_range:
+			continue
+		if absf(_lateral_at(op, so) - lane) >= block_lane_width:
+			continue
+		limit = minf(limit, maxf(other.forward_speed, 0.0) + follow_gain * (along - follow_gap))
+	return limit
 
 
 func _reset_to_line() -> void:

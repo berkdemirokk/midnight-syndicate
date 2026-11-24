@@ -2,6 +2,8 @@ extends "res://tests/test_case.gd"
 ## Tests for the FX pack (game/fx, game/shaders). Run at --fixed-fps 60.
 
 const SPEC_PATH: String = "res://vehicles/specs/noctra_sable.tres"
+const FlatWorld = preload("res://tests/helpers/flat_world.gd")
+const START_H: float = 0.47  ## body origin height above flat ground at rest (as in test_vehicle)
 const SCENES: Array[String] = [
 	"res://fx/rain.tscn", "res://fx/nitro_flame.tscn", "res://fx/tire_smoke.tscn",
 	"res://fx/sparks.tscn", "res://fx/speed_lines.tscn", "res://fx/headlights.tscn", "res://fx/car_fx.tscn",
@@ -167,6 +169,62 @@ func test_speed_lines_intensity_clamps() -> void:
 	check_range(sl.get_intensity(), 0.4, 0.4, "intensity 0.4")
 	sl.queue_free()
 	await frames(1)
+
+
+func test_tyre_smoke_silent_on_straight_acceleration_above_40() -> void:
+	var ground: StaticBody3D = FlatWorld.make_ground(0.0)
+	add(ground)
+	var car := ArcadeCar.new()
+	car.spec = load(SPEC_PATH) as CarSpec
+	add(car)
+	car.reset_to(Transform3D(Basis.IDENTITY, Vector3(0.0, START_H, 0.0)))
+	var fx := load("res://fx/car_fx.tscn").instantiate() as CarFx
+	car.add_child(fx)
+	await frames(120)
+	check(car.wheel_contact[2] and car.wheel_contact[3], "car not on the ground before the run")
+	# Start at 60 km/h, straight, then floor it until 150 km/h.
+	car.linear_velocity = Vector3(0.0, 0.0, -60.0 / 3.6)
+	car.input.throttle = 1.0
+	var reached: float = 0.0
+	var smoke_frames: int = 0
+	var max_frames: int = 60 * 90
+	for f: int in max_frames:
+		await frames(1)
+		reached = maxf(reached, car.speed_kmh)
+		if car.speed_kmh >= 40.0 and car.speed_kmh <= 150.0 and _smoke_emitting(fx):
+			smoke_frames += 1
+		if car.speed_kmh >= 150.0:
+			break
+	metric("straight_accel_top_kmh", reached)
+	metric("straight_accel_smoke_frames", smoke_frames)
+	check(reached >= 150.0, "car did not reach 150 km/h (top %.1f)" % reached)
+	check(smoke_frames == 0, "straight acceleration above 40 km/h emitted smoke on %d frames" % smoke_frames)
+	await cleanup([car, ground])
+
+
+func test_drifting_car_emits_tyre_smoke() -> void:
+	var ground: StaticBody3D = FlatWorld.make_ground(0.0)
+	add(ground)
+	var car := ArcadeCar.new()
+	car.spec = load(SPEC_PATH) as CarSpec
+	add(car)
+	car.reset_to(Transform3D(Basis.IDENTITY, Vector3(0.0, START_H, 0.0)))
+	var fx := load("res://fx/car_fx.tscn").instantiate() as CarFx
+	car.add_child(fx)
+	await frames(120)
+	car.linear_velocity = Vector3(0.0, 0.0, -80.0 / 3.6)
+	car.is_drifting = true
+	await frames(1)
+	check(car.is_drifting, "drift ended on the first tick; test needs a drift")
+	check(_smoke_emitting(fx), "drifting car emitted no tyre smoke")
+	await cleanup([car, ground])
+
+
+func _smoke_emitting(fx: CarFx) -> bool:
+	for e: GPUParticles3D in fx.smoke._emitters:
+		if e.emitting:
+			return true
+	return false
 
 
 func _any_emitting(node: Node) -> bool:

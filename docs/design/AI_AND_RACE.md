@@ -31,7 +31,12 @@ Output: `evidence/logs/stuck_events.json` (final 6-car run), `evidence/logs/stuc
   Braking points +-4 % of target speed, steering +-0.03.
 - Overtaking: a slower car within 20 m ahead in our lane triggers a 2.5 m lane shift to the side with the most room.
   A side is refused when a car is alongside on it (7 m along, 3.2 m across). The shift returns at 1.5 m/s.
-- Stuck: under 5 km/h for 2.5 s while racing starts a 1.5 s reverse. If still under 5 km/h, the car is reset onto the line facing forward.
+- Stuck (round 2, progress-based): while racing, no 2 m of forward progress along the line within 2 s starts recovery.
+  Recovery brakes for 1.5 s (reverse by brake once stopped). The car is free only if it gained 2 m of progress since the
+  recovery started and its heading is within 40 deg of the line; otherwise it is teleported onto the line (last resort).
+- Follow (round 2): a slower car within 18 m ahead in our lane (1.5 lane widths) caps the target at its speed plus 0.6 m/s per
+  m beyond a 6 m gap. Not applied while a lane shift is under way (passing).
+- Slide brake (round 2): sideways speed above 2.5 m/s also brakes, 0.15 per m/s (full at about 9 m/s), so the tyres get back grip.
 - Rubber band: RaceManager pushes the player's unwrapped race distance minus ours each tick. Gap beyond 150 m moves
   target speed by up to +-8 % (ahead of the player: down, behind: up). Never above the top speed. Neutral without a gap.
 - Finished or idle cars brake at 0.5 while above 20 km/h, then coast to a stop.
@@ -122,6 +127,49 @@ at --fixed-fps 60):
 | Single car: stuck events | 0 |
 | test_city_01 single AI lap | 64.97 s, max lateral 5.81 m, 0 stuck |
 
+## city_01 round 2 (after the Environment corridor push)
+Diagnostics: `diag_ai_stuck.gd --cars=6|8|1 --out=...`; numbers from `evidence/logs/stuck_events_round2.json`
+(6 cars, 8 cars, solo) and the runs listed below. Simulated, 60 Hz, all runs finished.
+
+Start of round 2 (the intrusions at 1080 to 1176 m were pushed out, but the clusters below remained):
+| Run | Race time | Stuck events | Where |
+|---|---|---|---|
+| 6 cars | 74.57 s | 4 (car 0 x4) | s 1265 to 1273 m, lat -11.4, `wall_10` (left side) |
+| 8 cars | 77.18 s | 16 | s 470 to 477 m (`bld_neon_03_a`, car 4 and 5), s 615 to 660 m (`bld_downtown_01/02_b`, cars 4, 6, 7) |
+
+Causes, from traces (`--s=<a>,<b>` windows):
+1. s 1150 to 1230 m, car 0 alone at skill 1.0: 155 km/h on the left sweep with throttle 0 and sideways speed 8 m/s, then yaw
+   swings from +4 to +42 deg with sideways speed -20 m/s. The slide rule only cut the throttle; nothing braked the slide.
+   Fix: slide brake (above). After it, 0 stuck events in the 6-car race and the same car stays on the road.
+2. s 430 to 460 m, car 4: cars bunched at the start touched (contacts at s 390 to 440 m). The AI had no car-following, so a
+   car at 100 to 108 km/h kept throttle on into the car ahead. Yaw error reached -56 deg at 458 m. Fix: follow cap.
+3. Stuck recovery did not free a spun car. The reverse only braked (no steering), and the car was released at 23 km/h
+   facing back along the road (yaw -112 deg). Fix: the teleport only when the car did not gain progress or still faces
+   more than 40 deg from the line.
+4. Speed-based detector: a car pinned at 5 to 12 km/h never triggered the 5 km/h test. Fix: progress-based detector.
+5. Overtake with the follow cap: the cap slowed the chaser before the shift could start (test_overtake_shifts_lane
+   failed at 0.70 m). Fix: no follow cap while a lane shift is under way (1.61 m shift).
+
+Round 2 final runs (current code):
+| Run | Race time | Stuck events | Notes |
+|---|---|---|---|
+| 6 cars | 74.10 s | 0 | 6 contacts, min basis.y.y 0.9963 |
+| 8 cars | 85.13 s | 3 | cars 5 and 6 at s 500 to 505 m (lat -4.4 to -7.5, left kerb, `Colliders_02`), car 6 at s 1472 m (right kerb) |
+| solo, skill 1.0 | 65.37 s | 0 | lap 1; test_city_race lap 1 65.33 s, lap 2 66.68 s |
+
+Before the overtake skip (the cap also applied while passing) the 8-car run had 0 stuck events, but the overtake test failed.
+The 3 events are the trade-off of that choice. The overtake shift at s 480 m moved the car to the left kerb while car 6 on its
+right pushed it further; the lane limit (5.5 m) is not enough when two cars share the side. Open.
+
+Targets (round 2 brief):
+- 6 cars, 0 stuck: met (0).
+- 8 cars, at most 1: not met (3).
+- Solo lap, at most 66 s: met (65.37 s; 0 stuck).
+- Autopilot car reaches 220 km/h on a lap: not met (solo max 174.7 km/h, see limits).
+
+Tests: test_ai_race 9 of 9 pass; test_city_race 2 of 2 pass with MAX_STUCK_TOTAL = 0 (6 cars). Full suite once: 119 tests,
+0 failed (run exit 0, no SCRIPT ERROR, Parse Error or SHADER ERROR in the log).
+
 ## Limits and open items
 - Layout defect (not fixed here, owner: Environment): the parking buildings intrude into the road at s 1080 to 1108 m and
   1136 to 1176 m (right side, 2.5 to 3.9 m from the line). Any car sliding there can be wedged. The AI cannot see colliders.
@@ -131,10 +179,12 @@ at --fixed-fps 60):
   (c) s 1133 to 1139 m, the parking intrusion again.
 - Contacts: about 10 unique car pairs per race (`contacts` in the JSON). Most are rear-end touches at 100 to 125 km/h at the
   race start (s 390 to 436 m) and during the finish bunch-up. Not analysed in detail.
-- Stuck detection is still speed-based. A progress-based detector (no progress for N seconds) would catch the creeping
-  wedge sooner. Not built.
 - Nitro is not gated by the slide rule. Nitro while sliding may increase the excursions. Not measured.
-- The stuck recovery still teleports to the line after a failed reverse. This is a fallback, not a fix.
+- Stuck recovery teleports to the line only after a failed reverse (round 2). Measured: 0 teleports in the 6-car race.
+- 8 cars, round 2: 3 stuck events (limit 1), see the round 2 section. Open.
+- 220 km/h on a lap: not reached. Solo max 174.7 km/h; the start straight (s 145 to 260 m) has target 216 to 252 km/h, but
+  the car is still accelerating at 175 km/h when the straight ends at about s 330 m. Needs a longer straight or more power
+  (not an AI setting). Nitro state was not logged in the trace, so the nitro use on that straight is not verified.
 - Lateral accel limit tuned to 9.5 m/s^2 after 13 m/s^2 gave 11 m excursions at the car grip limit under throttle.
 - Solo lateral margin (5.8 of 7 m) is modest. Re-check after any grip or steering change in ArcadeCar.
 - Track length is 1.27 km (test circuit), a little above the 1.2 km target.

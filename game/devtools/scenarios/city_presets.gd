@@ -3,7 +3,7 @@ extends "res://devtools/capture_scenario.gd"
 ## Three fixed viewpoints on the racing line (neon_strip at the grid, downtown_overpass on the guardrail run,
 ## underpass inside the tunnel), then the full 6-car pack in a live race (player + 5 rivals, autopilot).
 ## Each view: 60 settle frames, a shot, then cap.measure over 300 frames with vsync off (the probe does that).
-## Planar reflection is not attached in the game race path (only devtools use PlanarReflection), so it is reported off.
+## Planar reflection is not attached in the city views. The race scene attaches it on Medium and High (not Low), so the pack view has it on those presets.
 ## Rain is the preset's rain_enabled through fx/rain.gd.
 
 const CITY_SCENE: String = "res://world/city_01/city_01.tscn"
@@ -55,7 +55,7 @@ func run() -> void:
 	_cam.fov = FOV_DEG
 	_city.add_child(_cam)
 	_cam.current = true
-	print("city_presets: preset=%s rain=%s planar=off" % [_preset, Settings.get_preset().rain_enabled])
+	print("city_presets: preset=%s rain=%s planar=n/a in city views (race pack view: on Medium and High)" % [_preset, Settings.get_preset().rain_enabled])
 	for view: Dictionary in VIEWS:
 		var idx: int = clampi(roundi(float(view["s"]) / SAMPLE_M), 0, _line.size() - LOOK_AHEAD_IDX - 1)
 		var p: Vector3 = _line[idx]

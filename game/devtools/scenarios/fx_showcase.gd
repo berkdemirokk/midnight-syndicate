@@ -18,6 +18,13 @@ func run() -> void:
 	root.add_child(_world_environment())
 	root.add_child(_ground())
 	root.add_child(_block())
+	# Rig light so lit smoke reads as grey (the rig has no scene lights; the smoke is not unshaded).
+	var key := OmniLight3D.new()
+	key.position = Vector3(1.5, 2.5, 4.5)
+	key.omni_range = 14.0
+	key.light_energy = 2.5
+	key.light_color = Color(0.85, 0.9, 1.0)
+	root.add_child(key)
 	# CarFx normally sits under an ArcadeCar; here the stand-in block plays the car.
 	var holder := Node3D.new()
 	holder.position = Vector3(0.0, BLOCK_SIZE.y * 0.5, 0.0)

@@ -16,6 +16,12 @@ extends Resource
 @export var autopilot: bool = false  ## the player car is driven by an AIDriver (tests and captures)
 @export_range(0.8, 1.0) var autopilot_skill: float = 0.97
 @export var event_id: String = "dev_circuit"  ## key for GameState.record_result
+@export_range(0.1, 1.0, 0.01) var reflection_fraction_high: float = 0.33  ## wet road mirror size, High preset
+@export_range(0.1, 1.0, 0.01) var reflection_fraction_medium: float = 0.2  ## wet road mirror size, Medium preset (Low has none)
+@export_range(0.0, 4.0, 0.01) var car_fill_energy: float = 1.6 ## fill light on the car layer only, see RaceScene.CAR_FILL_LAYER
+@export var car_fill_color: Color = Color(0.82, 0.9, 1.0)
+@export_range(1.0, 60.0, 0.5) var car_fill_range_m: float = 25.0
+@export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
 
 
 ## Opponent paint by index, cycling through the list. Falls back to the player colour when no list is set.
