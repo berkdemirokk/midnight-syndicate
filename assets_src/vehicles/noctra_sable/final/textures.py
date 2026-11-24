@@ -193,29 +193,54 @@ def lens(n=256):
     return normal_from_height(h, 0.8)
 
 
-def plate(H=128, Wd=512):
-    base = np.zeros((H, Wd, 3))
+def _text_triangles(text="NOCTRA"):
+    """Triangles (N, 3, 2) of the text in Blender's built-in font (Bfont), flat in XY, reading +X."""
+    import bpy  # the texture step runs inside Blender
+    cu = bpy.data.curves.new("PLATE_TEXT", "FONT")
+    cu.body = text
+    cu.size = 1.0
+    ob = bpy.data.objects.new("PLATE_TEXT", cu)
+    bpy.context.scene.collection.objects.link(ob)
+    oe = ob.evaluated_get(bpy.context.evaluated_depsgraph_get())
+    me = oe.to_mesh()
+    me.calc_loop_triangles()
+    co = np.array([v.co[:] for v in me.vertices], float)
+    tri = np.array([t.vertices[:] for t in me.loop_triangles], int)
+    oe.to_mesh_clear()
+    bpy.data.objects.remove(ob)
+    bpy.data.curves.remove(cu)
+    if len(tri) == 0:
+        raise RuntimeError("plate text: built-in font produced no triangles")
+    return co[tri][:, :, :2]
+
+
+def plate(H=128, Wd=512, text="NOCTRA"):
+    """Pale plate with black NOCTRA. Columns run left to right, which is viewer's right when
+    seen from behind (plate_uv: U grows toward -X, the viewer's right), so the text reads true."""
+    T = _text_triangles(text)
+    lo, hi = T.reshape(-1, 2).min(axis=0), T.reshape(-1, 2).max(axis=0)
+    k = min(0.80 * Wd / (hi[0] - lo[0]), 0.74 * H / (hi[1] - lo[1]))
+    cen = 0.5 * (lo + hi)
+    # pixel space, columns to the right and rows top down: text y up becomes H - y
+    P = (T - cen) * k + np.array([Wd / 2, H / 2])
+    P[:, :, 1] = H - P[:, :, 1]
+    mask = np.zeros((H, Wd), bool)
+    for a, b, c in P:
+        x0, x1 = max(int(np.floor(min(a[0], b[0], c[0]))), 0), min(int(np.ceil(max(a[0], b[0], c[0]))), Wd)
+        y0, y1 = max(int(np.floor(min(a[1], b[1], c[1]))), 0), min(int(np.ceil(max(a[1], b[1], c[1]))), H)
+        if x0 >= x1 or y0 >= y1:
+            continue
+        X, Y = np.meshgrid(np.arange(x0, x1) + 0.5, np.arange(y0, y1) + 0.5)
+        d = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1])
+        if abs(d) < 1e-9:
+            continue
+        l1 = ((b[1] - c[1]) * (X - c[0]) + (c[0] - b[0]) * (Y - c[1])) / d
+        l2 = ((c[1] - a[1]) * (X - c[0]) + (a[0] - c[0]) * (Y - c[1])) / d
+        inside = (l1 >= 0) & (l2 >= 0) & (1.0 - l1 - l2 >= 0)
+        mask[y0:y1, x0:x1] |= inside
+    base = np.empty((H, Wd, 3))
     base[:] = np.array([0.91, 0.92, 0.89])
-    text = "NOCTRA"
-    scale = 12
-    cells = []
-    for i, ch in enumerate(text):
-        if i:
-            cells.append(None)
-        cells.append(FONT[ch])
-    ncol = sum(5 if g else 1 for g in cells)
-    cols = []
-    for g in cells:
-        if g is None:
-            cols.append(np.zeros((7, 1)))
-        else:
-            cols.append(np.array([[int(b) for b in row] for row in g], float))
-    mask = np.concatenate(cols, axis=1)
-    m = np.kron(mask, np.ones((scale, scale)))
-    x0 = (Wd - m.shape[1]) // 2
-    y0 = (H - m.shape[0]) // 2
-    base[y0:y0 + m.shape[0], x0:x0 + m.shape[1]] *= (1.0 - 0.86 * m[:, :, None])
-    base[..., :] += 0.0
+    base[mask] = np.array([0.02, 0.02, 0.025])
     return to_u8(np.clip(base, 0, 1))
 
 

@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/garage/garage.gd" id="1_garage"]
+[ext_resource type="PackedScene" path="res://assets/world/garage/garage_room.glb" id="2_room"]
+
+[node name="Garage" type="Node3D"]
+script = ExtResource("1_garage")
+
+[node name="Room" parent="." instance=ExtResource("2_room")]
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Camera" type="Camera3D" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]

@@ -1,0 +1,363 @@
+{
+ "coords": "godot_y_up",
+ "generator": "build_buildings.py",
+ "materials": {
+  "M_Aircraft_Red": {
+   "base_color": "#2A0505",
+   "roughness": 0.5,
+   "metallic": 0.0,
+   "emission_color": "#FF3B30",
+   "emission_strength": 6.0,
+   "uv": "metres",
+   "tint_for_impostor": "#401010",
+   "licence": "project-owned"
+  },
+  "M_Awning_Red": {
+   "base_color": "#7A1F1C",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres",
+   "tint_for_impostor": "#7A1F1C",
+   "licence": "project-owned"
+  },
+  "M_Awning_Teal": {
+   "base_color": "#1E5A58",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres",
+   "tint_for_impostor": "#1E5A58",
+   "licence": "project-owned"
+  },
+  "M_Brick_Dark": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#5A3A33",
+   "source": "cc0 set dark_brick_wall (game/assets/textures/cc0/dark_brick_wall)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/dark_brick_wall/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/dark_brick_wall/normal.jpg",
+    "roughness": "game/assets/textures/cc0/dark_brick_wall/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Brick_Painted": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#D9D2C4",
+   "source": "cc0 set castle_brick_02_white (game/assets/textures/cc0/castle_brick_02_white)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/castle_brick_02_white/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/castle_brick_02_white/normal.jpg",
+    "roughness": "game/assets/textures/cc0/castle_brick_02_white/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Brick_Red": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#8A4A3A",
+   "source": "cc0 set brick_wall_006 (game/assets/textures/cc0/brick_wall_006)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/brick_wall_006/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/brick_wall_006/normal.jpg",
+    "roughness": "game/assets/textures/cc0/brick_wall_006/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_CeilingStrip": {
+   "base_color": "#E8F0FF",
+   "roughness": 0.6,
+   "metallic": 0.0,
+   "emission_color": "#BFD8FF",
+   "emission_strength": 5.0,
+   "uv": "metres",
+   "tint_for_impostor": "#BFD8FF",
+   "licence": "project-owned"
+  },
+  "M_CollisionOnly": {
+   "base_color": "#FFFFFF",
+   "note": "collider only, never rendered"
+  },
+  "M_Concrete_Panels": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.75,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#8C8A84",
+   "source": "cc0 set concrete_panels (game/assets/textures/cc0/concrete_panels)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/concrete_panels/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/concrete_panels/normal.jpg",
+    "roughness": "game/assets/textures/cc0/concrete_panels/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Concrete_Smooth": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#7E7C78",
+   "source": "cc0 set brushed_concrete_03 (game/assets/textures/cc0/brushed_concrete_03)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/brushed_concrete_03/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/brushed_concrete_03/normal.jpg",
+    "roughness": "game/assets/textures/cc0/brushed_concrete_03/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Concrete_Stained": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#6E6A62",
+   "source": "cc0 set concrete_wall_006 (game/assets/textures/cc0/concrete_wall_006)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/concrete_wall_006/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/concrete_wall_006/normal.jpg",
+    "roughness": "game/assets/textures/cc0/concrete_wall_006/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Facade_Tile": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.35,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#9A9A96",
+   "source": "cc0 set concrete_tile_facade (game/assets/textures/cc0/concrete_tile_facade)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/concrete_tile_facade/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/concrete_tile_facade/normal.jpg",
+    "roughness": "game/assets/textures/cc0/concrete_tile_facade/roughness.jpg"
+   },
+   "uv_tile_m": 1.2,
+   "licence": "CC0-1.0"
+  },
+  "M_Frame": {
+   "base_color": "#2B2F38",
+   "roughness": 0.55,
+   "metallic": 0.2,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres",
+   "tint_for_impostor": "#2B2F38",
+   "licence": "project-owned"
+  },
+  "M_ImpostorAtlas": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emission_color": "#FFFFFF",
+   "emission_strength": 2.0,
+   "uv": "0..1 atlas: TL front, TR back, BL left, BR right, BL corner 0.03 = roof",
+   "tint_for_impostor": "#808080",
+   "generated": [
+    "out/impostor_<building>_basecolor.png",
+    "out/impostor_<building>_emissive.png"
+   ],
+   "licence": "project-owned"
+  },
+  "M_Metal_Corrugated": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.5,
+   "metallic": 0.5,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#7A7F86",
+   "source": "cc0 set corrugated_iron_03 (game/assets/textures/cc0/corrugated_iron_03)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/corrugated_iron_03/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/corrugated_iron_03/normal.jpg",
+    "roughness": "game/assets/textures/cc0/corrugated_iron_03/roughness.jpg"
+   },
+   "uv_tile_m": 1.5,
+   "licence": "CC0-1.0"
+  },
+  "M_Metal_Painted": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.45,
+   "metallic": 0.4,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#3B4A5C",
+   "source": "cc0 set blue_metal_plate (game/assets/textures/cc0/blue_metal_plate)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/blue_metal_plate/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/blue_metal_plate/normal.jpg",
+    "roughness": "game/assets/textures/cc0/blue_metal_plate/roughness.jpg"
+   },
+   "uv_tile_m": 1.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Metal_Rusty": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.7,
+   "metallic": 0.4,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#7A5238",
+   "source": "cc0 set corrugated_iron (game/assets/textures/cc0/corrugated_iron)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/corrugated_iron/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/corrugated_iron/normal.jpg",
+    "roughness": "game/assets/textures/cc0/corrugated_iron/roughness.jpg"
+   },
+   "uv_tile_m": 1.5,
+   "licence": "CC0-1.0"
+  },
+  "M_Plaster_Beige": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#CDBFA5",
+   "source": "cc0 set beige_wall_001 (game/assets/textures/cc0/beige_wall_001)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/beige_wall_001/normal.jpg",
+    "roughness": "game/assets/textures/cc0/beige_wall_001/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Plaster_Clay": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#B08D6E",
+   "source": "cc0 set clay_plaster (game/assets/textures/cc0/clay_plaster)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/clay_plaster/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/clay_plaster/normal.jpg",
+    "roughness": "game/assets/textures/cc0/clay_plaster/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_Roof_Bitumen": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#2A2A2C",
+   "source": "cc0 set bitumen (game/assets/textures/cc0/bitumen)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/bitumen/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/bitumen/normal.jpg",
+    "roughness": "game/assets/textures/cc0/bitumen/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "licence": "CC0-1.0"
+  },
+  "M_ShopGlass": {
+   "base_color": "#0A1220",
+   "roughness": 0.05,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres (flat glass, tint only; BLEND so the lit interior card shows)",
+   "tint_for_impostor": "#1A2638",
+   "alpha": 0.25,
+   "alpha_mode": "BLEND",
+   "licence": "project-owned"
+  },
+  "M_ShopInterior": {
+   "base_color": "#3A2A1E",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emission_color": "#FFFFFF",
+   "emission_strength": 2.0,
+   "uv": "2x2 atlas: each shop picks one 0.5 UV card (goods, cafe, boutique, bar)",
+   "tint_for_impostor": "#6A4A30",
+   "generated": [
+    "out/shop_interior_basecolor.png",
+    "out/shop_interior_emissive.png"
+   ],
+   "licence": "project-owned"
+  },
+  "M_SignBand": {
+   "base_color": "#1A1E2A",
+   "roughness": 0.5,
+   "metallic": 0.1,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres; neutral band, props agent places signs on anchors",
+   "tint_for_impostor": "#1A1E2A",
+   "licence": "project-owned"
+  },
+  "M_WindowAtlas": {
+   "base_color": "#202838",
+   "roughness": 0.25,
+   "metallic": 0.0,
+   "emission_color": "#FFFFFF",
+   "emission_strength": 3.0,
+   "uv": "0..1 over an 8x8 tile atlas, one tile per pane",
+   "tint_for_impostor": "#7A7A70",
+   "generated": [
+    "out/window_atlas_basecolor.png",
+    "out/window_atlas_emissive.png"
+   ],
+   "licence": "project-owned"
+  },
+  "M_Wood_Planks": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.7,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#5E4530",
+   "source": "cc0 set dark_wooden_planks (game/assets/textures/cc0/dark_wooden_planks)",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/dark_wooden_planks/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/dark_wooden_planks/normal.jpg",
+    "roughness": "game/assets/textures/cc0/dark_wooden_planks/roughness.jpg"
+   },
+   "uv_tile_m": 1.5,
+   "licence": "CC0-1.0"
+  }
+ },
+ "notes": "M_ImpostorAtlas: one 512 px atlas per building, see catalog.json impostor_textures. M_WindowAtlas and M_ShopInterior are shared; per-window tile chosen in the UVs."
+}

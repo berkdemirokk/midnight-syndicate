@@ -1,0 +1,25 @@
+{
+  "name": "waterfront_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 92,
+    "driver": "vulkan",
+    "fps": 789.7,
+    "frame_ms_avg": 1.266,
+    "frame_ms_p95": 1.342,
+    "frame_ms_p99": 5.441,
+    "frames": 300,
+    "objects": 92,
+    "os": "Windows",
+    "primitives": 56482,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.122,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "city_districts"
+}

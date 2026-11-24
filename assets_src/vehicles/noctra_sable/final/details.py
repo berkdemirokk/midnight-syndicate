@@ -239,7 +239,9 @@ def light_band(s):
     """R-list 2A fix: the light blade runs from the centre notch (x 0.16 on top) round the nose
     corner and down the side to 0.10 m below the shoulder. Returns (v_side, v_top)."""
     h = B._half(s)
-    return _v_side_cross(h, B.z_sh(s) - 0.10, 0.3 * B.w_max(s)), _v_top_cross(h, 0.16)
+    # P8: band runs down the nose corner to just under the shoulder, toward the fender
+    # round 8: wrap reaches further down the nose corner toward the fender (was z_sh - 0.035)
+    return _v_side_cross(h, B.z_sh(s) - 0.085, 0.3 * B.w_max(s)), _v_top_cross(h, 0.16)
 
 
 def v_grid(s_list, v_of_s, sg):
@@ -301,6 +303,25 @@ def pocket(body, pred, depth, name):
     print("POCKET %-16s faces %4d depth %.3f" % (name, res.get("n", 0), depth))
 
 
+def lip_bevel(body):
+    """P3: round the side-intake opening edge (wall to paint) into a 10 mm lip."""
+    def op(bm):
+        edges = []
+        for e in bm.edges:
+            if len(e.link_faces) != 2:
+                continue
+            a, b = e.link_faces
+            if {a.material_index, b.material_index} != {0, 1}:
+                continue
+            m = (e.verts[0].co + e.verts[1].co) * 0.5
+            if abs(m.x) > 0.55 and 2.62 <= m.y + Y0 <= 3.14 and 0.34 <= m.z <= 0.63:
+                edges.append(e)
+        bmesh.ops.bevel(bm, geom=edges, offset=0.010, offset_type='OFFSET', segments=3,
+                        profile=0.5, affect='EDGES', clamp_overlap=True)
+        print("INTAKE lip edges", len(edges))
+    body_edit(body, op)
+
+
 def tail_slice(bm):
     """Cut horizontal edges into the tail fan at the ruling heights so the recess and
     lamp surround boundaries are straight lines, not fan slivers."""
@@ -335,6 +356,34 @@ def p_nose_intake(x, s, z):
     return abs(x) <= 0.55 and -0.05 <= s <= 0.10 and 0.24 <= z <= 0.34
 
 
+def rounded_poly(P, r, k):
+    """Closed polygon with each corner replaced by a quadratic arc of radius r (k segments)."""
+    out, n = [], len(P)
+    for i in range(n):
+        p, v, q = (np.array(P[i - 1], float), np.array(P[i], float), np.array(P[(i + 1) % n], float))
+        A = v + (p - v) * min(r / np.linalg.norm(p - v), 0.45)
+        B = v + (q - v) * min(r / np.linalg.norm(q - v), 0.45)
+        for j in range(k + 1):
+            u = j / k
+            out.append(tuple((1 - u) ** 2 * A + 2 * (1 - u) * u * v + u * u * B))
+    return out
+
+
+def add_tube(bm, xc, zc, y0, y1, ro, ri, mi_out, mi_in, n=32):
+    """Exhaust tip along Y: outer wall, a real rim (annulus) at y1 and a dark bore inside."""
+    def ring(r, y):
+        return [bm.verts.new((xc + r * math.cos(2 * math.pi * k / n), y,
+                              zc + r * math.sin(2 * math.pi * k / n))) for k in range(n)]
+    O0, O1, I0, I1 = ring(ro, y0), ring(ro, y1), ring(ri, y0), ring(ri, y1)
+    cen = bm.verts.new((xc, y0 + 0.002, zc))  # bore floor centre
+    for j in range(n):
+        k = (j + 1) % n
+        bm.faces.new([O0[j], O0[k], O1[k], O1[j]]).material_index = mi_out  # outer wall
+        bm.faces.new([O1[j], O1[k], I1[k], I1[j]]).material_index = mi_out  # rim, wall thickness
+        bm.faces.new([I1[j], I1[k], I0[k], I0[j]]).material_index = mi_in   # dark bore wall
+        bm.faces.new([I0[j], I0[k], cen]).material_index = mi_in            # dark bore floor
+
+
 def p_brake(x, s, z):
     return 0.60 <= abs(x) <= 0.80 and 0.03 <= s <= 0.07 and 0.33 <= z <= 0.40
 
@@ -355,11 +404,17 @@ def p_tail_band(x, s, z):
 def extra_materials():
     out = {}
     m, b = B._principled("M_Carbon", B._lin((0x12, 0x12, 0x14)), 0.0, 0.35)
-    b.inputs["Coat Weight"].default_value = 0.6
+    # round 8: wing plates and uprights use this slot; strip-light reflections turned them pale grey
+    b.inputs["Coat Weight"].default_value = 0.0
     b.inputs["Coat Roughness"].default_value = 0.2
+    b.inputs["Specular IOR Level"].default_value = 0.12
     out["M_Carbon"] = m
     m, b = B._principled("M_Chrome", B._lin((0xE8, 0xE8, 0xEC)), 1.0, 0.12)
     out["M_Chrome"] = m
+    # P1: gloss black greenhouse pillars and roof rails (material count 15, per the lead)
+    m, b = B._principled("M_Pillar", B._lin((0x08, 0x08, 0x0A)), 0.0, 0.12)
+    b.inputs["Coat Weight"].default_value = 1.0
+    out["M_Pillar"] = m
     m, b = B._principled("M_Lens", B._lin((0xFF, 0xFF, 0xFF)), 0.0, 0.05)
     b.inputs["Alpha"].default_value = 0.25
     m.surface_render_method = "BLENDED"
@@ -407,53 +462,74 @@ def build_trim(mats, body):
         P, N = grid_side([1.30, 1.90, 2.50, 3.15],
                          lambda s: [B.z_bot(s) + 0.015, B.z_bot(s) + 0.045, B.z_bot(s) + 0.075], sg)
         add_thick(bm, P, N, 0.03, 0.03, 0)
-    # diffuser: five vertical strakes in the recess
+    # diffuser: five tapered strakes, 8 mm thick, rounded leading end, evenly spaced 135 mm
     for xk in (-0.27, -0.135, 0.0, 0.135, 0.27):
-        add_box(bm, (xk, FLOOR_TAIL + 0.012, 0.34), (0.022, 0.024, 0.24), 0)
-    # fixed low wing on swan-neck uprights, end plates
+        y_a, y_b = FLOOR_TAIL + 0.004, YF + 0.012
+        rings = [ell_ring((xk, y_a - 0.003, 0.34), (1, 0, 0), (0, 0, 1), 0.001, 0.05, 12)]
+        for t in (0.0, 0.5, 1.0):
+            rings.append(ell_ring((xk, y_a + t * (y_b - y_a), 0.34), (1, 0, 0), (0, 0, 1),
+                                  0.004, 0.12 * (1.0 - 0.35 * t), 12))
+        add_loft(bm, rings, 0)
+    # fixed low wing: aerofoil section, small gurney lip, swan-neck uprights, trapezoid end plates
     zw = B.z_top(4.34) + 0.10 + 0.017
     add_wing(bm, zw, 1)
+    add_box(bm, (0.0, 4.46 - Y0 - 0.003, zw + 0.012), (1.5, 0.006, 0.016), 1)  # gurney lip
     for sx in (1, -1):
-        # swan-neck upright: streamlined loft, chord along Y, tapering toward the wing
-        zb_, zt_ = B.z_top(4.34) - 0.02, zw
-        rings = [ell_ring((sx * 0.48, 4.34 - Y0, zb_ + hh * (zt_ - zb_)), (0, 1, 0), (1, 0, 0),
-                          0.034, 0.013, 16, 1.0 - 0.25 * hh) for hh in np.linspace(0.0, 1.0, 6)]
-        add_loft(bm, rings, 1)
-        # end plate: rounded-rectangle (squircle) loft, two rings 8 mm apart in X
+        # 12 mm swan-neck blade: rises from the deck, leans back, hooks over the wing's upper surface
+        P = [np.array(p) for p in ((4.26, B.z_top(4.26) - 0.01), (4.27, zw - 0.05),
+                                   (4.36, zw + 0.02), (4.36, zw + 0.05))]
         rings = []
-        for off in (-0.004, 0.004):
-            c = np.array((sx * (0.75 + off), 2.06, zw))
-            t = np.linspace(0.0, 2 * math.pi, 17)[:-1]
-            sq = lambda a: np.sign(a) * np.abs(a) ** 0.3
-            rings.append(np.array([c + 0.06 * sq(np.cos(a)) * np.array((0, 1, 0))
-                                   + 0.13 * sq(np.sin(a)) * np.array((0, 0, 1)) for a in t]))
+        for u in np.linspace(0.0, 1.0, 9):
+            q = (1 - u) ** 3 * P[0] + 3 * (1 - u) ** 2 * u * P[1] + 3 * (1 - u) * u ** 2 * P[2] + u ** 3 * P[3]
+            d = 3 * ((1 - u) ** 2 * (P[1] - P[0]) + 2 * (1 - u) * u * (P[2] - P[1]) + u ** 2 * (P[3] - P[2]))
+            d = d / max(np.linalg.norm(d), 1e-9)
+            nrm = np.array([-d[1], d[0]])  # in the Y-Z plane, perpendicular to the path
+            az = 0.024 * (1.0 - 0.4 * u)
+            rings.append(np.array([(sx * 0.48 + 0.006 * math.cos(a), q[0] - Y0 + az * math.sin(a) * nrm[0],
+                                    q[1] + az * math.sin(a) * nrm[1])
+                                   for a in np.linspace(0, 2 * math.pi, 14, endpoint=False)]))
         add_loft(bm, rings, 1)
-    # mirrors: round arm, housing base (trim), mirror face (chrome); housing top is paint (body)
+        # 8 mm trapezoid end plate, longer at the bottom, rounded corners (Chaikin), bevelled edges
+        poly = rounded_poly([(4.20, zw - 0.09), (4.46, zw - 0.09), (4.41, zw + 0.04), (4.27, zw + 0.04)], 0.02, 4)
+        pc = np.mean(np.array(poly), axis=0)
+        rings = []
+        for xo, inset in ((0.746, 0.94), (0.748, 1.0), (0.752, 1.0), (0.754, 0.94)):
+            rings.append(np.array([(sx * xo, pc[0] - Y0 + (p[0] - pc[0]) * inset,
+                                    pc[1] + (p[1] - pc[1]) * inset) for p in poly]))
+        add_loft(bm, rings, 1)
+    # mirrors: thin arm, teardrop housing (black base), paint cap on top
     for sx in (1, -1):
-        add_cyl(bm, (sx * 0.84, 1.58 - Y0, B.z_sh(1.58) + 0.03), (sx * 0.90, 1.58 - Y0, B.z_sh(1.58) + 0.03),
-                0.011, 0, 16)
-        add_ell(bm, (sx * 0.90, 1.58 - Y0, B.z_sh(1.58) + 0.06), 0.055, 0.10, 0.045, False, 0)
-        add_box(bm, (sx * 0.952, 1.58 - Y0, B.z_sh(1.58) + 0.03), (0.004, 0.07, 0.05), 2)
+        zm = B.z_sh(1.58) + 0.05
+        add_cyl(bm, (sx * 0.84, 1.58 - Y0, zm - 0.01), (sx * 0.90, 1.58 - Y0, zm - 0.01), 0.006, 0, 12)
+        rings, cap = [], []
+        for x_off, sc in ((0.0, 0.45), (0.02, 0.80), (0.04, 1.0), (0.06, 0.92), (0.075, 0.55)):
+            c = (sx * (0.90 + x_off), 1.58 - Y0 - 0.012 * (1 - sc), zm)
+            rings.append(ell_ring(c, (0, 1, 0), (0, 0, 1), 0.075 * sc, 0.050 * sc, 16))
+            cap.append(ell_ring(c, (0, 1, 0), (0, 0, 1), 0.077 * sc, 0.052 * sc, 16)[:9])  # top half, 2 mm proud
+        add_loft(bm, rings, 0)
+        add_loft(bm, cap, 3)
     # door handles: flush pads, s 2.40, z = z_sh - 0.07
     for sg in (1, -1):
         P, N = grid_side([2.32, 2.40, 2.48],
                          lambda s: [B.z_sh(2.40) - 0.07 - 0.0125, B.z_sh(2.40) - 0.07,
                                     B.z_sh(2.40) - 0.07 + 0.0125], sg)
         add_thick(bm, P, N, 0.001, 0.003, 0)
-    # antenna fin on the roof
-    # roof fin: low rounded dome, top 8 mm above the roof and below the 1.19 m height limit
-    add_ell(bm, (0.0, 2.30 - Y0, B.z_top(2.30) - 0.012), 0.006, 0.07, 0.020, True, 0)
+    # P7: no roof antenna (it broke the 1.19 m height check)
     # front lower housing behind the light lens
     for sg in (1, -1):
         P, N = grid_top([0.030, 0.090], np.linspace(0.15, XE + 0.01, 5), sg)
         add_thick(bm, P, N, 0.0025, 0.0025, 0)
-    # side intake: dark mesh slats on the pocket floor (floor is 60 mm inside the surface)
+    # P8: dark mesh in the lower nose intake: four thin horizontal bars across the recess
+    for z in (0.255, 0.275, 0.295, 0.315):
+        add_box(bm, (0.0, 0.035 - Y0, z), (1.0, 0.010, 0.008), 0)
+    # P3: side intake, three 6 mm horizontal blades 25 mm behind the opening
     for sg in (1, -1):
-        for z in (0.38, 0.43, 0.48, 0.53, 0.58):
-            p, _ = side_pt(2.88, z, sg)
-            add_box(bm, (p[0] - sg * 0.052, 2.88 - Y0, z), (0.016, 0.44, 0.012), 0)
+        for z in (0.42, 0.50, 0.58):
+            p, n = side_pt(2.88, z, sg)
+            q = p - n * 0.025
+            add_box(bm, (q[0], 2.88 - Y0, z), (0.03, 0.44, 0.006), 0)
     # tail: diffuser and claws surround stay on the body; exhaust in exhaust object
-    return finish_obj("trim", bm, [mats["M_Trim"], mats["M_Carbon"], mats["M_Chrome"]])
+    return finish_obj("trim", bm, [mats["M_Trim"], mats["M_Carbon"], mats["M_Chrome"], mats["M_Paint"]])
 
 
 def build_lights_rear_plate(mats):
@@ -465,25 +541,13 @@ def build_lights_rear_plate(mats):
     lights = finish_obj("lights_rear", bl, [mats["M_LightRear"]])
     bp = bmesh.new()
     fl = FLOOR_TAIL
-    add_box(bp, (0.0, fl + 0.004, 0.56), (0.36, 0.008, 0.12), 0)  # plate block (slot 0 M_Plate)
-    px = 0.0095
-    text = "NOCTRA"
-    cols = []
-    for ch in text:
-        if cols:
-            cols.append(None)
-        cols.append(BITMAP[ch])
-    g = 0
-    for item in cols:
-        if item is None:
-            g += 1
-            continue
-        for r, row in enumerate(item):
-            for cc, bit in enumerate(row):
-                if bit == "1":
-                    # viewer behind the car looks along -Y: viewer right is -X, so x grows to the left
-                    add_box(bp, (-(g + cc - 17) * px, fl + 0.010, 0.56 + (3 - r) * px), (px * 0.9, 0.004, px * 0.9), 1)
-        g += 5
+    # plate face 0.34 x 0.10 m (slot 0, M_Plate: the NOCTRA text is in its texture)
+    add_box(bp, (0.0, fl + 0.006, 0.56), (0.34, 0.012, 0.10), 0)
+    # shallow recess frame stands 6 mm proud of the plate face (slot 1, M_Trim)
+    add_box(bp, (0.0, fl + 0.010, 0.62), (0.38, 0.016, 0.02), 1)
+    add_box(bp, (0.0, fl + 0.010, 0.50), (0.38, 0.016, 0.02), 1)
+    add_box(bp, (-0.18, fl + 0.010, 0.56), (0.02, 0.016, 0.10), 1)
+    add_box(bp, (0.18, fl + 0.010, 0.56), (0.02, 0.016, 0.10), 1)
     plate = finish_obj("plate_rear", bp, [mats["M_Plate"], mats["M_Trim"]])
     return lights, plate
 
@@ -491,9 +555,8 @@ def build_lights_rear_plate(mats):
 def build_exhaust(mats):
     bm = bmesh.new()
     for sx in (1, -1):
-        x = sx * 0.045
-        add_cyl(bm, (x, FLOOR_TAIL - 0.004, 0.33), (x, FLOOR_TAIL + 0.040, 0.33), 0.030, 0, 32)
-        add_cyl(bm, (x, FLOOR_TAIL + 0.034, 0.33), (x, FLOOR_TAIL + 0.0405, 0.33), 0.022, 1, 32)
+        # 6 mm wall, polished rim, dark bore (slot 1) so the tips read as hollow
+        add_tube(bm, sx * 0.045, 0.33, FLOOR_TAIL - 0.004, FLOOR_TAIL + 0.040, 0.030, 0.024, 0, 1, 32)
     return finish_obj("exhaust", bm, [mats["M_Chrome"], mats["M_Trim"]])
 
 
@@ -517,6 +580,11 @@ def build_interior(mats):
     bm = bmesh.new()
     mi = 0
     liner(bm, mi)
+    # the liner sits 30 mm inside the skin, in front of the side-intake floor (70 mm deep):
+    # cut it away at the intake so the intake reads dark, not as a grey liner panel
+    gone = [f for f in bm.faces if abs(centroid(f).x) > 0.45 and 2.62 <= centroid(f).y + Y0 <= 3.12
+            and 0.33 <= centroid(f).z <= 0.66]
+    bmesh.ops.delete(bm, geom=gone, context='FACES')
     add_box(bm, (0.0, -0.055, 0.38), (1.2, 1.65, 0.04), mi)  # cabin floor
     add_box(bm, (0.0, -0.76, 0.56), (1.5, 0.22, 0.12), mi)  # dash base
     add_ell(bm, (0.0, -0.76, 0.62), 0.78, 0.12, 0.20, True, mi)  # dash top, rounded

@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.995,
+  "luma_min": 0.0,
+  "name": "old_market",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 163,
+    "driver": "vulkan",
+    "fps": 563.322,
+    "frame_ms_avg": 1.775,
+    "frame_ms_p95": 5.313,
+    "frame_ms_p99": 5.976,
+    "frames": 60,
+    "objects": 163,
+    "os": "Windows",
+    "primitives": 156832,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.122,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/city_districts/old_market.png",
+  "preset": "high",
+  "scenario": "city_districts"
+}

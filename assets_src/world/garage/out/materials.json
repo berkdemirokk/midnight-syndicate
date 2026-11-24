@@ -1,0 +1,328 @@
+{
+  "materials": [
+    {
+      "name": "M_Floor_Epoxy",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.03,
+        0.031,
+        0.034
+      ],
+      "roughness": 0.1,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 8.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Paint_Line",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.75,
+        0.52,
+        0.04
+      ],
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Steel_Brushed",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.55,
+        0.57,
+        0.6
+      ],
+      "roughness": 0.28,
+      "metallic": 1.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Concrete_Wall",
+      "cc0_texture_id": "concrete_wall_006",
+      "base_color_linear": [
+        0.13,
+        0.13,
+        0.14
+      ],
+      "roughness": 0.85,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 3.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Metal_Ribbed",
+      "cc0_texture_id": "corrugated_iron_03",
+      "base_color_linear": [
+        0.09,
+        0.11,
+        0.13
+      ],
+      "roughness": 0.42,
+      "metallic": 0.7,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.5,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Beam_Dark",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.035,
+        0.036,
+        0.04
+      ],
+      "roughness": 0.55,
+      "metallic": 0.35,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Light_Emit",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.85,
+        0.94,
+        1.0
+      ],
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0.85,
+        0.94,
+        1.0
+      ],
+      "emissive_strength": 20.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Warm_Emit",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        1.0,
+        0.55,
+        0.2
+      ],
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        1.0,
+        0.5,
+        0.18
+      ],
+      "emissive_strength": 8.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Neon_Magenta",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        1.0,
+        0.05,
+        0.7
+      ],
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        1.0,
+        0.08,
+        0.75
+      ],
+      "emissive_strength": 9.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Neon_Cyan",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.1,
+        0.9,
+        1.0
+      ],
+      "roughness": 0.3,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0.1,
+        0.9,
+        1.0
+      ],
+      "emissive_strength": 7.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Door_Slats",
+      "cc0_texture_id": "corrugated_iron",
+      "base_color_linear": [
+        0.1,
+        0.11,
+        0.13
+      ],
+      "roughness": 0.5,
+      "metallic": 0.7,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Wood_Bench",
+      "cc0_texture_id": "dark_wooden_planks",
+      "base_color_linear": [
+        0.06,
+        0.03,
+        0.015
+      ],
+      "roughness": 0.7,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Paint_Blue",
+      "cc0_texture_id": "blue_metal_plate",
+      "base_color_linear": [
+        0.02,
+        0.06,
+        0.15
+      ],
+      "roughness": 0.45,
+      "metallic": 0.5,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Rubber",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.012,
+        0.012,
+        0.013
+      ],
+      "roughness": 0.85,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Paint_Red",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.25,
+        0.012,
+        0.008
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 1.0,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": null
+    },
+    {
+      "name": "M_Pegboard_Tan",
+      "cc0_texture_id": null,
+      "base_color_linear": [
+        0.45,
+        0.31,
+        0.16
+      ],
+      "roughness": 0.8,
+      "metallic": 0.0,
+      "emissive_color_linear": [
+        0,
+        0,
+        0
+      ],
+      "emissive_strength": 0.0,
+      "uv_tiling_m": 0.5,
+      "uv_note": "UV = world metres (box projection); engine repeats by 1/uv_tiling_m",
+      "generated_texture": "textures/pegboard_holes.png"
+    }
+  ],
+  "generated_textures": [
+    "textures/pegboard_holes.png"
+  ],
+  "uv_units": "metres"
+}

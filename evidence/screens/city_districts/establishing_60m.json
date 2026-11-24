@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.998,
+  "luma_min": 0.0,
+  "name": "establishing_60m",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 256,
+    "driver": "vulkan",
+    "fps": 392.039,
+    "frame_ms_avg": 2.551,
+    "frame_ms_p95": 2.764,
+    "frame_ms_p99": 6.066,
+    "frames": 60,
+    "objects": 256,
+    "os": "Windows",
+    "primitives": 155452,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.122,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/city_districts/establishing_60m.png",
+  "preset": "high",
+  "scenario": "city_districts"
+}

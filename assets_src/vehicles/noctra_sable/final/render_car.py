@@ -79,7 +79,7 @@ def main():
     engine, outdir, views, samples = parse_args()
     os.makedirs(outdir, exist_ok=True)
     bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, "out", "noctra_sable.blend"))
-    floor_mat = B._principled("M_Floor", B._lin((0x14, 0x15, 0x1A)), 0.0, 0.15)[0]
+    floor_mat = B._principled("M_Floor", B._lin((0x14, 0x15, 0x1A)), 0.0, 0.3)[0]
     mats = {"M_Floor": floor_mat}
     sc, cam, tgt = B.setup_scene(mats)
     set_engine(sc, engine, samples)

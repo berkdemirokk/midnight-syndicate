@@ -569,6 +569,18 @@ def cut_arches(body):
 
 
 # ------------------------------------------------------------------ glazing
+def _greenhouse_slot(co, pv):
+    """Material slot for a paint face that is not glass. 0 paint, 2 gloss-black pillar and
+    roof rail, 3 carbon roof panel between windscreen top and rear screen (top faces only)."""
+    c = co[list(pv)].mean(axis=0)
+    s, x, z = c[1] + Y_OFFSET, abs(c[0]), c[2]
+    if not (1.30 <= s <= 3.20) or z <= z_sh(s) + 0.03:
+        return 0
+    if 1.98 <= s <= 2.74 and x < 0.42 and _centre_normal(co, pv)[2] > 0.5:
+        return 3
+    return 2
+
+
 def split_glazing(body):
     """Move the glazing faces to a 'glass' object, 2 mm inside the body; the
     one-face-wide border of each pane is M_Trim (material slot 1)."""
@@ -620,7 +632,8 @@ def split_glazing(body):
     co_g = co - 0.002 * vn
     me_g, _ = _new_mesh("glass", co_g, [polys[pi] for pi in gl], mats)
     keep = [polys[i] for i in range(len(polys)) if i not in gset]
-    me_b, _ = _new_mesh("body", co, keep)
+    # P1: greenhouse above the beltline is one dark canopy (slot 2 pillars, slot 3 roof panel)
+    me_b, _ = _new_mesh("body", co, keep, [_greenhouse_slot(co, pv) for pv in keep])
     _set_body_mesh(body, me_b)
     glass = bpy.data.objects.new("glass", me_g)
     bpy.context.collection.objects.link(glass)
@@ -698,7 +711,7 @@ def make_materials():
     b.inputs["Coat Roughness"].default_value = 0.04
     mats["M_Paint"] = m
     # tint lifted from #0A0F12 so the panes read against the dark studio (deviation, see notes)
-    m, b = _principled("M_Glass", _lin((0x1B, 0x2A, 0x33)), 0.0, 0.03)
+    m, b = _principled("M_Glass", _lin((0x4A, 0x62, 0x6C)), 0.0, 0.03)  # P1: lighter tint, interior reads
     b.inputs["Alpha"].default_value = 0.35  # brief value; lets the seats show through the glass
     m.surface_render_method = "BLENDED"
     mats["M_Glass"] = m
@@ -710,13 +723,14 @@ def make_materials():
     mats["M_Plate"] = m
     m, b = _principled("M_Interior", _lin((0x2A, 0x2C, 0x30)), 0.0, 0.7)
     mats["M_Interior"] = m
-    m, b = _principled("M_Trim", _lin((0x14, 0x14, 0x16)), 0.0, 0.55)
+    m, b = _principled("M_Trim", _lin((0x0C, 0x0C, 0x0D)), 0.0, 0.5)  # P4: satin black trim
+    b.inputs["Specular IOR Level"].default_value = 0.08  # the 520 W strip light must not grey the black parts
     mats["M_Trim"] = m
     m, b = _principled("M_Tire", _lin((0x1A, 0x1A, 0x1C)), 0.0, 0.85)
     mats["M_Tire"] = m
     m, b = _principled("M_Clay", (0.5, 0.5, 0.5), 0.0, 0.6)
     mats["M_Clay"] = m
-    m, b = _principled("M_Floor", _lin((0x14, 0x15, 0x1A)), 0.0, 0.15)
+    m, b = _principled("M_Floor", _lin((0x14, 0x15, 0x1A)), 0.0, 0.3)  # P9: softer key glare on the floor
     mats["M_Floor"] = m
     return mats
 
@@ -755,10 +769,14 @@ def setup_scene(mats):
         o.location, o.rotation_euler = loc, rot
         sc.collection.objects.link(o)
 
-    area("key", (-3.5, -4.5, 5.0), (math.radians(50), 0, math.radians(-35)), 5, 55, (0.85, 0.92, 1.0))  # R6
+    # P9: key lowered and moved toward the nose so roof and bonnet do not clip to white
+    # round 8: same power on a larger area = same diffuse fill, dimmer mirror peak on bonnet and roof
+    area("key", (-4.2, -4.6, 2.6), (math.radians(68), 0, math.radians(-35)), 14, 18, (0.85, 0.92, 1.0))
+    # P9: front fill lights the nose face (the front three-quarter was too dark)
+    area("front_fill", (-3.6, -6.0, 1.3), (math.radians(80), 0, math.radians(-30)), 3.0, 120, (0.92, 0.95, 1.0))
     area("strip", (4.2, 0.0, 1.9), (0, math.radians(90), 0), 0.6, 520, (1, 1, 1), 9.0)
     area("rim", (3.0, 5.5, 3.0), (math.radians(-60), 0, math.radians(150)), 2.5, 500, (1.0, 0.75, 0.5))
-    area("top", (0, 0, 6.0), (0, 0, 0), 2.0, 14, (1, 1, 1), 8.0)  # R6
+    area("top", (0, 0, 6.0), (0, 0, 0), 5.0, 14, (1, 1, 1), 10.0)  # round 8: larger, dimmer (was the bonnet streak)
     # rear fill: lights the flat tail fascia (faces +Y) from behind, pointing -Y
     area("rearfill", (0.0, 6.0, 1.1), (math.radians(-90), 0, 0), 3.0, 260, (1.0, 0.95, 0.9))
     cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam"))

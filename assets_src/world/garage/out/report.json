@@ -1,0 +1,50 @@
+{
+  "exported_bounds_blender_m": {
+    "min": [
+      -8.3,
+      -9.0,
+      -3.0
+    ],
+    "max": [
+      8.3,
+      6.3,
+      4.9
+    ]
+  },
+  "exported_bounds_note": "ramp_down runs outside the back wall and below floor level (Blender z min = -3.0); walls are 0.3 m thick. Room interior is x[-8,8] y[-6,6] z[0,4.6].",
+  "primitives_without_uv": 0,
+  "triangles": 31420,
+  "triangle_budget": 60000,
+  "object_count": 305,
+  "material_slots": 16,
+  "material_slot_budget": 16,
+  "materials": [
+    "M_Beam_Dark",
+    "M_Concrete_Wall",
+    "M_Door_Slats",
+    "M_Floor_Epoxy",
+    "M_Light_Emit",
+    "M_Metal_Ribbed",
+    "M_Neon_Cyan",
+    "M_Neon_Magenta",
+    "M_Paint_Blue",
+    "M_Paint_Line",
+    "M_Paint_Red",
+    "M_Pegboard_Tan",
+    "M_Rubber",
+    "M_Steel_Brushed",
+    "M_Warm_Emit",
+    "M_Wood_Bench"
+  ],
+  "glb_bytes": 2158356,
+  "glb_images": 0,
+  "glb_textures": 0,
+  "glb_meshes": 305,
+  "room_m": {
+    "x": 16.0,
+    "y": 12.0,
+    "z": 4.6
+  },
+  "collider": "floor-colonly",
+  "turntable_object": "turntable"
+}

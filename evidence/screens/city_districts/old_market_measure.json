@@ -1,0 +1,25 @@
+{
+  "name": "old_market_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 163,
+    "driver": "vulkan",
+    "fps": 668.501,
+    "frame_ms_avg": 1.496,
+    "frame_ms_p95": 1.621,
+    "frame_ms_p99": 2.032,
+    "frames": 300,
+    "objects": 163,
+    "os": "Windows",
+    "primitives": 156832,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.122,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "city_districts"
+}

@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://world/city_01/city_builder.gd" id="1_builder"]
+
+[node name="City01" type="Node3D"]
+script = ExtResource("1_builder")
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="RacingLine" type="Path3D" parent="."]
+
+[node name="StartGrid" type="Node3D" parent="."]
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="Lighting" type="Node3D" parent="."]

@@ -3,21 +3,21 @@
   "blender_version": "5.3.0",
   "engine_used": "CYCLES (OPTIX GPU, RTX 5060 Ti) for renders/, BLENDER_EEVEE for renders_iter/ rounds",
   "dims": {
-    "length": 4.5392,
-    "width": 1.945,
+    "length": 4.5457,
+    "width": 1.95,
     "height": 1.1899,
     "wheelbase": 2.66
   },
   "tris": {
-    "lod0": 86821,
-    "lod1": 27499,
-    "lod2": 6775
+    "lod0": 86397,
+    "lod1": 27497,
+    "lod2": 6778
   },
   "tris_note": "tris counts the visible objects only. col_body is excluded (it is collision-only, extras collision_only=1). tris_incl_col_body adds it, matching the GLB accessor totals.",
   "tris_incl_col_body": {
-    "0": 86883,
-    "1": 27561,
-    "2": 6837
+    "0": 86457,
+    "1": 27557,
+    "2": 6838
   },
   "objects_present": [
     "body",
@@ -51,6 +51,7 @@
     "M_LightFront",
     "M_LightRear",
     "M_Paint",
+    "M_Pillar",
     "M_Plate",
     "M_Rim",
     "M_Tire",
@@ -94,23 +95,23 @@
       "size": 1024
     }
   ],
-  "non_manifold_edges_body": 10026,
+  "non_manifold_edges_body": 10508,
   "glb_sizes_bytes": {
-    "lod0": 7542972,
-    "lod1": 4921376,
-    "lod2": 3677472
+    "lod0": 7484172,
+    "lod1": 4900212,
+    "lod2": 3670292
   },
   "glb_reimport_ok": true,
   "checks": [
     {
       "name": "length",
       "pass": true,
-      "detail": "value 4.5392 target 4.4500 err 2.00%"
+      "detail": "value 4.5457 target 4.4500 err 2.15%"
     },
     {
       "name": "width",
       "pass": true,
-      "detail": "value 1.9450 target 1.9600 err 0.77%"
+      "detail": "value 1.9500 target 1.9600 err 0.51%"
     },
     {
       "name": "height",
@@ -155,22 +156,22 @@
     {
       "name": "lod0_budget_45k_90k",
       "pass": true,
-      "detail": "86821"
+      "detail": "86397"
     },
     {
       "name": "lod1_budget_28k",
       "pass": true,
-      "detail": "27499"
+      "detail": "27497"
     },
     {
       "name": "lod2_budget_7k",
       "pass": true,
-      "detail": "6775"
+      "detail": "6778"
     },
     {
-      "name": "materials_le_14",
+      "name": "materials_le_15",
       "pass": true,
-      "detail": "14 M_BrakeDisc, M_Caliper, M_Carbon, M_Chrome, M_Glass, M_Interior, M_Lens, M_LightFront, M_LightRear, M_Paint, M_Plate, M_Rim, M_Tire, M_Trim"
+      "detail": "15 M_BrakeDisc, M_Caliper, M_Carbon, M_Chrome, M_Glass, M_Interior, M_Lens, M_LightFront, M_LightRear, M_Paint, M_Pillar, M_Plate, M_Rim, M_Tire, M_Trim"
     },
     {
       "name": "draw_objects_le_20",
@@ -189,22 +190,25 @@
     }
   ],
   "self_score": {
-    "geometry": 4,
-    "materials": 5,
+    "geometry": 6,
+    "materials": 6,
     "wheels": 7,
-    "details": 3
+    "details": 5
   },
   "known_defects": [
-    "Cabin still reads as a tall bubble: the roof peak (1.19 m) and n_top follow the spec data; glass is lighter but the greenhouse is not reshaped",
-    "Bonnet highlight is still a hot streak near the fender under the render rig; the overhead, key and strip lights were each lowered and none was the sole source",
-    "Side intake pocket floor still reads mid grey under the strip light; slats are box primitives",
-    "Tail: flat rear fascia below the ducktail; diffuser strakes are thin boxes; the ducktail lip reads weakly at 1600 px",
-    "Floor reads bright at the left edge of the frame (key-light reflection on the glossy floor)",
-    "Stage 2A close-ups (cabin, tail, nose, intake) were not regenerated in this round; they show stage-2A state",
+    "Cabin: greenhouse is dark gloss-black above the beltline (M_Pillar, M_Carbon roof panel) but the glass panes are still flat boxes and the roof profile is the spec curve; the tall bubble reads less, not gone",
+    "Bonnet: the key light still makes a hot streak near the bonnet centre (key area 14 m, 18 W; was 5 m, 34 W); not fully free of clipping",
+    "Front three-quarter: the driver-side flank is still in shadow; the nose face is lit by front_fill",
+    "Side intake: the opening outline is ragged at the top-right and bottom-right corners (pocket boolean ends), not a clean 10 mm lip; straight walls, no sloped rear wall",
+    "Roof: a pale spike near the rear of the greenhouse in the side view is visible through the glass (far-side headrest or glass edge); not identified as geometry and not removed",
+    "Front light blade wrap reaches further down the nose corner than round 7 but is still short of the fender",
+    "Materials: 15 slots (brief budget 14, lead allowed 15 for M_Pillar); the side-intake interior uses M_Trim, not a separate material",
+    "Wing end plates and uprights use M_Carbon with the spec reduced to specular 0.12 and no clearcoat; carbon weave is not visible at render scale",
+    "Carbon weave on the roof panel uses the body UV tile (0.20 m), so the weave is coarse there",
     "col_body is still a visible mesh node in the GLBs with extras collision_only=1; the engine must skip it by that flag or by name",
     "LOD1/LOD2 are uniform-ratio decimation with no per-part protection",
-    "Carbon weave (M_Carbon) is only on the wing and uprights at small size; not inspected in a close-up",
     "M_Clay and M_Floor exist in the .blend but are not used by car objects (not in the GLBs)",
-    "Rear wheels: spec R4 positions used (x 0.800 rear, 0.815 front); the inboard offset to the fender lip was not measured"
+    "Stage 2A close-ups (cabin, tail, nose, intake) were not regenerated; renders are the six base views plus wheel_closeup",
+    "Floor glare at the frame left edge remains (key light on the glossy floor), reduced by floor roughness 0.3"
   ]
 }

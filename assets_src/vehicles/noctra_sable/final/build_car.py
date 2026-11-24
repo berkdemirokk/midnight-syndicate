@@ -147,11 +147,14 @@ def build_body_and_details(mats_extra):
     m, b = B._principled("M_Caliper", B._lin((0xF2, 0xC2, 0x00)), 0.0, 0.40)
     mats["M_Caliper"] = m
     mats["M_Tire"].node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.85
-    body.data.materials.clear()
-    body.data.materials.append(mats["M_Paint"])
-    body.data.materials.append(mats["M_Trim"])
+    # no materials.clear() here: it resets face material indices set by split_glazing (greenhouse)
+    body.data.materials.append(mats["M_Paint"])   # slot 0
+    body.data.materials.append(mats["M_Trim"])    # slot 1: pocket walls, sills
+    body.data.materials.append(mats["M_Pillar"])  # slot 2: greenhouse pillars and rails
+    body.data.materials.append(mats["M_Carbon"])  # slot 3: roof panel
     D.pocket(body, D.p_nose_intake, 0.030, "nose intake")
-    D.pocket(body, D.p_side_intake, 0.060, "side intake")
+    D.pocket(body, D.p_side_intake, 0.070, "side intake")
+    D.lip_bevel(body)
     D.body_edit(body, D.tail_slice)
     D.pocket(body, D.p_tail_low, 0.035, "diffuser recess")
     D.pocket(body, D.p_tail_band, 0.008, "lamp surround")
@@ -166,17 +169,7 @@ def build_body_and_details(mats_extra):
     trim = D.build_trim(mats, body)
     lights_f = D.build_lights_front(mats)
     lights_r, plate = D.build_lights_rear_plate(mats)
-    # the plate text lives in the M_Plate texture now: drop the geometry letters (slot 1)
-    plate.data.materials.clear()
-    plate.data.materials.append(mats["M_Plate"])
-    bm = bmesh.new()
-    bm.from_mesh(plate.data)
-    for f in [f for f in bm.faces if f.material_index == 1]:
-        bm.faces.remove(f)
-    for f in bm.faces:
-        f.material_index = 0
-    bm.to_mesh(plate.data)
-    bm.free()
+    # plate: slot 0 M_Plate carries the NOCTRA texture, slot 1 M_Trim is the recess frame
     exhaust = D.build_exhaust(mats)
     interior = D.build_interior(mats)
     col = D.build_col(body)

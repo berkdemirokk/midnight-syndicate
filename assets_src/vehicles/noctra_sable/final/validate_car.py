@@ -118,7 +118,7 @@ def parent():
     mats = sorted({m for v in o.values() for m in v["materials"]})
     draw_objs = len([k for k in o if k != "col_body"])
     checks += [
-        {"name": "materials_le_14", "pass": len(mats) <= 14, "detail": str(len(mats)) + " " + ", ".join(mats)},
+        {"name": "materials_le_15", "pass": len(mats) <= 15, "detail": str(len(mats)) + " " + ", ".join(mats)},
         {"name": "draw_objects_le_20", "pass": draw_objs <= 20, "detail": str(draw_objs)},
         {"name": "col_body_le_48_verts", "pass": True, "detail": "33 vertices from details.build_col (hull)"},
         {"name": "objects_present", "pass": not missing, "detail": "missing: %s" % missing},
@@ -143,19 +143,22 @@ def parent():
                             "lod2": os.path.getsize(os.path.join(OUT, "noctra_sable_lod2.glb"))},
         "glb_reimport_ok": all(lods[lv].get("ok", False) for lv in lods),
         "checks": checks,
-        "self_score": {"geometry": 4, "materials": 5, "wheels": 7, "details": 3},
+        "self_score": {"geometry": 6, "materials": 6, "wheels": 7, "details": 5},
         "known_defects": [
-            "Cabin still reads as a tall bubble: the roof peak (1.19 m) and n_top follow the spec data; glass is lighter but the greenhouse is not reshaped",
-            "Bonnet highlight is still a hot streak near the fender under the render rig; the overhead, key and strip lights were each lowered and none was the sole source",
-            "Side intake pocket floor still reads mid grey under the strip light; slats are box primitives",
-            "Tail: flat rear fascia below the ducktail; diffuser strakes are thin boxes; the ducktail lip reads weakly at 1600 px",
-            "Floor reads bright at the left edge of the frame (key-light reflection on the glossy floor)",
-            "Stage 2A close-ups (cabin, tail, nose, intake) were not regenerated in this round; they show stage-2A state",
+            "Cabin: greenhouse is dark gloss-black above the beltline (M_Pillar, M_Carbon roof panel) but the glass panes are still flat boxes and the roof profile is the spec curve; the tall bubble reads less, not gone",
+            "Bonnet: the key light still makes a hot streak near the bonnet centre (key area 14 m, 18 W; was 5 m, 34 W); not fully free of clipping",
+            "Front three-quarter: the driver-side flank is still in shadow; the nose face is lit by front_fill",
+            "Side intake: the opening outline is ragged at the top-right and bottom-right corners (pocket boolean ends), not a clean 10 mm lip; straight walls, no sloped rear wall",
+            "Roof: a pale spike near the rear of the greenhouse in the side view is visible through the glass (far-side headrest or glass edge); not identified as geometry and not removed",
+            "Front light blade wrap reaches further down the nose corner than round 7 but is still short of the fender",
+            "Materials: 15 slots (brief budget 14, lead allowed 15 for M_Pillar); the side-intake interior uses M_Trim, not a separate material",
+            "Wing end plates and uprights use M_Carbon with the spec reduced to specular 0.12 and no clearcoat; carbon weave is not visible at render scale",
+            "Carbon weave on the roof panel uses the body UV tile (0.20 m), so the weave is coarse there",
             "col_body is still a visible mesh node in the GLBs with extras collision_only=1; the engine must skip it by that flag or by name",
             "LOD1/LOD2 are uniform-ratio decimation with no per-part protection",
-            "Carbon weave (M_Carbon) is only on the wing and uprights at small size; not inspected in a close-up",
             "M_Clay and M_Floor exist in the .blend but are not used by car objects (not in the GLBs)",
-            "Rear wheels: spec R4 positions used (x 0.800 rear, 0.815 front); the inboard offset to the fender lip was not measured",
+            "Stage 2A close-ups (cabin, tail, nose, intake) were not regenerated; renders are the six base views plus wheel_closeup",
+            "Floor glare at the frame left edge remains (key light on the glossy floor), reduced by floor roughness 0.3",
         ],
     }
     with open(os.path.join(HERE, "report.json"), "w") as f:

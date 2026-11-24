@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import shutil
+import struct
 import subprocess
 import sys
 
@@ -30,6 +31,19 @@ def sha256_file(path):
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def glb_material_count(path):
+    """Counts the materials in a GLB's JSON chunk (the file as shipped, not the summary)."""
+    with open(path, "rb") as f:
+        head = f.read(20)
+        if head[:4] != b"glTF":
+            raise ValueError("not a GLB: %s" % path)
+        chunk_len, chunk_type = struct.unpack("<II", head[12:20])
+        if chunk_type != 0x4E4F534A:  # "JSON"
+            raise ValueError("first GLB chunk is not JSON: %s" % path)
+        doc = json.loads(f.read(chunk_len).decode("utf-8"))
+    return len(doc.get("materials", []))
 
 
 def main():
@@ -54,11 +68,16 @@ def main():
             ok = False
             continue
         rel = os.path.relpath(dst, REPO).replace("\\", "/")
-        tri_count = str(tris.get(lod, 0))
+        if lod not in tris:
+            print("MISSING tris for %s in build_summary.json" % lod)
+            ok = False
+            continue
+        tri_count = str(tris[lod])
+        mat_count = str(glb_material_count(dst))
         cmd = [sys.executable, FACTORY, "register",
                "--id", "noctra_sable_%s" % lod, "--kind", "model", "--path", rel,
                "--source", "generated:blender", "--license", "project-owned",
-               "--tris", tri_count, "--materials", "0",
+               "--tris", tri_count, "--materials", mat_count,
                "--notes", "Hero car %s, shipped by tools/ship_assets.py" % lod.upper()]
         r = subprocess.run(cmd, cwd=REPO)
         if r.returncode != 0:

@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.636,
+  "luma_min": 0.002,
+  "name": "windows_close",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 5,
+    "driver": "vulkan",
+    "fps": 979.352,
+    "frame_ms_avg": 1.021,
+    "frame_ms_p95": 1.043,
+    "frame_ms_p99": 1.098,
+    "frames": 60,
+    "objects": 5,
+    "os": "Windows",
+    "primitives": 20982,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 344.305,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/world_materials/windows_close.png",
+  "preset": "high",
+  "scenario": "world_materials"
+}
