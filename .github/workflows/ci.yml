@@ -8,8 +8,9 @@
 #  - macOS is billed about 10x the Linux rate [E]. This file never uses macOS (see build-ios.yml).
 #  - Cache limit 10 GB per repository [S]. Artifacts + Packages on Free: 500 MB [S].
 #
-# Triggers: every push and every pull request. A push to a PR branch runs twice (push + pull_request);
-# this is a free-minute cost. Superseded runs are cancelled (concurrency below).
+# Triggers: manual only (2026-11-24). Jobs on the private repo are refused by GitHub billing
+# (BLOCKERS.md B8) and the owner chose to keep testing locally: tools/ci_local.ps1 runs the same
+# steps. Restore "push:" and "pull_request:" when B8 is cleared.
 # UNVERIFIED (no run has happened): Godot release asset names, the SHA512-SUMS.txt asset name and
 # line format, the headless editor running on ubuntu-latest, and the action major versions below.
 # Actions are pinned to major tags, not commit SHAs. Pinning to SHAs is a follow-up.
@@ -17,8 +18,7 @@
 name: ci
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
