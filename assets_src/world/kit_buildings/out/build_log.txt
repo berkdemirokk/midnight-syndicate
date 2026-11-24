@@ -1,0 +1,275 @@
+﻿blender.exe : C:\Users\berk\car race\assets_src\world\kit_buildings\build_buildings.py:111: DeprecationWarning: 'Materi
+al.use_nodes' is expected to be removed in Blender 6.0
+At line:1 char:372
++ ... buildings"; & "C:\Program Files\Blender Foundation\Blender 5.3\blende ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\berk\c... in Blender 6.0:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  m.use_nodes = True
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.3\blender.shared\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.3\blender.shared\bf_intern_meshopt_bridge.dll
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_neon_01_a-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:26 | INFO: Primitives created: 13
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 10
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Finished glTF 2.0 export in 0.05712246894836426 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_neon_01_a {'LOD0': 3468, 'LOD1': 702, 'LOD2': 10} ratio 0.202
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_neon_01_b-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:26 | INFO: Primitives created: 12
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 9
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Finished glTF 2.0 export in 0.02309584617614746 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_neon_01_b {'LOD0': 3624, 'LOD1': 774, 'LOD2': 10} ratio 0.214
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_neon_02_a-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:26 | INFO: Primitives created: 12
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 9
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Finished glTF 2.0 export in 0.023795366287231445 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_neon_02_a {'LOD0': 4596, 'LOD1': 990, 'LOD2': 10} ratio 0.215
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_neon_02_b-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:26 | INFO: Primitives created: 13
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 10
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Finished glTF 2.0 export in 0.02824997901916504 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_neon_02_b {'LOD0': 6932, 'LOD1': 1342, 'LOD2': 10} ratio 0.194
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_neon_03_a-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:26 | INFO: Primitives created: 13
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 10
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Finished glTF 2.0 export in 0.030982494354248047 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_neon_03_a {'LOD0': 8170, 'LOD1': 1726, 'LOD2': 10} ratio 0.211
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_neon_03_b-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:26 | INFO: Primitives created: 13
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 10
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Finished glTF 2.0 export in 0.029642105102539062 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_neon_03_b {'LOD0': 7522, 'LOD1': 1390, 'LOD2': 10} ratio 0.185
+18:10:26 | INFO: Starting glTF 2.0 export
+18:10:26 | INFO: Extracting primitive: bld_downtown_01_a-colonly_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:26 | INFO: Extracting primitive: LOD0_mesh
+18:10:26 | INFO: Primitives created: 12
+18:10:26 | INFO: Extracting primitive: LOD1_mesh
+18:10:26 | INFO: Primitives created: 10
+18:10:26 | INFO: Extracting primitive: LOD2_mesh
+18:10:26 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.0652472972869873 s
+
+BUILT bld_downtown_01_a {'LOD0': 10050, 'LOD1': 1218, 'LOD2': 30} ratio 0.121
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_downtown_01_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 11
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 9
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.03692293167114258 s
+
+BUILT bld_downtown_01_b {'LOD0': 10978, 'LOD1': 1354, 'LOD2': 30} ratio 0.123
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_downtown_02_a-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 12
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 10
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.04479336738586426 s
+
+BUILT bld_downtown_02_a {'LOD0': 13170, 'LOD1': 1574, 'LOD2': 30} ratio 0.12
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_downtown_02_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 11
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 9
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.04071235656738281 s
+
+BUILT bld_downtown_02_b {'LOD0': 13194, 'LOD1': 1730, 'LOD2': 30} ratio 0.131
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_downtown_03_a-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 11
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 9
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.03764915466308594 s
+
+BUILT bld_downtown_03_a {'LOD0': 11302, 'LOD1': 1742, 'LOD2': 30} ratio 0.154
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_downtown_03_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 12
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 10
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.037843942642211914 s
+
+BUILT bld_downtown_03_b {'LOD0': 10802, 'LOD1': 1410, 'LOD2': 30} ratio 0.131
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_market_01_a-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:27 | INFO: Primitives created: 13
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 10
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.024846792221069336 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_market_01_a {'LOD0': 3918, 'LOD1': 204, 'LOD2': 10} ratio 0.052
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_market_01_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:27 | INFO: Primitives created: 14
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 11
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.02466106414794922 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_market_01_b {'LOD0': 3338, 'LOD1': 152, 'LOD2': 10} ratio 0.046
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_market_02_a-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:27 | INFO: Primitives created: 14
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 11
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.02595806121826172 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_market_02_a {'LOD0': 4870, 'LOD1': 256, 'LOD2': 10} ratio 0.053
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_market_02_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | WARNING: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+18:10:27 | INFO: Primitives created: 14
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 11
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.026138782501220703 s
+
+Warning: LOD0_mesh: Could not calculate tangents. Please try to triangulate the mesh first.
+BUILT bld_market_02_b {'LOD0': 4934, 'LOD1': 276, 'LOD2': 10} ratio 0.056
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_waterfront_01_a-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 4
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 3
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.015651464462280273 s
+
+BUILT bld_waterfront_01_a {'LOD0': 3202, 'LOD1': 218, 'LOD2': 16} ratio 0.068
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_waterfront_01_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 5
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 4
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.017032146453857422 s
+
+BUILT bld_waterfront_01_b {'LOD0': 3058, 'LOD1': 206, 'LOD2': 16} ratio 0.067
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_parking_01_a-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:27 | INFO: Primitives created: 5
+18:10:27 | INFO: Extracting primitive: LOD1_mesh
+18:10:27 | INFO: Primitives created: 4
+18:10:27 | INFO: Extracting primitive: LOD2_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Finished glTF 2.0 export in 0.020470857620239258 s
+
+BUILT bld_parking_01_a {'LOD0': 3518, 'LOD1': 638, 'LOD2': 10} ratio 0.181
+18:10:27 | INFO: Starting glTF 2.0 export
+18:10:27 | INFO: Extracting primitive: bld_parking_01_b-colonly_mesh
+18:10:27 | INFO: Primitives created: 1
+18:10:27 | INFO: Extracting primitive: LOD0_mesh
+18:10:28 | INFO: Primitives created: 6
+18:10:28 | INFO: Extracting primitive: LOD1_mesh
+18:10:28 | INFO: Primitives created: 5
+18:10:28 | INFO: Extracting primitive: LOD2_mesh
+18:10:28 | INFO: Primitives created: 1
+18:10:28 | INFO: Finished glTF 2.0 export in 0.021944522857666016 s
+
+BUILT bld_parking_01_b {'LOD0': 3758, 'LOD1': 638, 'LOD2': 10} ratio 0.17
+SUMMARY {"types": 10, "variants": 2, "glbs": 20, "all_lod0_in_budget": true, "all_lod1_ok": true}
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

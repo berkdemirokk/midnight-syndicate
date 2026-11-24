@@ -85,9 +85,10 @@ fire hydrant, utility box, overhead cable spans, string lights, market awning st
 jersey barrier, guardrail, chevron board, traffic cone, container stack and crane silhouette for
 the bay, parked-car slots (filled later with car LOD2).
 
-Fictional sign names to use (original): `KIRIN NOODLE BAR`, `HOTEL ARDEN`, `PIXEL ARCADE`,
+Fictional sign names to use (original): `KOI NOODLE BAR`, `HOTEL ARDEN`, `PIXEL ARCADE`,
 `MOTO GARAGE 24H`, `BLUE HERON SUSHI`, `LUMEN CINEMA`, `ORBIT RECORDS`, `NIGHT OWL DINER`,
-`VOLT ENERGY`, `HARBOR PAWN`, `ZENITH TOWER`, `SYNDICATE CLUB`, `KAPI DONER`, `EFES TEA HOUSE`.
+`AMPERE ENERGY`, `HARBOR PAWN`, `ZENITH TOWER`, `SYNDICATE CLUB`, `KAPI DONER`, `EGE TEA HOUSE`.
+(Lead correction: KIRIN, EFES and VOLT were dropped because they collide with real drink brands.)
 Typeface: any font shipped with Windows that allows embedding in rendered images, or shapes
 drawn by script. Never a traced logo.
 
