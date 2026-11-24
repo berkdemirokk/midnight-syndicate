@@ -1,15 +1,27 @@
 shader_type canvas_item;
 // Full-screen radial speed streaks from the screen centre. Intensity 0..1 is set from GDScript (SpeedLines).
-// Lines are thin (about 3 px), aspect-correct, start at their own radius and sit at the screen edges.
+// Lines are thin (about 3 px), aspect-correct and live in the outer ring of the screen. Only some slots
+// carry a streak, and each streak flows outward over time, so they read as motion, not as a grid.
+// The centre (the car) and the speedometer zone at the bottom stay clear.
 uniform float intensity : hint_range(0.0, 1.0) = 0.0;
 uniform float peak_alpha : hint_range(0.0, 1.0) = 0.35;
-uniform float streak_count : hint_range(8.0, 256.0) = 90.0;
-uniform float inner_radius : hint_range(0.0, 1.0) = 0.45;
-uniform float half_width_px : hint_range(0.5, 4.0) = 1.6;
+uniform float streak_count : hint_range(8.0, 256.0) = 120.0;
+// Share of slots that carry a streak.
+uniform float density : hint_range(0.0, 1.0) = 0.45;
+uniform float inner_radius : hint_range(0.0, 1.5) = 0.8;
+uniform float half_width_px : hint_range(0.5, 4.0) = 1.4;
+// Outward flow speed in half-screen-heights per second at full intensity.
+uniform float flow_speed : hint_range(0.0, 8.0) = 3.0;
+uniform float streak_length : hint_range(0.05, 1.0) = 0.35;
+// Speedometer zone (normalised screen UV rectangle: x0, y0, x1, y1) kept clear.
+uniform vec4 hud_clear_rect = vec4(0.30, 0.62, 0.70, 1.0);
 uniform vec4 line_color : source_color = vec4(0.8, 0.95, 1.0, 1.0);
 
 float hash11(float p) {
-	return fract(sin(p * 91.345) * 47453.5453);
+	p = fract(p * 0.1031);
+	p *= p + 33.33;
+	p *= p + p;
+	return fract(p);
 }
 
 void fragment() {
@@ -20,16 +32,19 @@ void fragment() {
 	float turn = atan(p.y, p.x) / 6.2831853 + 0.5;
 	float slot_f = turn * streak_count;
 	float slot = floor(slot_f);
-	// Distance from the streak's centre line, measured along the arc at this radius.
+	float h = hash11(slot + 1.0);
+	float present = step(h, density);
 	float arc = r * 6.2831853 / streak_count;
 	float dist = abs(fract(slot_f) - 0.5) * arc;
 	float hw = half_width_px / (0.5 * res.y);
 	float thin = 1.0 - smoothstep(hw * 0.5, hw, dist);
-	// Each streak starts at its own radius and runs out to the edge.
-	float start = mix(inner_radius, 1.2, hash11(slot));
-	float along = smoothstep(start, start + 0.25, r);
-	// Concentrated at the screen edges, nothing over the centre.
-	float edge = smoothstep(0.5, 1.1, r);
-	float on = thin * along * edge;
+	// One dash per slot, flowing outward and wrapping; its phase differs per slot.
+	float span = 1.6;
+	float head = inner_radius + mod(TIME * flow_speed * (0.6 + 0.8 * h) + h * span, span);
+	float dash = smoothstep(head - streak_length, head - streak_length * 0.4, r) * (1.0 - smoothstep(head - 0.02, head, r));
+	float edge = smoothstep(inner_radius, inner_radius + 0.35, r);
+	vec2 q = UV;
+	float in_hud = step(hud_clear_rect.x, q.x) * step(q.x, hud_clear_rect.z) * step(hud_clear_rect.y, q.y) * step(q.y, hud_clear_rect.w);
+	float on = thin * dash * edge * present * (1.0 - in_hud);
 	COLOR = vec4(line_color.rgb, on * intensity * peak_alpha * line_color.a);
 }
