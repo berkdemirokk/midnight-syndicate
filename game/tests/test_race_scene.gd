@@ -19,6 +19,9 @@ func _cfg(autopilot: bool, laps: int, opponents: int) -> RaceConfig:
 	c.autopilot = autopilot
 	c.laps = laps
 	c.opponent_count = opponents
+	# These tests cover the dev fallbacks on purpose: force them, whatever real assets exist.
+	c.track_scene = MISSING_PATH
+	c.car_scene = MISSING_PATH
 	return c
 
 

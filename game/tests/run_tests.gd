@@ -4,7 +4,23 @@ extends SceneTree
 ## Exit code 0 = all passed. Results: <repo>/evidence/test_results.json (merged per test file).
 
 
+## Counts script runtime errors. A coroutine that hits one simply returns, so without this a
+## crashed test would be reported as passed.
+class ErrLogger extends Logger:
+	var script_errors: int = 0
+	var last: String = ""
+
+	func _log_error(function: String, file: String, line: int, code: String, rationale: String, _editor_notify: bool, error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		if error_type == Logger.ERROR_TYPE_SCRIPT:
+			script_errors += 1
+			last = "%s:%d in %s: %s %s" % [file, line, function, code, rationale]
+
+
+var _err := ErrLogger.new()
+
+
 func _initialize() -> void:
+	OS.add_logger(_err)
 	_run.call_deferred()
 
 
@@ -45,8 +61,11 @@ func _run() -> void:
 			var t: Object = script.new()
 			t.tree = self
 			total += 1
+			var errors_before: int = _err.script_errors
 			await t.call(mname)
 			var fails: Array = t.failures
+			if _err.script_errors > errors_before:
+				fails.append("script error during the test: " + _err.last)
 			if fails.is_empty():
 				print("[PASS] %s::%s %s" % [f, mname, JSON.stringify(t.metrics)])
 			else:

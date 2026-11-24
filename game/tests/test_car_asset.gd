@@ -17,7 +17,7 @@ const POS_TOL_M: float = 0.02
 const TRI_LOD0_RANGE: Vector2 = Vector2(45000, 90000)
 const TRI_LOD1_MAX: int = 28000
 const TRI_LOD2_MAX: int = 7000
-const MAX_MATERIALS_LOD0: int = 14
+const MAX_MATERIALS_LOD0: int = 15  ## lead allowed M_Pillar on top of the brief's 14
 const MAX_DRAW_OBJECTS_LOD0: int = 20
 const PAINT_TEST: Color = Color(0.0, 0.0, 1.0)
 
@@ -207,7 +207,7 @@ func test_triangle_and_material_budgets() -> void:
 				names[m.resource_name] = true
 	metric("lod0_materials", names.size())
 	metric("lod0_draw_objects", draws)
-	check(names.size() <= MAX_MATERIALS_LOD0, "LOD0 uses %d materials, max 14" % names.size())
+	check(names.size() <= MAX_MATERIALS_LOD0, "LOD0 uses %d materials, max 15" % names.size())
 	check(draws <= MAX_DRAW_OBJECTS_LOD0, "LOD0 has %d objects, max 20" % draws)
 	await cleanup(_spawned)
 	_spawned.clear()
