@@ -9,6 +9,7 @@
 | B5 | Audio assets | No engine/tyre/ambience sounds yet; CC0 sources identified in docs/research/05 | Scheduled for M2; downloads need approval | open |
 | B6 | glTF material extensions in Godot | Whether the importer reads KHR clearcoat / emissive strength is not confirmed in docs | Test with our own exported car GLB | to verify in M1 |
 | B7 | Bundle identifier, developer team id | Must be chosen by the account owner | Owner | open |
+| B8 | GitHub Actions jobs do not start on the private repo (github.com/berkdemirokk/midnight-syndicate) | Run 45446375128: "The job was not started because recent account payments have failed or your spending limit needs to be increased." CI (headless tests, asset validation) cannot run in the cloud; tests run locally instead | Owner: GitHub Billing & plans (fix the payment method or spending limit), or make the repo public (public repos get free minutes). Nothing was changed on the account | open |
 
 Rules: a blocker is recorded here the moment it is found, work continues on everything that does
 not depend on it, and it is removed only with evidence.
