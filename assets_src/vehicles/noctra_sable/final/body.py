@@ -118,8 +118,14 @@ def shelf_drop(s):
     return 0.005 * min(1.0, shelf(s) / 0.03)
 
 
-TUM_W = 0.085  # R9: side glass leans in over this half-width (about 12 deg from vertical)
-ROOF_CROWN = 0.025  # R9: roof edge sits this far below the roof centre (no flat slab)
+# Greenhouse (lead, 2026-11-25). The cabin must be clearly narrower than the body: a shoulder
+# shelf, then side glass leaning in, then a narrow crowned roof. With the glass starting at the
+# widest shoulder the cabin read as a box sitting on the car.
+CAB_SHELF_W = 0.12  # flat-ish shoulder top between the body side and the glass base
+CAB_SHELF_DROP = 0.012  # the shelf falls this much toward the glass
+CAB_TUMBLE_DEG = 22.0  # side glass lean from vertical
+CAB_GLASS_EXP = 1.35  # >1: the glass is steepest at its base and rolls smoothly into the roof
+ROOF_CROWN = 0.03  # roof edge sits this far below the roof centre (no flat slab)
 
 
 def cab_blend(s):
@@ -127,14 +133,29 @@ def cab_blend(s):
     return _smoothstep((s - 1.30) / 0.25) * _smoothstep((2.90 - s) / 0.25)
 
 
+def cab_edges(s):
+    """(glass base x, roof edge x, belt z) of the greenhouse section at station s."""
+    zs, zt = z_sh(s), z_top(s)
+    xg = xs_of(s) - CAB_SHELF_W
+    zb = zs - CAB_SHELF_DROP
+    h = max(zt - ROOF_CROWN - zb, 1e-6)
+    xr = max(xg - h * np.tan(np.radians(CAB_TUMBLE_DEG)), 0.2)
+    return xg, xr, zs
+
+
 def _top_z_tumble(s, x):
-    """R9 greenhouse: flat crowned roof, steep tumblehome side glass rolling into it."""
+    """Greenhouse section: shoulder shelf, leaning side glass, crowned roof (continuous slope)."""
     zs, zt = z_sh(s), z_top(s)
     xs = xs_of(s)
-    xr = xs - TUM_W
+    xg = xs - CAB_SHELF_W  # glass base
+    zb = zs - CAB_SHELF_DROP
+    h = max(zt - ROOF_CROWN - zb, 1e-6)  # glass height up to the roof edge
+    xr = max(xg - h * np.tan(np.radians(CAB_TUMBLE_DEG)), 0.2)  # roof edge
+    if x >= xg:
+        return zs - CAB_SHELF_DROP * (xs - x) / CAB_SHELF_W
     if x >= xr:
-        u = (xs - x) / TUM_W  # 0 at the shoulder, 1 at the roof edge
-        return zs + (zt - ROOF_CROWN - zs) * (1.0 - (1.0 - u) ** 2)
+        u = (xg - x) / max(xg - xr, 1e-6)  # 0 at the glass base, 1 at the roof edge
+        return zb + h * (1.0 - (1.0 - u) ** CAB_GLASS_EXP)
     q = x / xr
     return zt - ROOF_CROWN * q * q
 
@@ -610,6 +631,81 @@ def _greenhouse_slot(co, pv):
     return 2
 
 
+# One continuous side window (lead, 2026-11-25): the front edge follows the A-pillar rake, the rear
+# edge leans forward with the fastback; no vertical B-pillar box. Only the leaning glass surface
+# between the glass base and the roof edge is glass (the roof stays paint/carbon).
+DLO_FRONT_S, DLO_FRONT_RAKE = 1.72, 0.95  # front edge s at the belt, and ds/dz going up
+DLO_REAR_S, DLO_REAR_RAKE = 2.98, 0.90  # rear edge s at the belt, and -ds/dz going up
+DLO_BELT_GAP = 0.030  # glass starts this far above the shoulder
+WS_EDGE_X = 0.50  # windscreen and rear screen end at this half-width ...
+SIDE_TOP_X = 0.535  # ... side glass starts here: the paint band between is the A/C-pillar line
+
+
+def belt_z(s):
+    """Window bottom line: a straight line along the shoulder (a plane, so it can be cut cleanly)."""
+    z0 = z_sh(1.8) + DLO_BELT_GAP
+    z1 = z_sh(2.9) + DLO_BELT_GAP
+    return z0 + (z1 - z0) * (s - 1.8) / 1.1
+
+
+def _in_side_dlo(s, x, z):
+    if not (1.6 <= s <= 3.05):
+        return False
+    xg, xr, zs = cab_edges(s)
+    if z <= belt_z(s) or not (SIDE_TOP_X < x < xg - 0.005):
+        return False
+    dz = z - (z_sh(2.35) + DLO_BELT_GAP)  # same reference height as the rake cut planes
+    return DLO_FRONT_S + DLO_FRONT_RAKE * dz <= s <= DLO_REAR_S - DLO_REAR_RAKE * dz
+
+
+def _cut_dlo_edges(body):
+    """Cut the cabin top along the two raked side-window planes so the window edges are straight
+    lines instead of a stair-step of whole faces. In (s, z) the front edge is s = F + Rf*(z - zb)
+    and the rear edge s = R - Rr*(z - zb): planes that do not depend on x. zb varies a little with
+    s; the belt height at the window's middle is used for the plane."""
+    zb = z_sh(2.35) + DLO_BELT_GAP
+    bm = bmesh.new()
+    bm.from_mesh(body.data)
+    def cabin_faces():
+        out = []
+        for f in bm.faces:
+            c = f.calc_center_median()
+            s = c.y + Y_OFFSET
+            if 1.55 <= s <= 3.1 and c.z > z_sh(min(max(s, 0.0), 4.45)) - 0.02:
+                out.append(f)
+        return out
+    # front edge  s = F + Rf*(z - zb)  ->  y - Rf*z = const, normal (0, 1, -Rf)
+    # rear edge   s = R - Rr*(z - zb)  ->  y + Rr*z = const, normal (0, 1, +Rr)
+    for s0, k in ((DLO_FRONT_S, -DLO_FRONT_RAKE), (DLO_REAR_S, DLO_REAR_RAKE)):
+        geom = cabin_faces()
+        if not geom:
+            continue
+        verts = list({v for f in geom for v in f.verts})
+        edges = list({e for f in geom for e in f.edges})
+        bmesh.ops.bisect_plane(bm, geom=verts + edges + geom, plane_co=(0.0, s0 - Y_OFFSET, zb), plane_no=(0.0, 1.0, k))
+    # window bottom: z = z0 + b*(s - 1.8)  ->  -b*y + z = const, normal (0, -b, 1)
+    b = (belt_z(2.9) - belt_z(1.8)) / 1.1
+    geom = cabin_faces()
+    verts = list({v for f in geom for v in f.verts})
+    edges = list({e for f in geom for e in f.edges})
+    bmesh.ops.bisect_plane(bm, geom=verts + edges + geom, plane_co=(0.0, 1.8 - Y_OFFSET, belt_z(1.8)), plane_no=(0.0, -b, 1.0))
+    # windscreen top/bottom and rear-screen ends: constant-s cuts (they are planes y = const)
+    for sc in (1.36, 1.98, 2.74, 3.02):
+        geom = cabin_faces()
+        verts = list({v for f in geom for v in f.verts})
+        edges = list({e for f in geom for e in f.edges})
+        bmesh.ops.bisect_plane(bm, geom=verts + edges + geom, plane_co=(0.0, sc - Y_OFFSET, 0.0), plane_no=(0.0, 1.0, 0.0))
+    # straight pillar lines: constant half-width cuts on both sides
+    for xc in (WS_EDGE_X, SIDE_TOP_X, 0.42, -WS_EDGE_X, -SIDE_TOP_X, -0.42):
+        geom = cabin_faces()
+        verts = list({v for f in geom for v in f.verts})
+        edges = list({e for f in geom for e in f.edges})
+        bmesh.ops.bisect_plane(bm, geom=verts + edges + geom, plane_co=(xc, 0.0, 0.0), plane_no=(1.0, 0.0, 0.0))
+    bm.to_mesh(body.data)
+    bm.free()
+    body.data.update()
+
+
 def split_glazing(body):
     """Move the glazing faces to a 'glass' object, 2 mm inside the body; the
     one-face-wide border of each pane is M_Trim (material slot 1)."""
@@ -626,12 +722,10 @@ def split_glazing(body):
         pwa, sgo = xs - 0.14, xs - 0.07  # A-pillar paint between pwa and sgo (70 mm)
         if not (x < xs - 0.0015 and z > zs - 0.015):  # top surface only
             continue
-        if 1.36 <= s <= 1.98 and x <= pwa:
+        if 1.36 <= s <= 1.98 and x <= WS_EDGE_X:
             sel[pi] = "windscreen"
-        elif 2.02 <= s <= 2.62 and 0.42 < x < sgo and z > zs + 0.030:  # R2: glass from beltline up
+        elif _in_side_dlo(s, x, z):
             sel[pi] = "side"
-        elif 2.74 <= s <= 3.02 and 0.5025 < x < sgo and z > zs + 0.030:
-            sel[pi] = "quarter"
         elif 2.74 <= s <= 3.02 and x <= 0.42:
             sel[pi] = "rear"
     gl = sorted(sel)
@@ -942,6 +1036,7 @@ def main():
     cut_panel_lines(body)
     checks_pre = checks(body)  # spec dims on the grooved shell, before the arches
     underbody = cut_arches(body)
+    _cut_dlo_edges(body)
     glass = split_glazing(body)
     for ob in (body, glass, underbody):
         finish_shading(ob)

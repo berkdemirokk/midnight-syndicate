@@ -77,6 +77,9 @@ def set_engine(sc, engine, samples):
 
 def main():
     engine, outdir, views, samples = parse_args()
+    # A relative outdir means relative to this folder (Blender resolved it against the drive root).
+    if not os.path.isabs(outdir):
+        outdir = os.path.join(HERE, outdir)
     os.makedirs(outdir, exist_ok=True)
     bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, "out", "noctra_sable.blend"))
     floor_mat = B._principled("M_Floor", B._lin((0x14, 0x15, 0x1A)), 0.0, 0.3)[0]

@@ -23,7 +23,7 @@ extends Resource
 @export_range(0.0, 1.0) var road_paint_glow: float = 0.05
 ## Worn wet paint is grey-white, not white.
 @export_range(0.0, 1.0) var road_paint_albedo: float = 0.42
-@export_range(0.0, 1.0) var road_paint_roughness: float = 0.35
+@export_range(0.0, 1.0) var road_paint_roughness: float = 0.55  ## at 0.35 the grid boxes mirrored the blue sky at grazing angles
 ## Window panes are glass: dark, glossy, slightly metallic so probes and lamps reflect in them.
 ## (At albedo x2.2 the pane atlas lit up as lavender plaster blocks on the towers.)
 @export_range(0.0, 4.0) var pane_albedo_scale: float = 0.22

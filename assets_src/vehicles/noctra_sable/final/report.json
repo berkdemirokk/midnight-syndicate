@@ -9,15 +9,15 @@
     "wheelbase": 2.66
   },
   "tris": {
-    "lod0": 86558,
-    "lod1": 27492,
+    "lod0": 86567,
+    "lod1": 27496,
     "lod2": 6776
   },
   "tris_note": "tris counts the visible objects only. col_body is excluded (it is collision-only, extras collision_only=1). tris_incl_col_body adds it, matching the GLB accessor totals.",
   "tris_incl_col_body": {
-    "0": 86622,
-    "1": 27556,
-    "2": 6840
+    "0": 86629,
+    "1": 27558,
+    "2": 6838
   },
   "objects_present": [
     "body",
@@ -95,11 +95,11 @@
       "size": 1024
     }
   ],
-  "non_manifold_edges_body": 10380,
+  "non_manifold_edges_body": 10602,
   "glb_sizes_bytes": {
-    "lod0": 7487776,
-    "lod1": 4903024,
-    "lod2": 3671072
+    "lod0": 7510360,
+    "lod1": 4912184,
+    "lod2": 3674640
   },
   "glb_reimport_ok": true,
   "checks": [
@@ -156,12 +156,12 @@
     {
       "name": "lod0_budget_45k_90k",
       "pass": true,
-      "detail": "86558"
+      "detail": "86567"
     },
     {
       "name": "lod1_budget_28k",
       "pass": true,
-      "detail": "27492"
+      "detail": "27496"
     },
     {
       "name": "lod2_budget_7k",
