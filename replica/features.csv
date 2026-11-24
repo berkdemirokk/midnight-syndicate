@@ -1,0 +1,93 @@
+feature,area,priority,original,clone,notes
+Tap to steer with automatic throttle and braking,controls,must,NFSNL;A9,no,assist on by default (pocketgamer NFSNL review)
+Assist ladder with manual toggle,controls,must,A9;NFSNL,no,A9 TouchDrive vs manual P-CCOMP
+Swipe down to start a drift,controls,must,NFSNL,no,one gesture
+Swipe up to fire nitro,controls,must,NFSNL,no,one gesture
+Tilt steering with heavy smoothing and dead zone,controls,could,A9;CarX,no,tilt caused wall hits in one review
+Movable on-screen buttons,controls,should,CarX,no,layout the player can move
+Double-tap for nitro shockwave from full bar,controls,could,A9,no,shockwave was earlier named nitro pulse
+Timed perfect-nitro tap window,controls,should,A9,no,skill layer must read on a phone HUD
+Controller support,input,could,CarX,no,support at launch unknown
+Drift charges nitro scaled by duration with cap,nitro,must,A9;NFSU2,no,longer drifts recharge faster
+Nitro refilled by stunts and ramps,nitro,should,A9;NFSU2,no,stunt style points in NFSU2
+Three nitro tiers burst perfect shockwave,nitro,could,A9,no,tier names from A9
+Nitro banned in drift and tight-track rules,event rules,should,NFSU2,no,mode-level rule flag
+Drag start gauge with two colour zones,start,must,CSR2,no,over-accelerate to orange at countdown 2
+Shift timing cue that shows when not to shift,shifting,should,CSR2,no,shift must not drop speed
+Manual shifting for drag events,event rules,could,NFSU2,no,redline or traffic forfeits
+Wheelspin indicator on HUD,HUD,should,CSR2,no,shows slip
+Nitro boost pads as a challenge,events,could,NFSNL,no,one review mentions nitro pads
+Tuning sliders with live stat delta,tuning,must,CSR2,no,delta shows if change helps overall
+Dyno power and torque graph,tuning,should,CSR2;NFSU2,no,graph is feedback for car fans
+Final drive trades acceleration for top speed,tuning,should,CSR2,no,quarter vs half mile
+Tyre pressure trades grip for acceleration,tuning,should,CSR2,no,stat trade-off
+Nitro slider trades burst length for power,tuning,must,CSR2,no,nitro slider
+Per-event setup by race type,tuning,could,CarX;CSR2,no,drift and sprint setups
+Performance parts slot grid,upgrade,must,NFSNL;CSR2,no,bolt-on upgrades per slot
+Visual customization separate from performance,customization,must,NFSU2,no,cosmetics have no effect except spoiler and hood
+Paint swatches,customization,must,NFSNL;CSR2,no,colour choice on most cars
+Wraps and decals,customization,should,NFSNL;CSR2,no,wrap and decal options
+Wheels body kits and widebody kits,customization,should,NFSNL;NFSU2,no,visual parts on most cars
+Event-only cars cannot be visually customized,customization,could,NFSNL,no,lock reason shown on card
+Underglow neon accent lights,customization,could,NFSU2,no,weak source (snippet)
+Car classes D to S,garage,must,A9,no,class ladder for progression gates
+Starter car given at first launch,onboarding,must,A9,no,starter is class D
+Garage car carousel with stat card,garage,must,NFSNL;CSR2,no,power grip handling on card
+Turntable garage presentation,garage,must,CSR2,no,showroom view of car
+Unlock cars by winning and reaching levels,progression,must,A9;CSR2,no,no paid blueprint wall
+Reputation or campaign progress markers,progression,should,NFSNL,no,progress shown on career
+Campaign world map with five stages,career,must,NFSU2,no,stage map is core navigation
+Stage unlock swaps event locations,career,should,NFSU2,no,pacing without new worlds
+Hidden races discovered in the world,career,could,NFSU2,no,exploration reward
+Cash and info icons on map,career,could,NFSU2,no,rewards for exploring
+Sponsor races per stage with a subset run,career,should,NFSU2,no,11 races per stage and 3 run
+Car series race with entry restrictions,events,must,NFSNL,no,car pool filtered by series
+Ghost-based rival races,events,must,NFSNL,no,avoids rival AI problem offline
+Time-limited loaner car earned by event,events,could,NFSNL,no,loaner joins garage if finished
+Sprint point-to-point race,events,must,NFSU2,no,max four cars in reference
+Circuit race with lap count,events,must,NFSU2,no,two to five laps in reference
+Drag race,events,should,NFSU2;CSR2,no,drag start gauge reused
+Drift event on a fixed track,events,must,NFSU2;CarX,no,drift zone with rivals
+Outrun against a marked car,events,could,NFSU2,no,follow-the-target race
+Photographer or magazine reward event,events,could,NFSU2,no,reward beat for style
+Race results with reward and unlock notice,results,must,NFSNL;A9,no,reward after each race
+Short race length under two minutes,session,must,NFSNL;A9,no,races under a minute in review
+Police pursuit with escape,pursuit,must,NFSNL;NFSU2,no,pursuit is main pressure source
+Police use ramps and barriers,pursuit,should,NFSNL,no,ramp-jumping police criticised
+Roadblock challenge,pursuit,should,NFSNL,no,avoid roadblocks
+Pursuit end state is clear,pursuit,must,NFSNL,no,endless chase complaint is about another title
+Interceptor mode joins the police,pursuit,could,NFSNL,no,role flip mode
+Reactive traffic that responds to hits,world,should,CarX,no,traffic reacts
+Open-world free-roam city,world,could,NFSU2;CarX,no,offline map needs asset budget
+Rival drivers ram near the finish,AI,could,CarX,no,aggression tuned by rival tier
+Club boss progression,career,could,CarX,no,boss needs fair car level
+Leaderboard mode,social,could,CarX,no,offline ghost times instead
+Crew chat and crew vs crew events,social,could,CSR2,no,needs network
+Daily and seasonal events,live ops,could,A9,no,needs servers
+Multiplayer and ranked matchmaking,online,could,A9,no,needs servers
+Cash and premium currencies,economy,should,CSR2,no,two currencies recommended
+Rewarded ad refuel optional,economy,could,CSR2;CarX,no,keep optional not a gate
+Energy cap on races,economy,should,A9;CSR2,no,criticised; avoid in offline premium game
+Premium subscription,economy,could,CarX,no,subscription tier seen in store
+Gacha keys with random car,economy,could,CSR2,no,opaque odds complaints
+Real-money car purchase,economy,could,CSR2;NFSNL,no,up to 30 dollars cited in CSR2
+Offline play with no network needed,platform,must,CarX;NFSU2,no,CarX requires stable connection
+Frame rate cap,performance,must,CarX,no,heat and battery complaints
+Thermal-aware quality drop,performance,must,CarX,no,heat reports on iPhone
+Quality tiers with shader budget,graphics,must,CSR2;CarX,no,device tiers
+Physically based car paint shading,graphics,should,CSR2,no,from GDC abstract
+Static image-based lighting for cars,graphics,should,CSR2,no,baked light for cars
+Wet asphalt neon reflections at night,graphics,must,NFSU2,no,widely cited look (weak source)
+Rain droplets on screen,graphics,could,CSR2,no,post effect seen in 2016 report
+Motion blur at speed,graphics,could,CSR2;NFSU2,no,speed cue
+Countersteer drift that can be caught,handling,must,CarX,no,snap-straight countersteer criticised
+Drift physics tuned per mode,handling,should,CarX,no,developer claim unverified
+Spoiler and hood add downforce,handling,could,NFSU2,no,only performance-visible cosmetics
+Fast travel to races,navigation,must,NFSU2,no,travel was a criticism
+Skip to race early,navigation,should,NFSU2,no,cuts travel time
+Short cutscenes and sparse story,story,should,NFSU2,no,comic cutscenes criticised
+Phone-style message for story beats,story,could,NFSU2,no,delivery of story beats
+Garage or tuning shop hub,hub,should,NFSU2,no,build before race
+Car meet hub,hub,could,NFSU2,no,weak source (snippet)
+Settings for steering assist and camera,settings,must,A9;NFSNL,no,assist toggles
+Settings for quality and frame cap,settings,must,CarX;CSR2,no,quality and fps choice

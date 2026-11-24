@@ -25,3 +25,8 @@ Thumbs.db
 *.keystore
 .env
 export_credentials.cfg
+# Third-party CC0 downloads are reproducible via tools/fetch_cc0.py (pinned ids); only the
+# processed copies under game/assets are committed.
+assets_src/textures/cc0/
+assets_src/**/out/*.blend
+assets_src/**/*.blend1
