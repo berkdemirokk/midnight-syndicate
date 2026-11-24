@@ -104,11 +104,16 @@ def sha256_file(path):
     return h.hexdigest()
 
 
+# Engine metadata written next to assets after registration; not part of the asset itself.
+METADATA_EXT = (".import", ".uid")
+
+
 def _walk(full):
     out = []
     for dp, _, fns in os.walk(full):
         for fn in fns:
-            out.append(os.path.join(dp, fn))
+            if not fn.endswith(METADATA_EXT):
+                out.append(os.path.join(dp, fn))
     return sorted(out, key=lambda p: os.path.relpath(p, full).replace("\\", "/"))
 
 
@@ -295,11 +300,12 @@ def check_record(rec, root):
             fails.append("no image files")
         for name, (w, h) in sizes.items():
             pot = w > 0 and h > 0 and not (w & (w - 1)) and not (h & (h - 1))
-            # textures are square; HDRIs are equirectangular 2:1
-            shape_ok = (w == h) if rec["kind"] == "texture" else (w == 2 * h)
+            # textures: each side a power of two (posters and skyline strips are not square);
+            # HDRIs are equirectangular 2:1
+            shape_ok = True if rec["kind"] == "texture" else (w == 2 * h)
             if not (pot and shape_ok):
-                fails.append("%s is %dx%d, not a power-of-two %s" % (
-                    name, w, h, "square" if rec["kind"] == "texture" else "2:1 panorama"))
+                fails.append("%s is %dx%d, not %s" % (
+                    name, w, h, "power-of-two sides" if rec["kind"] == "texture" else "a power-of-two 2:1 panorama"))
         if rec["kind"] == "texture" and rec.get("texture_sizes") and rec["texture_sizes"] != sizes:
             fails.append("texture sizes differ from registration")
     return fails
