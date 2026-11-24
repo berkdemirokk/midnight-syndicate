@@ -1,0 +1,25 @@
+{
+  "name": "neon_strip_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 365,
+    "driver": "vulkan",
+    "fps": 574.234,
+    "frame_ms_avg": 1.741,
+    "frame_ms_p95": 2.26,
+    "frame_ms_p99": 4.011,
+    "frames": 300,
+    "objects": 365,
+    "os": "Windows",
+    "primitives": 209452,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.118,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "city_districts"
+}

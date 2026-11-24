@@ -48,6 +48,8 @@ const AI_PHYSICS_PRIORITY: int = -1  ## runs before ArcadeCar (priority 0) so th
 @export var stuck_time: float = 2.5  ## s under stuck_speed_kmh while racing before recovery starts
 @export var reverse_time: float = 1.5  ## s of reversing before checking whether the car is free
 @export var reset_height: float = 0.47  ## car origin height used when placing it back on the line
+@export var slide_lift_ms: float = 2.5  ## m/s sideways speed across the track where the throttle starts to ease off (sliding)
+@export var slide_cut_ms: float = 4.0  ## m/s sideways speed at which the throttle is fully lifted; ramps in between (no step)
 
 var stuck_count: int = 0  ## recovery starts so far
 
@@ -149,6 +151,7 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	var o: float = s + look
 	var c: Vector3 = _track.get_point_at(o)
 	var t: Vector3 = _track.get_tangent_at(o)
+	var tg: Vector3 = _track.get_tangent_at(s)
 	var target: Vector3 = c + Vector3(-t.z, 0.0, t.x) * lane
 	var b: Basis = _car.global_transform.basis
 	var fwd: Vector3 = Vector3(-b.z.x, 0.0, -b.z.z).normalized()
@@ -173,6 +176,9 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	if err >= 0.0:
 		inp.throttle = clampf(err * throttle_gain, 0.0, 1.0)
 		inp.brake = 0.0
+		var lat_v: float = _car.linear_velocity.dot(Vector3(-tg.z, 0.0, tg.x))
+		var ease: float = clampf((slide_cut_ms - absf(lat_v)) / maxf(slide_cut_ms - slide_lift_ms, 0.01), 0.0, 1.0)
+		inp.throttle *= ease
 	else:
 		inp.throttle = 0.0
 		inp.brake = clampf(-err * brake_gain, 0.0, 1.0)

@@ -19,8 +19,8 @@ const NEON_MID_S: float = 144.0
 const ROAD_LAYER_BIT: int = 1 << 1  ## road is kept out of the planar mirror (see PlanarReflection.excluded_layers)
 const SHOTS: Array[Dictionary] = [
 	{"name": "neon_strip", "s": 144.0},
-	{"name": "downtown", "s": 750.0},
-	{"name": "waterfront", "s": 1250.0},
+	{"name": "downtown", "s": 590.0},  ## downtown lamp run is s 514 to 665; the old s 750 looked past every lamp
+	{"name": "waterfront", "s": 1250.0, "yaw": 80.0},  ## yaw turns the camera across the bay to the skyline card at x 949
 	{"name": "underpass", "s": 1620.0},
 	{"name": "old_market", "s": 1950.0},
 ]
@@ -35,6 +35,9 @@ func run() -> void:
 	var city: Node = await cap.load_scene(SCENE)
 	if city == null:
 		return
+	print("city_districts: lights dropped=%s over_volumes=%s" % [city.get("light_report")["dropped"], city.get("light_report")["over_volumes"]])
+	for line: String in city.get("light_report")["log"]:
+		print("city_districts: budget " + line)
 	_line = _load_line()
 	if _line.size() < LOOK_AHEAD_IDX + 2:
 		cap.fail("racing line missing in layout")
@@ -63,8 +66,10 @@ func run() -> void:
 	for shot: Dictionary in SHOTS:
 		var idx: int = clampi(roundi(float(shot["s"]) / SAMPLE_M), 0, _line.size() - LOOK_AHEAD_IDX - 1)
 		var p: Vector3 = _line[idx]
-		var ahead: Vector3 = _line[idx + LOOK_AHEAD_IDX]
-		_place(p + Vector3(0.0, EYE_M, 0.0), ahead + Vector3(0.0, EYE_M, 0.0), p.y)
+		var fwd: Vector3 = _line[idx + LOOK_AHEAD_IDX] - p
+		fwd.y = 0.0
+		fwd = fwd.rotated(Vector3.UP, deg_to_rad(float(shot.get("yaw", 0.0))))
+		_place(p + Vector3(0.0, EYE_M, 0.0), p + fwd + Vector3(0.0, EYE_M, 0.0), p.y)
 		await _take(str(shot["name"]))
 
 	var mid: int = roundi(NEON_MID_S / SAMPLE_M)

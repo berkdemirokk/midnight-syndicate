@@ -80,3 +80,56 @@ Known and not done:
 - race_city: a real race capture now exists (`evidence/screens/race_city/`). The nitro shot failed: the autopilot player car sat below 6 km/h for about 30 s at a wall (reverse gear in the shot). AI and physics code are not owned here.
 
 Self-assessment after round 3: the blocker is fixed. Majors are partly fixed (downtown and underpass better, waterfront not). The scene is still not at the reference look.
+
+## Second pass (lighting and look agent, rounds 4 to 9 of the brief's count)
+Baseline copies: `evidence/screens/city_districts_before/`. Captures: `evidence/screens/city_districts/`, logs `evidence/logs/capture_city_r1..r6.log`.
+
+### Findings that changed the plan
+- Downtown was not dark because its lamps were dropped. Its shot (s=750) sat past the downtown lamp run (s 514 to 665), so no lamp was in frame. Shot moved to s=590.
+- The light budget dropped 36 lights before this pass. Causes: double street lamps (25 lamp heads within 3 m of another head) and 16 neon fill omnis at range 12 to 14 touching the road volumes. After the fixes the budget drops 12, all underpass tunnel strips (budget log: `road_12..14`, `sidewalk_12..17`, `structure_12..14`).
+- Layout sample spacing of the racing line is 4 m (551 points over 2203 m), so the scenario's SAMPLE_M=4 is right. The centerline is 2 m.
+- Depth fog: exponential fog at 0.0045 put about 74 percent fog on anything 300 m out, so the bay skyline was invisible. Now depth fog from 220 m to 1200 m. Near city unchanged.
+- Waterfront shot faced along the road, so the bay and skyline were out of frame. Camera yaw 80 degrees added to the shot.
+
+### Round 4 (underpass and budget)
+- New `game/shaders/tunnel_light.gdshader`: world-space dash, 1.2 m lit, 0.6 m dark, energy 3 (`tunnel_light_energy`). M_TunnelLight routed to it.
+- M_TunnelStripe now painted #B8901E, roughness 0.5, no emission.
+- Tunnel omni strips x2 (`tunnel_light_energy_scale`).
+- `neon_fill` range capped at 8 m; `lamp_head` range capped at 18 m; double-lamp heads merged (`lamp_merge_m`).
+- Kerb (M_Curb) albedo x1.8, sidewalk (M_Paving) x1.2; road paint glow 0.02 to 0.05.
+- Result (`underpass.png`): fixtures read as separate dashes, walls and stripe visible, road edge readable. Last looked at after round 1 of this pass.
+
+### Round 5 (lamps and market)
+- Lamp spot energy per district (`lamp_district_scale`): downtown x4, waterfront x8, market x4, neon x1 (reference unchanged).
+- String lights x3 (`string_light_energy_scale`).
+- Result (`old_market.png`): warm pools on the street and dapple from the string lights. Looked at after round 5.
+- Downtown (`downtown.png`, after round 5): towers, signage (BLUE HERON SUSHI, red and teal fronts), kerb visible on the left. Overpass guardrails not checked in frame.
+
+### Round 6 (waterfront skyline)
+- Waterfront camera yawed to the bay (`yaw` 80).
+- M_Skyline emission scaled by `skyline_emission_scale` 0.35, applied in the texture branch. It had been blown to pure white at 1.6.
+- Result (`waterfront.png`): skyline card and lit windows across the water, two gantry cranes visible, water reflects the card. Pools on the promenade road are still weak.
+
+### Establishing shot (point 6 of the brief)
+- Checked the building GLBs. LOD0 holds every material, LOD1 keeps walls, window atlas and frame-less shell (it drops only Aircraft_Red, Frame and Metal_Painted). LOD ranges switch at 70 m and 180 m with a 4 m fade. No visibility gap between window panes and walls was found.
+- The "floating windows" in `establishing_60m.png` are lit window cells on near-black walls and roofs (roof bitumen and wall albedo under 1.2 night ambient). Not fixed in this pass.
+
+### Test results
+- `test_world_materials`: 5 of 5 pass (`evidence/logs/tests_city_r6.log`).
+- `test_city_01`: 4 of 6 pass, including `count_lights_dropped` 12 and `light_worst_per_mesh_*` 8. Two fail: `test_single_ai_lap` and `test_eight_cars_on_grid`. Cause is outside this agent's files: `game/ai/ai_driver.gd:88` calls `_build_profile()`, which does not exist, so `race_manager.gd` and the test script fail to compile. Owner must fix that file.
+
+### Per-district score against the brief's acceptance test (0 to 10)
+Acceptance test: "does not read as boxes on a plane: facade depth, signage, street furniture, light rhythm, readable road edge".
+- neon_strip (reference): 6. Signs, wet reflections and kerb read. Facade depth still weak.
+- downtown: 5. Towers, signage and kerb read at street level; road pools weak; overpass guardrails not verified.
+- waterfront: 4. Bay and skyline now read; promenade lamp pools still weak; warehouse fills not added.
+- underpass: 7. Rhythmic fixtures, lit walls, painted stripe, readable edge.
+- old_market: 6. Warm lamp pools and string dapple; facade depth average.
+- establishing_60m: 2. Black walls and roofs; windows float. Not solved.
+
+### Still not done
+- Warehouse land-side fills on the waterfront (brief item 2, last clause).
+- Downtown overpass guardrails and parapet light catch (brief item 3).
+- Establishing: unlit walls and roofs (fill or roof albedo).
+- Road-paint readability at 60 m was not measured, only visually checked in the neon and downtown shots.
+- No perf numbers from this pass were reviewed.

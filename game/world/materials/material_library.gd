@@ -16,6 +16,7 @@ const BUILDING_TEX: String = "res://assets/world/kits/buildings/textures/"
 const PROP_TEX: String = "res://assets/world/kits/props/"
 const ASPHALT_SHADER: String = "res://shaders/wet_asphalt.gdshader"
 const NEON_SHADER: String = "res://shaders/neon.gdshader"
+const TUNNEL_SHADER: String = "res://shaders/tunnel_light.gdshader"
 const WATER_SHADER: String = "res://world/materials/water.gdshader"
 const WINDOW_SHADER: String = "res://world/materials/window_atlas.gdshader"
 ## CC0 set used for names whose JSON entry carries no texture of its own.
@@ -193,9 +194,23 @@ static func _build(mat_name: String) -> Material:
 		return _emissive_atlas(mat_name, BUILDING_TEX + "shop_interior_basecolor.png", BUILDING_TEX + "shop_interior_emissive.png", tuning.shop_energy_scale)
 	if mat_name == "M_ShopGlass":
 		return _glass(mat_name, r)
+	if mat_name == "M_TunnelLight":
+		return _tunnel_light(r)
 	if _is_neon(mat_name):
 		return _neon(mat_name, r)
 	return _standard(mat_name, r)
+
+
+static func _tunnel_light(r: Dictionary) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.resource_name = "M_TunnelLight"
+	sm.shader = load(TUNNEL_SHADER) as Shader
+	sm.set_shader_parameter("base_color", r["emit"])
+	sm.set_shader_parameter("energy", tuning.tunnel_light_energy)
+	sm.set_shader_parameter("run_dir", tuning.tunnel_run_dir.normalized())
+	sm.set_shader_parameter("lit_m", tuning.tunnel_light_lit_m)
+	sm.set_shader_parameter("period_m", tuning.tunnel_light_period_m)
+	return sm
 
 
 static func _is_neon(mat_name: String) -> bool:
@@ -235,9 +250,17 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		m.emission_enabled = true
 		m.emission_texture = m.albedo_texture
 		m.emission = Color.WHITE
-		m.emission_energy_multiplier = float(r["emit_strength"])
+		m.emission_energy_multiplier = float(r["emit_strength"]) * (tuning.skyline_emission_scale if mat_name == "M_Skyline" else 1.0)
 		return m
 	var emit_strength: float = float(r["emit_strength"])
+	if mat_name == "M_TunnelStripe":
+		m.albedo_color = tuning.tunnel_stripe_colour
+		m.roughness = tuning.tunnel_stripe_roughness
+		return m
+	if mat_name == "M_Curb":
+		m.albedo_color = _scale_rgb(m.albedo_color, tuning.kerb_albedo_scale)
+	if mat_name == "M_Paving":
+		m.albedo_color = _scale_rgb(m.albedo_color, tuning.sidewalk_albedo_scale)
 	if mat_name == "M_RoadPaint":
 		# Wet worn paint: grey-white, glossy, readable under lamps and headlights, never brighter
 		# than the lit scene around it.
@@ -258,10 +281,14 @@ static func _neon(mat_name: String, r: Dictionary) -> ShaderMaterial:
 	var colour: Color = r["emit"] if r["emit"] != Color.BLACK else r["colour"]
 	sm.set_shader_parameter("base_color", colour)
 	var energy: float = float(r["emit_strength"]) * tuning.neon_energy_scale
-	if mat_name.begins_with("M_CeilingStrip") or mat_name.begins_with("M_TunnelLight"):
+	if mat_name.begins_with("M_CeilingStrip"):
 		energy *= tuning.ceiling_energy_scale
 	sm.set_shader_parameter("energy", clampf(energy, 0.0, 16.0))
 	return sm
+
+
+static func _scale_rgb(c: Color, s: float) -> Color:
+	return Color(c.r * s, c.g * s, c.b * s, c.a)
 
 
 static func _asphalt() -> ShaderMaterial:

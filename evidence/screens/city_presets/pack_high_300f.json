@@ -1,0 +1,25 @@
+{
+  "name": "pack_high_300f",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 357,
+    "driver": "vulkan",
+    "fps": 535.852,
+    "frame_ms_avg": 1.866,
+    "frame_ms_p95": 2.449,
+    "frame_ms_p99": 2.6,
+    "frames": 300,
+    "objects": 623,
+    "os": "Windows",
+    "primitives": 243860,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 786.106,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "city_presets"
+}

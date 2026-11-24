@@ -20,7 +20,7 @@ extends Resource
 @export_range(0.0, 1.0) var window_glow_saturation: float = 0.15
 ## Faint self-glow on road paint. Keep near zero: at 0.18 under the blue ambient the markings read
 ## as bright blue plastic, brighter than anything lit around them.
-@export_range(0.0, 1.0) var road_paint_glow: float = 0.02
+@export_range(0.0, 1.0) var road_paint_glow: float = 0.05
 ## Worn wet paint is grey-white, not white.
 @export_range(0.0, 1.0) var road_paint_albedo: float = 0.42
 @export_range(0.0, 1.0) var road_paint_roughness: float = 0.35
@@ -51,3 +51,17 @@ extends Resource
 @export var window_glow_tint: Color = Color(1.0, 0.78, 0.5)
 ## Multiplies the energy of ceiling strips and tunnel lights (JSON energy 5 blew out to white bands).
 @export_range(0.0, 1.0) var ceiling_energy_scale: float = 0.06
+## Underpass ceiling fixture: HDR energy of the lit dashes, dash length and period along the tunnel (m),
+## and the tunnel direction the dashes run along. Energy 3 blooms without going flat white.
+@export_range(0.0, 16.0) var tunnel_light_energy: float = 3.0
+@export var tunnel_run_dir: Vector3 = Vector3(-0.985, 0.0, 0.17)
+@export_range(0.1, 10.0) var tunnel_light_lit_m: float = 1.2
+@export_range(0.2, 20.0) var tunnel_light_period_m: float = 1.8
+## Underpass wall stripe: painted, lit by the tunnel lights, not emissive.
+@export var tunnel_stripe_colour: Color = Color("#B8901E")
+@export_range(0.0, 1.0) var tunnel_stripe_roughness: float = 0.5
+## Kerb: lighter wet concrete so the road edge catches lamp light. Sidewalk: a little lighter than asphalt.
+@export_range(0.5, 3.0) var kerb_albedo_scale: float = 1.8
+@export_range(0.5, 3.0) var sidewalk_albedo_scale: float = 1.2
+## Far skyline card (M_Skyline): its emissive texture is a whole night skyline at 1.6, which blew out to white across the bay.
+@export_range(0.0, 2.0) var skyline_emission_scale: float = 0.35

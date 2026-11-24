@@ -30,6 +30,15 @@ const FALL_FLOOR_SIZE_M: float = 6000.0
 @export var sign_overlap_height_m: float = 1.5  ## signs further apart vertically never collide
 @export var chunk_m: float = 120.0  ## road chunk length for prop MultiMeshes, merged colliders and light budget
 @export var light_energy_scale: float = 0.6  ## layout energies are Blender-scale; tuned in the capture
+## Street lamp spot energy multiplier per district. Waterfront and market lamps had no visible pool at 0.6 x 14.
+@export var lamp_district_scale: Dictionary = {"neon": 1.0, "downtown": 4.0, "waterfront": 8.0, "market": 4.0, "underpass": 1.0}
+@export var fog_begin_m: float = 220.0  ## depth fog starts here: city blocks stay crisp, the bay backdrop fades
+@export var fog_end_m: float = 1200.0
+@export var lamp_range_m: float = 18.0  ## was 22: a street lamp only has to reach the road below it; shorter range touches fewer volumes
+@export var neon_fill_range_m: float = 8.0  ## was 12 to 14: the omni fills used up the 8-per-mesh budget on the overpass
+@export var lamp_merge_m: float = 3.0  ## lamp heads closer than this are one double lamp: one spot is kept
+@export_range(0.0, 8.0) var tunnel_light_energy_scale: float = 2.0  ## underpass ceiling omnis: walls and road get a pool every 12 m
+@export_range(0.0, 8.0) var string_light_energy_scale: float = 3.0  ## market string lights: warm dapple on the street under them
 @export var lamp_spot_angle_deg: float = 55.0  ## wide cone for street lamp heads
 @export var light_fade_begin_m: float = 70.0
 @export var light_fade_length_m: float = 30.0
@@ -438,9 +447,24 @@ func _library_mesh(src: Mesh, owner_id: String) -> Mesh:
 
 func _build_lights(raw: Array) -> void:
 	var lights: Array = []
+	var lamp_pos: Array[Vector3] = []
 	for v: Variant in raw:
 		var d: Dictionary = v
-		lights.append({"type": String(d["type"]), "pos": _vec(d["position"]), "range": float(d["range"]), "src": d})
+		var p: Vector3 = _vec(d["position"])
+		var rng: float = float(d["range"])
+		var src_name: String = String(d["source"])
+		if src_name == "lamp_head":
+			# Double lamps carry two heads 1.8 m apart; one spot is enough and frees budget for the rest.
+			var dup: bool = false
+			for q: Vector3 in lamp_pos:
+				dup = dup or q.distance_to(p) < lamp_merge_m
+			if dup:
+				continue
+			lamp_pos.append(p)
+			rng = minf(rng, lamp_range_m)
+		elif src_name == "neon_fill":
+			rng = minf(rng, neon_fill_range_m)  # short fills: fewer volumes touched, so street lamps survive the budget
+		lights.append({"type": String(d["type"]), "pos": p, "range": rng, "src": d})
 	var vols: Dictionary = _budget_volumes()
 	light_volumes = vols["aabbs"]
 	var report: Dictionary = CityLights.budget(lights, light_volumes, vols["names"])
@@ -469,7 +493,15 @@ func _build_lights(raw: Array) -> void:
 			light = omni
 		light.name = "%s_%03d" % [String(src["source"]), i]
 		light.light_color = Color.html(String(src["color"]))
-		light.light_energy = float(src["energy"]) * light_energy_scale
+		var boost: float = 1.0
+		var src_name: String = String(src["source"])
+		if src_name == "tunnel_strip":
+			boost = tunnel_light_energy_scale
+		elif src_name == "string_light":
+			boost = string_light_energy_scale
+		elif src_name == "lamp_head":
+			boost = float(lamp_district_scale.get(String(src["district"]), 1.0))
+		light.light_energy = float(src["energy"]) * light_energy_scale * boost
 		light.shadow_enabled = false
 		light.distance_fade_enabled = true
 		light.distance_fade_begin = light_fade_begin_m
@@ -506,7 +538,10 @@ func _build_environment() -> void:
 	env.ambient_light_energy = ambient_energy
 	env.fog_enabled = true
 	env.fog_light_color = Color.html("#101A2E")
-	env.fog_density = 0.0045
+	# Depth fog, not exponential: exponential at 0.0045 put 74 percent fog on the bay 300 m out, so the skyline was gone.
+	env.fog_mode = Environment.FOG_MODE_DEPTH
+	env.fog_depth_begin = fog_begin_m
+	env.fog_depth_end = fog_end_m
 	env.glow_enabled = true
 	env.glow_intensity = 0.55
 	env.glow_bloom = 0.05

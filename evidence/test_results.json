@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-24T19:43:45"
+    "time": "2026-11-24T20:49:05"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -15,25 +15,25 @@
     "test_four_ai_race": {
       "failures": [],
       "metrics": {
-        "car0_min_up_y": 0.99952632188797,
-        "car1_min_up_y": 0.999594926834106,
-        "car2_min_up_y": 0.999611377716064,
-        "car3_min_up_y": 0.999602079391479,
-        "race_pos1_best_lap_s": 49.9333333333305,
-        "race_pos1_total_s": 102.516666666662,
-        "race_pos2_best_lap_s": 50.2499999999972,
-        "race_pos2_total_s": 103.233333333329,
-        "race_pos3_best_lap_s": 58.1666666666659,
-        "race_pos3_total_s": 131.03333333333,
-        "race_pos4_best_lap_s": 53.5166666666707,
-        "race_pos4_total_s": 136.366666666667
+        "car0_min_up_y": 0.999613761901855,
+        "car1_min_up_y": 0.999594271183014,
+        "car2_min_up_y": 0.999623835086823,
+        "car3_min_up_y": 0.999703645706177,
+        "race_pos1_best_lap_s": 50.2499999999972,
+        "race_pos1_total_s": 103.216666666662,
+        "race_pos2_best_lap_s": 51.2166666666638,
+        "race_pos2_total_s": 104.833333333329,
+        "race_pos3_best_lap_s": 58.3166666666634,
+        "race_pos3_total_s": 122.766666666661,
+        "race_pos4_best_lap_s": 53.5833333333303,
+        "race_pos4_total_s": 126.866666666661
       },
       "pass": true
     },
     "test_overtake_shifts_lane": {
       "failures": [],
       "metrics": {
-        "overtake_max_shift_m": 4.86562204360962
+        "overtake_max_shift_m": 2.87826347351074
       },
       "pass": true
     },
@@ -56,9 +56,9 @@
     "test_single_ai_two_laps": {
       "failures": [],
       "metrics": {
-        "solo_lap1_s": 51.6499999999984,
-        "solo_lap2_s": 49.0666666666639,
-        "solo_max_abs_lateral_m": 5.71556949615479,
+        "solo_lap1_s": 52.166666666665,
+        "solo_lap2_s": 49.9833333333305,
+        "solo_max_abs_lateral_m": 5.82886028289795,
         "solo_stuck_events": 0
       },
       "pass": true
@@ -67,7 +67,7 @@
       "failures": [],
       "metrics": {
         "stuck_events_held": 1,
-        "stuck_forward_after_release_m": 178.31981980916
+        "stuck_forward_after_release_m": 168.972494856504
       },
       "pass": true
     },
@@ -77,7 +77,7 @@
         "curvature_hairpin_radius_m": 27.0688531996069,
         "lateral_3m_left_m": -2.99999666213989,
         "lateral_3m_right_m": 2.99999642372131,
-        "progress_max_error_m": 1.18800006703168e-05,
+        "progress_max_error_m": 0.0000118800006703168,
         "target_speed_hairpin_ms": 16.0360260009766,
         "target_speed_straight_ms": 58.2353096008301,
         "track_length_m": 1265.146484375,
@@ -180,17 +180,17 @@
       "failures": [],
       "metrics": {
         "count_instances": 1113,
-        "count_lights_built": 150,
-        "count_lights_dropped": 28,
+        "count_lights_built": 141,
+        "count_lights_dropped": 12,
         "count_multimeshes": 846,
         "count_occluders": 148,
         "count_probes": 37,
         "count_prop_colliders": 368,
         "count_unbound_materials": 0,
-        "light_budget_log": 23,
+        "light_budget_log": 13,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1212.4,
+        "load_time_ms": 1193.9,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -206,10 +206,10 @@
     "test_single_ai_lap": {
       "failures": [],
       "metrics": {
-        "ai_lap_time_s": 63.9,
-        "ai_max_abs_lateral_m": 6.41,
-        "ai_max_abs_line_offset_m": 8.12,
-        "ai_max_lat_at_s": 1451.3,
+        "ai_lap_time_s": 64.97,
+        "ai_max_abs_lateral_m": 5.81,
+        "ai_max_abs_line_offset_m": 7.5,
+        "ai_max_lat_at_s": 1449.2,
         "ai_stuck_events": 0
       },
       "pass": true
@@ -219,6 +219,29 @@
       "metrics": {
         "track_length_m": 2184.54,
         "track_length_rel_err": 0.0085
+      },
+      "pass": true
+    }
+  },
+  "test_city_race.gd": {
+    "test_single_car_two_laps_keep_pace": {
+      "failures": [],
+      "metrics": {
+        "lap_limit_s": 67.1,
+        "solo_lap1_s": 64.97,
+        "solo_lap2_s": 65.85,
+        "stuck_events": 0
+      },
+      "pass": true
+    },
+    "test_six_car_race_finishes": {
+      "failures": [],
+      "metrics": {
+        "finish_events": 1,
+        "min_upright_y": 0.9918,
+        "race_time_s": 80.4,
+        "stuck_events": 1,
+        "wall_s": 3.0
       },
       "pass": true
     }
@@ -237,10 +260,10 @@
         "camera_back_m": 5.78236103057861,
         "camera_distance_m": 5.97687768936157,
         "camera_height_above_car_m": 1.45000004768372,
-        "camera_lateral_m": 1.70145675326694e-09,
+        "camera_lateral_m": 0.00000000170145675326694,
         "camera_to_ideal_gap_m": 0.0166244506835938,
         "car_angle_from_view_deg": 6.59338434251894,
-        "car_slip_deg": 3.60018281270043e-09,
+        "car_slip_deg": 0.00000000360018281270043,
         "speed_kmh_after_5s": 146.562451171875
       },
       "pass": true
@@ -492,7 +515,7 @@
       "failures": [],
       "metrics": {
         "results_rows": 4,
-        "winner_time_s": 47.8166666666652
+        "winner_time_s": 58.0333333333313
       },
       "pass": true
     },
@@ -519,7 +542,7 @@
     "test_reset_car_puts_displaced_car_back_on_line": {
       "failures": [],
       "metrics": {
-        "reset_lateral_m": 0.0
+        "reset_lateral_m": 0.00000242805572270299
       },
       "pass": true
     },
@@ -537,7 +560,7 @@
       "failures": [],
       "metrics": {
         "wheel_error_grid_m": 0.0,
-        "wheel_error_racing_m": 0.000193119092728011
+        "wheel_error_racing_m": 0.000315144687192515
       },
       "pass": true
     }
@@ -627,7 +650,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@4568"
+        "main_menu_focus": "@Button@5332"
       },
       "pass": true
     },
@@ -719,16 +742,16 @@
     "test_drop": {
       "failures": [],
       "metrics": {
-        "drop_creep_5s_m": 3.12924385070801e-05,
-        "drop_vertical_speed_3s_mps": 2.62639304082768e-07
+        "drop_creep_5s_m": 0.0000312924385070801,
+        "drop_vertical_speed_3s_mps": 0.000000262639304082768
       },
       "pass": true
     },
     "test_drop_platform": {
       "failures": [],
       "metrics": {
-        "drop_platform_creep_5s_m": 3.12924385070801e-05,
-        "drop_platform_vertical_speed_3s_mps": 2.63973248593175e-07
+        "drop_platform_creep_5s_m": 0.0000312924385070801,
+        "drop_platform_vertical_speed_3s_mps": 0.000000263973248593175
       },
       "pass": true
     },
@@ -779,9 +802,9 @@
     "test_settle": {
       "failures": [],
       "metrics": {
-        "settle_creep_5s_m": 4.4703483581543e-06,
+        "settle_creep_5s_m": 0.0000044703483581543,
         "settle_origin_height_m": 0.467833817005157,
-        "settle_vertical_speed_mps": 1.13117891942238e-07
+        "settle_vertical_speed_mps": 0.000000113117891942238
       },
       "pass": true
     },
@@ -799,7 +822,7 @@
       "failures": [],
       "metrics": {
         "top_speed_kmh": 284.868264770508,
-        "top_speed_lateral_wander_m": 1.40680886033806e-05,
+        "top_speed_lateral_wander_m": 0.0000140680886033806,
         "top_speed_reach_96pct_s": 25.0166666666667
       },
       "pass": true

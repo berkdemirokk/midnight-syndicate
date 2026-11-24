@@ -1,0 +1,25 @@
+{
+  "name": "pack_low_300f",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 358,
+    "driver": "vulkan",
+    "fps": 546.81,
+    "frame_ms_avg": 1.829,
+    "frame_ms_p95": 2.389,
+    "frame_ms_p99": 2.575,
+    "frames": 300,
+    "objects": 624,
+    "os": "Windows",
+    "primitives": 242040,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 747.999,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "low",
+  "scenario": "city_presets"
+}

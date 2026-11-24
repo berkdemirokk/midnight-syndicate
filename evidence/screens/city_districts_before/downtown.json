@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.988,
+  "luma_min": 0.0,
+  "name": "downtown",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 108,
+    "driver": "vulkan",
+    "fps": 754.205,
+    "frame_ms_avg": 1.326,
+    "frame_ms_p95": 1.403,
+    "frame_ms_p99": 1.419,
+    "frames": 60,
+    "objects": 108,
+    "os": "Windows",
+    "primitives": 165261,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.118,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/city_districts/downtown.png",
+  "preset": "high",
+  "scenario": "city_districts"
+}
