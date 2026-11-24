@@ -77,7 +77,7 @@
         "curvature_hairpin_radius_m": 27.0688531996069,
         "lateral_3m_left_m": -2.99999666213989,
         "lateral_3m_right_m": 2.99999642372131,
-        "progress_max_error_m": 0.0000118800006703168,
+        "progress_max_error_m": 1.18800006703168e-05,
         "target_speed_hairpin_ms": 16.0360260009766,
         "target_speed_straight_ms": 58.2353096008301,
         "track_length_m": 1265.146484375,
@@ -237,10 +237,10 @@
         "camera_back_m": 5.78236103057861,
         "camera_distance_m": 5.97687768936157,
         "camera_height_above_car_m": 1.45000004768372,
-        "camera_lateral_m": 0.00000000170145675326694,
+        "camera_lateral_m": 1.70145675326694e-09,
         "camera_to_ideal_gap_m": 0.0166244506835938,
         "car_angle_from_view_deg": 6.59338434251894,
-        "car_slip_deg": 0.00000000360018281270043,
+        "car_slip_deg": 3.60018281270043e-09,
         "speed_kmh_after_5s": 146.562451171875
       },
       "pass": true
@@ -719,16 +719,16 @@
     "test_drop": {
       "failures": [],
       "metrics": {
-        "drop_creep_5s_m": 0.0000312924385070801,
-        "drop_vertical_speed_3s_mps": 0.000000262639304082768
+        "drop_creep_5s_m": 3.12924385070801e-05,
+        "drop_vertical_speed_3s_mps": 2.62639304082768e-07
       },
       "pass": true
     },
     "test_drop_platform": {
       "failures": [],
       "metrics": {
-        "drop_platform_creep_5s_m": 0.0000312924385070801,
-        "drop_platform_vertical_speed_3s_mps": 0.000000263973248593175
+        "drop_platform_creep_5s_m": 3.12924385070801e-05,
+        "drop_platform_vertical_speed_3s_mps": 2.63973248593175e-07
       },
       "pass": true
     },
@@ -779,9 +779,9 @@
     "test_settle": {
       "failures": [],
       "metrics": {
-        "settle_creep_5s_m": 0.0000044703483581543,
+        "settle_creep_5s_m": 4.4703483581543e-06,
         "settle_origin_height_m": 0.467833817005157,
-        "settle_vertical_speed_mps": 0.000000113117891942238
+        "settle_vertical_speed_mps": 1.13117891942238e-07
       },
       "pass": true
     },
@@ -799,7 +799,7 @@
       "failures": [],
       "metrics": {
         "top_speed_kmh": 284.868264770508,
-        "top_speed_lateral_wander_m": 0.0000140680886033806,
+        "top_speed_lateral_wander_m": 1.40680886033806e-05,
         "top_speed_reach_96pct_s": 25.0166666666667
       },
       "pass": true
@@ -851,24 +851,6 @@
         "textures_referenced": 103
       },
       "pass": true
-    }
-  },
-  "test_zz_leak.gd": {
-    "test_leaks_are_reported": {
-      "failures": [
-        "left 1 node(s) in the tree (freed by the runner)"
-      ],
-      "metrics": {},
-      "pass": false
-    }
-  },
-  "test_zz_probe.gd": {
-    "test_script_error_is_caught": {
-      "failures": [
-        "script error during the test: res://tests/test_zz_probe.gd:6 in test_script_error_is_caught: Cannot call method 'queue_free' on a null value. "
-      ],
-      "metrics": {},
-      "pass": false
     }
   }
 }

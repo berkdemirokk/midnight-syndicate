@@ -38,7 +38,8 @@ func _run() -> void:
 
 	var out_path: String = ProjectSettings.globalize_path("res://").path_join("../evidence/test_results.json").simplify_path()
 	var results: Dictionary = {}
-	if FileAccess.file_exists(out_path):
+	# A full run rebuilds the file; a partial run (--only) merges into it.
+	if not only.is_empty() and FileAccess.file_exists(out_path):
 		var prev: Variant = JSON.parse_string(FileAccess.get_file_as_string(out_path))
 		if prev is Dictionary:
 			results = prev
