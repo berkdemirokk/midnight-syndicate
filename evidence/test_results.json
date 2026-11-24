@@ -1,0 +1,526 @@
+{
+  "_meta": {
+    "godot": "4.7.2-stable (official)",
+    "physics_engine": "Jolt Physics",
+    "time": "2026-11-24T18:17:41"
+  },
+  "test_ai_race.gd": {
+    "test_countdown": {
+      "failures": [],
+      "metrics": {
+        "countdown_moved_before_go_m": 0.0
+      },
+      "pass": true
+    },
+    "test_four_ai_race": {
+      "failures": [],
+      "metrics": {
+        "car0_min_up_y": 0.99952632188797,
+        "car1_min_up_y": 0.999594926834106,
+        "car2_min_up_y": 0.999611377716064,
+        "car3_min_up_y": 0.999602079391479,
+        "race_pos1_best_lap_s": 49.9333333333305,
+        "race_pos1_total_s": 102.516666666662,
+        "race_pos2_best_lap_s": 50.2499999999972,
+        "race_pos2_total_s": 103.233333333329,
+        "race_pos3_best_lap_s": 58.1666666666659,
+        "race_pos3_total_s": 131.03333333333,
+        "race_pos4_best_lap_s": 53.5166666666707,
+        "race_pos4_total_s": 136.366666666667
+      },
+      "pass": true
+    },
+    "test_overtake_shifts_lane": {
+      "failures": [],
+      "metrics": {
+        "overtake_max_shift_m": 4.86562204360962
+      },
+      "pass": true
+    },
+    "test_reverse_across_start_adds_no_lap": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_rubber_band_uses_race_gap": {
+      "failures": [],
+      "metrics": {
+        "rubber_band_at_-225m": 0.96,
+        "rubber_band_at_-700m": 0.92,
+        "rubber_band_at_225m": 1.04,
+        "rubber_band_at_700m": 1.08,
+        "rubber_band_at_75m": 1.0
+      },
+      "pass": true
+    },
+    "test_single_ai_two_laps": {
+      "failures": [],
+      "metrics": {
+        "solo_lap1_s": 51.6499999999984,
+        "solo_lap2_s": 49.0666666666639,
+        "solo_max_abs_lateral_m": 5.71556949615479,
+        "solo_stuck_events": 0
+      },
+      "pass": true
+    },
+    "test_stuck_recovery": {
+      "failures": [],
+      "metrics": {
+        "stuck_events_held": 1,
+        "stuck_forward_after_release_m": 178.31981980916
+      },
+      "pass": true
+    },
+    "test_track_maths": {
+      "failures": [],
+      "metrics": {
+        "curvature_hairpin_radius_m": 27.0688531996069,
+        "lateral_3m_left_m": -2.99999666213989,
+        "lateral_3m_right_m": 2.99999642372131,
+        "progress_max_error_m": 0.0000118800006703168,
+        "target_speed_hairpin_ms": 16.0360260009766,
+        "target_speed_straight_ms": 58.2353096008301,
+        "track_length_m": 1265.146484375,
+        "track_samples": 316
+      },
+      "pass": true
+    },
+    "test_wrong_way_signal": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_driver_camera.gd": {
+    "test_accelerate_gives_full_throttle": {
+      "failures": [],
+      "metrics": {
+        "settings_autoload_present": true
+      },
+      "pass": true
+    },
+    "test_chase_camera_behind_car_after_five_seconds": {
+      "failures": [],
+      "metrics": {
+        "camera_back_m": 5.78236103057861,
+        "camera_distance_m": 5.97687768936157,
+        "camera_height_above_car_m": 1.45000004768372,
+        "camera_lateral_m": 0.00000000170145675326694,
+        "camera_to_ideal_gap_m": 0.0166244506835938,
+        "car_angle_from_view_deg": 6.59338434251894,
+        "car_slip_deg": 0.00000000360018281270043,
+        "speed_kmh_after_5s": 146.562451171875
+      },
+      "pass": true
+    },
+    "test_disabled_driver_clears_input": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_fov_grows_with_speed_and_nitro": {
+      "failures": [],
+      "metrics": {
+        "fov_after_5s_deg": 69.8058700561523,
+        "fov_nitro_kick_deg": 6.58866460840186,
+        "fov_rest_deg": 62.0219116210938
+      },
+      "pass": true
+    },
+    "test_hit_and_nitro_add_trauma_automatically": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_hood_mode_sits_at_bonnet": {
+      "failures": [],
+      "metrics": {
+        "hood_error_m": 0.0
+      },
+      "pass": true
+    },
+    "test_keyboard_steering_ramps_and_is_slower_at_speed": {
+      "failures": [],
+      "metrics": {
+        "speed_kmh_during_30kmh_steer": 33.4455173492432,
+        "speed_kmh_during_steer_test": 200.922775268555,
+        "steer_after_0.1s_at_0kmh": 0.598776426994672,
+        "steer_after_0.1s_at_200kmh": 0.333549407158698,
+        "steer_after_0.1s_at_30kmh": 0.5574647532243
+      },
+      "pass": true
+    },
+    "test_orbit_mode_circles_target_at_set_radius": {
+      "failures": [],
+      "metrics": {
+        "orbit_height_m": 2.50000008940697,
+        "orbit_radius_m": 9.0
+      },
+      "pass": true
+    },
+    "test_shake_offset_is_zero_at_rest_and_scales_with_trauma_squared": {
+      "failures": [],
+      "metrics": {
+        "shake_mean_at_0.5_m": 0.0841413299242655,
+        "shake_mean_at_1.0_m": 0.312381173670292,
+        "shake_ratio_1_vs_0.5": 3.71257708847081
+      },
+      "pass": true
+    },
+    "test_snap_places_camera_at_ideal_pose": {
+      "failures": [],
+      "metrics": {
+        "snap_error_m": 0.0
+      },
+      "pass": true
+    },
+    "test_target_assigned_after_ready_gets_hit_trauma": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_touch_zones_drive_the_driver": {
+      "failures": [],
+      "metrics": {
+        "touch_visible_without_force": false
+      },
+      "pass": true
+    },
+    "test_trauma_decays_below_threshold_in_1_5_s": {
+      "failures": [],
+      "metrics": {
+        "trauma_after_1_5s": 0.0
+      },
+      "pass": true
+    },
+    "test_wall_between_car_and_camera_shortens_distance": {
+      "failures": [],
+      "metrics": {
+        "distance_before_wall_m": 5.39838075637817,
+        "distance_with_wall_m": 3.74101400375366
+      },
+      "pass": true
+    }
+  },
+  "test_game_state.gd": {
+    "test_bad_types_are_sanitised": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_both_corrupt_gives_defaults": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_corrupt_main_restores_backup": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_migration_from_version_0": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_record_result_keeps_best_time": {
+      "failures": [],
+      "metrics": {
+        "best_time_harbor": 40.0
+      },
+      "pass": true
+    },
+    "test_round_trip": {
+      "failures": [],
+      "metrics": {
+        "cash_after_round_trip": 4450
+      },
+      "pass": true
+    },
+    "test_spend_more_than_cash_fails": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_upgrade_costs_and_max_level": {
+      "failures": [],
+      "metrics": {
+        "engine_max_total_cost": 12000
+      },
+      "pass": true
+    }
+  },
+  "test_settings.gd": {
+    "test_bad_file_values_fall_back": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_dynamic_resolution_hysteresis_and_off": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_dynamic_resolution_stays_off_until_confirmed": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_dynamic_resolution_steps_down_and_up_within_bounds": {
+      "failures": [],
+      "metrics": {
+        "min_scale_reached": 0.55,
+        "scale_after_5s_slow": 0.75,
+        "scale_after_recovery": 1.0
+      },
+      "pass": true
+    },
+    "test_presets_apply_to_viewport_and_environment": {
+      "failures": [],
+      "metrics": {
+        "glow_intensity_high": 0.800000011920929,
+        "glow_intensity_low": 0.349999994039536,
+        "glow_intensity_medium": 0.600000023841858
+      },
+      "pass": true
+    },
+    "test_save_load_round_trip": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_setters_autosave": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_smoke.gd": {
+    "test_input_actions_exist": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_rigidbody_falls": {
+      "failures": [],
+      "metrics": {
+        "y_after_1s": 5.1777491569519
+      },
+      "pass": true
+    }
+  },
+  "test_ui.gd": {
+    "test_hud_readout_follows_car_and_race": {
+      "failures": [],
+      "metrics": {
+        "countdown_sequence": "3,2,1,GO",
+        "speed_text": "187",
+        "timer_text": "01:23.45"
+      },
+      "pass": true
+    },
+    "test_i18n_keys_complete_and_used": {
+      "failures": [],
+      "metrics": {
+        "i18n_keys": 71,
+        "i18n_keys_used": 71
+      },
+      "pass": true
+    },
+    "test_language_switch_refreshes_text": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_main_menu_focus_and_backdrop": {
+      "failures": [],
+      "metrics": {
+        "main_menu_focus": "@Button@305"
+      },
+      "pass": true
+    },
+    "test_pause_toggles_tree": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_results_rewards_and_signals": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_scenes_instantiate": {
+      "failures": [],
+      "metrics": {
+        "scenes_instantiated": 5
+      },
+      "pass": true
+    }
+  },
+  "test_vehicle.gd": {
+    "test_acceleration": {
+      "failures": [],
+      "metrics": {
+        "accel_0_100_s": 3.08333333333333,
+        "accel_0_200_s": 8.55
+      },
+      "pass": true
+    },
+    "test_anti_roll": {
+      "failures": [],
+      "metrics": {
+        "anti_roll_off_turn_roll_deg": 1.63182849750368,
+        "anti_roll_on_turn_roll_deg": 1.31789528790123
+      },
+      "pass": true
+    },
+    "test_braking": {
+      "failures": [],
+      "metrics": {
+        "brake_100_0_heading_deg": 0.976904027740352,
+        "brake_100_0_m": 25.2271881103516,
+        "brake_200_0_heading_deg": 0.949125008055676,
+        "brake_200_0_m": 94.427978515625
+      },
+      "pass": true
+    },
+    "test_chaos": {
+      "failures": [],
+      "metrics": {
+        "chaos_min_origin_y_m": 0.465226769447327,
+        "chaos_nan_ticks": 0,
+        "chaos_upright_dot": 0.999907612800598
+      },
+      "pass": true
+    },
+    "test_cornering": {
+      "failures": [],
+      "metrics": {
+        "corner_200_lateral_g": 1.54942343059544,
+        "corner_200_max_slip_deg": 5.42937449048709,
+        "corner_200_max_yaw_rad_s": 0.300266981124878,
+        "corner_60_radius_m": 29.0118345514982
+      },
+      "pass": true
+    },
+    "test_default_curve": {
+      "failures": [],
+      "metrics": {
+        "default_curve_max_diff": 0.0
+      },
+      "pass": true
+    },
+    "test_drift": {
+      "failures": [],
+      "metrics": {
+        "drift_band_sustained_s": 5.0,
+        "drift_ended_after_release_s": 1.4,
+        "drift_entered_during_handbrake_s": 0.0166666666666667,
+        "drift_last_score": 178.50975564733,
+        "drift_score_gain": 159.602674750536,
+        "drift_slip_max_deg": 42.6119241781148,
+        "drift_slip_under_8_after_release_s": 1.73333333333333,
+        "drift_still_drifting_1s_after_throttle": 1.0
+      },
+      "pass": true
+    },
+    "test_drop": {
+      "failures": [],
+      "metrics": {
+        "drop_creep_5s_m": 0.0000312924385070801,
+        "drop_vertical_speed_3s_mps": 0.000000262639304082768
+      },
+      "pass": true
+    },
+    "test_drop_platform": {
+      "failures": [],
+      "metrics": {
+        "drop_platform_creep_5s_m": 0.0000312924385070801,
+        "drop_platform_vertical_speed_3s_mps": 0.000000263973248593175
+      },
+      "pass": true
+    },
+    "test_frozen_and_reset": {
+      "failures": [],
+      "metrics": {
+        "frozen_moved_m": 0.0,
+        "unfrozen_speed_2s_kmh": 68.1232131958008
+      },
+      "pass": true
+    },
+    "test_gear_rpm": {
+      "failures": [],
+      "metrics": {
+        "gear_dip_checks": 24,
+        "gear_dip_mismatch": 0,
+        "gear_max_at_150": 4,
+        "gear_upshifts_to_150": 3
+      },
+      "pass": true
+    },
+    "test_hit": {
+      "failures": [],
+      "metrics": {
+        "hit_count": 2,
+        "hit_impulse_Ns": 4594.91943359375,
+        "hit_pos_y_m": -0.132987394928932
+      },
+      "pass": true
+    },
+    "test_nitro": {
+      "failures": [],
+      "metrics": {
+        "nitro_drain_s": 3.21666666666667,
+        "nitro_passive_refill_5s": 0.175000000000014,
+        "nitro_top_speed_kmh": 331.780490112305,
+        "nitro_top_speed_ratio": 1.16007164374932
+      },
+      "pass": true
+    },
+    "test_reverse": {
+      "failures": [],
+      "metrics": {
+        "reverse_max_kmh": 45.2944953918457
+      },
+      "pass": true
+    },
+    "test_settle": {
+      "failures": [],
+      "metrics": {
+        "settle_creep_5s_m": 0.0000044703483581543,
+        "settle_origin_height_m": 0.467833817005157,
+        "settle_vertical_speed_mps": 0.000000113117891942238
+      },
+      "pass": true
+    },
+    "test_slope": {
+      "failures": [],
+      "metrics": {
+        "slope_10pct_climb_dz_m": 16.8387298583984,
+        "slope_10pct_max_kmh": 257.669165039063,
+        "slope_10pct_rise_over_run": 0.0999615273260761,
+        "slope_10pct_time_to_60_s": 1.96666666666667
+      },
+      "pass": true
+    },
+    "test_top_speed": {
+      "failures": [],
+      "metrics": {
+        "top_speed_kmh": 284.868264770508,
+        "top_speed_lateral_wander_m": 0.0000140680886033806,
+        "top_speed_reach_96pct_s": 25.0166666666667
+      },
+      "pass": true
+    },
+    "test_wheel_visuals": {
+      "failures": [],
+      "metrics": {
+        "wheel_centre_fl_y_m": 0.334996461868286,
+        "wheel_compression_fl": 0.287831246852875,
+        "wheel_spin_expected_step_rad": 1.30416588556199,
+        "wheel_spin_step_rad": 1.30416584014893
+      },
+      "pass": true
+    }
+  }
+}

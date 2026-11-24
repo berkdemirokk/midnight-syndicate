@@ -1,0 +1,25 @@
+{
+  "name": "selftest_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 5,
+    "driver": "vulkan",
+    "fps": 1977.809,
+    "frame_ms_avg": 0.506,
+    "frame_ms_p95": 0.561,
+    "frame_ms_p99": 0.755,
+    "frames": 600,
+    "objects": 5,
+    "os": "Windows",
+    "primitives": 21132,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 120.036,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "harness_selftest"
+}

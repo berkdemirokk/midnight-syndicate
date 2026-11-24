@@ -1,0 +1,3083 @@
+{
+  "schema": 1,
+  "records": [
+    {
+      "id": "asphalt_02",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/asphalt_02",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/asphalt_02",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          2048,
+          2048
+        ],
+        "normal.jpg": [
+          2048,
+          2048
+        ],
+        "roughness.jpg": [
+          2048,
+          2048
+        ]
+      },
+      "material_count": 1,
+      "bytes": 10250083,
+      "sha256": "2655327efaeff21b6551707880a8c50fef3572445d89eec2c4bd19327f9a0a26",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Asphalt_Main: main road carriageway, fine dark asphalt. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "asphalt_04",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/asphalt_04",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/asphalt_04",
+      "license": "CC0-1.0",
+      "author": "Jenelle van Heerden, Sergej Majboroda",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          2048,
+          2048
+        ],
+        "normal.jpg": [
+          2048,
+          2048
+        ],
+        "roughness.jpg": [
+          2048,
+          2048
+        ]
+      },
+      "material_count": 1,
+      "bytes": 10862375,
+      "sha256": "c6d77d219c8039590336a30b0a93139aa2c1fdaf02f7c620d1df5db54a1e953d",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Asphalt_Worn: worn and cracked asphalt, inside lanes and braking zones. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "concrete_panels",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/concrete_panels",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/concrete_panels",
+      "license": "CC0-1.0",
+      "author": "Amal Kumar",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1793176,
+      "sha256": "7afc631957f5ea861f7bae8afe8adb4faf0cbc6b9e5124452ece594431366a7d",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Concrete_Panels: road-side concrete panels, jersey barrier and kerb faces. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "brushed_concrete_03",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/brushed_concrete_03",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/brushed_concrete_03",
+      "license": "CC0-1.0",
+      "author": "Amal Kumar",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2573553,
+      "sha256": "e24af05cd03ce00845d2bd38ba28d28ef016eefc70cbe1fab2e06e597ac68693",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Concrete_Smooth: smooth road-side concrete, kerbs and underpass walls. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "concrete_wall_006",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/concrete_wall_006",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/concrete_wall_006",
+      "license": "CC0-1.0",
+      "author": "Charlotte Baglioni, Dario Barresi",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2219497,
+      "sha256": "ecd2bdec49cdf68839ed92ff4f143d93d6251cb184ddc9c1d0286087d3f140e7",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Concrete_Stained: stained concrete, retaining walls and underpass portals. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "concrete_pavers_02",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/concrete_pavers_02",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/concrete_pavers_02",
+      "license": "CC0-1.0",
+      "author": "Amal Kumar",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1737087,
+      "sha256": "657926f1d60b4b1c2e486fb1d5c5d466b4c516a6c87e2f23681548c2e346798c",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Paving_Slab: sidewalk paving slabs. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "concrete_pavement_03",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/concrete_pavement_03",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/concrete_pavement_03",
+      "license": "CC0-1.0",
+      "author": "Charlotte Baglioni",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2075648,
+      "sha256": "186112b8bcf6a935b8e71a0314c8d9c2193f91f25ac1f9c3e6b50dfe6fb1947c",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Sidewalk_Tile: chequer sidewalk tiles, pedestrian areas. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "brick_wall_006",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/brick_wall_006",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/brick_wall_006",
+      "license": "CC0-1.0",
+      "author": "Jan Burghardt",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2601187,
+      "sha256": "d52adc63d97b11249481fa29c2554644bc12cc087979f98dcdd19f14bc6b1d6a",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Brick_Red: red brick facades, Old Market shop houses. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "dark_brick_wall",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/dark_brick_wall",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/dark_brick_wall",
+      "license": "CC0-1.0",
+      "author": "Dario Barresi, Dimitrios Savva",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2587728,
+      "sha256": "85f2b8e27e2fc66caccf3ef98a56407843bfeb2d8131fdb2e0fdba535c111999",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Brick_Dark: dark brick facades, Downtown and Neon Strip rear walls. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "castle_brick_02_white",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/castle_brick_02_white",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/castle_brick_02_white",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2162870,
+      "sha256": "bf3694ee259ff1dd1b2ebdb99b704c39146a154374af233bf242ee375a8bc4ba",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Brick_Painted: painted white brick, shop house facades. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "clay_plaster",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/clay_plaster",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/clay_plaster",
+      "license": "CC0-1.0",
+      "author": "Amal Kumar",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1484839,
+      "sha256": "d9d41f648df52c904efe9959b987a79b8e992ac5f42ee3ce6cdd5a24f464ab48",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Plaster_Clay: rough clay plaster, Old Market walls. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "beige_wall_001",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/beige_wall_001",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/beige_wall_001",
+      "license": "CC0-1.0",
+      "author": "Dimitrios Savva, Rico Cilliers",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 337764,
+      "sha256": "25685da7a8ecc4dd98ec465850b88775316c2463064aba06c1811cd366527f70",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Plaster_Beige: painted beige plaster, upper floor walls. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "blue_metal_plate",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/blue_metal_plate",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/blue_metal_plate",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1036398,
+      "sha256": "d77340946d8089b9dfcc517706a8168292850b99a25ff330fec6b8ec377e2f62",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Metal_Painted: painted steel shutters, awnings, handrails. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "corrugated_iron_03",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/corrugated_iron_03",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/corrugated_iron_03",
+      "license": "CC0-1.0",
+      "author": "Charlotte Baglioni",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1179221,
+      "sha256": "8c1c27e4a2ca721c84cfd8f0335a81a2e6a824cc7061cb1d530498c57bb0c41c",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Metal_Corrugated: corrugated sheet, market roofs and sheds. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "corrugated_iron",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/corrugated_iron",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/corrugated_iron",
+      "license": "CC0-1.0",
+      "author": "Dimitrios Savva, Jenelle van Heerden",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1930419,
+      "sha256": "9927a2ffca24b1e7ec08311b146d062f068ce2d9f4ce0a32fbc5212586917cd5",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Metal_Rusty: rusty corrugated iron, waterfront warehouse. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "concrete_tile_facade",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/concrete_tile_facade",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/concrete_tile_facade",
+      "license": "CC0-1.0",
+      "author": "Charlotte Baglioni",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1898148,
+      "sha256": "234336c3b538bef4124c7f529d3a9db237c0b3316f4190ed460610cd15726643",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Facade_Tile: tiled concrete facade, modern tower bases. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "dark_wooden_planks",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/dark_wooden_planks",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/dark_wooden_planks",
+      "license": "CC0-1.0",
+      "author": "Amal Kumar",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 2033633,
+      "sha256": "70313ac8f896b790fb69314462986d8f1a2aabba9a24e8c80f3efc44ad46e8bb",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Wood_Planks: old wood planks, market stall boards and pier. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "bitumen",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/bitumen",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/bitumen",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 1414799,
+      "sha256": "857bd708f90af47276f78eca267455950c9f948ebf8aab24c31983de5edebe8a",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Roof_Bitumen: bitumen roof felt, rooftops. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "modern_buildings_night",
+      "kind": "hdri",
+      "path": "game/assets/textures/cc0/modern_buildings_night",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/modern_buildings_night",
+      "license": "CC0-1.0",
+      "author": "Greg Zaal",
+      "tris": 0,
+      "texture_sizes": {
+        "environment.hdr": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6485327,
+      "sha256": "4b65aa784f5491b5be667092c5c489220c02d7d207257bcf1ea072a28b83cb70",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "environment light (HDRI): night sky and lighting, Berlin riverside, artificial light. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "cobblestone_street_night",
+      "kind": "hdri",
+      "path": "game/assets/textures/cc0/cobblestone_street_night",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/cobblestone_street_night",
+      "license": "CC0-1.0",
+      "author": "Greg Zaal, Jenelle van Heerden",
+      "tris": 0,
+      "texture_sizes": {
+        "environment.hdr": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7064424,
+      "sha256": "e9b55cd14136e61170019725db933dffb663dd8afa33d5655e7b9a94a1fc0766",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "environment light (HDRI): night street lighting, narrow lamp-lit street. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "asphalt_07",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/asphalt_07",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/asphalt_07",
+      "license": "CC0-1.0",
+      "author": "Charlotte Baglioni",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          2048,
+          2048
+        ],
+        "normal.jpg": [
+          2048,
+          2048
+        ],
+        "roughness.jpg": [
+          2048,
+          2048
+        ]
+      },
+      "material_count": 1,
+      "bytes": 10209884,
+      "sha256": "2d323f5f3da13c88dca0976afab8dff26f5aa8d36fbc8f57dfec779e413f5aab",
+      "test_result": "fail: sha256 mismatch",
+      "added": "2026-11-24",
+      "notes": "M_Asphalt_Patched: chipped granular asphalt with repair patches, urban road. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "props_kit_lamp_sodium",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_lamp_sodium.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 912,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 49108,
+      "sha256": "1c139e9ffae13e4c97d4d3bfdbc2eb1b71c38f6a78e2ce1d236cc6daf91abcfd",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (lamp): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_lamp_led_double",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_lamp_led_double.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 752,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 59528,
+      "sha256": "1ada1f12be66319fc682b6c6da27d6bee672478930b7dd713ca9b72a2c6a19f5",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (lamp): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_traffic_light",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_traffic_light.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 972,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 92896,
+      "sha256": "f3c0393d45c7e9706125412cca9278fc7dc3f70db50264db6cc5611bcb66f90e",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (lamp): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_blade_kirin_noodle_bar",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_kirin_noodle_bar.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1984,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 121316,
+      "sha256": "e23639fb862b8834f6dde46fc85f0709801424f0e688ba707dcaa25a20c9d9d9",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_blade_hotel_arden",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_hotel_arden.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1296,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 88376,
+      "sha256": "9090247bd16e5893912c0b3de8708cb4a43b9635c3453bb01498c534a9fee32a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_blade_pixel_arcade",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_pixel_arcade.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1448,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 96112,
+      "sha256": "12853664a6186212ca173b15887f16c46e50de9ed62edb31879ea29cb78bff9f",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_blade_syndicate_club",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_syndicate_club.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1904,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 115296,
+      "sha256": "fa27ed38ce7f12802d97a2ded951a713a88e7fe2ad4ea76ff921b80e3f4dd32a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_blade_kapi_doner",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_kapi_doner.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1272,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 85008,
+      "sha256": "dd34b0d2193d3caa799d9d1a75fbf3a3720fd159ca9d9d05d430d9cbd17a0172",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_box_lumen_cinema_4m",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_lumen_cinema_4m.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1268,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 90760,
+      "sha256": "3aefe01ba8cfad1e6e816a055a45138458e0c0aaf53e022ea2034c8050cd017d",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_box_volt_energy_4m",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_volt_energy_4m.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1300,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 83224,
+      "sha256": "87f8549a2aef7bd76384ee84f64129b5ba49d0b7b07a59249ca523aa787431a8",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_box_orbit_records_8m",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_orbit_records_8m.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 2308,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 127680,
+      "sha256": "1beccb85f99e438c91a105b63345437664dec7d152c6d01a414e1328fa57cda1",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_box_blue_heron_sushi_8m",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_blue_heron_sushi_8m.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 2260,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 139360,
+      "sha256": "06e686a3a9fb684a9b7b9c66155a62211526bac4cce5a8d1fa78e901c55ae793",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_arrow_night_owl_diner",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_arrow_night_owl_diner.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1648,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 113752,
+      "sha256": "d90b3fbf90a06be9d7531c5ee6b781d7ec0fd43740e4faa213b282f7fa238b49",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_open24h_moto_garage",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_open24h_moto_garage.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 2628,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 166772,
+      "sha256": "fdcfc4b5d898e3e15c17b0ea06f0eaec85fd5faf79e73641e1b5b064d738e484",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_sign_billboard_zenith_tower_12x5",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_billboard_zenith_tower_12x5.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 2288,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 212236,
+      "sha256": "ffb4fbc8765d3f737595bca63f285dea9aac46fade46902e4aedb0bbb988ba9d",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (sign): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_poster_01",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_poster_01.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 110,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 16200,
+      "sha256": "bf3f14bf57d89f10900ef3b81ba39fe2e0c0bdf94fff659584bb0c70a61ddcb3",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (poster): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_poster_02",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_poster_02.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 110,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 16200,
+      "sha256": "ba9db0458d601b17482f6ed5261fb94aab360a3f63f12e5a66c9c0e09cda8b6a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (poster): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_poster_03",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_poster_03.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 110,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 16200,
+      "sha256": "49858943e355aaef33361c4a2e33404c56176bb795c8e15a10ddd47c04179bb7",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (poster): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_poster_04",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_poster_04.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 110,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 16200,
+      "sha256": "3ce88db2bfe9e99fdc0e291aa27c83e7d02db5e5d4e1dd9a98b4734b5e789960",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (poster): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_poster_05",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_poster_05.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 110,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 16200,
+      "sha256": "f52fc5c5047708fd0f1d7f94da362a404dbf785e17c9cda729e9ae1b47ccdca3",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (poster): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_poster_06",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_poster_06.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 110,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 16200,
+      "sha256": "683859acaeba8fee21018f4e7fd8d587e40b9f851d3be9dc70266b4886ea3d55",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (poster): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_bus_shelter",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_bus_shelter.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 626,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 85204,
+      "sha256": "33e675e093bad7948b40f18eb62072f3664021145f88c8ca642ecbc7020a5237",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_bollard",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_bollard.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 480,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 25996,
+      "sha256": "dcfcea78dda61c4c708933bb5a54b61e0892aea9e4171121f056dc06308648e9",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_litter_bin",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_litter_bin.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 204,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 13908,
+      "sha256": "29de23271983c444427e6b2051d56c2f7b4348ecddcdd84d3aaf6b106fe44d91",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_bench",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_bench.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 252,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 28164,
+      "sha256": "7d1b02d059645e3cd34069c3ebe8d2755c2fbb3c6c4078cc9af667956f3ea13b",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_planter_shrub",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_planter_shrub.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 708,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 50212,
+      "sha256": "2ec961d0bdc2cefd19b20e548e411d778c006649f072809e7bd86d9b9492f5e2",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_newspaper_box",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_newspaper_box.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 324,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 44292,
+      "sha256": "97b9d9a3ac232b61aa911eb51c9f4f5d47acd431115e9d6efc251817ca3281f8",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_fire_hydrant",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_fire_hydrant.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 384,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 25000,
+      "sha256": "77cbaa41b1fb519ebe343df1dcbce7b7b2c7ed2d92c5047d58bc2109baa03bc4",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_utility_cabinet",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_utility_cabinet.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 972,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 123416,
+      "sha256": "9c85beb9518730916f0c78dedd95ba373043b33bef3bed070dd0842fb764179e",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_market_stall",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_market_stall.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 256,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 24928,
+      "sha256": "cae389624056323f7188f16f1bed9eab7d68a4062dfd97e6615ee8d67cfcd0d5",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_roller_shutter",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_roller_shutter.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 312,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 34304,
+      "sha256": "a2631f3ffb133eae84920e6731afbefef8a55b4be354e455ff4d986e7c87941e",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (furniture): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_jersey_barrier",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_jersey_barrier.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 36,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 7328,
+      "sha256": "c0671bead292d8062a8a29a89066fac89100dd4013845eea44a7cfb9e0dc48b9",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_guardrail_segment",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_guardrail_segment.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 108,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 14720,
+      "sha256": "9499c80bb1dfc39844c8338a40e024798a5b593bd6cecd1eed7d02e794460900",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_chevron_board",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_chevron_board.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 168,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 23516,
+      "sha256": "bb38345a580e5369ce8ba2b4326fd3753ec501431ee97e6fd7038735646a4046",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_traffic_cone",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_traffic_cone.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 396,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 32180,
+      "sha256": "a3acaefe00a795073545baae7214f23a51f051fb159f1e44e55876f5b937e796",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_quay_railing",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_quay_railing.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 340,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 33984,
+      "sha256": "f54e51206bf643102c586e3a37360cb0a0765ba0413b949ba45589476c783bc6",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_tunnel_fan",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_tunnel_fan.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 312,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 23876,
+      "sha256": "b6fcf8bb498d0898626e6963203584a270f28fba65307bc7f0aef20fa19b38a7",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_tunnel_wall_light",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_tunnel_wall_light.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 120,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 17248,
+      "sha256": "6b5d3bf5a3fc5df049d236e4b554e55d99571172588c619c55b97c343bfc078d",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (circuit): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_cable_span",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_cable_span.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 588,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 32832,
+      "sha256": "ef25a5c245b56fb5a8c25e4fe1fe6f2e62f265fe662c80d812d9c4052ea75096",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (overhead): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_string_lights_span",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_string_lights_span.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1164,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 73976,
+      "sha256": "4de0150bea6822b207ec89f287d37c49533a4857071ce43a08204223bcb9d7a3",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (overhead): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_container_stack",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_container_stack.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 1872,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 186748,
+      "sha256": "c22c6e970fb414d0668b082cac56e85bb84eaad4791fa4915ae6f2a805d49533",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (bay): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_gantry_crane",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_gantry_crane.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 2456,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 264172,
+      "sha256": "8096a2fb6731689718c76b0f53e813bf31f353cc08b3f9d1b6af380a5007220f",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (bay): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_skyline_card",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_skyline_card.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 80,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 9700,
+      "sha256": "01a063278ace8696264669b3ec546f809a8542927f8c8349c6508c7bda7087e6",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit (bay): LOD0 + colliders; origin at mount point, forward -Y; no embedded images"
+    },
+    {
+      "id": "props_kit_tex_poster_01",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/poster_01.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 134100,
+      "sha256": "39427db5606e6a05b68b2212f4a30e26fb5887b47b9939a70a470b8d3bf1e863",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "props_kit_tex_poster_02",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/poster_02.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 170902,
+      "sha256": "1f17b7daf5850d68d0560d44ccc1cfe286e6073bd6bcbe895a363047abae4efa",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "props_kit_tex_poster_03",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/poster_03.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 136795,
+      "sha256": "8ad3be30b67bccc3a47956ec9b466faef5ce6895c5a765377f67d4fd36b77c4b",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "props_kit_tex_poster_04",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/poster_04.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 163237,
+      "sha256": "ecd1956e53f4d0846305276e2dfad7a3b998ada8e240befbccdbca58b261d49d",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "props_kit_tex_poster_05",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/poster_05.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 155915,
+      "sha256": "eca9962fb5d3f48523e6037547ea6dc7b1b09665d51cd14c7e097a711b99d8b2",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "props_kit_tex_poster_06",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/poster_06.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 168645,
+      "sha256": "fd9c9015d8cd623a741291a896a5163d46bbf1bf3f9121263bce4f4dc6659e8c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "props_kit_tex_skyline_night",
+      "kind": "generated",
+      "path": "assets_src/world/kit_props/out/textures/skyline_night.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 49602,
+      "sha256": "7859a90eb4e7f2e9097a016706512255bf002b2688f4ea39f4f96614cee71c3c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit generated sign/poster/skyline image (non-square by brief: posters 1024x512, skyline 2048x512; kind generated because the texture kind requires squares)"
+    },
+    {
+      "id": "bld_neon_01_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_neon_01_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3468,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 336252,
+      "sha256": "d5fea0151906bf8678280b3c1ceee705c31f953f437c6de6176dccaa3bc88d21",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_neon_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_neon_01_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_neon_01_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3624,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 352940,
+      "sha256": "b263865204a7f39408ecea946a27a00cbb39f65a94b886a1db9989bc1f1f6266",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_neon_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_neon_02_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_neon_02_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 4596,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 442468,
+      "sha256": "a734dd47137bb522f1f518c673331d5275f4db445193a06ac90b5a793a9f564a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_neon_02 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_neon_02_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_neon_02_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 6932,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 642524,
+      "sha256": "4a6b480367a5387966e07fa2f2bb657a5dd54ac25a9864df7c214598369d16fb",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_neon_02 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_neon_03_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_neon_03_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 8170,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 767592,
+      "sha256": "55ee3e0796050d914fcc1b48f2d5d3a7c3ddd064c91a0165d533018d1e4f09a0",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_neon_03 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_neon_03_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_neon_03_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 7522,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 688972,
+      "sha256": "2a4d82f0d00ef299d745e908083700a25a7c1409a13fc747d75e4e07a5476648",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_neon_03 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_downtown_01_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_downtown_01_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 10050,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 1176436,
+      "sha256": "f4b6f9aa32d93e1df93c2bb7f4a94cfe1bc3175cb5dc332cf8ae39fc6a02ce98",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_downtown_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_downtown_01_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_downtown_01_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 10978,
+      "texture_sizes": {},
+      "material_count": 12,
+      "bytes": 1282744,
+      "sha256": "8e6afe63565f6032fe31b9d1e975be8ee8af6735b2311c07179f599daf179ac2",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_downtown_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_downtown_02_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_downtown_02_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 13170,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 1531048,
+      "sha256": "61c90007664eb3cd151ca751688f1217abac1d0ad0cb0a729e65681551b79415",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_downtown_02 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_downtown_02_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_downtown_02_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 13194,
+      "texture_sizes": {},
+      "material_count": 12,
+      "bytes": 1547616,
+      "sha256": "27c0b282d8c4116a018cfc7975a663d69232eebb44d824e671c529a04ee06e0f",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_downtown_02 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_downtown_03_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_downtown_03_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 11302,
+      "texture_sizes": {},
+      "material_count": 12,
+      "bytes": 1355460,
+      "sha256": "b721dee4b88c3eae99a2910473bfbb46f9f9f28ac617dca135cffc6430bd9387",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_downtown_03 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_downtown_03_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_downtown_03_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 10802,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 1272740,
+      "sha256": "1973be405149782ce95fc7d7dbce487dc498df8f7e1f212673f6cae40e71ced1",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_downtown_03 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_market_01_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_market_01_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3918,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 318320,
+      "sha256": "d37da04a907149fd2d3903a01af8c3e23ff6e2c6f9e83a54d00fb35cc49f0167",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_market_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_market_01_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_market_01_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3338,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 273872,
+      "sha256": "de48a58c96b290c9052468d7a76be5dd57ab446f11b02fa522f38fb0d22448d3",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_market_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_market_02_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_market_02_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 4870,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 391868,
+      "sha256": "9996830298907846da35c16bfe86f33e9c9d6726121068f3bc794fa2541b2346",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_market_02 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_market_02_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_market_02_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 4934,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 398372,
+      "sha256": "31691c1d6a89680e14996594012d059eedaa2dee547e2adbd669c587d52b1604",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_market_02 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_waterfront_01_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_waterfront_01_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3202,
+      "texture_sizes": {},
+      "material_count": 5,
+      "bytes": 360832,
+      "sha256": "f14ef3aa55eae0b406fa5d0e2faf4c61b5c9612f2d8a14cd19bfdd1f5c481f5c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_waterfront_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_waterfront_01_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_waterfront_01_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3058,
+      "texture_sizes": {},
+      "material_count": 6,
+      "bytes": 346456,
+      "sha256": "5909119ed0668a77c2c74539b51a0ada8d94ebf985e6d43e867284cb9de3e447",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_waterfront_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_parking_01_a",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_parking_01_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3518,
+      "texture_sizes": {},
+      "material_count": 6,
+      "bytes": 432868,
+      "sha256": "dca620f64324e8cfc61039f9174c06014c6dfd89d6190e4fe7362366fdcd66af",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_parking_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "bld_parking_01_b",
+      "kind": "model",
+      "path": "assets_src/world/kit_buildings/out/bld_parking_01_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 3758,
+      "texture_sizes": {},
+      "material_count": 7,
+      "bytes": 458948,
+      "sha256": "be1990566fb613e33e1124c26ccd720dc4fc8131454d456299a5334dbcb01e6b",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit bld_parking_01 (LOD0/1/2, images excluded)"
+    },
+    {
+      "id": "window_atlas_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/window_atlas_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "window_atlas_basecolor.png": [
+          2048,
+          2048
+        ]
+      },
+      "material_count": 0,
+      "bytes": 4473819,
+      "sha256": "31a97c789da6d7320001019829acc8b74ef93c421b416b9e44e8ab049022e4ee",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit generated texture"
+    },
+    {
+      "id": "window_atlas_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/window_atlas_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "window_atlas_emissive.png": [
+          2048,
+          2048
+        ]
+      },
+      "material_count": 0,
+      "bytes": 78340,
+      "sha256": "29e1cd634a7c230182548e3eb5b846a376a192c38cd4924addd4a2f197e0e818",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit generated texture"
+    },
+    {
+      "id": "shop_interior_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/shop_interior_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "shop_interior_basecolor.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 17983,
+      "sha256": "4f7973c080c4b3c9afed4383bdbcee199b33491275fd9cc3a9dcaa44eb703d40",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit generated texture"
+    },
+    {
+      "id": "shop_interior_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/shop_interior_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "shop_interior_emissive.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 17451,
+      "sha256": "902dfa3b948afdfc6f6f7f97397cd38b38a896e45e3b8e8e133c51b05db54059",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "building kit generated texture"
+    },
+    {
+      "id": "impostor_bld_neon_01_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_01_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_01_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6228,
+      "sha256": "f03e77591cf53994e2fae6a4eb3a07e81fddf09fbd4b9fd1b1a92d149c187afb",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_01_a"
+    },
+    {
+      "id": "impostor_bld_neon_01_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_01_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_01_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2494,
+      "sha256": "e226d667d4fdc058642fcee228cc1cea909b518e36c5ace83a54a825c8c9b076",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_01_a"
+    },
+    {
+      "id": "impostor_bld_neon_01_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_01_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_01_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6150,
+      "sha256": "2a1686542c15d142efa31cb477c6e2b42a5a986f7d71f27c3b63ea420cb66c06",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_01_b"
+    },
+    {
+      "id": "impostor_bld_neon_01_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_01_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_01_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3128,
+      "sha256": "1929f6f7f37582881ccdef333f3ba14540e11ab7883d7e76ecccd774e3221a8a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_01_b"
+    },
+    {
+      "id": "impostor_bld_neon_02_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_02_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_02_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7417,
+      "sha256": "db14e63dbd7816b5546cb6f0574b6d006f9cb4c5b6bb2e620b77d92bd91eb2ad",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_02_a"
+    },
+    {
+      "id": "impostor_bld_neon_02_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_02_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_02_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2730,
+      "sha256": "448adcb7c0dadc6469139f77870c36df06715a372c43ba8b9003e9f94b140c06",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_02_a"
+    },
+    {
+      "id": "impostor_bld_neon_02_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_02_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_02_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7173,
+      "sha256": "f477642e4299e9369e5b4187d5d203d2b9f1153581cbfdeff27d6ea45a2275b6",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_02_b"
+    },
+    {
+      "id": "impostor_bld_neon_02_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_02_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_02_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3081,
+      "sha256": "0dd0b2bba33df4b42243d7238ee9e866f03c82be4dccc86e8108654ecf1c1945",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_02_b"
+    },
+    {
+      "id": "impostor_bld_neon_03_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_03_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_03_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7001,
+      "sha256": "840705f2e58e3d35e03b1a6cb5122e336fce44467deabd1a98f9cd41a0061dc7",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_03_a"
+    },
+    {
+      "id": "impostor_bld_neon_03_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_03_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_03_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3005,
+      "sha256": "fa0b79c7eb9774f0826087198faffb42354a12daa282aec01cf67446ac4ff2e0",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_03_a"
+    },
+    {
+      "id": "impostor_bld_neon_03_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_03_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_03_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6406,
+      "sha256": "db2cf027e39943afa246e0796b9a65f2fde17f32292e930a0c13852ecc5a1157",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_03_b"
+    },
+    {
+      "id": "impostor_bld_neon_03_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_neon_03_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_neon_03_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3001,
+      "sha256": "559c6a83bd33f6f509029c921c0864d0e6780dc179a675490d5a4e73ae516d26",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_neon_03_b"
+    },
+    {
+      "id": "impostor_bld_downtown_01_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_01_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_01_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8189,
+      "sha256": "cfdeaa8c735cfe5438f62b32ef9cba08a31b75e2070b0cc20bdc5c10d4b2ebb5",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_01_a"
+    },
+    {
+      "id": "impostor_bld_downtown_01_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_01_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_01_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3534,
+      "sha256": "8384aa287c3c73862f4a64e015aa69ec58cff8f8fe0d9e22be2755baf5db9462",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_01_a"
+    },
+    {
+      "id": "impostor_bld_downtown_01_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_01_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_01_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8665,
+      "sha256": "be539176af57e75df8049e888679b8499eb74ec3945c447fa8b0316904ea1e17",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_01_b"
+    },
+    {
+      "id": "impostor_bld_downtown_01_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_01_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_01_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3696,
+      "sha256": "83382d68e04abf2e42c80652ede24370f2f3adc63bef427e3f8de4eb096320ae",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_01_b"
+    },
+    {
+      "id": "impostor_bld_downtown_02_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_02_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_02_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8021,
+      "sha256": "8b3fd79d4998faa2d0c9f9403dfe18f7ac091bb0fdccfce158e54beb19f5e91a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_02_a"
+    },
+    {
+      "id": "impostor_bld_downtown_02_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_02_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_02_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3678,
+      "sha256": "d9ae03058582b883f8bd014b7b43ca450e72442175866e7928949047e6d9ddcc",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_02_a"
+    },
+    {
+      "id": "impostor_bld_downtown_02_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_02_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_02_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8339,
+      "sha256": "fb4129a69e97fb422c0a68f404e6099b159c86d3ad1cb6dbfe37dc01e2235fe8",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_02_b"
+    },
+    {
+      "id": "impostor_bld_downtown_02_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_02_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_02_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3330,
+      "sha256": "db31d8d68fe6a3194b92d1a2729a2ce47827ec5c09cc037d6712d0efe6e4a4d2",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_02_b"
+    },
+    {
+      "id": "impostor_bld_downtown_03_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_03_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_03_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7508,
+      "sha256": "30d7db3c1651cff3acebabb4cb45458092f2b561df50dd900dd1beee1c97ef8c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_03_a"
+    },
+    {
+      "id": "impostor_bld_downtown_03_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_03_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_03_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3297,
+      "sha256": "5880ee3c8a1ee98a2982ae5f3e118133fb9286419c85db90d891cbca44d5f35c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_03_a"
+    },
+    {
+      "id": "impostor_bld_downtown_03_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_03_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_03_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8138,
+      "sha256": "3804225b69e8cf142f098c0c1f674deb252c1a0d113ce0d4527727d823bee578",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_03_b"
+    },
+    {
+      "id": "impostor_bld_downtown_03_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_downtown_03_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_downtown_03_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3201,
+      "sha256": "3214a82a38f16826410f9b83cf605415bbea178a4be5f8f6d97f2294838afe08",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_downtown_03_b"
+    },
+    {
+      "id": "impostor_bld_market_01_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_01_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_01_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6566,
+      "sha256": "eecb086f155af05c057a2a9ffad002343fad6da4691c6b89292e5db5c09338f6",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_01_a"
+    },
+    {
+      "id": "impostor_bld_market_01_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_01_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_01_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2933,
+      "sha256": "2e0dee7cf605bba06aa90cf7c7f8487c6f515554ef4e7274cf78ef0bfd22c5e8",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_01_a"
+    },
+    {
+      "id": "impostor_bld_market_01_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_01_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_01_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6872,
+      "sha256": "dbe151898c9eaaf58bca64d917d497ed6745a32e3105abf9f02de375b1110bea",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_01_b"
+    },
+    {
+      "id": "impostor_bld_market_01_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_01_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_01_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2872,
+      "sha256": "19b51484452e51d3c952d12a6d397f91fa7376c2232f49cf96fc78110d57fb15",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_01_b"
+    },
+    {
+      "id": "impostor_bld_market_02_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_02_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_02_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7495,
+      "sha256": "d6f151f0d2949f5ae9b2c0f80e4e83b06c6156f79734a796944836b5fe738673",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_02_a"
+    },
+    {
+      "id": "impostor_bld_market_02_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_02_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_02_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3294,
+      "sha256": "e7e782e0573f5b742cef044e9888bad0b8820073f779da2a8d240573ee513d4d",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_02_a"
+    },
+    {
+      "id": "impostor_bld_market_02_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_02_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_02_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6177,
+      "sha256": "7ca6b483e5218f4a4abbaa2ea4e8536cfb172b46829ab2d408b0df285d98f16c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_02_b"
+    },
+    {
+      "id": "impostor_bld_market_02_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_market_02_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_market_02_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2617,
+      "sha256": "4dffe056f5ee83441def9da4e0128e6e2b691f87a4dd05fe4a7ca16e43724b5c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_market_02_b"
+    },
+    {
+      "id": "impostor_bld_waterfront_01_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_waterfront_01_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_waterfront_01_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7652,
+      "sha256": "b2787c5edccf7d8860e8abc453d4aaa1271d2710fe7ebeb3be0510bb59ea13c5",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_waterfront_01_a"
+    },
+    {
+      "id": "impostor_bld_waterfront_01_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_waterfront_01_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_waterfront_01_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 4681,
+      "sha256": "eb3aa2d487c750af234ab4ed1b7c96bb5124631d6caca93c1d55e7494909420a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_waterfront_01_a"
+    },
+    {
+      "id": "impostor_bld_waterfront_01_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_waterfront_01_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_waterfront_01_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7607,
+      "sha256": "75a67d1abf50b4d68a6bc72f3e940a8ee980a7e571fa1ce897de76b0c29f72a2",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_waterfront_01_b"
+    },
+    {
+      "id": "impostor_bld_waterfront_01_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_waterfront_01_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_waterfront_01_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3901,
+      "sha256": "beb3969a133fa4f1baa4a2a20728b99d2556e7a10d9f45acda896b9fae2dfe8f",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_waterfront_01_b"
+    },
+    {
+      "id": "impostor_bld_parking_01_a_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_parking_01_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_parking_01_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8046,
+      "sha256": "5d2bdd81626bfd269f4956914ff823f626c1c3849934712b4bcc8d5c45600027",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_parking_01_a"
+    },
+    {
+      "id": "impostor_bld_parking_01_a_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_parking_01_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_parking_01_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 4020,
+      "sha256": "ab35d2644f8c267fde3291f3cab8210423f81a63b64d5b10f66577679a133f94",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_parking_01_a"
+    },
+    {
+      "id": "impostor_bld_parking_01_b_basecolor",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_parking_01_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_parking_01_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7947,
+      "sha256": "da43591cf96f8fd74c412fc12b19d9bc2a9d27dc1e0354fd356bba0fb60fe56f",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_parking_01_b"
+    },
+    {
+      "id": "impostor_bld_parking_01_b_emissive",
+      "kind": "texture",
+      "path": "assets_src/world/kit_buildings/out/impostor_bld_parking_01_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_parking_01_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3801,
+      "sha256": "003ccac27bb54dc94da10531ad7d2e1be8802254b1d664386781ccc817b1aa1e",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "M_ImpostorAtlas for bld_parking_01_b"
+    },
+    {
+      "id": "props_kit_lamp_sodium_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_lamp_sodium_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 270,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 25252,
+      "sha256": "80aa45e19a9f6167eb9c5edae0b0432eef76ac9cd2da6ae33962d6bcd28025d4",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_lamp_sodium; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_traffic_light_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_traffic_light_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 290,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 42092,
+      "sha256": "ed0160baf9917545e27c3cc21f7f4795ea6eb70f31188eaf0c31406467463b9b",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_traffic_light; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_blade_kirin_noodle_bar_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_kirin_noodle_bar_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 258,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 24296,
+      "sha256": "ff649b5eba7c345145d4c5747bcbc6a2fa63b5c1514413836bcfb25eed54a0d4",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_blade_kirin_noodle_bar; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_blade_hotel_arden_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_hotel_arden_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 172,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 18408,
+      "sha256": "798e1f46758a2c6355fb2dc32d106df81f7b7d8393b7cb70256ae232499963a6",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_blade_hotel_arden; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_blade_pixel_arcade_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_pixel_arcade_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 191,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 20636,
+      "sha256": "0486959c9a2b62c6e24d262a885287553903859e8135c16f9083b493d5f9f88c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_blade_pixel_arcade; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_blade_syndicate_club_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_syndicate_club_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 242,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 23704,
+      "sha256": "bc7db93fc384687c41ff22ab5a8f6938b83ee3cbdd806e65a0e1c3cf729fd550",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_blade_syndicate_club; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_blade_kapi_doner_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_blade_kapi_doner_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 173,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 19448,
+      "sha256": "3088d34629b486b68d31f6ba2ec115ddb6b2a8decfcec037b439705c21df985c",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_blade_kapi_doner; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_box_lumen_cinema_4m_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_lumen_cinema_4m_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 157,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 15360,
+      "sha256": "26d91fe129429ff8d00938ccb652e2f8cddc40dcedb14c42699f7ec8ac4b6296",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_box_lumen_cinema_4m; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_box_volt_energy_4m_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_volt_energy_4m_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 165,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 15596,
+      "sha256": "6409671381a710443a86e0a3311db9f060a222365fc310b4777686e6f5daf611",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_box_volt_energy_4m; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_box_orbit_records_8m_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_orbit_records_8m_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 299,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 22440,
+      "sha256": "74a0ba8ac5e03c8e809d206d884a58badf072d4edd64a26eeaaba944cab76118",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_box_orbit_records_8m; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_box_blue_heron_sushi_8m_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_box_blue_heron_sushi_8m_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 281,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 22056,
+      "sha256": "d5d9394eb185db8c86143b42180cf1607022b659d50579ceb8e831ec7fdb43db",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_box_blue_heron_sushi_8m; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_arrow_night_owl_diner_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_arrow_night_owl_diner_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 230,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 22656,
+      "sha256": "bee498e5157bac116197b98bbe78f161146bcb375e0c293a0bcca35cf662af1b",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_arrow_night_owl_diner; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_open24h_moto_garage_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_open24h_moto_garage_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 329,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 26928,
+      "sha256": "4310eaa723018df3353890399227aa77d29525c8ca6f4ac0ed6ff1fb43115b7a",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_open24h_moto_garage; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_sign_billboard_zenith_tower_12x5_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_sign_billboard_zenith_tower_12x5_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 468,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 60936,
+      "sha256": "cdb308fa112921dd9b84b065d6b926e0d2c9830a24e20d79349edd3db818a817",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_sign_billboard_zenith_tower_12x5; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_utility_cabinet_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_utility_cabinet_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 290,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 44016,
+      "sha256": "0f5cce30dad0b4b0bb2df45275e479740f79b7d4161df289a75c3074115a8994",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_utility_cabinet; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_string_lights_span_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_string_lights_span_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 394,
+      "texture_sizes": {},
+      "material_count": 3,
+      "bytes": 35628,
+      "sha256": "57006ce8cc517383a8f27a7b3be1b4d9e909da8a04b71cc96246c228cde4e9e3",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_string_lights_span; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_container_stack_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_container_stack_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 560,
+      "texture_sizes": {},
+      "material_count": 4,
+      "bytes": 69712,
+      "sha256": "f8e42a3ef48bdbf1a1481b39cddb0ad990b8538780a4768c3f1c616bd1df63c0",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_container_stack; engine hides it unless switching LOD"
+    },
+    {
+      "id": "props_kit_gantry_crane_lod1",
+      "kind": "model",
+      "path": "assets_src/world/kit_props/out/prop_gantry_crane_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 752,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 97676,
+      "sha256": "64de89ef6f83283e2b40dc848349fd5275dc8febc3272e509344a33bc43e1249",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "CITY 01 props kit LOD1 for props_kit_gantry_crane; engine hides it unless switching LOD"
+    }
+  ]
+}

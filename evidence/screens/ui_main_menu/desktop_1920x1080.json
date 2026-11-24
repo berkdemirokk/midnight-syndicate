@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.05,
+  "name": "desktop_1920x1080",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 17,
+    "driver": "vulkan",
+    "fps": 1048.621,
+    "frame_ms_avg": 0.954,
+    "frame_ms_p95": 5.591,
+    "frame_ms_p99": 10.997,
+    "frames": 60,
+    "objects": 77,
+    "os": "Windows",
+    "primitives": 472,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 25.769,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/ui_main_menu/desktop_1920x1080.png",
+  "preset": "high",
+  "scenario": "ui_main_menu"
+}
