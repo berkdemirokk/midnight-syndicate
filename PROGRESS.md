@@ -50,7 +50,18 @@ c0c065d (see `git log`).
   not passed for commercial quality.
 - Commits up to 53a5fad.
 
-### Next
+### Session 2 — 2026-11-25 (gate rounds 5-6)
+- Pack AI: track-frame car avoidance; lead fix of a recovery deadlock (one car stuck 110 times,
+  race never finished). Canonical race tests strict; nitro/grid sweep checks for stuck loops
+  (pack contacts are chaotic in Jolt; see docs/design/AI_AND_RACE.md).
+- Camera polish (corner look-in, roll, nitro kick, ceiling pull-in, finish orbit).
+- Lead rebuilt the car canopy (narrow greenhouse, raked one-piece side window, A-pillar), glass,
+  nitro flame, HUD scrim, speed lines.
+- Gate round 6: lead average 6.5, independent 5.75 / 5.9. Not passed. 138 tests pass.
+- Commits up to ddce0ba.
+
+### Next (superseded list below kept for history)
+0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
    waterfront light. 2. M2 game loop: career, audio (needs CC0 download approval), onboarding.
 3. Owner decisions: export templates (Windows .exe), macOS/Xcode access for iOS.
