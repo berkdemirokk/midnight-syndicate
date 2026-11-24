@@ -1,7 +1,8 @@
 # Local CI: the same steps as .github/workflows/ci.yml, on this machine.
 # Usage (from the repo root):  powershell -ExecutionPolicy Bypass -File tools/ci_local.ps1
 # Exit code 0 = everything passed.
-$ErrorActionPreference = 'Stop'
+# Continue: Godot writes expected error lines to stderr (corrupt-save tests); exit codes decide.
+$ErrorActionPreference = 'Continue'
 $repo = Split-Path -Parent $PSScriptRoot
 $godot = if ($env:GODOT) { $env:GODOT } else { 'C:\Users\berk\tools\godot\Godot_v4.7.2-stable_win64_console.exe' }
 $logs = Join-Path $repo 'evidence\logs'
