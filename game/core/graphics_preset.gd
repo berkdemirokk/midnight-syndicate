@@ -46,6 +46,16 @@ static func build(preset_id: String) -> GraphicsPreset:
 	return p
 
 
-## The 3D scale the renderer uses: the preset value once confirmed on device, otherwise 1.0.
+## The 3D scale the renderer uses: the preset value on desktop or once confirmed on device, else 1.0.
 func effective_scale() -> float:
-	return scaling_3d_scale if scaling_confirmed_on_device else 1.0
+	return scale_on(is_desktop())
+
+
+## Same rule with the platform given: desktop (true) or a phone build (false).
+func scale_on(desktop: bool) -> float:
+	return scaling_3d_scale if (scaling_confirmed_on_device or desktop) else 1.0
+
+
+## True for desktop builds. Phone builds wait for a device measurement before the preset scale applies.
+static func is_desktop() -> bool:
+	return not (OS.has_feature("mobile") or OS.has_feature("ios") or OS.has_feature("android"))

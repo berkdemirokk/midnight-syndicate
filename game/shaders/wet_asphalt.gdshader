@@ -28,7 +28,7 @@ uniform float reflection_strength : hint_range(0.0, 6.0) = 2.4;
 // Vertical blur step in mirror-texture UV. Larger = longer light streaks.
 uniform float reflection_smear : hint_range(0.0, 0.05) = 0.012;
 // How far the asphalt grain pushes the reflection around on damp (not flooded) road.
-uniform float reflection_grain : hint_range(0.0, 0.1) = 0.03;
+uniform float reflection_grain : hint_range(0.0, 0.1) = 0.012;
 // Share of the mirror that damp asphalt shows compared with standing water.
 uniform float damp_reflectivity : hint_range(0.0, 1.0) = 0.55;
 

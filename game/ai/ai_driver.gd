@@ -29,8 +29,12 @@ const AI_PHYSICS_PRIORITY: int = -1  ## runs before ArcadeCar (priority 0) so th
 @export var target_look_ahead_max: float = 40.0  ## m
 @export var throttle_gain: float = 0.5  ## throttle per m/s of speed error
 @export var brake_gain: float = 0.2  ## brake per m/s of speed error
-@export var nitro_min_gap_ms: float = 10.0  ## m/s (36 km/h): nitro only when this far below the target speed
+@export var nitro_min_gap_ms: float = 5.0  ## m/s (18 km/h): nitro only when this far below the target speed
 @export var nitro_max_curvature: float = 0.004  ## 1/m, straights only (radius above 250 m)
+@export var nitro_look_m: float = 90.0  ## m, nitro needs the road to stay straight this far ahead (keeps the charge for straights)
+@export var shift_damp_curvature: float = 0.006  ## 1/m (radius 167 m): lane shifts move at full rate on gentler bends than this
+@export var shift_stop_curvature: float = 0.008  ## 1/m (radius 125 m): no lane shift starts or moves at this curvature or above
+@export var kerb_margin: float = 1.5  ## m: a shift that would put the car this close to a kerb is refused
 @export var overtake_range: float = 20.0  ## m, a slower car this close ahead in our lane is passed
 @export var overtake_shift: float = 2.5  ## m lane shift to pass
 @export var shift_rate: float = 1.5  ## m/s that the lane shift moves
@@ -55,6 +59,9 @@ const AI_PHYSICS_PRIORITY: int = -1  ## runs before ArcadeCar (priority 0) so th
 @export var slide_lift_ms: float = 2.5  ## m/s sideways speed across the track where the throttle starts to ease off (sliding)
 @export var slide_cut_ms: float = 4.0  ## m/s sideways speed at which the throttle is fully lifted; ramps in between (no step)
 @export var slide_brake_gain: float = 0.15  ## brake per m/s of sideways speed above slide_lift_ms (full brake at about 9 m/s)
+@export var bend_bias_start: float = 0.006  ## 1/m: tighter bends than this start to move the lane to the inside
+@export var bend_bias_full: float = 0.0075  ## 1/m: the inside bias reaches bend_bias_m at this curvature
+@export var bend_bias_m: float = 1.5  ## m: inside lane bias in a tight bend, so a car that runs wide still has room to the kerb
 
 var stuck_count: int = 0  ## recovery starts so far
 
@@ -154,7 +161,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var v: float = maxf(_car.forward_speed, 0.0)
 	_update_shift(s, _lateral_at(pos, s), delta)
-	var lane: float = clampf(lane_offset + _shift, -_lane_limit, _lane_limit)
+	var lane: float = clampf(lane_offset + _shift + _bend_bias(s), -_lane_limit, _lane_limit)
 	_drive(pos, s, v, lane)
 
 
@@ -185,7 +192,8 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	var ahead: float = s + clampf(target_look_ahead_time * v, 0.0, target_look_ahead_max)
 	var want: float = minf(_track.get_target_speed(s), _track.get_target_speed(ahead)) * skill * get_rubber_band()
 	want *= 1.0 + brake_noise * _noise(NOISE_BRAKE)
-	want = minf(want, _follow_cap(s, lane))
+	var cap: float = _follow_cap(s, lane)
+	want = minf(want, cap)
 	want = minf(want, top_ms)
 	var err: float = want - v
 	inp.steer = steer
@@ -201,9 +209,10 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 		inp.brake = clampf(-err * brake_gain, 0.0, 1.0)
 	# Sliding sideways: brake too, so the tyres get back the grip the lateral slide is using.
 	inp.brake = maxf(inp.brake, clampf((absf(lat_v) - slide_lift_ms) * slide_brake_gain, 0.0, 1.0))
-	inp.nitro = err > nitro_min_gap_ms \
-		and absf(_track.get_curvature(ahead)) < nitro_max_curvature \
-		and _car.nitro_amount > NITRO_MIN_AMOUNT
+	# Start nitro above NITRO_MIN_AMOUNT, then keep it running until the charge is gone (the car ends it at 0).
+	var charged: bool = _car.nitro_amount > 0.0 if _car.nitro_active else _car.nitro_amount > NITRO_MIN_AMOUNT
+	# No nitro while a slower car is in follow range: it would arrive too fast to pass it cleanly.
+	inp.nitro = err > nitro_min_gap_ms and charged and is_inf(cap) and _straight_ahead(s)
 
 
 func _tick_reverse(delta: float) -> void:
@@ -270,6 +279,10 @@ func _update_shift(s: float, lat_me: float, delta: float) -> void:
 	var blocked: bool = false
 	var blocker_dl: float = 0.0
 	var my_speed: float = _car.forward_speed
+	# Lane changes are damped near corners: full rate below shift_damp_curvature, none from shift_stop_curvature.
+	var curv: float = _track.get_curvature(s)
+	var damp: float = clampf((shift_stop_curvature - absf(curv)) / (shift_stop_curvature - shift_damp_curvature), 0.0, 1.0)
+	var outward: int = -1 if curv > 0.0 else 1  # the outside of a bend: cars get pushed there, so no shift toward it in a tight bend
 	for other: ArcadeCar in _traffic:
 		if other == _car or not is_instance_valid(other):
 			continue
@@ -286,15 +299,40 @@ func _update_shift(s: float, lat_me: float, delta: float) -> void:
 				and absf(dl) < block_lane_width and other.forward_speed < my_speed - 1.0:
 			blocked = true
 			blocker_dl = dl
-	if blocked:
+	if blocked and damp > 0.0:
 		var prefer: int = -1 if blocker_dl >= 0.0 else 1
 		var prefer_busy: bool = left_busy if prefer < 0 else right_busy
 		var other_busy: bool = right_busy if prefer < 0 else left_busy
-		if not prefer_busy:
+		if not prefer_busy and _shift_clear(prefer, lat_me, outward, absf(curv)):
 			want = float(prefer) * overtake_shift
-		elif not other_busy:
+		elif not other_busy and _shift_clear(-prefer, lat_me, outward, absf(curv)):
 			want = float(-prefer) * overtake_shift
-	_shift = move_toward(_shift, want, shift_rate * delta)
+	_shift = move_toward(_shift, want, shift_rate * delta * damp)
+
+
+## Lane bias toward the inside of a tight bend (curvature positive = right turn, so the inside is +lateral).
+func _bend_bias(s: float) -> float:
+	var k: float = _track.get_curvature(s)
+	var amount: float = clampf((absf(k) - bend_bias_start) / (bend_bias_full - bend_bias_start), 0.0, 1.0)
+	return signf(k) * amount * bend_bias_m
+
+
+## True when the road stays under nitro_max_curvature for nitro_look_m ahead of s (sampled every 10 m).
+func _straight_ahead(s: float) -> bool:
+	var d: float = 0.0
+	while d <= nitro_look_m:
+		if absf(_track.get_curvature(s + d)) >= nitro_max_curvature:
+			return false
+		d += 10.0
+	return true
+
+
+## False when a shift of overtake_shift to that side would put the car within kerb_margin of the kerb,
+## or when it goes to the outside of a bend tighter than shift_damp_curvature.
+func _shift_clear(side: int, lat_me: float, outward: int, curv_abs: float) -> bool:
+	if side == outward and curv_abs >= shift_damp_curvature:
+		return false
+	return absf(lat_me + float(side) * overtake_shift) <= _track.width * 0.5 - kerb_margin
 
 
 ## Target speed factor: up to +rubber_band_max when the reference car is far ahead of us, down to

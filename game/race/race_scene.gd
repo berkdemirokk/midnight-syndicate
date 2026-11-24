@@ -73,7 +73,7 @@ var _last_s: float = -1.0
 var _names: PackedStringArray = PackedStringArray()
 var _default_nitro_gap: float = 0.0
 var _default_nitro_curvature: float = 0.0
-var _reflection: PlanarReflection = null  ## wet road mirror; null on Low or when the track has no wet asphalt
+var _reflection: PlanarReflection = null  ## wet road mirror; null unless High, or when the track has no wet asphalt
 var _road_mats: Array[ShaderMaterial] = []
 var _nitro_forced: bool = false
 
@@ -363,10 +363,11 @@ func _is_asphalt(mat: Material) -> bool:
 	return sm != null and sm.resource_name == ASPHALT_MATERIAL_NAME and sm.shader != null and sm.shader.resource_path == ASPHALT_SHADER_PATH
 
 
-## Settings decide the mirror: none on Low, a smaller one on Medium, the full one on High.
+## High only. Medium has no mirror: it relies on the GGX lamp streaks and reflection probes of wet_asphalt.
+## The mirror on High re-renders every second frame (the road reflection is stable between frames).
 func _apply_reflection() -> void:
 	var preset_id: String = Settings.get_preset_id()
-	if preset_id == "low" or _road_mats.is_empty():
+	if preset_id != "high" or _road_mats.is_empty():
 		_release_reflection()
 		return
 	if _reflection == null:
@@ -375,7 +376,8 @@ func _apply_reflection() -> void:
 		_world.add_child(_reflection)
 		for m: ShaderMaterial in _road_mats:
 			_reflection.add_target_material(m)
-	_reflection.resolution_fraction = config_used.reflection_fraction_high if preset_id == "high" else config_used.reflection_fraction_medium
+	_reflection.resolution_fraction = config_used.reflection_fraction_high
+	_reflection.every_second_frame = true
 	_reflection.set_enabled(true)
 
 

@@ -69,6 +69,62 @@ Before = the numbers recorded in the previous pass of this section. After = this
 Sources: `evidence/screens/city_presets/*_300f.json` (scenario `city_presets`, run once per preset with `--preset=low|medium|high`, 60 settle frames, then `cap.measure` over 300 frames, vsync off) and `evidence/screens/race_city/*.json` (scenario `race_city`, one-lap run `--laps=1`, preset high, autopilot player, 5 rivals; each shot has a 60-frame probe). Logs: `evidence/logs/city_presets_qa_{low,medium,high}.log`, `evidence/logs/race_city_qa_1lap_r3.log` (the run that produced the shots kept here; r1 and r2 are earlier attempts).
 The probe measures the frame loop on the CPU side with vsync off. It does not isolate GPU time, so treat the ms figures as relative numbers, not GPU cost.
 
+### Optimization pass: race-pace pack, budgets, Low scale (current)
+
+Machine: dev PC, RTX 5060 Ti, desktop, Mobile renderer (Vulkan), Windows 11, Godot 4.7.2, 1920x1080 window, vsync off. Dev PC numbers only.
+Sources: `evidence/screens/city_presets/*_300f.json` (scenario `city_presets`, one run per preset, 300-frame probe per view), pack draw-call spread in `evidence/logs/city_presets_opt_{low,medium,high}.log`, race check `evidence/logs/race_city_opt_high_1lap.log`.
+
+Changes in this pass:
+- Planar mirror: off on Medium, on High only (`race/race_scene.gd` `_apply_reflection`). On High the mirror camera far plane is capped at 150 m (`PlanarReflection.max_distance_m`) and the mirror renders every second frame (`every_second_frame`).
+- Mirror camera has physics interpolation off. The "Interpolated Camera3D triggered from outside physics process" warning came from `PlanarReflection/@SubViewport/@Camera3D`. The one-lap High race log has 0 of these warnings (the older race log had 2).
+- Low renders at 0.67 on desktop. `GraphicsPreset.effective_scale()` returned 1.0 unless `scaling_confirmed_on_device` was set, so every preset read 1.00. Now desktop builds use the preset scale (Low 0.67, Medium 0.85, High 1.00). Phone builds still use 1.0 until a device measurement, and dynamic resolution stays gated on that measurement. Medium moved from 1.00 to 0.85 on desktop as a side effect of the same rule.
+- `city_presets` pack view waits until two cars are above 120 km/h before settling and measuring (race pace; before, it was measured about 24 km/h after GO). Its log also prints the per-frame draw-call spread over 120 frames, because the probe reads one frame and the High mirror is on every second frame.
+
+Pack view = 6 cars (player plus 5 rivals) at race pace, 300 frames. Budget verdicts use the worst sampled frame; the median is shown too.
+
+| preset | budget (draw calls) | worst frame | median frame | verdict |
+|---|---|---|---|---|
+| low | 250 | 253 | 240 | FAIL (over by 3) |
+| medium | 350 | 255 | 242 | PASS |
+| high | 500 | 458 | 415 | PASS |
+
+Before and after, pack view (draw calls):
+
+| preset | before (previous pass, start of race, one probe frame) | after (race pace, one probe frame) | after, 120 sampled frames: min / median / max |
+|---|---|---|---|
+| low | 326 | 252 | 233 / 240 / 253 |
+| medium | 629 | 254 | 234 / 242 / 255 |
+| high | 633 | 247 | 238 / 415 / 458 |
+
+The before column is not comparable with the after column. It was taken about one second after GO at about 24 km/h, from one frame. A race-pace before run was not measured. The High row alternates: frames that render the mirror sit near 415 to 458 draw calls, and the others near 238. So the mirror adds about 175 to 220 draw calls on each frame it renders.
+
+Preset table (city views 300 frames each, pack at race pace; `draw calls` is the single probe frame; ms figures are CPU frame time, not GPU time):
+
+| view | preset | ms avg | p95 | p99 | fps | draw calls | primitives | video MB | 3D scale |
+|---|---|---|---|---|---|---|---|---|---|
+| neon_strip | low | 1.46 | 2.72 | 5.42 | 684.7 | 193 | 127 966 | 634 | 0.67 |
+| neon_strip | medium | 1.21 | 1.76 | 5.26 | 826.8 | 195 | 129 450 | 647 | 0.85 |
+| neon_strip | high | 1.76 | 3.79 | 5.60 | 567.4 | 195 | 130 086 | 697 | 1.00 |
+| downtown_overpass | low | 1.48 | 2.53 | 5.37 | 676.2 | 55 | 63 668 | 634 | 0.67 |
+| downtown_overpass | medium | 1.81 | 3.17 | 5.55 | 552.4 | 57 | 65 152 | 647 | 0.85 |
+| downtown_overpass | high | 1.27 | 1.46 | 1.68 | 787.7 | 57 | 65 788 | 697 | 1.00 |
+| underpass | low | 1.00 | 2.00 | 4.47 | 998.4 | 157 | 42 724 | 634 | 0.67 |
+| underpass | medium | 0.99 | 2.11 | 5.07 | 1013.5 | 159 | 44 208 | 647 | 0.85 |
+| underpass | high | 0.90 | 0.96 | 2.74 | 1116.1 | 159 | 44 844 | 697 | 1.00 |
+| pack (6 cars, race pace) | low | 2.12 | 3.06 | 3.54 | 470.8 | 252 | 210 656 | 723 | 0.67 |
+| pack (6 cars, race pace) | medium | 2.29 | 3.96 | 5.42 | 436.0 | 254 | 212 140 | 736 | 0.85 |
+| pack (6 cars, race pace) | high | 3.22 | 5.33 | 5.95 | 311.0 | 247 | 209 770 | 796 | 1.00 |
+
+Race check (`race_city`, High, one lap, `--laps=1`): exit 0, no Interpolated Camera3D warning. Screenshot `evidence/screens/race_city/pack.png` shows the mirror on the wet road.
+
+Not done in this pass:
+- The mirror cull mask is not narrowed to cars, neon, signs, lamp heads, building LOD1/LOD2 and impostors. Only the road and the rain are excluded, so street furniture and small props are still mirrored. This needs layer assignment in `world/city_01/city_builder.gd` (prop MultiMeshes in `_build_props`, around line 497; building LOD meshes around line 249). Then set `PlanarReflection.excluded_layers` from `race_scene.gd`.
+- High mirror resolution is still 0.33. The 0.40 target needs `race/race_config.gd` line 19 (`reflection_fraction_high`) changed to 0.40. That file is not owned in this pass.
+- The every-second-frame mirror has not been checked for shimmer with motion. The stills show no obvious artifact, but that is not a stability test.
+- Budget status: Low is over its 250 budget on the worst frame (253). Medium and High pass their budgets on the worst sampled frame.
+
+No phone has been measured. These numbers come from a desktop GPU and say nothing reliable about iPhone frame rates or thermals.
+
 ### Preset table (city_presets, 300 frames each)
 
 Draw calls are shown before and after. Budget: 350 draw calls, 450 000 primitives (city brief).
@@ -135,7 +191,7 @@ Race and pack rows are over the draw-call budget after the race fixes. The budge
 
 ### Known gaps in this table
 
-- Low is not at 0.67 scale in this build (see above). The Low/High comparison therefore does not measure the Low preset's intended cost.
+- Low scale was fixed in the optimization pass above (0.67 on desktop). The preset table below it is the earlier pass, before that fix.
 - No row has a GPU-timed number. The probe is CPU frame time.
 - race_city `racing_nitro` is staged (capture only): the one-lap autopilot topped out at 177 to 138 km/h across runs and never reached 200 km/h. `race_city.gd` now sets the car's velocity to 230 km/h along the track tangent at s 200 to 240 m (the stretch where the track allows 252 km/h), then forces nitro. The shot was taken at 225.7 km/h. The car, physics and nitro are the real ones; the speed is not earned. The race is then driven on from there, so the one-lap race outcome in that run (1st, see results) is also not the autopilot's own pace.
 - race_city `racing_nitro`: flames and speed lines are not clearly visible in the frame. Tyre smoke is visible at the rear wheels; the nitro bar drains. Not fixed in this pass.

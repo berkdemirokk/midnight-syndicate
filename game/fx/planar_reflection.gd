@@ -9,6 +9,8 @@ extends Node
 @export var plane_height: float = 0.0
 @export_range(0.1, 1.0, 0.01) var resolution_fraction: float = 0.33
 @export var every_second_frame: bool = false
+## The mirror camera's far plane is min(main far, this): distant buildings do not reach a wet road reflection.
+@export_range(10.0, 1000.0, 1.0) var max_distance_m: float = 150.0
 ## Layer bits left out of the mirror view: the road (bit 1, layer 2) and rain particles (bit 9, layer 10).
 ## Bit 0 (default layer of every VisualInstance3D) must stay in, or the mirror shows nothing.
 @export var excluded_layers: int = (1 << 1) | (1 << 9)
@@ -28,6 +30,8 @@ func _ready() -> void:
 	add_child(_vp)
 	_cam = Camera3D.new()
 	_cam.cull_mask = 0xFFFFF & ~excluded_layers
+	# The mirror camera is moved in _process, not in physics: interpolating it warns every frame.
+	_cam.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_vp.add_child(_cam)
 	_cam.current = true
 	set_enabled(false)
@@ -71,7 +75,7 @@ func _process(_delta: float) -> void:
 	_cam.fov = main.fov
 	_cam.keep_aspect = main.keep_aspect
 	_cam.near = main.near
-	_cam.far = main.far
+	_cam.far = minf(main.far, max_distance_m)
 	# Mirror the camera position about the plane. The mirror view is a plain rotated camera (no
 	# reflected world), so its projection is used directly to look up the texture in the shader.
 	var p: Vector3 = main.global_position
@@ -85,5 +89,8 @@ func _process(_delta: float) -> void:
 	for m: ShaderMaterial in _materials:
 		m.set_shader_parameter("planar_vp", vp)
 	_frame += 1
+	# Re-rendered on even frames only; the texture keeps the last frame on the others.
 	if every_second_frame:
 		_vp.render_target_update_mode = SubViewport.UPDATE_ONCE if (_frame % 2 == 0) else SubViewport.UPDATE_DISABLED
+	else:
+		_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS

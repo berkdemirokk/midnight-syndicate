@@ -4,7 +4,7 @@ extends "res://tests/test_case.gd"
 ## global, so every test puts back the dB values it found.
 
 const SETTINGS: GDScript = preload("res://core/settings.gd")
-## data_scale is the preset value; the viewport renders at 1.0 until the preset is confirmed on device.
+## data_scale is the preset value: rendered on desktop, and on a phone build only once confirmed on device.
 const PRESET_EXPECT: Dictionary = {
 	"low": {"data_scale": 0.67, "msaa": Viewport.MSAA_DISABLED, "glow": true, "glow_intensity": 0.35},
 	"medium": {"data_scale": 0.85, "msaa": Viewport.MSAA_DISABLED, "glow": true, "glow_intensity": 0.6},
@@ -81,7 +81,10 @@ func test_presets_apply_to_viewport_and_environment() -> void:
 		var sv := SubViewport.new()
 		nodes.append(add(sv))
 		s.apply_to_viewport(sv)
-		check(is_equal_approx(sv.scaling_3d_scale, 1.0), "%s unconfirmed scale renders at 1.0, got %f" % [id, sv.scaling_3d_scale])
+		# Desktop renders the preset scale; a phone build without a device measurement renders 1.0.
+		var unconfirmed: float = expect["data_scale"] if GraphicsPreset.is_desktop() else 1.0
+		check(is_equal_approx(sv.scaling_3d_scale, unconfirmed), "%s unconfirmed viewport scale = %f" % [id, sv.scaling_3d_scale])
+		check(is_equal_approx(p.scale_on(false), 1.0), "%s phone build waits for device: 1.0" % id)
 		check(sv.msaa_3d == expect["msaa"], "%s viewport msaa = %d" % [id, sv.msaa_3d])
 		var env := Environment.new()
 		s.apply_to_environment(env)
@@ -227,7 +230,8 @@ func test_dynamic_resolution_hysteresis_and_off() -> void:
 	_wipe(path)
 
 
-## Without a device confirmation, Low (which asks for dynamic resolution) keeps the 3D scale at 1.0.
+## Without a device confirmation, Low (which asks for dynamic resolution) never steps its scale.
+## On desktop the fixed preset scale (0.67) is used; on a phone build it is 1.0.
 func test_dynamic_resolution_stays_off_until_confirmed() -> void:
 	var path := _path("dyn_gate")
 	_wipe(path)
@@ -236,7 +240,9 @@ func test_dynamic_resolution_stays_off_until_confirmed() -> void:
 	check(not s.get_dynamic_resolution(), "low preset does not enable dynamic resolution before confirmation")
 	s.set_dynamic_resolution(true)
 	check(not s.get_dynamic_resolution(), "set_dynamic_resolution(true) ignored while unconfirmed")
+	var expect: float = s.get_preset().effective_scale()
 	var scale: float = _run_frames(s, SLOW_MS, 5.0)
-	check(is_equal_approx(scale, 1.0), "unconfirmed scale stays 1.0 under slow frames, got %f" % scale)
+	check(is_equal_approx(scale, expect), "unconfirmed scale stays %f under slow frames, got %f" % [expect, scale])
+	check(is_equal_approx(s.get_preset().scale_on(false), 1.0), "phone build keeps 1.0 until confirmed")
 	_close(s)
 	_wipe(path)

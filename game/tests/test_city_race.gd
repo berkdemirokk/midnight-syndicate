@@ -1,19 +1,23 @@
 extends "res://tests/test_case.gd"
 ## Racing on the real city track (world/city_01): a 6-car one-lap race must finish with every car
-## classified, no stuck event in total and no car upside down; a single car over two laps must
-## keep each lap within 5 % of the earlier 63.9 s lap. Causes and numbers: docs/design/AI_AND_RACE.md.
+## classified, no stuck event in total and no car upside down; an 8-car race may have at most one stuck
+## event; a single car over two laps must keep each lap within 5 % of the earlier 63.9 s lap and must
+## pass 200 km/h on lap 2 (nitro on the Neon Strip). Causes and numbers: docs/design/AI_AND_RACE.md.
 
 const SCENE_PATH: String = "res://world/city_01/city_01.tscn"
 const SPEC_PATH: String = "res://vehicles/specs/noctra_sable.tres"
 const HZ: float = 60.0
 var CAR_SKILLS: PackedFloat32Array = PackedFloat32Array([1.0, 0.97, 0.94, 0.91, 0.88, 0.85])
-const RACE_LIMIT_S: float = 150.0  ## simulated time a 6-car one-lap race may take
-const WALL_LIMIT_S: float = 120.0  ## wall-clock time the 6-car race may take on the dev PC at --fixed-fps 60
-const MAX_STUCK_TOTAL: int = 0  ## reached in round 2 (progress-based detector, slide braking, car following)
+var EIGHT_CAR_SKILLS: PackedFloat32Array = PackedFloat32Array([1.0, 0.97, 0.94, 0.91, 0.88, 0.85, 0.9, 0.87])
+const RACE_LIMIT_S: float = 150.0  ## simulated time a race may take
+const WALL_LIMIT_S: float = 120.0  ## wall-clock time a race may take on the dev PC at --fixed-fps 60
+const MAX_STUCK_TOTAL: int = 0  ## 6 cars: reached in round 2 (progress-based detector, slide braking, car following)
+const MAX_STUCK_8_CARS: int = 1  ## 8 cars: round 3 (overtake kerb and bend rules) gives 0; the limit is the brief's target
 const MIN_UPRIGHT_Y: float = 0.5  ## basis.y.y below this counts as upside down
 const BASELINE_LAP_S: float = 63.9  ## solo AI lap before the AI changes of this task
 const LAP_LIMIT_S: float = BASELINE_LAP_S * 1.05  ## a lap may be up to 5 % slower than the baseline
 const TWO_LAP_LIMIT_S: float = 2.0 * LAP_LIMIT_S
+const LAP2_MIN_MAX_KMH: float = 200.0  ## solo car, lap 2 top speed must be above this (nitro on the Neon Strip)
 
 var _results: Array[Dictionary] = []
 var _finished_events: int = 0
@@ -47,16 +51,19 @@ func _load_city() -> CityBuilder:
 	return city
 
 
-func test_six_car_race_finishes() -> void:
+## One-lap race with the given AI skills on city_01. `tag` prefixes the metric names.
+func _run_race(skills: PackedFloat32Array, stuck_limit: int, tag: String) -> void:
 	var city: CityBuilder = await _load_city()
 	var manager := RaceManager.new()
 	manager.total_laps = 1
 	add(manager)
 	var cars: Array[ArcadeCar] = []
 	var names: PackedStringArray = PackedStringArray()
-	for i: int in CAR_SKILLS.size():
-		cars.append(_make_car(CAR_SKILLS[i], i + 1))
+	for i: int in skills.size():
+		cars.append(_make_car(skills[i], i + 1))
 		names.append("AI %d" % (i + 1))
+	_finished_events = 0
+	_results.clear()
 	manager.race_finished.connect(_on_finished)
 	manager.setup(city, cars, null, names)
 	manager.start_countdown()
@@ -74,12 +81,12 @@ func test_six_car_race_finishes() -> void:
 	for car: ArcadeCar in cars:
 		var d: AIDriver = car.get_node("AIDriver") as AIDriver
 		stuck_total += d.stuck_count
-	metric("race_time_s", snappedf(manager.race_time, 0.01))
-	metric("wall_s", snappedf(wall_s, 0.1))
-	metric("stuck_events", stuck_total)
-	metric("min_upright_y", snappedf(min_up, 0.0001))
-	metric("finish_events", _finished_events)
-	check(manager.state == RaceManager.State.FINISHED, "6-car race did not finish in %.0f s" % RACE_LIMIT_S)
+	metric(tag + "race_time_s", snappedf(manager.race_time, 0.01))
+	metric(tag + "wall_s", snappedf(wall_s, 0.1))
+	metric(tag + "stuck_events", stuck_total)
+	metric(tag + "min_upright_y", snappedf(min_up, 0.0001))
+	metric(tag + "finish_events", _finished_events)
+	check(manager.state == RaceManager.State.FINISHED, "%d-car race did not finish in %.0f s" % [cars.size(), RACE_LIMIT_S])
 	check(_finished_events == 1, "race_finished fired %d times, expected 1" % _finished_events)
 	check(_results.size() == cars.size(), "%d cars classified, expected %d" % [_results.size(), cars.size()])
 	var seen: Array[bool] = []
@@ -92,13 +99,21 @@ func test_six_car_race_finishes() -> void:
 		else:
 			seen[pos] = true
 		check(is_finite(float(r["total_time"])) and float(r["total_time"]) > 0.0, "position %d has no finite time" % pos)
-	check(stuck_total <= MAX_STUCK_TOTAL, "%d stuck events in the race, limit %d" % [stuck_total, MAX_STUCK_TOTAL])
+	check(stuck_total <= stuck_limit, "%d stuck events in the %d-car race, limit %d" % [stuck_total, cars.size(), stuck_limit])
 	check(min_up > MIN_UPRIGHT_Y, "a car went upside down: min basis.y.y %.3f" % min_up)
-	check(wall_s < WALL_LIMIT_S, "6-car race took %.1f s wall-clock, limit %.0f s" % [wall_s, WALL_LIMIT_S])
+	check(wall_s < WALL_LIMIT_S, "%d-car race took %.1f s wall-clock, limit %.0f s" % [cars.size(), wall_s, WALL_LIMIT_S])
 	var nodes: Array[Node] = [manager, city]
 	for car: ArcadeCar in cars:
 		nodes.append(car)
 	await cleanup(nodes)
+
+
+func test_six_car_race_finishes() -> void:
+	await _run_race(CAR_SKILLS, MAX_STUCK_TOTAL, "")
+
+
+func test_eight_car_race_stuck_limit() -> void:
+	await _run_race(EIGHT_CAR_SKILLS, MAX_STUCK_8_CARS, "8car_")
 
 
 func test_single_car_two_laps_keep_pace() -> void:
@@ -114,19 +129,25 @@ func test_single_car_two_laps_keep_pace() -> void:
 	manager.start_countdown()
 	var limit_ticks: int = roundi(TWO_LAP_LIMIT_S * 1.2 * HZ)
 	var ticks: int = 0
+	var lap2_max_kmh: float = 0.0
+	_lap_log.clear()
 	while manager.state != RaceManager.State.FINISHED and ticks < limit_ticks:
 		await frames(1)
 		ticks += 1
+		if manager.get_lap(car) == 2:
+			lap2_max_kmh = maxf(lap2_max_kmh, car.speed_kmh)
 	check(manager.state == RaceManager.State.FINISHED, "single car did not finish 2 laps in %.0f s" % (TWO_LAP_LIMIT_S * 1.2))
 	check(_lap_log.size() == 2, "single car: %d laps counted, expected 2" % _lap_log.size())
 	var lap1: float = float(_lap_log[0]["time"]) if _lap_log.size() > 0 else 0.0
 	var lap2: float = float(_lap_log[1]["time"]) if _lap_log.size() > 1 else 0.0
 	metric("solo_lap1_s", snappedf(lap1, 0.01))
 	metric("solo_lap2_s", snappedf(lap2, 0.01))
+	metric("solo_lap2_max_kmh", snappedf(lap2_max_kmh, 0.1))
 	metric("lap_limit_s", snappedf(LAP_LIMIT_S, 0.01))
 	metric("stuck_events", driver.stuck_count)
 	check(lap1 > 0.0 and lap1 <= LAP_LIMIT_S, "lap 1 took %.2f s, limit %.2f s (5 %% over 63.9 s)" % [lap1, LAP_LIMIT_S])
 	check(lap2 > 0.0 and lap2 <= LAP_LIMIT_S, "lap 2 took %.2f s, limit %.2f s (5 %% over 63.9 s)" % [lap2, LAP_LIMIT_S])
+	check(lap2_max_kmh > LAP2_MIN_MAX_KMH, "lap 2 top speed %.1f km/h, expected above %.0f" % [lap2_max_kmh, LAP2_MIN_MAX_KMH])
 	check(driver.stuck_count == 0, "single car was stuck %d times" % driver.stuck_count)
 	var nodes: Array[Node] = [manager, car, city]
 	await cleanup(nodes)

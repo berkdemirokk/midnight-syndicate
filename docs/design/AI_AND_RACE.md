@@ -2,11 +2,12 @@
 
 Code: `game/ai/ai_driver.gd` (AIDriver), `game/race/race_manager.gd` (RaceManager), `game/world/track.gd` (Track).
 Test circuit: `game/tests/helpers/test_track.gd`. Tests: `game/tests/test_ai_race.gd` (9 tests on the test circuit),
-`game/tests/test_city_race.gd` (2 tests on city_01: a 6-car race and a 2-lap regression).
+`game/tests/test_city_race.gd` (3 tests on city_01: a 6-car race, an 8-car stuck limit, and a 2-lap regression with the lap-2 top speed).
 Diagnostics (not tests, run with `--headless --fixed-fps 60 --path game -s res://ai/<file>`):
 `game/ai/diag_ai_stuck.gd` (race with stuck and contact logging; options `--cars=N`, `--out=file.json`,
 `--slide=<m/s>` turns the slide rule off with a large value, `--s=a,b` traces cars inside that progress window)
 and `game/ai/diag_probe_walls.gd` (ray scan of road-side colliders along a track range).
+Round 3: `game/ai/diag_nitro.gd` (solo nitro and speed per tick, per lap, with the target profile; `--out=<file>`).
 Output: `evidence/logs/stuck_events.json` (final 6-car run), `evidence/logs/stuck_events_run2.json` (before the fix).
 
 ## Track
@@ -21,8 +22,9 @@ Output: `evidence/logs/stuck_events.json` (final 6-car run), `evidence/logs/stuc
 - Runs before its ArcadeCar (physics priority -1), so the car reads this tick's input.
 - Pure pursuit: look-ahead 8 m + 0.45 s x speed (8 to 45 m), aimed at the racing line shifted by the lane offset.
 - Speed: target = min(profile at car, profile 0.6 s ahead) x skill x rubber band, capped at the car top speed.
-  Throttle or brake is proportional to the error. Nitro only on straights (radius over 250 m) when the target is
-  more than 10 m/s (36 km/h) above the speed.
+  Throttle or brake is proportional to the error. Nitro (round 3): starts above 0.3 charge and then runs until the charge is empty;
+  needs the target more than 5 m/s above the speed, no slower car in follow range, and a road with |curvature| under 0.004 1/m
+  (radius over 250 m) for 90 m ahead (`nitro_look_m`).
 - Slide rule (added with the city_01 fix): the sideways speed of the car across the track (its velocity
   projected on the track's lateral direction) is read each tick. The throttle is multiplied by a ramp that is 1 up to
   `slide_lift_ms` (2.5 m/s), 0 at `slide_cut_ms` (4.0 m/s), linear in between. Brake is not changed. Nitro is not gated
@@ -31,6 +33,9 @@ Output: `evidence/logs/stuck_events.json` (final 6-car run), `evidence/logs/stuc
   Braking points +-4 % of target speed, steering +-0.03.
 - Overtaking: a slower car within 20 m ahead in our lane triggers a 2.5 m lane shift to the side with the most room.
   A side is refused when a car is alongside on it (7 m along, 3.2 m across). The shift returns at 1.5 m/s.
+  Round 3: a side is also refused when the shift would put the car within 1.5 m of the kerb (`kerb_margin`), and when it goes
+  to the outside of a bend tighter than 0.006 1/m. Shifts move at full rate below 0.006 1/m, at a damped rate up to 0.008 1/m,
+  and not at all from 0.008 1/m (radius 125 m). A bend bias moves the lane up to 1.5 m to the inside between 0.006 and 0.0075 1/m.
 - Stuck (round 2, progress-based): while racing, no 2 m of forward progress along the line within 2 s starts recovery.
   Recovery brakes for 1.5 s (reverse by brake once stopped). The car is free only if it gained 2 m of progress since the
   recovery started and its heading is within 40 deg of the line; otherwise it is teleported onto the line (last resort).
@@ -170,6 +175,64 @@ Targets (round 2 brief):
 Tests: test_ai_race 9 of 9 pass; test_city_race 2 of 2 pass with MAX_STUCK_TOTAL = 0 (6 cars). Full suite once: 119 tests,
 0 failed (run exit 0, no SCRIPT ERROR, Parse Error or SHADER ERROR in the log).
 
+## city_01 round 3 (nitro use, 8-car stuck)
+Diagnostics: `diag_nitro.gd` (solo car, skill 1.0, 2 laps, every tick logged to `evidence/logs/nitro_*.json`, with the target
+speed profile) and `diag_ai_stuck.gd --cars=8|6 --out=stuck_r3_*.json`. Simulated, 60 Hz, dev PC (headless, Mobile renderer
+not used). Track length 2184.5 m. The brief's Neon Strip offsets (1900 to 2203 to 260) do not match this layout: the low-curvature
+run is s 2120 to 2184 and 0 to about 230 m (the start line at 0), and the car is still in a corner at s 1900 to 1950 (target 93 to 108 km/h).
+
+Nitro, before (solo, `nitro_trace.json`): lap 1 max 174.7 km/h at s 321 m, lap 2 max 199.8 km/h at s 270 m. Nitro ran 3.6 s per
+lap in 22 and 13 short bursts. Causes from the rows:
+1. The gate `target - speed > 10 m/s` stayed closed from the lap start until s 106 m (the target rises slowly out of the corner).
+2. Nitro ended at nitro charge 0.30: the start threshold (0.3) also applied while nitro ran, so the last 0.3 of the charge was never used.
+3. The charge went into short bursts in corners and bends, so little was left for the Neon Strip.
+
+Changes: nitro runs until the charge is empty (0.3 only starts it); gap 10 to 5 m/s; the road must stay under 0.004 1/m for 90 m
+ahead; no nitro while a slower car is in follow range (a rule, not measured on its own).
+Tried and rejected: curvature limit 0.005 or 0.006 (203.9 and 204.6 km/h, charge spent in bends); a lateral-load gate in place of the
+look-ahead gate (201.7 km/h, charge spent in bends).
+
+| Solo, skill 1.0 | Lap 1 max | Lap 2 max | Nitro lap 1 / lap 2 | Lap times |
+|---|---|---|---|---|
+| before (diag, fresh process) | 174.7 km/h at s 321 | 199.8 km/h at s 270 | 3.6 s, 22 starts / 3.6 s, 13 starts | race 132.00 s, 2 laps |
+| after (diag, fresh process) | 176.0 km/h at s 321 | 216.0 km/h at s 250 | 5.2 s, 4 starts / 5.3 s, 4 starts | race 132.0 s, 2 laps |
+| after (`test_city_race`) | | 216.1 km/h | | lap 1 65.43 s, lap 2 66.67 s (limit 67.1 s) |
+
+Lap 2 nitro bins: s 0 to 190 m (full 3.2 s charge on the Neon Strip) and s 1250 to 1330 m (weaker, lower speed).
+Waterfront straight: the brief does not give its offsets, so it is not isolated; the only other lap-2 nitro is s 1250 to 1330 m
+(113 to 136 km/h) and at s 1600 m (178 km/h).
+
+Stuck, before (8 cars, fresh process): 3 events, 85.13 s. Cars 5 and 6 at s 501 to 505 m on the left kerb (lat -4.4 to -6.7 m; a shift
+to the outside of a right bend at about 0.008 1/m, and pushed by each other), car 6 at s 1472 m on the right kerb.
+Changes: kerb margin, outside-of-bend refusal, damped shifts, bend bias (above).
+
+| Run (8 cars unless noted) | Stuck events | Note |
+|---|---|---|
+| before | 3 | s 501 to 505 m and 1472 m, 85.13 s |
+| kerb margin + damp at 0.004 1/m, nitro gates | 0 | 6 cars 0, but test_overtake_shifts_lane failed (the test chaser passes at 0.004 to 0.0065 1/m) |
+| damp 0.006 to 0.008 1/m, no outside rule | 2 | s 767 to 770 m, left kerb in a right bend (0.0065 to 0.008 1/m) |
+| + outside-of-bend refusal | 0 | 75.03 s |
+| + bend bias 1.5 m | 1 | s 588 m, right kerb (lat +6.8 m), 80.6 s |
+| same code, test order (6-car race first) | 1 | 80.23 s (test); full suite 80.58 s |
+| 6 cars, final | 0 | 73.93 s, 6 contacts; min upright 0.9963 |
+
+Sensitivity: before the bend bias, the 8-car result depended on the process: 0 events when the 8-car race ran first, 2 when it ran after
+the 6-car race in the same process (events at s 912 to 915 m, left kerb, cars 5 and 7). Physics ordering inside the process changes the
+contacts, so the count sits at the limit (1 of 1 allowed). Treat 8-car counts as a noisy statistic until a multi-seed run is done.
+Contacts (touches, not stuck events): 8 cars 34 in the fresh run (was 34), 6 cars 10 (was 6).
+
+Tests: `test_ai_race` 9 of 9 pass (solo test circuit lap 51.43 / 48.42 s, max lateral 5.01 m, limit 7). `test_city_race` 3 of 3 pass:
+6 cars 0 stuck (limit 0); 8 cars at most 1 stuck (limit 1, brief target); solo lap 1 65.43 s and lap 2 66.67 s (limit 67.1 s),
+lap 2 max 216.1 km/h (new assertion, > 200 km/h). Full suite once: 120 tests, 1 failed,
+`test_race_scene::test_planar_reflection_bound_on_real_track_by_preset` ("Medium: mirror missing or wrong size"). It fails alone too,
+and it does not use the AI code this round changed. Not investigated (race scene is not owned here).
+
+Targets (round 3 brief):
+- Lap-2 solo max above 200 km/h with nitro, target 210+: met (216.0 km/h in the diagnostic, 216.1 in the test).
+- 8 cars: at most 1 stuck event: met (1), with no margin; see the sensitivity note.
+- 6 cars: 0 stuck: met (0).
+- Per-lap max speed and where: lap 1 176.0 km/h at s 321 m; lap 2 216.0 km/h at s 250 m (fresh diagnostic).
+
 ## Limits and open items
 - Layout defect (not fixed here, owner: Environment): the parking buildings intrude into the road at s 1080 to 1108 m and
   1136 to 1176 m (right side, 2.5 to 3.9 m from the line). Any car sliding there can be wedged. The AI cannot see colliders.
@@ -181,7 +244,7 @@ Tests: test_ai_race 9 of 9 pass; test_city_race 2 of 2 pass with MAX_STUCK_TOTAL
   race start (s 390 to 436 m) and during the finish bunch-up. Not analysed in detail.
 - Nitro is not gated by the slide rule. Nitro while sliding may increase the excursions. Not measured.
 - Stuck recovery teleports to the line only after a failed reverse (round 2). Measured: 0 teleports in the 6-car race.
-- 8 cars, round 2: 3 stuck events (limit 1), see the round 2 section. Open.
+- 8 cars, round 2: 3 stuck events (limit 1). Round 3: 1 event (see round 3). Met, at the limit.
 - 220 km/h on a lap: not reached. Solo max 174.7 km/h; the start straight (s 145 to 260 m) has target 216 to 252 km/h, but
   the car is still accelerating at 175 km/h when the straight ends at about s 330 m. Needs a longer straight or more power
   (not an AI setting). Nitro state was not logged in the trace, so the nitro use on that straight is not verified.
@@ -189,3 +252,6 @@ Tests: test_ai_race 9 of 9 pass; test_city_race 2 of 2 pass with MAX_STUCK_TOTAL
 - Solo lateral margin (5.8 of 7 m) is modest. Re-check after any grip or steering change in ArcadeCar.
 - Track length is 1.27 km (test circuit), a little above the 1.2 km target.
 - Estimated times for unfinished cars are a pace extrapolation, not simulated.
+- Round 3: the nitro limit on a single straight is the charge (3.2 s per burst). Lap 2 reaches 216 km/h on the Neon Strip, so 220 km/h on a lap is still not reached.
+- Round 3: the 8-car stuck count changes with the process state (Jolt body order). The limit of 1 is met in the fresh run, the full suite and the test-only run, but with no margin. A multi-seed or multi-order check is open.
+- Round 3: `test_race_scene::test_planar_reflection_bound_on_real_track_by_preset` fails in the full suite (not in the AI area; not investigated).

@@ -231,8 +231,9 @@ func test_planar_reflection_bound_on_real_track_by_preset() -> void:
 	check(road_meshes > 0, "no road mesh carries the wet asphalt material")
 	Settings.set_preset("medium")
 	await frames(1)
-	refl = scene.find_child(RaceScene.REFLECTION_NAME, true, false) as PlanarReflection
-	check(refl != null and absf(refl.resolution_fraction - cfg.reflection_fraction_medium) < 0.0001, "Medium: mirror missing or wrong size")
+	# Lead decision 2026-11-24: Medium has no planar mirror (draw-call budget 350); it relies on
+	# the wet shader's lamp streaks and the reflection probes.
+	check(scene.find_child(RaceScene.REFLECTION_NAME, true, false) == null, "Medium: planar reflection must be absent")
 	Settings.set_preset("low")
 	await frames(1)
 	check(scene.find_child(RaceScene.REFLECTION_NAME, true, false) == null, "Low: planar reflection must be absent")

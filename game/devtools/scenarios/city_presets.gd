@@ -3,7 +3,7 @@ extends "res://devtools/capture_scenario.gd"
 ## Three fixed viewpoints on the racing line (neon_strip at the grid, downtown_overpass on the guardrail run,
 ## underpass inside the tunnel), then the full 6-car pack in a live race (player + 5 rivals, autopilot).
 ## Each view: 60 settle frames, a shot, then cap.measure over 300 frames with vsync off (the probe does that).
-## Planar reflection is not attached in the city views. The race scene attaches it on Medium and High (not Low), so the pack view has it on those presets.
+## Planar reflection is not attached in the city views. The race scene attaches it on High only, so the pack view has it on High.
 ## Rain is the preset's rain_enabled through fx/rain.gd.
 
 const CITY_SCENE: String = "res://world/city_01/city_01.tscn"
@@ -22,6 +22,9 @@ const WAIT_STEP_S: float = 1.0 / 60.0
 const PACK_OPPONENTS: int = 5
 const PACK_LAPS: int = 2
 const PACK_GO_WAIT_MAX_S: float = 30.0
+const PACK_PACE_KMH: float = 120.0  ## race pace: the pack is measured once two cars are above this
+const PACK_PACE_WAIT_MAX_S: float = 90.0
+const DRAW_SAMPLE_FRAMES: int = 120  ## per-frame draw-call spread after the pack measure (even and odd frames)
 const PACK_BACK_M: float = 30.0  ## camera behind the pack centroid
 const PACK_UP_M: float = 6.0
 const PACK_LOOK_M: float = 2.0
@@ -55,7 +58,7 @@ func run() -> void:
 	_cam.fov = FOV_DEG
 	_city.add_child(_cam)
 	_cam.current = true
-	print("city_presets: preset=%s rain=%s planar=n/a in city views (race pack view: on Medium and High)" % [_preset, Settings.get_preset().rain_enabled])
+	print("city_presets: preset=%s rain=%s planar=n/a in city views (race pack view: on High only)" % [_preset, Settings.get_preset().rain_enabled])
 	for view: Dictionary in VIEWS:
 		var idx: int = clampi(roundi(float(view["s"]) / SAMPLE_M), 0, _line.size() - LOOK_AHEAD_IDX - 1)
 		var p: Vector3 = _line[idx]
@@ -103,11 +106,31 @@ func _pack_view() -> void:
 	tree.root.add_child(_cam)
 	_cam.current = true
 	tree.process_frame.connect(_follow_pack)
+	# Race pace, not the start: wait until the two fastest cars are above PACK_PACE_KMH (or the cap runs out).
+	var paced: float = 0.0
+	while _leaders_above(PACK_PACE_KMH) < 2 and paced < PACK_PACE_WAIT_MAX_S:
+		await cap.wait_frames(1)
+		paced += WAIT_STEP_S
+	if paced >= PACK_PACE_WAIT_MAX_S:
+		cap.fail("pack never reached race pace (%.0f km/h, two cars)" % PACK_PACE_KMH)
+		return
 	await cap.wait_frames(SETTLE_FRAMES)
-	print("city_presets: pack in frame=%d of %d cars" % [_pack_in_frame(), _race.cars.size()])
+	print("city_presets: pack race pace after %.1f s, leaders %.0f / %.0f km/h, in frame=%d of %d cars" % [paced, _top_speed_kmh(1), _top_speed_kmh(0), _pack_in_frame(), _race.cars.size()])
 	await cap.shot("pack_%s" % _preset)
 	await cap.measure("pack_%s_300f" % _preset, MEASURE_FRAMES)
+	await _sample_draw_calls(DRAW_SAMPLE_FRAMES)
 	tree.process_frame.disconnect(_follow_pack)
+
+
+## The probe reads one frame's counter. The High mirror renders on every second frame, so that one frame may or
+## may not carry the mirror pass. This samples every frame and prints the spread (min, median, max).
+func _sample_draw_calls(frames: int) -> void:
+	var counts: PackedInt32Array = PackedInt32Array()
+	for i: int in frames:
+		await tree.process_frame
+		counts.append(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME))
+	counts.sort()
+	print("city_presets: pack draw calls over %d frames (%s) min %d median %d max %d" % [frames, _preset, counts[0], counts[counts.size() / 2], counts[counts.size() - 1]])
 
 
 func _follow_pack() -> void:
@@ -122,6 +145,24 @@ func _follow_pack() -> void:
 	fwd = fwd.normalized()
 	_cam.global_position = c - fwd * PACK_BACK_M + Vector3.UP * PACK_UP_M
 	_cam.look_at(c + fwd * PACK_LOOK_M)
+
+
+func _leaders_above(kmh: float) -> int:
+	var n: int = 0
+	for car: ArcadeCar in _race.cars:
+		if car.speed_kmh > kmh:
+			n += 1
+	return n
+
+
+## Speed of the car at the given rank by speed (0 = fastest). Returns 0 when there are fewer cars.
+func _top_speed_kmh(rank: int) -> float:
+	var speeds: PackedFloat32Array = PackedFloat32Array()
+	for car: ArcadeCar in _race.cars:
+		speeds.append(car.speed_kmh)
+	speeds.sort()
+	speeds.reverse()
+	return speeds[rank] if rank < speeds.size() else 0.0
 
 
 func _pack_in_frame() -> int:

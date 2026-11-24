@@ -84,8 +84,12 @@ func test_planar_reflection_keeps_default_layer_and_feeds_material() -> void:
 	if mirror_cam != null:
 		check(mirror_cam.cull_mask & 1 != 0, "mirror camera culls the default layer")
 		check(mirror_cam.cull_mask & (1 << 1) == 0, "mirror camera does not exclude the road layer")
+	if mirror_cam != null:
+		check(mirror_cam.physics_interpolation_mode == Node.PHYSICS_INTERPOLATION_MODE_OFF, "mirror camera interpolates physics (warning source)")
 	pr.set_enabled(true)
 	await frames(3)
+	if mirror_cam != null:
+		check(is_equal_approx(mirror_cam.far, minf(cam.far, pr.max_distance_m)), "mirror far plane %f, not the capped distance" % mirror_cam.far)
 	check(mat.get_shader_parameter("planar_enabled") == 1.0, "planar_enabled not set on material")
 	check(mat.get_shader_parameter("planar_reflection") != null, "planar texture not set on material")
 	var vp: Variant = mat.get_shader_parameter("planar_vp")
