@@ -1,0 +1,25 @@
+{
+  "name": "underpass_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 277,
+    "driver": "vulkan",
+    "fps": 1033.136,
+    "frame_ms_avg": 0.968,
+    "frame_ms_p95": 1.264,
+    "frame_ms_p99": 5.378,
+    "frames": 300,
+    "objects": 277,
+    "os": "Windows",
+    "primitives": 48084,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.118,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "city_districts"
+}

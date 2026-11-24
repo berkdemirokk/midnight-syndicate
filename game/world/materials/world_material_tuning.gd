@@ -70,3 +70,6 @@ extends Resource
 @export_range(0.0, 8.0) var skyline_window_energy: float = 2.2
 ## Roof bitumen albedo multiplier: near-black roofs under the night ambient read as holes in the skyline.
 @export_range(1.0, 4.0) var roof_albedo_scale: float = 2.0
+## Multiplies the concrete wall albedo (M_Concrete_Wall, the textured facade walls). Dark brick walls read as
+## black slabs from 60 m; raised so the walls read as buildings under the night ambient.
+@export_range(1.0, 4.0) var wall_albedo_scale: float = 1.8

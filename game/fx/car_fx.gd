@@ -6,12 +6,11 @@ extends Node3D
 
 const RL: int = 2  ## rear-left index in ArcadeCar.wheel_slip
 const RR: int = 3
-const SPEED_LINES_FROM_KMH: float = 180.0
-const SPEED_LINES_FULL_KMH: float = 300.0
 const NITRO_FULL_KMH: float = 250.0
 
-## Local to the car (forward is -Z). Rear centre, low, split for two flames.
-@export var exhaust_points: PackedVector3Array = PackedVector3Array([Vector3(-0.12, 0.2, 1.9), Vector3(0.12, 0.2, 1.9)])
+## Local to the car (forward is -Z). Measured from noctra_sable_lod0.glb: the two exhaust pipe tips sit at
+## x = +-0.045, y = 0.33, z = 2.19 (rear), and the flames start just behind them.
+@export var exhaust_points: PackedVector3Array = PackedVector3Array([Vector3(-0.045, 0.33, 2.2), Vector3(0.045, 0.33, 2.2)])
 ## Approximate rear contact points: wheelbase 2.66 m, rear track 1.64 m (check against the spec).
 @export var rear_wheel_offsets: PackedVector3Array = PackedVector3Array([Vector3(-0.82, -0.2, 1.33), Vector3(0.82, -0.2, 1.33)])
 ## Rear slip angle above which tyre smoke starts, and the angle range over which it reaches full amount.
@@ -43,11 +42,17 @@ func _ready() -> void:
 		push_warning("CarFx must be a child of an ArcadeCar; effects disabled")
 		set_process(false)
 		return
+	# Flame meshes take the car body's render layers, so the car-only fill light treats them like the body.
+	var body_layers: int = 1
+	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
+		body_layers = (n as MeshInstance3D).layers
+		break
 	flames = NitroFlame.new()
 	smoke = TireSmoke.new()
 	sparks = Sparks.new()
 	headlights = Headlights.new()
 	add_child(flames)
+	flames.set_mesh_layers(body_layers)
 	add_child(smoke)
 	add_child(sparks)
 	add_child(headlights)
@@ -94,10 +99,9 @@ func _process(_delta: float) -> void:
 		_slip_out[i] = amount
 		_wheel_world[i] = xf * rear_wheel_offsets[i]
 	smoke.update_puffs(_wheel_world, _slip_out, xf.basis.x * signf(lateral), absf(lateral))
-	# Speed lines fade in above 180 km/h and intensify with nitro.
+	# Speed lines: none below 160 km/h, full at 180 km/h, stronger with nitro (SpeedLines.intensity_for).
 	if speed_lines != null:
-		var k: float = clampf((car.speed_kmh - SPEED_LINES_FROM_KMH) / (SPEED_LINES_FULL_KMH - SPEED_LINES_FROM_KMH), 0.0, 1.0)
-		speed_lines.set_intensity(k * (1.0 if car.nitro_active else 0.6))
+		speed_lines.set_speed(car.speed_kmh, car.nitro_active)
 
 
 ## Lateral slip angle in degrees at rear wheel i: the velocity of that contact point, body frame.

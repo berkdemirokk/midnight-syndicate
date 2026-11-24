@@ -10,9 +10,12 @@ extends Resource
 @export_range(0, 7) var opponent_count: int = 5  ## the grid has 8 slots, the player takes the last one
 @export var opponent_skills: PackedFloat32Array = PackedFloat32Array([0.93, 0.91, 0.89, 0.87, 0.85, 0.83, 0.81])
 @export var opponent_names: PackedStringArray = PackedStringArray(["Kade Vorne", "Mira Halloway", "Dex Ormond", "Ilse Crane", "Tomas Vey", "Runa Sable", "Pell Adair"])
-@export var opponent_paints: PackedColorArray = PackedColorArray([Color(0.7, 0.13, 0.16), Color(0.85, 0.87, 0.9), Color(0.18, 0.44, 0.25), Color(0.88, 0.65, 0.15), Color(0.35, 0.17, 0.53), Color(0.12, 0.44, 0.7), Color(0.5, 0.5, 0.52)])
+## Saturated mid-value paints that read under the night car fill light. All distinct; the player keeps candy red.
+@export var opponent_paints: PackedColorArray = PackedColorArray([Color("#1F5BFF"), Color("#FF6A13"), Color("#7BE000"), Color("#E8ECF2"), Color("#8A3BFF"), Color("#F2C200"), Color("#12B5A5")])
 @export var player_name: String = "Nova Rike"
-@export var player_paint: Color = Color(0.09, 0.13, 0.24)
+@export var player_paint: Color = Color("#8E0F1E")  ## candy red (car brief); used when the profile has no saved paint
+## true: the player car wears the paint saved in the garage (GameState), false: always player_paint.
+@export var use_garage_paint: bool = true
 @export var autopilot: bool = false  ## the player car is driven by an AIDriver (tests and captures)
 @export_range(0.8, 1.0) var autopilot_skill: float = 0.97
 @export var event_id: String = "dev_circuit"  ## key for GameState.record_result

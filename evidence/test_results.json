@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-24T22:06:06"
+    "time": "2026-11-24T22:43:01"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -104,6 +104,11 @@
       },
       "pass": true
     },
+    "test_factory_paint_survives_entering_the_tree": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
     "test_force_lod0_keeps_lod0_only": {
       "failures": [],
       "metrics": {},
@@ -114,7 +119,7 @@
       "metrics": {
         "bbox_size_m": [
           1.95,
-          1.19,
+          1.155,
           4.546
         ]
       },
@@ -146,9 +151,9 @@
         "lod0_draw_objects": 17,
         "lod0_materials": 15,
         "tris": {
-          "lod0": 86397,
-          "lod1": 27498,
-          "lod2": 6799
+          "lod0": 86558,
+          "lod1": 27493,
+          "lod2": 6797
         }
       },
       "pass": true
@@ -191,7 +196,7 @@
       "failures": [],
       "metrics": {
         "count_instances": 1113,
-        "count_lights_built": 141,
+        "count_lights_built": 144,
         "count_lights_dropped": 12,
         "count_multimeshes": 565,
         "count_occluders": 148,
@@ -201,7 +206,7 @@
         "light_budget_log": 13,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1384.8,
+        "load_time_ms": 1481.0,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -242,7 +247,7 @@
         "8car_min_upright_y": 0.9963,
         "8car_race_time_s": 80.58,
         "8car_stuck_events": 1,
-        "8car_wall_s": 7.0
+        "8car_wall_s": 7.1
       },
       "pass": true
     },
@@ -264,7 +269,7 @@
         "min_upright_y": 0.9963,
         "race_time_s": 73.93,
         "stuck_events": 0,
-        "wall_s": 3.4
+        "wall_s": 3.6
       },
       "pass": true
     }
@@ -408,6 +413,16 @@
       "metrics": {},
       "pass": true
     },
+    "test_nitro_flames_are_unshaded_additive_and_only_on_nitro": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_nitro_start_at_rest_does_not_start_tyre_smoke": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
     "test_planar_reflection_keeps_default_layer_and_feeds_material": {
       "failures": [],
       "metrics": {},
@@ -424,6 +439,11 @@
       "pass": true
     },
     "test_speed_lines_intensity_clamps": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_speed_lines_schedule": {
       "failures": [],
       "metrics": {},
       "pass": true
@@ -706,7 +726,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@7353"
+        "main_menu_focus": "@Button@7433"
       },
       "pass": true
     },

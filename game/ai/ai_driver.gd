@@ -31,6 +31,7 @@ const AI_PHYSICS_PRIORITY: int = -1  ## runs before ArcadeCar (priority 0) so th
 @export var brake_gain: float = 0.2  ## brake per m/s of speed error
 @export var nitro_min_gap_ms: float = 5.0  ## m/s (18 km/h): nitro only when this far below the target speed
 @export var nitro_max_curvature: float = 0.004  ## 1/m, straights only (radius above 250 m)
+@export var nitro_min_start_kmh: float = 0.0  ## 0 = off. Pack-race stuck counts react chaotically to this value (tested 100/140 on 2026-11-24), so rivals keep 0; nitro starts only above this speed: it also raises the speed cap, so it pays most near the top end
 @export var nitro_look_m: float = 90.0  ## m, nitro needs the road to stay straight this far ahead (keeps the charge for straights)
 @export var shift_damp_curvature: float = 0.006  ## 1/m (radius 167 m): lane shifts move at full rate on gentler bends than this
 @export var shift_stop_curvature: float = 0.008  ## 1/m (radius 125 m): no lane shift starts or moves at this curvature or above
@@ -212,7 +213,8 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	# Start nitro above NITRO_MIN_AMOUNT, then keep it running until the charge is gone (the car ends it at 0).
 	var charged: bool = _car.nitro_amount > 0.0 if _car.nitro_active else _car.nitro_amount > NITRO_MIN_AMOUNT
 	# No nitro while a slower car is in follow range: it would arrive too fast to pass it cleanly.
-	inp.nitro = err > nitro_min_gap_ms and charged and is_inf(cap) and _straight_ahead(s)
+	var fast_enough: bool = _car.nitro_active or _car.speed_kmh >= nitro_min_start_kmh
+	inp.nitro = err > nitro_min_gap_ms and charged and fast_enough and is_inf(cap) and _straight_ahead(s)
 
 
 func _tick_reverse(delta: float) -> void:

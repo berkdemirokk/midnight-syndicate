@@ -242,6 +242,8 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 	if tex.has("roughness"):
 		m.roughness_texture = _tex(tex["roughness"])
 		m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+	if mat_name.begins_with("M_Brick") or mat_name.begins_with("M_Concrete") or mat_name == "M_Facade_Tile":
+		m.albedo_color = _scale_rgb(m.albedo_color, tuning.wall_albedo_scale)  # facade walls: the building kit uses these
 	if not tex.is_empty() and not kit_tex:
 		# Walls and ground have no UVs in metres, so project them in world space.
 		m.uv1_triplanar = true

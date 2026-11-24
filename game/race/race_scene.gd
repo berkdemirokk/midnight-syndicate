@@ -59,6 +59,7 @@ var hud: RaceHUD
 var pause_menu: PauseMenu
 var results_screen: ResultsScreen
 var player_ai: AIDriver  ## set only in autopilot mode
+var _speed_lines: Node = null  ## res://fx/speed_lines.tscn instance under the HUD's SpeedFx node
 var last_results: Array[Dictionary] = []
 var dev_track_used: bool = false
 var dev_car_used: bool = false
@@ -98,6 +99,9 @@ func _config_from_router() -> RaceConfig:
 func _process(delta: float) -> void:
 	if race == null:
 		return
+	# Speed lines follow the player only (never an opponent).
+	if _speed_lines != null and player != null and _speed_lines.has_method("set_speed"):
+		_speed_lines.call("set_speed", player.speed_kmh, player.nitro_active)
 	if race.state == RaceManager.State.GRID:
 		_grid_t += delta
 		if _grid_t >= GRID_BEAT_S:
@@ -168,7 +172,8 @@ func _build_chrome() -> void:
 	add_child(hud)
 	var speed_parent: Node = hud.find_child(SPEED_FX_NODE, true, false)
 	if speed_parent != null and ResourceLoader.exists(FX_SPEED_SCENE):
-		speed_parent.add_child((load(FX_SPEED_SCENE) as PackedScene).instantiate())
+		_speed_lines = (load(FX_SPEED_SCENE) as PackedScene).instantiate()
+		speed_parent.add_child(_speed_lines)
 	_overlay = CanvasLayer.new()
 	_overlay.name = "Overlay"
 	_overlay.layer = OVERLAY_LAYER
@@ -267,7 +272,7 @@ func _spawn_cars() -> void:
 		var car: ArcadeCar = CarFactory.create(config_used.car_scene, spec, config_used.opponent_paint(i))
 		_add_car(car)
 		_names.append(_opponent_name(i))
-	player = CarFactory.create(config_used.car_scene, spec, config_used.player_paint)
+	player = CarFactory.create(config_used.car_scene, spec, _player_paint())
 	_add_car(player)
 	_names.append(config_used.player_name)
 	dev_car_used = bool(player.get_meta("dev_car", false))
@@ -474,3 +479,16 @@ func _to_menu() -> void:
 func _to_garage() -> void:
 	if ResourceLoader.exists(GARAGE_SCENE):
 		Router.goto(GARAGE_SCENE)
+
+
+## The paint chosen in the garage for the selected car, else the config's default.
+func _player_paint() -> Color:
+	if not config_used.use_garage_paint:
+		return config_used.player_paint
+	var setup: Dictionary = GameState.get_setup(GameState.get_selected_car())
+	var c: Variant = setup.get("paint_color")
+	if c is Color:
+		return c
+	if c is String and Color.html_is_valid(c):
+		return Color.html(c)
+	return config_used.player_paint

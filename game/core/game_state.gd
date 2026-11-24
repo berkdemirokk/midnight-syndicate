@@ -20,7 +20,7 @@ const UPGRADE_BASE_COST: Dictionary = {"engine": 800, "tires": 500, "nitro": 120
 const REWARD_CASH: PackedInt32Array = [1000, 600, 300, 100]
 const REWARD_REP: PackedInt32Array = [100, 60, 30, 10]
 const REWARD_STARS: PackedInt32Array = [3, 2, 1]
-const DEFAULT_PAINT: String = "#16213e"
+const DEFAULT_PAINT: String = "#8e0f1e"  ## candy red, the starter car colour in docs/art/CAR_01_BRIEF.md
 const DEFAULT_RIM: String = "#c0c0c0"
 
 var save_path: String = "user://save.json"

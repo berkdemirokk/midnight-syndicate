@@ -20,6 +20,10 @@ static func create(car_scene_path: String, spec: CarSpec, paint: Color) -> Arcad
 	if dev:
 		model = DevVisual.build()
 		paint = paint.lerp(DEV_GREY, DEV_PAINT_MIX)
+	# A real car scene (CarLod) applies its own paint in _ready(), after this function returns:
+	# hand it the colour first, or every car comes out in the default candy red.
+	if "paint_colour" in model:
+		model.set("paint_colour", paint)
 	var visual := Node3D.new()
 	visual.name = VISUAL_NAME
 	visual.rotation.y = VISUAL_TURN_RAD

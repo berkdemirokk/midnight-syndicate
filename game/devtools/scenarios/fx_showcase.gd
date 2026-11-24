@@ -9,6 +9,9 @@ const CAM_POS: Vector3 = Vector3(3.5, 1.8, 7.5)
 const CAM_LOOK: Vector3 = Vector3(0.0, 0.6, 1.0)
 const CAM_FRONT_POS: Vector3 = Vector3(0.0, 1.6, 6.0)
 const CAM_FRONT_LOOK: Vector3 = Vector3(0.0, 0.0, -8.0)
+## Chase view for the nitro shot: 6 m behind the exhaust tips (block rear face at z = 2.1, tips at z = 2.15).
+const CAM_BACK_POS: Vector3 = Vector3(0.0, 1.5, 8.15)
+const CAM_BACK_LOOK: Vector3 = Vector3(0.0, 0.4, 2.15)
 
 
 func run() -> void:
@@ -31,7 +34,8 @@ func run() -> void:
 	root.add_child(holder)
 	var flames := NitroFlame.new()
 	holder.add_child(flames)
-	flames.set_exhaust_points(PackedVector3Array([Vector3(-0.45, -0.15, 2.1), Vector3(0.45, -0.15, 2.1)]))
+	# Pipe tips of the Noctra Sable model (x +-0.045, z 2.15 at the rear); the holder is at block mid-height.
+	flames.set_exhaust_points(PackedVector3Array([Vector3(-0.045, -0.12, 2.15), Vector3(0.045, -0.12, 2.15)]))
 	var smoke := TireSmoke.new()
 	holder.add_child(smoke)
 	var sparks := Sparks.new()
@@ -50,16 +54,29 @@ func run() -> void:
 	cam_front.fov = 55.0
 	cam_front.position = CAM_FRONT_POS
 	root.add_child(cam_front)
+	var cam_back := Camera3D.new()
+	cam_back.fov = 55.0
+	cam_back.position = CAM_BACK_POS
+	root.add_child(cam_back)
+	cam_back.look_at(CAM_BACK_LOOK)
+	cam_back.current = true
 	await cap.wait_frames(SETTLE)
 
-	# 1. Nitro at full strength, just after ignition.
+	# 1. Nitro at full strength, just after ignition, from 6 m behind. Then the same view with speed lines at 200 km/h.
 	flames.set_active(true)
 	flames.set_strength(1.0)
 	flames.pop()
 	await cap.wait_seconds(0.25)
 	await cap.shot("nitro_flame")
+	var lines := SpeedLines.new()
+	root.add_child(lines)
+	lines.set_speed(200.0, true)
+	await cap.wait_frames(3)
+	await cap.shot("speed_lines")
+	lines.queue_free()
 	await cap.measure("nitro_flame_measure", MEASURE_FRAMES)
 	flames.set_active(false)
+	cam.current = true
 
 	# 2. Tyre smoke from both rear wheels while drifting left.
 	var wheels := PackedVector3Array([root.to_global(Vector3(-0.82, 0.0, 1.3)), root.to_global(Vector3(0.82, 0.0, 1.3))])

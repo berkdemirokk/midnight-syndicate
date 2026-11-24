@@ -69,7 +69,7 @@ def _pchip(pts):
 
 
 _Z_TOP = _pchip([(0, .400), (0.10, .470), (0.40, .575), (0.95, .670), (1.28, .760), (1.60, .950),
-                 (1.90, 1.130), (2.05, 1.190), (2.40, 1.170), (2.80, 1.080), (3.30, .975),
+                 (1.98, 1.075), (2.10, 1.155), (2.40, 1.145), (2.80, 1.075), (3.30, .975),
                  (3.80, .900), (4.20, .872), (4.36, .905), (4.45, .915)])
 _Z_BOT = _pchip([(0, .220), (0.15, .135), (0.50, .110), (3.70, .110), (4.05, .190), (4.45, .400)])
 _W_MAX = _pchip([(0, .620), (0.06, .775), (0.25, .880), (0.95, .972), (1.50, .930), (2.30, .918),
@@ -118,8 +118,37 @@ def shelf_drop(s):
     return 0.005 * min(1.0, shelf(s) / 0.03)
 
 
+TUM_W = 0.085  # R9: side glass leans in over this half-width (about 12 deg from vertical)
+ROOF_CROWN = 0.025  # R9: roof edge sits this far below the roof centre (no flat slab)
+
+
+def cab_blend(s):
+    """R9: 0 outside the cabin, 1 across the greenhouse, smooth ramps at both ends."""
+    return _smoothstep((s - 1.30) / 0.25) * _smoothstep((2.90 - s) / 0.25)
+
+
+def _top_z_tumble(s, x):
+    """R9 greenhouse: flat crowned roof, steep tumblehome side glass rolling into it."""
+    zs, zt = z_sh(s), z_top(s)
+    xs = xs_of(s)
+    xr = xs - TUM_W
+    if x >= xr:
+        u = (xs - x) / TUM_W  # 0 at the shoulder, 1 at the roof edge
+        return zs + (zt - ROOF_CROWN - zs) * (1.0 - (1.0 - u) ** 2)
+    q = x / xr
+    return zt - ROOF_CROWN * q * q
+
+
 def top_z(s, x):
     """Top surface height at station s and half-width x in [0, xs]."""
+    b = cab_blend(s)
+    if b > 0.0:
+        z0, z1 = _top_z_dome(s, x), _top_z_tumble(s, x)
+        return z0 + b * (z1 - z0)
+    return _top_z_dome(s, x)
+
+
+def _top_z_dome(s, x):
     zs, zt, n = z_sh(s), z_top(s), n_top(s)
     xs, xg = xs_of(s), xg_of(s)
     dr = shelf_drop(s)

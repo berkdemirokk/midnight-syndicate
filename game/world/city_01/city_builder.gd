@@ -55,6 +55,16 @@ const PUSH_MAX_M: float = 40.0
 @export_range(0.0, 4.0) var ambient_energy: float = 1.2  ## was 0.6: facades away from lamps were black slabs
 @export_range(0.0, 1.0) var moon_energy: float = 0.25  ## weak cool directional fill for far facades and roofs, no shadows
 @export var moon_color: Color = Color("#8FA8D8")
+## Waterfront warehouse wall wash: warm low-energy spots over the road, aimed at the land-side facades.
+@export var wall_wash_count: int = 3
+@export var wall_wash_energy: float = 14.0  ## JSON-scale energy, x light_energy_scale; the lamp heads are 14 x 8 district boost
+@export var wall_wash_color: String = "#FFB26B"
+@export var wall_wash_range_m: float = 24.0
+@export var wall_wash_height_m: float = 6.0
+@export var wall_wash_target_m: float = 4.0  ## aim point above the building origin
+@export var wall_wash_s_min: float = 1150.0  ## waterfront stretch with the warehouses in view of the capture
+@export var wall_wash_s_max: float = 1400.0
+@export var wall_wash_spacing_m: float = 35.0
 
 var stats: Dictionary = {}  ## counts recorded for the tests and the engine report
 var light_report: Dictionary = {}  ## CityLights.budget summary (counts, log lines)
@@ -101,7 +111,7 @@ func _ready() -> void:
 	_load_corridor()
 	_build_buildings(inst, lap)
 	_build_props(inst, lap, n_chunks)
-	_build_lights(d["lights"])
+	_build_lights(d["lights"], inst)
 	_build_probes(d["reflection_probes"])
 	_build_environment()
 	load_time_ms = float(Time.get_ticks_usec() - t0) / 1000.0
@@ -548,7 +558,7 @@ func _library_mesh(src: Mesh, owner_id: String) -> Mesh:
 
 # --- lights, probes, environment ------------------------------------------------------------
 
-func _build_lights(raw: Array) -> void:
+func _build_lights(raw: Array, inst: Array) -> void:
 	var lights: Array = []
 	var lamp_pos: Array[Vector3] = []
 	for v: Variant in raw:
@@ -568,6 +578,7 @@ func _build_lights(raw: Array) -> void:
 		elif src_name == "neon_fill":
 			rng = minf(rng, neon_fill_range_m)  # short fills: fewer volumes touched, so street lamps survive the budget
 		lights.append({"type": String(d["type"]), "pos": p, "range": rng, "src": d})
+	lights.append_array(_wall_wash_lights(inst))
 	var vols: Dictionary = _budget_volumes()
 	light_volumes = vols["aabbs"]
 	var report: Dictionary = CityLights.budget(lights, light_volumes, vols["names"])
@@ -611,6 +622,31 @@ func _build_lights(raw: Array) -> void:
 		light.distance_fade_length = light_fade_length_m
 		_lighting.add_child(light)
 		stats["lights"] = int(stats["lights"]) + 1
+
+
+## One warm spot per warehouse, spaced along the waterfront stretch: over the road, aimed at the facade.
+func _wall_wash_lights(inst: Array) -> Array:
+	var out: Array = []
+	var path: Path3D = get_node("RacingLine") as Path3D
+	var last_s: float = -INF
+	for v: Variant in inst:
+		if out.size() >= wall_wash_count:
+			break
+		var d: Dictionary = v
+		if String(d["kind"]) != "building" or String(d["district"]) != "waterfront" or not String(d["asset"]).begins_with("bld_waterfront"):
+			continue
+		var s: float = float(d["s_offset_m"])
+		if s < wall_wash_s_min or s > wall_wash_s_max or s - last_s < wall_wash_spacing_m:
+			continue
+		last_s = s
+		var b: Vector3 = _vec(d["position"])
+		var road_pt: Vector3 = path.to_global(path.curve.get_closest_point(path.to_local(b)))
+		var spot_pos: Vector3 = Vector3(road_pt.x, wall_wash_height_m, road_pt.z)
+		var dir: Vector3 = (b + Vector3(0.0, wall_wash_target_m, 0.0) - spot_pos).normalized()
+		out.append({"type": "spot", "pos": spot_pos, "range": wall_wash_range_m,
+			"src": {"source": "wall_wash", "district": "waterfront", "color": wall_wash_color,
+				"energy": wall_wash_energy, "direction": [dir.x, dir.y, dir.z]}})
+	return out
 
 
 func _build_probes(raw: Array) -> void:

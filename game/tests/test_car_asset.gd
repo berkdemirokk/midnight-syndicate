@@ -259,3 +259,16 @@ func test_force_lod0_keeps_lod0_only() -> void:
 	_spawned.clear()
 	var cam_nodes: Array[Node] = [cam]
 	await cleanup(cam_nodes)
+
+
+## Regression (2026-11-24): CarLod._ready() re-applied its default red after CarFactory had set the
+## paint, so every rival in a race came out candy red.
+func test_factory_paint_survives_entering_the_tree() -> void:
+	var car: ArcadeCar = CarFactory.create(SCENE, CarSpec.new(), PAINT_TEST)
+	add(car)
+	await frames(2)
+	var m: StandardMaterial3D = _material(car, "M_Paint")
+	check(m != null, "no M_Paint material on the factory car")
+	if m != null:
+		check(m.albedo_color.is_equal_approx(PAINT_TEST), "factory paint lost: %s" % m.albedo_color)
+	await cleanup([car])

@@ -20,7 +20,7 @@ const ROAD_LAYER_BIT: int = 1 << 1  ## road is kept out of the planar mirror (se
 const SHOTS: Array[Dictionary] = [
 	{"name": "neon_strip", "s": 144.0},
 	{"name": "downtown", "s": 590.0},  ## downtown lamp run is s 514 to 665; the old s 750 looked past every lamp
-	{"name": "waterfront", "s": 1250.0, "yaw": 80.0},  ## yaw turns the camera across the bay to the skyline card at x 949
+	{"name": "waterfront", "s": 1250.0, "yaw": 27.0},  ## yaw 27: promenade lamp run ahead-left (heading -15..-21) and the bay on the right edge; yaw 80 looked past every lamp
 	{"name": "underpass", "s": 1620.0},
 	{"name": "old_market", "s": 1950.0},
 ]

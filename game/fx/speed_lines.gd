@@ -1,6 +1,11 @@
 class_name SpeedLines
 extends CanvasLayer
-## Full-screen radial speed streaks. set_intensity(v) clamps v to 0..1. Put it on the HUD layer.
+## Full-screen radial speed streaks on the HUD layer. set_intensity(v) clamps v to 0..1. set_speed(kmh, nitro)
+## maps the car's speed to an intensity: nothing below from_kmh, full at full_kmh, and less without nitro.
+
+@export var from_kmh: float = 160.0  ## lines start to show here
+@export var full_kmh: float = 180.0  ## full strength here (clearly visible from 180 km/h)
+@export var no_nitro_mul: float = 0.75  ## strength scale without nitro; nitro gives 1.0
 
 var _rect: ColorRect = ColorRect.new()
 
@@ -25,3 +30,13 @@ func set_intensity(v: float) -> void:
 
 func get_intensity() -> float:
 	return (_rect.material as ShaderMaterial).get_shader_parameter("intensity")
+
+
+## Feed this every frame with the player's car. Caller: race_scene or race_hud (see FX_AND_SHADERS.md).
+func set_speed(kmh: float, nitro: bool) -> void:
+	set_intensity(intensity_for(kmh, nitro))
+
+
+func intensity_for(kmh: float, nitro: bool) -> float:
+	var k: float = smoothstep(from_kmh, full_kmh, kmh)
+	return k if nitro else k * no_nitro_mul

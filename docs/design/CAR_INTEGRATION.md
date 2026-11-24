@@ -54,3 +54,8 @@ Re-ship after every car build: `py -3.10 tools/ship_assets.py` (copies the three
 - test_race_scene.gd test_paint_sets_body_albedo reads 'Visual/DevCar/body', which is null now that the race config uses noctra_sable.tscn.
   The test raises SCRIPT ERROR and still reports PASS.
 - test_vehicle.gd test_slope fails in the full suite. Not checked here whether the car caused it.
+
+## Noctra Sable R round 9 (greenhouse, wing)
+- Node names and wheel/brake setup unchanged. Ship via tools/ship_assets.py (SHIP OK); ASSET_MANIFEST.json re-registered.
+- Triangles: LOD0 86558, LOD1 27493, LOD2 6797. Height 1.155 m (within 3% of 1.19 m).
+- Engine: the body still carries the glass, col_body (collision_only) and wheel/brake nodes as before.

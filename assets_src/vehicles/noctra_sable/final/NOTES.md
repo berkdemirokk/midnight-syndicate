@@ -113,3 +113,14 @@ Changes:
 Triangle counts (report.json): LOD0 86397 visible, 86457 incl col_body; LOD1 27497 / 27557; LOD2 6778 / 6838 (GLB parse by validate_car). Manifest shows LOD1 27498 and LOD2 6799 (from build_summary, one or twenty-one triangles different from the validate parse). All within budget.
 
 Render rig (EEVEE iterations): renders_iter/r17 (before rig tuning), r18, r19, r20 (kept). Final: Cycles OPTIX 96 samples, renders/ (seven views), contact_sheet.png regenerated.
+
+## Round 9: greenhouse and wing (3D Asset Agent)
+- Cabin z_top: peak 1.190 -> 1.155 (peak moved back 2.05 -> 2.10). Windscreen run 1.28..1.98 now about 24 deg rake (brief asks 24).
+  Height 1.155 is 2.9% under 1.19, inside the 3% tolerance. A 1.15 peak would fail, so 1.155 was used.
+- Greenhouse: top_z blends into a flat crowned roof (ROOF_CROWN 25 mm) with a steep tumblehome wall (TUM_W 85 mm, about 12 deg from vertical)
+  over the cabin (cab_blend 1.30..2.90). Replaces the dome in that range. Side glass still reads a bit flat; the rear end of the cabin shows a small step in side.png.
+- Wing: aerofoil camber 0.02 -> 0.035; end plate trailing edge now curved with a small gurney at the top. Uprights and 8 mm plates unchanged.
+- Validate: all checks pass. LOD0 86558, LOD1 27493, LOD2 6797, 15 materials, 17 draw objects.
+- Shipped with tools/ship_assets.py (SHIP OK). test_car_asset and test_garage pass (17 tests, 0 failed). Garage overview.png and rear34.png looked at.
+- Renders: renders/ Cycles OPTIX 96 samples; old contact sheet kept as renders/contact_sheet_before_round4.png.
+- Open: 12-15 deg tumblehome is only approximated (about 78 deg wall); the rear cabin step; the bonnet highlight.

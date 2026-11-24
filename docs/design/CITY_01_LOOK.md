@@ -133,3 +133,32 @@ Acceptance test: "does not read as boxes on a plane: facade depth, signage, stre
 - Establishing: unlit walls and roofs (fill or roof albedo).
 - Road-paint readability at 60 m was not measured, only visually checked in the neon and downtown shots.
 - No perf numbers from this pass were reviewed.
+
+## Third pass (lighting and look agent, brief of 2026-11-24: rival paint, waterfront, establishing)
+Baseline for every round: `evidence/screens/city_districts_round0/` (snapshot of the second pass). Logs `evidence/logs/capture_city_round1.log`, `capture_city_round2.log`, `capture_city_round3.log`, base `capture_city_r1_base.log`.
+
+### Round 1 (framing and facade albedo)
+- `city_districts.gd`: waterfront yaw 80 -> 27. At yaw 80 the camera looked past every promenade lamp (all 9 lamp heads at heading -15..-21 deg were outside the frame), so the pools were never in view.
+- `world_material_tuning.gd` new `wall_albedo_scale` 1.8; `material_library.gd` multiplies the albedo of the building brick and concrete materials by it.
+- Result: waterfront shows warm sodium pools on the promenade, the lit lamp heads, the sidewalk kerb catching light, the skyline card with lit windows. Establishing: walls still near-black (first version only scaled `M_Concrete_Wall`, which the building kit does not use; fixed in round 2).
+
+### Round 2 (wall-wash spots and the correct facade materials)
+- `material_library.gd`: the wall scale now covers `M_Brick*`, `M_Concrete*` and `M_Facade_Tile` (the materials the building kit uses).
+- `city_builder.gd`: new `_wall_wash_lights`. Three warm spots (`wall_wash_*` exports, colour #FFB26B) over the road at the waterfront warehouses (`bld_waterfront*`, s 1150 to 1400, spaced 35 m), aimed at the land-side facades. They go through the normal light budget.
+- Result: establishing shows brick texture, window openings and roofs on the facades; lit windows sit on visible walls. Downtown and Neon Strip compared with round 0: no regression seen (Neon Strip signs and wet reflections unchanged; downtown walls slightly lighter).
+
+### Round 3 (wall-wash energy)
+- `wall_wash_energy` 7 -> 14 (JSON scale; effective 8.4 after `light_energy_scale`). The warehouse lower storeys read lit; the change is small in frame because the wash is aimed at the warehouse base.
+- Light budget: 58 dropped lights in the scene (round 0: 56). All road, sidewalk and structure volumes stay at 8 kept omni or spot lights or fewer; the new drops are prop lamp volumes.
+- Tests: `test_city_01` and `test_world_materials` 12 of 12 pass (`evidence/logs/tests_city_round3.log`).
+
+### Rival paint (RaceConfig): palette set, NOT visible in the race yet
+- `race_config.gd` `opponent_paints`: electric blue #1F5BFF, signal orange #FF6A13, acid green #7BE000, pearl white #E8ECF2, violet #8A3BFF, sun yellow #F2C200, teal #12B5A5. All distinct; the player keeps candy red.
+- Race capture (`evidence/screens/race_city/racing_10s.png`, `pack.png`, run after the palette change): every car in frame is still candy red (#8E0F1E) including the rivals.
+- Cause (outside this agent's files): `vehicles/noctra_sable/car_lod.gd` `_ready()` calls `CarMaterials.apply(self, paint_colour)` with its own default `paint_colour` (CarMaterials.DEFAULT_PAINT). `CarFactory.create` sets the paint before the car enters the tree, so `_ready` replaces the paint materials with candy red. `CarVisual.set_paint` then changes only the orphaned materials. The player's navy `player_paint` is hidden the same way.
+- Fix needed (owner: vehicles): in `vehicles/car_factory.gd`, set `(model as CarLod).paint_colour = paint` before `visual.add_child(model)` when the model is a `CarLod`, or have `CarLod._ready` take the paint from the CarVisual. Then re-capture race_city and check pack.png.
+
+### Open items (not done in this pass)
+- Waterfront: no container stacks or quay railing catch light in the frame; water reflection of the skyline is hard to see at this exposure.
+- Underpass: ceiling dashes still the largest bright shapes (unchanged this pass, judged acceptable).
+- Full suite (`evidence/logs/tests_full_city_look.log`): 123 tests, 1 failed: `test_race_scene.gd::test_car_fill_light_reaches_only_the_car_layer` (12 car meshes not on the fill layer). The test file was modified after the last passing run (`tests_r3_full_suite.log`, 21:48; test file 21:58). Not in this agent's files; not investigated further.

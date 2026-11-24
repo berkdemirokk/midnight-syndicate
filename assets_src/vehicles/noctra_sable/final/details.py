@@ -157,7 +157,7 @@ def add_ell(bm, c, ax, ay, az, keep_top, mi):
 def add_wing(bm, zb, mi):
     """Low fixed wing: NACA-like cambered section extruded across span x in [-0.75, 0.75]."""
     cs = (1.0 - np.cos(np.linspace(0.0, np.pi, 25))) / 2.0
-    c, t, m, p = 0.24, 0.14, 0.02, 0.4
+    c, t, m, p = 0.24, 0.14, 0.035, 0.4  # R9: camber 0.02 -> 0.035 so the plane reads as an aerofoil
     yc = np.where(cs < p, m / p ** 2 * (2 * p * cs - cs ** 2),
                   m / (1 - p) ** 2 * ((1 - 2 * p) + 2 * p * cs - cs ** 2))
     yt = 5 * t * (0.2969 * np.sqrt(cs) - 0.1260 * cs - 0.3516 * cs ** 2 + 0.2843 * cs ** 3 - 0.1015 * cs ** 4)
@@ -490,7 +490,9 @@ def build_trim(mats, body):
                                    for a in np.linspace(0, 2 * math.pi, 14, endpoint=False)]))
         add_loft(bm, rings, 1)
         # 8 mm trapezoid end plate, longer at the bottom, rounded corners (Chaikin), bevelled edges
-        poly = rounded_poly([(4.20, zw - 0.09), (4.46, zw - 0.09), (4.41, zw + 0.04), (4.27, zw + 0.04)], 0.02, 4)
+        # R9: curved trailing edge (bulges back mid-height, into a small gurney at the top)
+        poly = rounded_poly([(4.20, zw - 0.09), (4.46, zw - 0.09), (4.475, zw - 0.025),
+                             (4.44, zw + 0.02), (4.41, zw + 0.04), (4.27, zw + 0.04)], 0.02, 4)
         pc = np.mean(np.array(poly), axis=0)
         rings = []
         for xo, inset in ((0.746, 0.94), (0.748, 1.0), (0.752, 1.0), (0.754, 0.94)):

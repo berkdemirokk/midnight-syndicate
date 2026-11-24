@@ -35,6 +35,7 @@ const DRIFT_SHOT_MIN_DEG: float = 15.0  ## shot as soon as the slide is this big
 const DRIFT_SHOT_AT_S: float = 1.4  ## fallback moment if the slide never gets that big
 const DRIFT_WAIT_MAX_S: float = 40.0
 const NITRO_MIN_KMH: float = 180.0  ## speed lines fade in from 180 km/h; the lap-2 nitro bursts end before 200
+const PLAYER_NITRO_START_KMH: float = 140.0  ## lap-2 autopilot policy for the nitro shot
 const NITRO_LAP: int = 2  ## the nitro shot is taken on lap 2 only
 const NITRO_WAIT_MAX_S: float = 240.0  ## bounded; the wait also ends when the results screen shows
 const TUNNEL_IN_M: float = 1560.0  ## underpass lights span s 1467 to 1803 m; shot taken inside, past the entry
@@ -351,4 +352,8 @@ func _on_go() -> void:
 func _on_lap_completed(car: ArcadeCar, lap: int, _lap_time: float) -> void:
 	if car == _scene.player and lap == 1:
 		_lap1_done = true
+		# Lap 2: the player's autopilot saves its nitro for the top end (input policy only; the car's
+		# speed and position are never touched). Rivals keep the default policy.
+		if _scene.player_ai != null:
+			_scene.player_ai.nitro_min_start_kmh = PLAYER_NITRO_START_KMH
 		print("race_city: player finished lap 1 at %.1f s after GO, top so far %.1f km/h" % [(Time.get_ticks_msec() - _go_ms_value) / 1000.0, _top_kmh])

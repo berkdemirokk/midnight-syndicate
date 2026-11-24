@@ -112,12 +112,68 @@ func test_car_fx_follows_nitro_signals() -> void:
 	check(fx.flames != null, "flames not built")
 	car.nitro_started.emit()
 	await frames(2)
-	check(_any_emitting(fx.flames), "nitro_started did not turn flames on")
+	check(fx.flames.is_emitting(), "nitro_started did not turn flames on")
 	check(fx.flames.visible, "flame root hidden")
 	car.nitro_ended.emit()
 	await frames(2)
-	check(not _any_emitting(fx.flames), "nitro_ended did not turn flames off")
+	check(not fx.flames.is_emitting(), "nitro_ended did not turn flames off")
 	await cleanup([car])
+
+
+func test_nitro_flames_are_unshaded_additive_and_only_on_nitro() -> void:
+	var fl := load("res://fx/nitro_flame.tscn").instantiate() as NitroFlame
+	add(fl)
+	await frames(2)
+	var meshes: Array[MeshInstance3D] = _flame_meshes(fl)
+	check(meshes.size() == 4, "expected 2 flames x (core + halo), got %d meshes" % meshes.size())
+	for mi: MeshInstance3D in meshes:
+		var m := mi.material_override as StandardMaterial3D
+		check(m != null and m.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED, "flame material is lit")
+		check(m != null and m.blend_mode == BaseMaterial3D.BLEND_MODE_ADD, "flame material is not additive")
+		check(not mi.is_visible_in_tree(), "flame visible while nitro is off")
+	fl.set_strength(1.0)
+	fl.set_active(true)
+	fl.pop()
+	await frames(3)
+	check(fl.is_emitting(), "set_active(true) did not start the flames")
+	for mi: MeshInstance3D in meshes:
+		check(mi.is_visible_in_tree(), "flame hidden while nitro is on")
+	fl.set_active(false)
+	await frames(2)
+	check(not fl.is_emitting(), "set_active(false) did not stop the flames")
+	for mi: MeshInstance3D in meshes:
+		check(not mi.is_visible_in_tree(), "flame still visible after nitro ended")
+	await cleanup([fl])
+
+
+func test_nitro_start_at_rest_does_not_start_tyre_smoke() -> void:
+	# The flames are the nitro effect. Tyre smoke comes only from slip, drift or launch wheelspin.
+	var car := ArcadeCar.new()
+	car.spec = load(SPEC_PATH) as CarSpec
+	add(car)
+	var fx := load("res://fx/car_fx.tscn").instantiate() as CarFx
+	car.add_child(fx)
+	await frames(3)
+	car.nitro_started.emit()
+	await frames(3)
+	check(not _smoke_emitting(fx), "nitro start emitted tyre smoke")
+	car.nitro_ended.emit()
+	await cleanup([car])
+
+
+func test_speed_lines_schedule() -> void:
+	var sl := load("res://fx/speed_lines.tscn").instantiate() as SpeedLines
+	add(sl)
+	await frames(1)
+	check_range(sl.intensity_for(140.0, true), 0.0, 0.0, "speed lines show below 150 km/h with nitro")
+	check_range(sl.intensity_for(120.0, false), 0.0, 0.0, "speed lines show at 120 km/h")
+	check(sl.intensity_for(200.0, true) > 0.5, "speed lines weak at 200 km/h with nitro")
+	check(sl.intensity_for(180.0, false) > 0.5, "speed lines not clearly visible at 180 km/h")
+	check(sl.intensity_for(200.0, true) > sl.intensity_for(200.0, false), "nitro does not strengthen speed lines")
+	sl.set_speed(200.0, true)
+	check(sl.get_intensity() > 0.5, "set_speed did not reach the shader")
+	sl.queue_free()
+	await frames(1)
 
 
 func test_hit_above_threshold_triggers_sparks() -> void:
@@ -231,10 +287,8 @@ func _smoke_emitting(fx: CarFx) -> bool:
 	return false
 
 
-func _any_emitting(node: Node) -> bool:
-	for c: Node in node.get_children():
-		if c is GPUParticles3D and (c as GPUParticles3D).emitting and not (c as GPUParticles3D).one_shot:
-			return true
-		if _any_emitting(c):
-			return true
-	return false
+func _flame_meshes(node: Node) -> Array[MeshInstance3D]:
+	var out: Array[MeshInstance3D] = []
+	for c: Node in node.find_children("*", "MeshInstance3D", true, false):
+		out.append(c as MeshInstance3D)
+	return out
