@@ -244,3 +244,25 @@ Verdict: **still not passed for commercial quality** (lead average 6.25). Earned
 every vertical-slice item except police pursuit (not built). Remaining work toward 7+: car canopy
 and side-glass shaping, pack-race traffic avoidance (stuck counts react chaotically to small AI
 changes), speed-line mask over the HUD centre, waterfront and establishing light.
+
+### Round 6 — 2026-11-25 (lead canopy rebuild, glass, flame, HUD scrim)
+
+Two independent reviewers (art-director lens, technical-artist lens) looked at fresh captures
+taken before the lead's last three fixes (glass border ring removed, flame colour, HUD scrim).
+Note: both quoted race draw calls of 481-633 from an older table; the current per-preset table
+above (Low 253 / Medium 255 / High 458 at race pace, budgets 250 / 350 / 500) supersedes them.
+
+| criterion | art lens | tech lens | lead (final captures) |
+|---|---|---|---|
+| vehicle geometry | 6 | 6 | 7 — narrow greenhouse with tumblehome, one raked side window, A-pillar (`final/renders/contact_sheet.png` vs `contact_sheet_before_round5.png`, `garage/overview.png`); a few small steps remain at the windscreen corners |
+| materials | 6 | 6 | 6 — clearcoat and wet road good; glass reads light grey at grazing angles in the garage (ceiling-bar fresnel) |
+| lighting | 6 | 6.5 | 7 |
+| environment detail | 5 | 6 | 6 — waterfront still sparse; rooftop "hexagon holes" in the 60 m view are AC units/tanks in shadow, not missing geometry, but they read badly |
+| camera | 6 | 6 | 6 |
+| UI | 6 | 6 | 7 — top scrim keeps the lap/time rows legible over neon (`ui_hud_mock/desktop_1920x1080.png`) |
+| effects | 6 | 5.5 | 7 — nitro now a white-root, blue-to-magenta flame (`race_city/racing_nitro.png`), speed lines edge-only, rain, reflections |
+| performance | 5 | 5 | 6 (desktop only) |
+
+Verdict: **not passed** (lead average 6.5; materials, environment, camera and performance below 7;
+performance cannot pass without a phone measurement). Next: environment density (waterfront,
+rooftops), glass and car-paint read in the race, camera replay/cinematics, a phone build.

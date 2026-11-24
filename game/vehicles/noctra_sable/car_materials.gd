@@ -12,6 +12,8 @@ const KNOWN: PackedStringArray = [
 ]
 const DEFAULT_PAINT: Color = Color(0.557, 0.059, 0.118)  ## #8E0F1E candy red from the brief
 const DEFAULT_RIM: Color = Color(0.314, 0.333, 0.369)  ## gunmetal, the GLB source albedo (was 0.08: read as black)
+const GLASS_TINT: Color = Color(0.02, 0.03, 0.04, 0.62)  ## near-black smoked glass, alpha = opacity
+const GLASS_SPECULAR: float = 0.25
 const PAINT_METALLIC: float = 0.85
 const PAINT_ROUGHNESS: float = 0.32
 const PAINT_CLEAR: float = 1.0
@@ -98,6 +100,10 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color) -> Standar
 			m.albedo_color = Color(src.albedo_color.r, src.albedo_color.g, src.albedo_color.b, GLASS_ALPHA)
 			m.roughness = GLASS_ROUGHNESS
 			m.metallic = 0.0
+			# Tinted glass: dark, and a reduced specular so a bright ceiling bar does not turn the
+			# whole windscreen into a white plate (it read as an opaque slab in the garage).
+			m.albedo_color = GLASS_TINT
+			m.metallic_specular = GLASS_SPECULAR
 			m.render_priority = 1  ## draw after opaque, so the glass sits over the interior
 		"M_Lens":
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA

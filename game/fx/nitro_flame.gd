@@ -6,7 +6,7 @@ extends Node3D
 ## The flames are meshes, not particles: a particle puff read as white smoke at speed (see FX_AND_SHADERS.md).
 
 const LEN_MIN: float = 0.6  ## metres at ignition
-const LEN_MAX: float = 1.2  ## metres at full strength
+const LEN_MAX: float = 1.6  ## metres at full strength
 const CORE_RADIUS: float = 0.06  ## base radius: 0.12 m wide
 const HALO_RADIUS: float = 0.16
 const HALO_LEN: float = 0.8  ## the halo is shorter than the core
@@ -20,13 +20,13 @@ const FLICKER_HZ: float = 23.0
 const FLICKER_LEN: float = 0.07  ## length jitter from the sine
 const FLICKER_NOISE: float = 0.05  ## random jitter per frame
 const WHITE: Color = Color(1.0, 1.0, 1.0)
-const BLUE: Color = Color(0.1, 0.5, 1.0)
+const BLUE: Color = Color(0.04, 0.32, 1.0)  ## saturated: with HDR glow a paler blue tonemapped to white
 const MAGENTA: Color = Color(1.0, 0.1, 0.9)
 
 @export var light_energy: float = 3.0
 @export var light_range: float = 4.0
-@export var core_glow: float = 3.5  ## HDR brightness of the core; above 1.0 it blooms
-@export var halo_glow: float = 2.0
+@export var core_glow: float = 1.7  ## HDR brightness of the core; above 1.0 it blooms (3.5 washed the whole flame to white)
+@export var halo_glow: float = 1.5
 
 var _holders: Array[Node3D] = []
 var _cores: Array[MeshInstance3D] = []
@@ -179,7 +179,7 @@ func _put(st: SurfaceTool, radius: float, t: float, angle: float, core: bool) ->
 
 ## Along the flame (t = 0 at the exhaust, 1 at the tip): core is white-hot, then electric blue, then magenta.
 func _ramp(t: float, core: bool) -> Color:
-	var rgb: Color = WHITE.lerp(BLUE, smoothstep(0.0, 0.2, t)) if core else BLUE
-	rgb = rgb.lerp(MAGENTA, smoothstep(0.45, 1.0, t))
+	var rgb: Color = WHITE.lerp(BLUE, smoothstep(0.0, 0.09, t)) if core else BLUE  # only a short white-hot root
+	rgb = rgb.lerp(MAGENTA, smoothstep(0.35, 0.9, t))
 	var a: float = pow(1.0 - t, 0.9) if core else 0.6 * pow(1.0 - t, 1.5)
 	return Color(rgb.r, rgb.g, rgb.b, a)

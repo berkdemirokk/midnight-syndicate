@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-25T01:16:53"
+    "time": "2026-11-25T01:31:25"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -151,8 +151,8 @@
         "lod0_draw_objects": 17,
         "lod0_materials": 15,
         "tris": {
-          "lod0": 86567,
-          "lod1": 27497,
+          "lod0": 86557,
+          "lod1": 27498,
           "lod2": 6797
         }
       },
@@ -206,7 +206,7 @@
         "light_budget_log": 13,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1504.5,
+        "load_time_ms": 1452.7,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -260,7 +260,7 @@
         "8car_orderA_nitro140_race_time_s": 74.47,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 4.2
+        "8car_orderA_nitro140_wall_s": 4.0
       },
       "pass": true
     },
@@ -284,7 +284,7 @@
         "8car_orderB_nitro100_race_time_s": 83.18,
         "8car_orderB_nitro100_stuck_events": 3,
         "8car_orderB_nitro100_stuck_worst_car": 1,
-        "8car_orderB_nitro100_wall_s": 5.0
+        "8car_orderB_nitro100_wall_s": 4.9
       },
       "pass": true
     },
@@ -296,7 +296,7 @@
         "8car_orderB_nitro140_race_time_s": 80.73,
         "8car_orderB_nitro140_stuck_events": 3,
         "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 5.2
+        "8car_orderB_nitro140_wall_s": 5.0
       },
       "pass": true
     },
@@ -308,7 +308,7 @@
         "8car_orderB_nitro0_race_time_s": 80.3,
         "8car_orderB_nitro0_stuck_events": 4,
         "8car_orderB_nitro0_stuck_worst_car": 2,
-        "8car_orderB_nitro0_wall_s": 4.6
+        "8car_orderB_nitro0_wall_s": 4.4
       },
       "pass": true
     },
@@ -331,7 +331,7 @@
         "6car_nitro100_race_time_s": 76.42,
         "6car_nitro100_stuck_events": 2,
         "6car_nitro100_stuck_worst_car": 1,
-        "6car_nitro100_wall_s": 3.0
+        "6car_nitro100_wall_s": 2.9
       },
       "pass": true
     },
@@ -355,7 +355,7 @@
         "6car_nitro0_race_time_s": 74.07,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 2.9
+        "6car_nitro0_wall_s": 2.8
       },
       "pass": true
     }

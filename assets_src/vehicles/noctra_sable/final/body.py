@@ -742,7 +742,9 @@ def split_glazing(body):
     for pi in gl:
         pv = polys[pi]
         border = any(ecount[tuple(sorted((pv[k], pv[(k + 1) % len(pv)])))] == 1 for k in range(len(pv)))
-        mats.append(1 if border else 0)
+        # No M_Trim border ring: since the window edges are cut along their planes, the one-face
+        # ring was made of thin slivers and read as jagged black teeth. All glazing faces are glass.
+        mats.append(0)
     # inward offset: average of face normals per vertex
     vn = np.zeros_like(co)
     for pi in gl:

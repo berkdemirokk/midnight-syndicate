@@ -26,6 +26,8 @@ const POS_TOTAL_PX: int = 28
 const SPEED_PX: int = 112
 const UNIT_PX: int = 20
 const LAP_PX: int = 40
+const TOP_SCRIM_PX: float = 300.0  ## height of the dark gradient behind the top HUD clusters
+const TOP_SCRIM_ALPHA: float = 0.6
 const SMALL_PX: int = 18
 const TIME_PX: int = 24
 const NITRO_LABEL_PX: int = 18
@@ -101,6 +103,28 @@ func _build() -> void:
 	_speed_fx.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_speed_fx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_speed_fx)
+
+	# Top scrim: a soft dark gradient under the position and lap clusters, so bright neon behind
+	# them never washes out the labels (the TIME caption disappeared over a sign).
+	var scrim := TextureRect.new()
+	scrim.name = "TopScrim"
+	var grad := Gradient.new()
+	grad.set_color(0, Color(0.0, 0.0, 0.0, TOP_SCRIM_ALPHA))
+	grad.set_color(1, Color(0.0, 0.0, 0.0, 0.0))
+	grad.add_point(0.75, Color(0.0, 0.0, 0.0, TOP_SCRIM_ALPHA * 0.6))  # holds dark under the lap/time rows
+	var gtex := GradientTexture2D.new()
+	gtex.gradient = grad
+	gtex.fill_from = Vector2(0.5, 0.0)
+	gtex.fill_to = Vector2(0.5, 1.0)
+	gtex.width = 4
+	gtex.height = 64
+	scrim.texture = gtex
+	scrim.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	scrim.stretch_mode = TextureRect.STRETCH_SCALE
+	scrim.anchor_right = 1.0
+	scrim.offset_bottom = TOP_SCRIM_PX
+	scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(scrim)
 
 	_frame = Control.new()
 	_frame.name = "Frame"
