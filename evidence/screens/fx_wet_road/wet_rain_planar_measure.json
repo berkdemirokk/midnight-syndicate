@@ -1,0 +1,25 @@
+{
+  "name": "wet_rain_planar_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 57,
+    "driver": "vulkan",
+    "fps": 1356.177,
+    "frame_ms_avg": 0.737,
+    "frame_ms_p95": 0.858,
+    "frame_ms_p99": 0.887,
+    "frames": 300,
+    "objects": 57,
+    "os": "Windows",
+    "primitives": 126084,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 164.589,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "fx_wet_road"
+}

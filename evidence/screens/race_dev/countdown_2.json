@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.984,
+  "luma_min": 0.0,
+  "name": "countdown_2",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 171,
+    "driver": "vulkan",
+    "fps": 1147.93,
+    "frame_ms_avg": 0.871,
+    "frame_ms_p95": 0.942,
+    "frame_ms_p99": 1.074,
+    "frames": 60,
+    "objects": 461,
+    "os": "Windows",
+    "primitives": 24372,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 171.518,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/race_dev/countdown_2.png",
+  "preset": "high",
+  "scenario": "race_dev"
+}

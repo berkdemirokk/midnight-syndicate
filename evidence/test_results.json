@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-24T18:17:41"
+    "time": "2026-11-24T18:42:02"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -202,6 +202,50 @@
       "pass": true
     }
   },
+  "test_fx.gd": {
+    "test_car_fx_follows_nitro_signals": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_default_car_fx_has_no_speed_lines_overlay": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_freeing_car_leaves_no_orphans": {
+      "failures": [],
+      "metrics": {
+        "node_delta_after_free": 0
+      },
+      "pass": true
+    },
+    "test_hit_above_threshold_triggers_sparks": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_planar_reflection_keeps_default_layer_and_feeds_material": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_scenes_instantiate": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_shaders_compile_on_mesh": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_speed_lines_intensity_clamps": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
   "test_game_state.gd": {
     "test_bad_types_are_sanitised": {
       "failures": [],
@@ -246,6 +290,61 @@
       "failures": [],
       "metrics": {
         "engine_max_total_cost": 12000
+      },
+      "pass": true
+    }
+  },
+  "test_race_scene.gd": {
+    "test_autopilot_completes_one_lap_with_results": {
+      "failures": [],
+      "metrics": {
+        "results_rows": 4,
+        "winner_time_s": 47.5166666666653
+      },
+      "pass": true
+    },
+    "test_countdown_runs_and_race_starts": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_missing_scenes_use_fallbacks": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_paint_sets_body_albedo": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_pause_toggles_tree_paused": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_reset_car_puts_displaced_car_back_on_line": {
+      "failures": [],
+      "metrics": {
+        "reset_lateral_m": 0.0
+      },
+      "pass": true
+    },
+    "test_retry_gives_fresh_race_at_grid": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_scene_instantiates_without_errors": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_wheels_follow_wheel_positions": {
+      "failures": [],
+      "metrics": {
+        "wheel_error_grid_m": 0.0,
+        "wheel_error_racing_m": 0.000193119092728011
       },
       "pass": true
     }
@@ -335,7 +434,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@305"
+        "main_menu_focus": "@Button@1807"
       },
       "pass": true
     },

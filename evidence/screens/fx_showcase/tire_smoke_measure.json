@@ -1,0 +1,25 @@
+{
+  "name": "tire_smoke_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 5,
+    "driver": "vulkan",
+    "fps": 2483.711,
+    "frame_ms_avg": 0.403,
+    "frame_ms_p95": 0.457,
+    "frame_ms_p99": 0.563,
+    "frames": 300,
+    "objects": 5,
+    "os": "Windows",
+    "primitives": 176,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 104.113,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "fx_showcase"
+}

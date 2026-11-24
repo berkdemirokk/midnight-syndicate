@@ -1,0 +1,105 @@
+class_name CarFx
+extends Node3D
+## Put under an ArcadeCar. Drives nitro flames, tyre smoke, hit sparks, headlights and speed lines
+## from the car's signals and state only. Everything it creates is a child of this node, so freeing
+## the car frees every emitter. Pools are built once in _ready; nothing is allocated per frame.
+
+const RL: int = 2  ## rear-left index in ArcadeCar.wheel_slip
+const RR: int = 3
+const SPEED_LINES_FROM_KMH: float = 180.0
+const SPEED_LINES_FULL_KMH: float = 300.0
+const NITRO_FULL_KMH: float = 250.0
+
+## Local to the car (forward is -Z). Rear centre, low, split for two flames.
+@export var exhaust_points: PackedVector3Array = PackedVector3Array([Vector3(-0.12, 0.2, 1.9), Vector3(0.12, 0.2, 1.9)])
+## Approximate rear contact points: wheelbase 2.66 m, rear track 1.64 m (check against the spec).
+@export var rear_wheel_offsets: PackedVector3Array = PackedVector3Array([Vector3(-0.82, -0.2, 1.33), Vector3(0.82, -0.2, 1.33)])
+@export var slip_threshold: float = 0.35
+@export var spark_min_impulse: float = 0.0  ## the car only emits hit above spec.hit_min_impulse already
+@export var headlights_on: bool = true
+## Full-screen overlay: off by default. race_scene gives every car a CarFx, so only the player's
+## HUD speed lines should be driven; an opponent with this on would draw streaks on the player's screen.
+@export var speed_lines_on: bool = false
+
+var car: ArcadeCar = null
+var flames: NitroFlame
+var smoke: TireSmoke
+var sparks: Sparks
+var headlights: Headlights
+var speed_lines: SpeedLines
+var _wheel_world: PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+var _slip_out: PackedFloat32Array = PackedFloat32Array([0.0, 0.0])
+
+
+func _ready() -> void:
+	car = get_parent() as ArcadeCar
+	if car == null:
+		push_warning("CarFx must be a child of an ArcadeCar; effects disabled")
+		set_process(false)
+		return
+	flames = NitroFlame.new()
+	smoke = TireSmoke.new()
+	sparks = Sparks.new()
+	headlights = Headlights.new()
+	add_child(flames)
+	add_child(smoke)
+	add_child(sparks)
+	add_child(headlights)
+	if speed_lines_on:
+		speed_lines = SpeedLines.new()
+		add_child(speed_lines)
+	flames.set_exhaust_points(exhaust_points)
+	flames.set_active(false)
+	headlights.set_on(headlights_on)
+	car.nitro_started.connect(_on_nitro_started)
+	car.nitro_ended.connect(_on_nitro_ended)
+	car.hit.connect(_on_hit)
+
+
+func _exit_tree() -> void:
+	if car != null and is_instance_valid(car):
+		if car.nitro_started.is_connected(_on_nitro_started):
+			car.nitro_started.disconnect(_on_nitro_started)
+		if car.nitro_ended.is_connected(_on_nitro_ended):
+			car.nitro_ended.disconnect(_on_nitro_ended)
+		if car.hit.is_connected(_on_hit):
+			car.hit.disconnect(_on_hit)
+
+
+func _process(_delta: float) -> void:
+	if car == null or not is_instance_valid(car):
+		return
+	var xf: Transform3D = car.global_transform
+	# Nitro flame strength follows speed while the flames are on.
+	flames.set_strength(clampf(car.speed_kmh / NITRO_FULL_KMH, 0.0, 1.0))
+	# Tyre smoke: rear wheels only, on slip above the threshold or while drifting.
+	var lateral: float = car.linear_velocity.dot(xf.basis.x)
+	for i: int in 2:
+		var idx: int = RL + i
+		var wi: float = car.wheel_slip[idx]
+		var on: bool = wi > slip_threshold or car.is_drifting
+		_slip_out[i] = (maxf(wi, 0.5) if car.is_drifting else wi) if on else 0.0
+		_wheel_world[i] = xf * rear_wheel_offsets[i]
+	smoke.update_puffs(_wheel_world, _slip_out, xf.basis.x * signf(lateral), absf(lateral))
+	# Speed lines fade in above 180 km/h and intensify with nitro.
+	if speed_lines != null:
+		var k: float = clampf((car.speed_kmh - SPEED_LINES_FROM_KMH) / (SPEED_LINES_FULL_KMH - SPEED_LINES_FROM_KMH), 0.0, 1.0)
+		speed_lines.set_intensity(k * (1.0 if car.nitro_active else 0.6))
+
+
+func _on_nitro_started() -> void:
+	flames.set_active(true)
+	flames.pop()
+
+
+func _on_nitro_ended() -> void:
+	flames.set_active(false)
+
+
+func _on_hit(impulse: float, world_pos: Vector3) -> void:
+	if impulse >= spark_min_impulse:
+		sparks.burst(world_pos)
+
+
+func set_headlights(on: bool) -> void:
+	headlights.set_on(on)
