@@ -1,0 +1,52 @@
+; Engine configuration file.
+; Owned by the lead (Fable). Agents: do not edit; request changes in your report.
+
+config_version=5
+
+[application]
+
+config/name="Midnight Syndicate"
+config/version="0.1.0"
+run/main_scene="res://ui/menus/main_menu.tscn"
+config/features=PackedStringArray("4.7", "Mobile")
+run/max_fps=60
+
+[autoload]
+
+InputSetup="*res://core/input_setup.gd"
+Settings="*res://core/settings.gd"
+GameState="*res://core/game_state.gd"
+Router="*res://core/router.gd"
+Capture="*res://devtools/capture.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
+
+[layer_names]
+
+3d_physics/layer_1="world"
+3d_physics/layer_2="vehicles"
+3d_physics/layer_3="triggers"
+3d_physics/layer_4="props"
+3d_physics/layer_5="police_sensors"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+common/physics_ticks_per_second=60
+common/physics_interpolation=true
+common/max_physics_steps_per_frame=4
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
+textures/vram_compression/import_etc2_astc=true
+anti_aliasing/quality/msaa_3d=1
+lights_and_shadows/directional_shadow/size=2048
+lights_and_shadows/directional_shadow/size.mobile=1024

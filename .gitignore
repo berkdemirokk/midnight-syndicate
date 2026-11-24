@@ -1,0 +1,27 @@
+# Godot
+game/.godot/
+game/*.translation
+game/export/
+*.import.bak
+# Blender
+*.blend1
+*.blend2
+# Python
+__pycache__/
+*.pyc
+.venv/
+# Logs and scratch
+*.log
+evidence/tmp/
+assets_src/**/attempt_*/out/*.blend
+# OS
+Thumbs.db
+.DS_Store
+# Secrets and signing: never commit
+*.p12
+*.mobileprovision
+*.cer
+*.p8
+*.keystore
+.env
+export_credentials.cfg
