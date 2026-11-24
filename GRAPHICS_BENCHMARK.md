@@ -199,3 +199,30 @@ Race and pack rows are over the draw-call budget after the race fixes. The budge
 - city_presets `downtown_overpass`: still faces a building block, not the guardrails. Not retaken in this pass.
 - city_presets `pack` on all presets: start-of-race (see notes), not race pace.
 - Results screen at one lap: CASH 1 000 and REP 100 (non-zero), player 1st. The earlier run without staging finished 6th with CASH 300 and REP 30.
+
+## Visual quality gate — vertical slice, 2026-11-24 (round 3)
+
+Two review stages on real captures from the capture harness (no mock-ups):
+stage 1 = independent Haiku reviewer that did not build anything; stage 2 = lead (Claude) looking
+at the same PNGs. Scale: 5 acceptable indie, 7 good commercial mobile, 9 top of the store.
+Performance is desktop-only, so it is capped at 6 until a phone is measured.
+
+| criterion | stage 1 | stage 2 (lead) | lead's reason, with the screenshot |
+|---|---|---|---|
+| vehicle geometry | 6 | 6 | credible original silhouette, strong wheels/brakes (`car_studio/`, `garage/overview.png`); greenhouse still boxy, wing plates plain |
+| materials | 5 | 6 | clearcoat paint in the garage, convincing wet asphalt (`race_city/racing_10s.png`); rival paint reads near-black in the race, some facades flat |
+| lighting | 6 | 7 | neon + lamp reflections on the wet road, lit tower windows, car-only fill light (`race_city/pack.png`, `city_districts/neon_strip.png`); waterfront and the 60 m establishing view still too dark |
+| environment detail | 5 | 6 | Neon Strip dense with readable original signage; waterfront sparse; downtown street level plain |
+| camera | 6 | 6 | stable chase framing with speed FOV (`race_city/racing_nitro.png`); no replay camera; drift shot weak |
+| UI | 6 | 7 | coherent HUD, menus, garage and results (`race_city/results.png`); minimap sometimes over bright signs |
+| effects | 5 | 5 | rain and reflections good; nitro flame reads as a white puff and speed lines are not visible at 180 km/h (`race_city/racing_nitro.png`) |
+| performance | 5 | 6 | per-preset draw-call budgets met on the dev PC (table above); no phone measured |
+
+Screens required by the brief: main menu, garage, car modification (garage paint/rims/upgrades),
+race start, in-race camera, nitro, night atmosphere, results — captured. Car selection: one car
+only (the garage shows it). **Police pursuit: not built (M3) — not evaluated.**
+
+**Verdict: not passed for commercial quality.** The slice is complete and playable end to end
+at an indie level (average 6.1 lead, 5.5 independent). Scaling content is still on hold.
+Next fixes, in order: nitro flame + speed lines (effects 5), car paint readability in the race,
+waterfront and establishing light, greenhouse/wing geometry.
