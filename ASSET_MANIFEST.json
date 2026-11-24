@@ -3078,6 +3078,57 @@
       "test_result": "pass",
       "added": "2026-11-24",
       "notes": "CITY 01 props kit LOD1 for props_kit_gantry_crane; engine hides it unless switching LOD"
+    },
+    {
+      "id": "noctra_sable_lod0",
+      "kind": "model",
+      "path": "assets_src/vehicles/noctra_sable/final/out/noctra_sable_lod0.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 86821,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 7542972,
+      "sha256": "2fc07a99e87e58c3853d1958817e6206a7a83bcb33c81d3fb946143cbad86dd4",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "Noctra Sable R hero car LOD0, stage 2B"
+    },
+    {
+      "id": "noctra_sable_lod1",
+      "kind": "model",
+      "path": "assets_src/vehicles/noctra_sable/final/out/noctra_sable_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 27499,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 4921376,
+      "sha256": "445826e281d3c2c76acc5de5cc56ca7f35a3a1f442994fc5658253eef82be7c1",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "Noctra Sable R hero car LOD1, stage 2B"
+    },
+    {
+      "id": "noctra_sable_lod2",
+      "kind": "model",
+      "path": "assets_src/vehicles/noctra_sable/final/out/noctra_sable_lod2.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 6775,
+      "texture_sizes": {},
+      "material_count": 14,
+      "bytes": 3677472,
+      "sha256": "d3ce4acd5fd9ab3db26fa373d9183b63d6623ca44996743394fcd119214933eb",
+      "test_result": "pass",
+      "added": "2026-11-24",
+      "notes": "Noctra Sable R hero car LOD2, stage 2B"
     }
   ]
 }
