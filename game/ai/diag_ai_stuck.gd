@@ -156,6 +156,9 @@ func _start() -> void:
 	var out_name: String = "stuck_events.json"
 	var trace_s: PackedStringArray = PackedStringArray(["1100", "1190"])
 	var slide: float = -1.0  ## --slide=<m/s> overrides AIDriver.slide_lift_ms (a huge value turns the rule off)
+	var nitro_kmh: float = 0.0  ## --nitro=<kmh> sets AIDriver.nitro_min_start_kmh for every car (test settings 0, 100, 140)
+	var reversed_order: bool = false  ## --order=b gives the skills in reverse grid order (test order B)
+	var set_args: PackedStringArray = PackedStringArray()  ## --set=<property>=<value>, any AIDriver export, for experiments
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--slide="):
 			slide = float(a.trim_prefix("--slide="))
@@ -165,6 +168,12 @@ func _start() -> void:
 			n = clampi(int(a.trim_prefix("--cars=")), 1, SKILLS.size())
 		if a.begins_with("--out="):
 			out_name = a.trim_prefix("--out=")
+		if a.begins_with("--nitro="):
+			nitro_kmh = float(a.trim_prefix("--nitro="))
+		if a.begins_with("--set="):
+			set_args.append(a.trim_prefix("--set="))
+		if a == "--order=b":
+			reversed_order = true
 	var city: CityBuilder = (load(SCENE_PATH) as PackedScene).instantiate() as CityBuilder
 	root.add_child(city)
 	var manager := RaceManager.new()
@@ -178,7 +187,10 @@ func _start() -> void:
 		root.add_child(car)
 		var d := AIDriver.new()
 		d.name = "AIDriver"
-		d.skill = SKILLS[i]
+		d.skill = SKILLS[SKILLS.size() - 1 - i] if reversed_order else SKILLS[i]
+		d.nitro_min_start_kmh = nitro_kmh
+		for kv: String in set_args:
+			d.set(kv.get_slice("=", 0), kv.get_slice("=", 1).to_float())
 		if slide >= 0.0:
 			d.slide_lift_ms = slide
 			d.slide_cut_ms = slide + 1.5

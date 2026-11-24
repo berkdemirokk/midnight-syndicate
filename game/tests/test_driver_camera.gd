@@ -398,3 +398,151 @@ func test_touch_zones_drive_the_driver() -> void:
 	check(hidden.visible == DisplayServer.is_touchscreen_available(),
 		"touch controls hidden unless a touchscreen is available")
 	await _finish()
+
+
+## Static box at centre, size; layer 1 so the camera wall rays see it.
+func _add_box(centre: Vector3, size: Vector3) -> StaticBody3D:
+	var body := StaticBody3D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var cs := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	cs.shape = box
+	body.add_child(cs)
+	body.position = centre
+	_nodes.append(add(body))
+	return body
+
+
+## Holds the car's yaw rate at yaw for ticks physics frames (the car's yaw damping eats a single kick).
+func _hold_yaw(yaw: float, ticks: int) -> void:
+	for _i: int in ticks:
+		_car.angular_velocity = Vector3(0.0, yaw, 0.0)
+		await frames(1)
+
+
+func test_look_point_moves_toward_corner_inside() -> void:
+	_rig(true)
+	await _settle()
+	await _hold_yaw(1.0, 60)  # positive yaw turns left, so the inside is left
+	var xf: Transform3D = _car.get_global_transform_interpolated()
+	var lateral_left: float = (_cam._look_point(xf) - xf.origin).dot(xf.basis.x)
+	metric("look_side_left_turn", _cam.look_side)
+	metric("look_lateral_left_turn_m", lateral_left)
+	check(_cam.look_side < -0.5, "left turn: look shift goes left (look_side %.2f)" % _cam.look_side)
+	check(lateral_left < -0.3, "left turn: look point is left of the car (%.2f m)" % lateral_left)
+	await _hold_yaw(-1.0, 120)
+	xf = _car.get_global_transform_interpolated()
+	var lateral_right: float = (_cam._look_point(xf) - xf.origin).dot(xf.basis.x)
+	check(lateral_right > 0.3, "right turn: look point is right of the car (%.2f m)" % lateral_right)
+	await _hold_yaw(0.0, 240)
+	check(absf(_cam.look_side) < 0.05, "straight road: look shift returns to centre")
+	await _finish()
+
+
+func test_roll_leans_into_turn_within_limit_and_zero_in_grid() -> void:
+	_rig(true)
+	await _settle()
+	await _hold_yaw(1.0, 60)
+	var max_rad: float = deg_to_rad(_cam.max_roll_deg)
+	metric("roll_deg_left_turn", rad_to_deg(_cam.roll_rad))
+	check(absf(_cam.roll_rad) <= max_rad + 0.0001, "roll stays within max_roll_deg")
+	check(_cam.roll_rad < -0.5 * max_rad, "left turn rolls the camera left (negative)")
+	var right0: Vector3 = (-_cam.global_transform.basis.z).cross(Vector3.UP).normalized()
+	var tilt: float = _cam.global_transform.basis.y.dot(right0)
+	check(tilt < -0.02, "camera horizon tilts left on a left turn (tilt %.4f)" % tilt)
+	check(absf(tilt) <= sin(max_rad) + 0.001, "applied roll matches roll_rad")
+	_cam.set_mode(ChaseCamera.Mode.ORBIT)
+	await _hold_yaw(1.0, 240)
+	metric("roll_deg_in_grid", rad_to_deg(_cam.roll_rad))
+	check(absf(_cam.roll_rad) < 0.0005, "no roll in ORBIT (grid and finish)")
+	await _finish()
+
+
+func test_nitro_ignition_kicks_camera_back_and_eases_out() -> void:
+	_rig(true)
+	await _settle()
+	_car.nitro_started.emit()
+	await frames(1)
+	metric("kick_back_at_ignition_m", _cam.kick_back_m)
+	check_range(_cam.kick_back_m, 0.39, 0.41, "nitro ignition pushes the camera back 0.4 m")
+	await frames(24)  # 0.4 s is half of nitro_kick_back_s
+	metric("kick_back_at_half_m", _cam.kick_back_m)
+	check_range(_cam.kick_back_m, 0.15, 0.25, "push-back is half eased at half the time")
+	await frames(60)
+	check(absf(_cam.kick_back_m) < 0.001, "push-back fully eased after nitro_kick_back_s")
+	await _finish()
+
+
+func test_speed_lowers_camera_and_adds_shake_above_180() -> void:
+	_rig(true)
+	await _settle()
+	await frames(2)
+	var h_rest: float = _cam.compute_ideal_position().y - _car.global_position.y
+	_car.linear_velocity = Vector3(0.0, 0.0, -70.0)  # 252 km/h
+	await frames(30)
+	var h_fast: float = _cam.compute_ideal_position().y - _car.global_position.y
+	metric("speed_kmh_for_shake", _car.speed_kmh)
+	metric("camera_height_drop_m", h_rest - h_fast)
+	check(_car.speed_kmh > 200.0, "car reached 200 km/h for the speed test")
+	check(h_rest - h_fast > 0.02, "camera lowers with speed (%.3f m)" % (h_rest - h_fast))
+	check(h_rest - h_fast <= _cam.speed_drop_m + 0.001, "lowering stays within speed_drop_m")
+	_cam.trauma = 0.0
+	# Measured on the shake term alone: the spring lag at speed is not shake.
+	var mean: float = 0.0
+	var peak: float = 0.0
+	for _i: int in SHAKE_SAMPLES:
+		await frames(1)
+		var s: float = _cam._speed_shake_offset(_cam.global_transform.basis).length()
+		mean += s
+		peak = maxf(peak, s)
+	mean /= SHAKE_SAMPLES
+	metric("speed_shake_mean_m", mean)
+	metric("speed_shake_peak_m", peak)
+	check(mean > 0.002, "speed shake is visible above 180 km/h without trauma")
+	check(peak <= _cam.speed_shake_m * 1.2 + 0.0005, "speed shake stays subtle (peak %.4f m)" % peak)
+	await _finish()
+
+
+func test_ceiling_keeps_camera_under_roof() -> void:
+	_rig(true)
+	await _settle()
+	var roof_y: float = _car.global_position.y + 1.6
+	_add_box(Vector3(0.0, roof_y + 0.2, 0.0), Vector3(60.0, 0.4, 60.0))  # slab bottom at roof_y
+	await frames(30)
+	_sync_camera()
+	metric("camera_y_under_roof_m", roof_y - _cam.global_position.y)
+	check(_cam.global_position.y < roof_y - 0.1, "camera stays below the ceiling")
+	check(_cam.global_position.y > _car.global_position.y, "camera still above the car under the roof")
+	await _finish()
+
+
+func test_side_wall_limits_camera_swing() -> void:
+	_rig(true)
+	await _settle()
+	_driver.enabled = false
+	_add_box(Vector3(1.2, 1.5, 0.0), Vector3(0.3, 3.0, 40.0))  # near face at x = 1.05
+	await frames(30)
+	var limit: float = _cam._side_limit_right_m
+	metric("side_limit_right_m", limit)
+	check_range(limit, 0.6, 0.85, "side probe finds the wall face (limit to the right)")
+	check(_cam._goal_offset().y <= limit + 0.001, "goal swing stays inside the side wall")
+	_sync_camera()
+	var xf: Transform3D = _car.get_global_transform_interpolated()
+	var lateral: float = (_cam.global_position - xf.origin).dot(xf.basis.x)
+	check(lateral < 1.05, "camera is not inside the side wall (lateral %.2f m)" % lateral)
+	await _finish()
+
+
+func test_finish_orbit_circles_car_at_orbit_radius() -> void:
+	_rig(true)
+	await _settle()
+	_cam.start_finish_orbit()
+	check(_cam.mode == ChaseCamera.Mode.ORBIT, "finish orbit sets ORBIT mode")
+	await frames(ORBIT_FRAMES)
+	_sync_camera()
+	var car_p: Vector3 = _car.get_global_transform_interpolated().origin
+	var flat: Vector2 = Vector2(_cam.global_position.x - car_p.x, _cam.global_position.z - car_p.z)
+	check_range(flat.length(), _cam.orbit_radius_m - ORBIT_TOL_M, _cam.orbit_radius_m + ORBIT_TOL_M, "finish orbit radius (m)")
+	await _finish()

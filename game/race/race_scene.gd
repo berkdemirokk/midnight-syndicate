@@ -464,6 +464,8 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)))
 	if player_ai != null:
 		player_ai.set_racing(false)
+	if camera != null:
+		camera.start_finish_orbit()  # slow cinematic orbit behind the results screen
 	results_screen.show_results(results, rewards)
 	results_screen.visible = true
 

@@ -37,13 +37,13 @@ const PUSH_MAX_M: float = 40.0
 @export var chunk_m: float = 240.0  ## road chunk length for prop MultiMeshes, merged colliders and light budget
 @export var light_energy_scale: float = 0.6  ## layout energies are Blender-scale; tuned in the capture
 ## Street lamp spot energy multiplier per district. Waterfront and market lamps had no visible pool at 0.6 x 14.
-@export var lamp_district_scale: Dictionary = {"neon": 1.0, "downtown": 4.0, "waterfront": 8.0, "market": 4.0, "underpass": 1.0}
+@export var lamp_district_scale: Dictionary = {"neon": 1.0, "downtown": 4.0, "waterfront": 10.0, "market": 4.0, "underpass": 1.0}
 @export var fog_begin_m: float = 220.0  ## depth fog starts here: city blocks stay crisp, the bay backdrop fades
 @export var fog_end_m: float = 1200.0
 @export var lamp_range_m: float = 18.0  ## was 22: a street lamp only has to reach the road below it; shorter range touches fewer volumes
 @export var neon_fill_range_m: float = 8.0  ## was 12 to 14: the omni fills used up the 8-per-mesh budget on the overpass
 @export var lamp_merge_m: float = 3.0  ## lamp heads closer than this are one double lamp: one spot is kept
-@export_range(0.0, 8.0) var tunnel_light_energy_scale: float = 2.0  ## underpass ceiling omnis: walls and road get a pool every 12 m
+@export_range(0.0, 8.0) var tunnel_light_energy_scale: float = 3.0  ## underpass ceiling omnis: walls and road get a pool every 12 m
 @export_range(0.0, 8.0) var string_light_energy_scale: float = 3.0  ## market string lights: warm dapple on the street under them
 @export var lamp_spot_angle_deg: float = 55.0  ## wide cone for street lamp heads
 @export var light_fade_begin_m: float = 70.0
@@ -65,6 +65,14 @@ const PUSH_MAX_M: float = 40.0
 @export var wall_wash_s_min: float = 1150.0  ## waterfront stretch with the warehouses in view of the capture
 @export var wall_wash_s_max: float = 1400.0
 @export var wall_wash_spacing_m: float = 35.0
+## Waterfront floodlights: one cool-white spot above each container stack and gantry crane base, aimed at it.
+## No distance fade: the stacks sit 100 to 300 m from the promenade, past the normal fade.
+@export var floodlight_energy: float = 9.0  ## JSON-scale energy, x light_energy_scale
+@export var floodlight_color: String = "#FFF1D6"
+@export var floodlight_range_m: float = 30.0
+@export var floodlight_height_m: float = 18.0
+@export var floodlight_s_min: float = 1100.0
+@export var floodlight_s_max: float = 1420.0
 
 var stats: Dictionary = {}  ## counts recorded for the tests and the engine report
 var light_report: Dictionary = {}  ## CityLights.budget summary (counts, log lines)
@@ -579,6 +587,7 @@ func _build_lights(raw: Array, inst: Array) -> void:
 			rng = minf(rng, neon_fill_range_m)  # short fills: fewer volumes touched, so street lamps survive the budget
 		lights.append({"type": String(d["type"]), "pos": p, "range": rng, "src": d})
 	lights.append_array(_wall_wash_lights(inst))
+	lights.append_array(_floodlights(inst))
 	var vols: Dictionary = _budget_volumes()
 	light_volumes = vols["aabbs"]
 	var report: Dictionary = CityLights.budget(lights, light_volumes, vols["names"])
@@ -617,7 +626,7 @@ func _build_lights(raw: Array, inst: Array) -> void:
 			boost = float(lamp_district_scale.get(String(src["district"]), 1.0))
 		light.light_energy = float(src["energy"]) * light_energy_scale * boost
 		light.shadow_enabled = false
-		light.distance_fade_enabled = true
+		light.distance_fade_enabled = src_name != "floodlight"
 		light.distance_fade_begin = light_fade_begin_m
 		light.distance_fade_length = light_fade_length_m
 		_lighting.add_child(light)
@@ -646,6 +655,28 @@ func _wall_wash_lights(inst: Array) -> Array:
 		out.append({"type": "spot", "pos": spot_pos, "range": wall_wash_range_m,
 			"src": {"source": "wall_wash", "district": "waterfront", "color": wall_wash_color,
 				"energy": wall_wash_energy, "direction": [dir.x, dir.y, dir.z]}})
+	return out
+
+
+## One cool-white spot above each waterfront container stack and gantry crane, aimed down at its base.
+func _floodlights(inst: Array) -> Array:
+	var out: Array = []
+	for v: Variant in inst:
+		var d: Dictionary = v
+		if String(d["kind"]) != "prop" or String(d["district"]) != "waterfront":
+			continue
+		var asset: String = String(d["asset"])
+		if asset != "container_stack" and asset != "gantry_crane":
+			continue
+		var s: float = float(d["s_offset_m"])
+		if s < floodlight_s_min or s > floodlight_s_max:
+			continue
+		var b: Vector3 = _vec(d["position"])
+		var spot_pos: Vector3 = b + Vector3(0.0, floodlight_height_m, 0.0)
+		var dir: Vector3 = (b + Vector3(0.0, 4.0, 0.0) - spot_pos).normalized()
+		out.append({"type": "spot", "pos": spot_pos, "range": floodlight_range_m,
+			"src": {"source": "floodlight", "district": "waterfront", "color": floodlight_color,
+				"energy": floodlight_energy, "direction": [dir.x, dir.y, dir.z]}})
 	return out
 
 

@@ -51,9 +51,10 @@ extends Resource
 @export var window_glow_tint: Color = Color(1.0, 0.78, 0.5)
 ## Multiplies the energy of ceiling strips and tunnel lights (JSON energy 5 blew out to white bands).
 @export_range(0.0, 1.0) var ceiling_energy_scale: float = 0.06
+
 ## Underpass ceiling fixture: HDR energy of the lit dashes, dash length and period along the tunnel (m),
 ## and the tunnel direction the dashes run along. Energy 3 blooms without going flat white.
-@export_range(0.0, 16.0) var tunnel_light_energy: float = 3.0
+@export_range(0.0, 16.0) var tunnel_light_energy: float = 0.4
 @export var tunnel_run_dir: Vector3 = Vector3(-0.985, 0.0, 0.17)
 @export_range(0.1, 10.0) var tunnel_light_lit_m: float = 1.2
 @export_range(0.2, 20.0) var tunnel_light_period_m: float = 1.8
@@ -69,7 +70,7 @@ extends Resource
 @export var skyline_tint: Color = Color(0.42, 0.45, 0.55)
 @export_range(0.0, 8.0) var skyline_window_energy: float = 2.2
 ## Roof bitumen albedo multiplier: near-black roofs under the night ambient read as holes in the skyline.
-@export_range(1.0, 4.0) var roof_albedo_scale: float = 2.0
+@export_range(1.0, 4.0) var roof_albedo_scale: float = 3.0
 ## Multiplies the concrete wall albedo (M_Concrete_Wall, the textured facade walls). Dark brick walls read as
 ## black slabs from 60 m; raised so the walls read as buildings under the night ambient.
-@export_range(1.0, 4.0) var wall_albedo_scale: float = 1.8
+@export_range(1.0, 4.0) var wall_albedo_scale: float = 2.2

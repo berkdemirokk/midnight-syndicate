@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.988,
+  "luma_min": 0.0,
+  "name": "waterfront_stacks",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 26,
+    "driver": "vulkan",
+    "fps": 1247.92,
+    "frame_ms_avg": 0.801,
+    "frame_ms_p95": 0.83,
+    "frame_ms_p99": 0.941,
+    "frames": 60,
+    "objects": 26,
+    "os": "Windows",
+    "primitives": 34294,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.118,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/city_districts/waterfront_stacks.png",
+  "preset": "high",
+  "scenario": "city_districts"
+}

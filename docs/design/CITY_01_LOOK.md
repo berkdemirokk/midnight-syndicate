@@ -162,3 +162,43 @@ Baseline for every round: `evidence/screens/city_districts_round0/` (snapshot of
 - Waterfront: no container stacks or quay railing catch light in the frame; water reflection of the skyline is hard to see at this exposure.
 - Underpass: ceiling dashes still the largest bright shapes (unchanged this pass, judged acceptable).
 - Full suite (`evidence/logs/tests_full_city_look.log`): 123 tests, 1 failed: `test_race_scene.gd::test_car_fill_light_reaches_only_the_car_layer` (12 car meshes not on the fill layer). The test file was modified after the last passing run (`tests_r3_full_suite.log`, 21:48; test file 21:58). Not in this agent's files; not investigated further.
+
+## Fourth pass (brief of 2026-11-25: waterfront, establishing, downtown, underpass; rounds 0 to 4)
+Baseline (round 0, unchanged code): `evidence/screens/city_districts_look_r0/`. Logs `evidence/logs/capture_city_look_r0..r4.log`.
+Shot list now has 7 shots: `waterfront_stacks` added (s 1279, yaw 80, faces the container stack and gantry crane across the quay).
+
+### Round 1 (floodlights, roofs and walls, underpass energy)
+- `city_builder.gd`: new `_floodlights()`: one cool-white spot (`floodlight_*` exports, source `floodlight`, no distance fade) above each waterfront `container_stack` and `gantry_crane` (s 1100 to 1420). New `lamp_district_scale` waterfront 8 -> 10 in round 2.
+- `world_material_tuning.gd`: `roof_albedo_scale` 2.0 -> 3.0, `wall_albedo_scale` 1.8 -> 2.2, `tunnel_light_energy` 3.0 -> 1.5. `city_builder.gd`: `tunnel_light_energy_scale` 2.0 -> 3.0.
+- Look: establishing roofs now read as blue roof planes; walls brighter. Underpass dashes still blown out at 1.5 (see round 3 for why). Waterfront: floodlights not visible in frame.
+
+### Round 2 (floodlight range, promenade lamps, underpass energy)
+- `floodlight_range_m` 60 -> 30. The 60 m sphere touched many light-budget volumes; the range was cut to keep the lights in budget. `lamp_district_scale` waterfront 10. `tunnel_light_energy` 1.5 -> 0.9.
+- Look: promenade pools slightly warmer on the road. Underpass dashes still near white.
+
+### Round 3 (underpass fixture energy, scene check)
+- `tunnel_light_energy` 0.9 -> 0.4. The shader is unshaded and writes `base * energy` in linear space; sRGB output makes 0.9 look white. 0.4 gives grey-blue fixtures, not blown out.
+- `city_districts.gd` now prints the count of `floodlight_*` spots in the scene: 4 in the scene (all kept by the budget). Not a budget drop; they were out of frame.
+- Look: underpass fixtures read as separate grey-blue dashes; walls and the painted stripe unchanged (the stripe is still a flat band).
+
+### Round 4 (new waterfront_stacks shot)
+- Added `waterfront_stacks` (s 1279, yaw 80). Look: the far skyline card reads, but the containers and crane base do NOT read. They are behind the quay fence and too far (350 to 380 m) for the floodlights to light a visible area; the crane base is still dark.
+- Neon Strip compared with round 0 (`neon_strip.png`): no regression seen. Signs read, wet reflections unchanged, facades a little lighter from the wall albedo.
+- Downtown compared with round 0 (`downtown.png`): essentially unchanged. Overpass deck lamp pools and parapet catch light were NOT done.
+
+### Tests
+- `test_city_01` + `test_world_materials` (round 4): 12 of 12 pass (`evidence/logs/tests_city_look_r4.log`).
+- Full suite (round 4): 131 tests, 0 failed (`evidence/logs/tests_full_city_look_r4.log`).
+- Import after round 1: no SCRIPT ERROR, Parse Error or SHADER ERROR.
+
+### Status against the brief
+1. Waterfront: partly. Promenade pools warmer; the skyline card reads; floodlights are placed and in budget but do NOT show in any frame. Quay railing light catch NOT done. Container stacks NOT visible.
+2. Establishing: partly. Roof planes read; walls brighter; floating window cells on the dark side walls remain. No moonlight change (moon already at 0.25, no shadows).
+3. Downtown street level: NOT done (overpass lamp pools, parapets).
+4. Underpass: partly. Dashes dimmed from blown-out white to grey-blue fixtures, now not the brightest shapes (the stripe and walls are still dark). Walls lit in rhythm NOT verified.
+
+### Still open (next pass)
+- Frame the containers: a closer or higher camera at the quay, or a floodlight range that reaches the camera side.
+- Quay railing material (M_Metal_Painted or the railing kit) needs a rim or sheen to catch light.
+- Downtown overpass: place lamps for the deck and raise the parapet albedo.
+- Establishing: the lit window cells on near-black side walls; raise facade albedo further or add a wall-wash fill there.

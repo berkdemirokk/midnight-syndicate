@@ -2,7 +2,7 @@
 
 Code: `game/ai/ai_driver.gd` (AIDriver), `game/race/race_manager.gd` (RaceManager), `game/world/track.gd` (Track).
 Test circuit: `game/tests/helpers/test_track.gd`. Tests: `game/tests/test_ai_race.gd` (9 tests on the test circuit),
-`game/tests/test_city_race.gd` (3 tests on city_01: a 6-car race, an 8-car stuck limit, and a 2-lap regression with the lap-2 top speed).
+`game/tests/test_city_race.gd` (10 tests on city_01: 6-car and 8-car races at AI nitro start 0, 100 and 140 km/h, two skill orders for 8 cars, and a 2-lap pace test). Round 4 below changes the car-to-car rules and the numbers; the sections before it describe the earlier rules.
 Diagnostics (not tests, run with `--headless --fixed-fps 60 --path game -s res://ai/<file>`):
 `game/ai/diag_ai_stuck.gd` (race with stuck and contact logging; options `--cars=N`, `--out=file.json`,
 `--slide=<m/s>` turns the slide rule off with a large value, `--s=a,b` traces cars inside that progress window)
@@ -255,3 +255,120 @@ Targets (round 3 brief):
 - Round 3: the nitro limit on a single straight is the charge (3.2 s per burst). Lap 2 reaches 216 km/h on the Neon Strip, so 220 km/h on a lap is still not reached.
 - Round 3: the 8-car stuck count changes with the process state (Jolt body order). The limit of 1 is met in the fresh run, the full suite and the test-only run, but with no margin. A multi-seed or multi-order check is open.
 - Round 3: `test_race_scene::test_planar_reflection_bound_on_real_track_by_preset` fails in the full suite (not in the AI area; not investigated).
+
+## Round 4: car-to-car avoidance (2026-11-25)
+
+Brief: pack-race stuck counts reacted chaotically to small unrelated changes; cars survived the pack by luck. Build sensing and
+avoidance, a robustness test (6 cars and 8 cars, AI nitro start 0/100/140 km/h, two skill orders), keep the pace test.
+
+### Design (game/ai/ai_driver.gd; RaceManager unchanged)
+- Sensing (`_sense`, every tick): each other car within `sense_range` (30 m) along the line: along (m, positive = ahead),
+  lateral offset (Track progress and lateral, no physics queries), relative lateral `dl`, forward speed, time to contact
+  `ttc = (along - car_length) / closing speed` when it is ahead and closing. A reused pool of entries, no allocation per tick.
+- (a) Following: the lead is the nearest car ahead with `|dl| < car_width + lane_margin` (1.9 + 0.6 m). When its ttc is under
+  `ttc_brake` (1.5 s) and no pass is possible this tick, our speed is capped at the lead's speed. The gap cap of the earlier
+  rounds stays (`follow_range` 18 m).
+- (b) Side by side: `_clamp_lane` keeps the lane target out of the band of any car with `|along| < side_long_range` (7 m):
+  never toward it, and centre distance at least `car_width + side_clearance` = 2.7 m (0.8 m body gap). If cars on both
+  sides conflict, the current offset is held.
+- (c) Passing: starts only when the lead is within `overtake_range` (20 m) and at least 1 m/s slower. `_side_passable`: the
+  target offset keeps `kerb_margin` 1.5 m from the kerb, and `_side_free`: no other sensed car has its centre within 2.7 m of
+  the target offset between 15 m behind and 27 m ahead. The pass ends when the passed car is 7 m behind. It aborts (3 s
+  cooldown, then back behind the car) when the target side fills, when the strongest curvature in the next 27 m reaches
+  `shift_stop_curvature` (0.008 1/m), or after 8 s.
+- (d) Kerbs: `edge_margin` is 1.0 m (was 1.5): lane offsets stay within 6.0 m of the line on the 14 m track.
+- (e) Corner entry: `_corner_braking`: when the target speed 50 m ahead is 1 m/s or more below ours and the curvature in those
+  50 m reaches 0.006 1/m, lane changes freeze (the shift holds).
+- (f) Start: a car that starts behind the line keeps its grid lateral (recorded at GO) for the first 150 m of race distance.
+  Race distance is unwrapped (`_race_m` accumulates per tick, so a lap does not reset it).
+- Lane shifts return at full rate. Passes start and continue only in zones below `shift_stop_curvature`.
+
+### Bugs found and fixed on the way
+1. Lap-2 drift: the first version wrapped race distance at half a lap, so the grid hold came back on lap 2 and held the solo
+   car at -3.5 m into the sweep at s 1050 (solo max 7.74 m). Race distance is now unwrapped: solo max 4.85 m (committed driver 5.01 m).
+2. The committed overtaking returned to the lane as soon as the passed car was alongside, which steered into it. A pass now
+   ends only when the car is 7 m behind.
+3. A pass into the inside of a tight left bend (6-car run, s 709 m, lateral -2.4 to -3.0 m, `Colliders_02`): the shift
+   was damped on return, so it held into the bend, and the bend bias added up to -1.5 m. Returns are now at full rate and the
+   zone rule refuses passes into bends.
+
+### Tried and rejected (fresh-process diagnostic, 8 cars order B, nitro 0 unless noted)
+| Change | Result |
+|---|---|
+| Heading correction in steering, gain 1.0 | 91 stuck (jam at s 690 to 710), worse |
+| Heading correction, gain -1.0 | 160 stuck, cars leave the road at the start, much worse |
+| Heading correction, gain 0.25 | 3 stuck (4 without): inside the noise, removed |
+| Side-lift speed rule (cap v - 2 m/s while alongside inside the clearance) | 107 to 280 stuck in the batch: cars stop beside each other; removed |
+| Clearance buffer +0.5 m in the clamp and the pass check | 3 / 6 / 4 stuck (nitro 0/100/140): no gain; removed |
+| Pass zone limit 0.006 1/m instead of 0.008 | 7 / 3 / 2 stuck: no clear gain; kept 0.008 |
+| No bend bias | 5 / 3 stuck: no clear gain; kept |
+
+### Numbers
+Fresh-process runs (`game/ai/diag_ai_stuck.gd`, one process per race, 60 Hz, city_01, the test skills, nitro set with `--nitro`):
+
+| Race | Committed driver (stuck) | Round 4 (stuck) | Round 4 race time |
+|---|---|---|---|
+| 6 cars, nitro 0 / 100 / 140 | 0 / 2 / 1 | 0 / 1 / 0 | 74.0 / 75.0 / 73.8 s |
+| 8 cars, order A, nitro 0 / 100 / 140 | 1 / 4 / 3 | 0 / 1 / 0 | 74.6 / 77.8 / 77.6 s |
+| 8 cars, order B, nitro 0 / 100 / 140 | 6 / 24 / 10 | 4 / 5 / 3 | 83.2 / 79.0 / 84.8 s |
+
+Test runs (`test_city_race`, one process for the whole file, full suite run, 138 tests, 5 failed):
+
+| Test | Stuck | Limit | Race time | Wall |
+|---|---|---|---|---|
+| 6 cars, nitro 0 | 0 | 0 | 74.07 s | 2.9 s |
+| 6 cars, nitro 100 | 2 | 0 | 76.62 s | 3.1 s |
+| 6 cars, nitro 140 | 0 | 0 | 73.77 s | 2.9 s |
+| 8 cars A, nitro 0 | 0 | 1 | 74.60 s | 4.4 s |
+| 8 cars A, nitro 100 | 3 | 1 | 82.65 s | 5.3 s |
+| 8 cars A, nitro 140 | 0 | 1 | 74.47 s | 4.2 s |
+| 8 cars B, nitro 0 | 4 | 1 | 80.85 s | 4.7 s |
+| 8 cars B, nitro 100 | 3 | 1 | 83.60 s | 5.2 s |
+| 8 cars B, nitro 140 | 6 | 1 | 82.85 s | 5.7 s |
+
+Single car, 2 laps (pace test, limits 67.1 s and over 200 km/h): lap 1 65.43 s, lap 2 66.67 s, lap-2 max 216.1 km/h, 0 stuck: pass.
+test_ai_race: 9 of 9 pass. Solo lap 1 51.18 s, lap 2 48.50 s, max lateral 4.85 m (limit 7). Overtake: max shift 2.69 m.
+The overtake test moved from s 170/200 to s 70/100 (start straight). The old spot is a bend (0.0055 to 0.0076 1/m) inside the
+pass zone, which the zone rule refuses: there the pass reached only 1.19 m before the zone aborted it. The test still asks for a
+1.5 m shift over a 30 m gap, so the pass rule is tested the same way.
+
+### Not met: the robustness criterion
+- 6 cars: nitro 0 and 140 pass. Nitro 100 gives 1 (fresh process) or 2 (test process) against the limit 0.
+- 8 cars: order A gives 0 to 3 (limit 1). Order B gives 3 to 6 in every run.
+- Off-road stuck events come from car-to-car contacts at 110 to 130 km/h in side-by-side bunching (about 20 to 60 contacts per
+  8-car race, most at s 360 to 520 m and 690 to 800 m), then slides at 120 to 160 km/h with the car sideways (lateral speed 4 to
+  6 m/s, yaw 10 to 15 deg) into the kerb or an intrusion. The AI has no answer to a slide once it starts. The heading
+  correction was the only steering answer tried (rejected above).
+- Process history changes the outcome. Order B, nitro 0: 4 stuck when it runs alone (probe test), 0 to 1 after the 8-car
+  nitro 140 race, and 110 (race never finishes) in the full test process. The settle frames between races (`cleanup` frees
+  the cars with `queue_free`) did not change it. The source is not identified (suspect: body and node order in the physics
+  server after many spawns). Per-race numbers are deterministic for a fixed sequence. A multi-seed or multi-order sweep is
+  needed before a limit can be trusted.
+- The earlier note about `test_race_scene::test_planar_reflection_bound_on_real_track_by_preset` did not recur in this run
+  (full suite: 138 tests, 5 failed, all in test_city_race).
+
+### Diagnostics added
+- `game/ai/diag_ai_stuck.gd`: `--nitro=<kmh>` (AI nitro start), `--order=b` (reversed skills, test order B),
+  `--set=<property>=<value>` (any AIDriver export, for experiments), plus the earlier `--cars`, `--out`, `--s`.
+- `game/ai/diag_solo_track.gd`: solo car on the test circuit, per-tick state for the first 4 s and every lateral excursion
+  over 5 m (`--nohold` sets grid_hold_m to 0).
+- `game/ai/diag_track_profile.gd`: curvature and target speed of the test circuit (`--from`, `--to`).
+- Logs: `evidence/logs/diag_*_r4*.log`, `evidence/logs/b_*.json` (current driver, fresh process), `evidence/logs/h_*.json`
+  (committed driver), `evidence/logs/c_*.json`, `cb_*`, `cz_*`, `nb_*` (rejected experiments). Full suite: `evidence/logs/full_suite_r4.log`.
+
+## Lead decision 2026-11-25: deadlock fix and the sweep criterion
+- Root cause of the 8-car order-B race that never finished (110 stuck events): the recovery
+  teleport searched progress without a hint (underpass and hairpin are about 43 m apart) and
+  placed the car on the line even when another stopped car occupied that spot, so the car was
+  stuck again at once, forever. Fix in `_reset_to_line`: hinted progress search, landing 4 m
+  ahead on a spot with 7 m clearance to every other car (probing 8 m further up to 6 times), and
+  a repeat stuck event within 15 m of the previous one skips the reverse attempt.
+- Pack contacts are chaotic: with identical code, the stuck count of one race depends on the
+  races run before it in the same process (Jolt body creation/free history changes contact
+  order). Small unrelated AI changes flip counts between 0 and 7.
+- Criteria: canonical setups stay strict (6 cars nitro off: 0; 8 cars order A nitro off: <= 1).
+  The sweep (nitro 100/140 and the reversed grid) checks the player-facing property instead:
+  the race finishes, everyone is classified, no car needs more than 3 recoveries (no stuck loop),
+  total <= 8. Every count is recorded as a metric in evidence/test_results.json.
+- Open problem: slides after side-by-side contacts at 110-160 km/h (car grip under slide, not
+  AI). Next step is a contact-assist in ArcadeCar (brief yaw damping after a car-to-car impulse).

@@ -3,13 +3,17 @@ extends Camera3D
 ## Follows an ArcadeCar. The chase offsets (travel direction, distance, drift swing) are critically
 ## damped springs, so the camera trails the car's direction, not its position. Runs in _process and
 ## reads the car with get_global_transform_interpolated(); the camera has physics interpolation off.
-## A wall raycast in _physics_process pulls the distance in; the same spring smooths that pull.
+## Wall raycasts in _physics_process pull the distance in and cap the height (ceiling) and the
+## lateral swing (side walls, parapets); the spring smooths the distance pull.
+## Corner look-into and roll follow the car's yaw rate. ORBIT is the grid and the finish camera.
 
 enum Mode { CHASE, HOOD, ORBIT }
 
 const MIN_DIV: float = 0.0001  ## divisor floor, not a tunable
 const MIN_BLEND_SPEED_MS: float = 0.5  ## below this speed the car's facing alone sets the direction
 const MIN_DIR_LEN_SQ: float = 0.000001  ## numeric guard for a near-zero blended direction
+const MIN_CAMERA_HEIGHT_M: float = 0.2  ## lowest camera height above the car origin under a ceiling
+const KICK_CLOCK_IDLE_S: float = 1000.0  ## starts the nitro kick clock far past its end
 
 @export var target: ArcadeCar: set = set_target
 @export var mode: Mode = Mode.CHASE
@@ -26,6 +30,19 @@ const MIN_DIR_LEN_SQ: float = 0.000001  ## numeric guard for a near-zero blended
 @export var drift_swing_norm_deg: float = 30.0
 @export var fallback_top_speed_kmh: float = 286.0  ## used when the car has no spec
 @export var min_distance_m: float = 3.0
+@export_group("Look, roll and speed feel")
+@export var look_inside_m: float = 1.2  ## look point shift toward the inside of a corner, at full yaw
+@export var look_smooth_s: float = 0.35  ## time constant of the look shift
+@export var yaw_full_rad_s: float = 0.6  ## yaw rate at which look shift and roll reach full strength
+@export var max_roll_deg: float = 2.5  ## camera roll into a turn, chase mode only
+@export var roll_smooth_s: float = 0.4
+@export var speed_drop_m: float = 0.06  ## camera lowered by this much at top speed
+@export var speed_shake_m: float = 0.012  ## high-frequency shake amplitude at full shake speed
+@export var speed_shake_from_kmh: float = 180.0
+@export var speed_shake_full_kmh: float = 240.0
+@export var speed_shake_hz: float = 35.0
+@export var nitro_kick_back_m: float = 0.4  ## camera pushed back on nitro ignition, eased to 0
+@export var nitro_kick_back_s: float = 0.8
 @export_group("Lens")
 @export var fov_rest: float = 62.0
 @export var fov_top: float = 78.0
@@ -43,6 +60,8 @@ const MIN_DIR_LEN_SQ: float = 0.000001  ## numeric guard for a near-zero blended
 @export var wall_mask: int = 1  ## world layer
 @export var wall_margin_m: float = 0.3
 @export var wall_ray_height_m: float = 0.5
+@export var side_probe_m: float = 2.0  ## lateral reach of the side-wall probes
+@export var ceiling_probe_m: float = 2.0  ## how far above the camera the ceiling probe looks
 @export_group("Hood and orbit")
 @export var hood_offset: Vector3 = Vector3(0.0, 0.5, -0.6)
 @export var hood_look_local: Vector3 = Vector3(0.0, 0.4, -30.0)
@@ -53,6 +72,9 @@ const MIN_DIR_LEN_SQ: float = 0.000001  ## numeric guard for a near-zero blended
 
 var trauma: float = 0.0  ## 0..1, shake strength is trauma squared
 var nitro_kick: float = 0.0  ## 0..1, eased nitro state that drives the FOV kick
+var kick_back_m: float = 0.0  ## current nitro push-back distance, eased to 0
+var look_side: float = 0.0  ## smoothed corner look: +1 shifts right, -1 shifts left
+var roll_rad: float = 0.0  ## smoothed roll; negative leans the camera left
 
 var _settings: Node = null
 var _initialised: bool = false
@@ -61,8 +83,12 @@ var _dir_vel: Vector3 = Vector3.ZERO
 var _off: Vector3 = Vector3.ZERO  ## smoothed offsets: x = distance behind, y = lateral swing
 var _off_vel: Vector3 = Vector3.ZERO
 var _wall_limit: float = INF  ## distance behind the car where a wall stops the camera
+var _ceiling_height_m: float = INF  ## camera height above the car origin where a ceiling stops it
+var _side_limit_right_m: float = INF  ## lateral swing to the right before a wall
+var _side_limit_left_m: float = INF  ## lateral swing to the left before a wall
 var _fov_now: float = 62.0
 var _shake_clock: float = 0.0
+var _kick_clock: float = KICK_CLOCK_IDLE_S
 var _orbit_angle: float = 0.0
 var _ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()  ## reused every physics tick
 var _exclude: Array[RID] = []  ## the car's RID, kept out of the wall ray
@@ -103,17 +129,21 @@ func _physics_process(_delta: float) -> void:
 		return
 	var xf: Transform3D = target.global_transform
 	var dir: Vector3 = _goal_dir(xf)
+	var right: Vector3 = dir.cross(Vector3.UP)
 	var base: float = lerpf(distance_rest_m, distance_top_m, _speed_t())
-	var from: Vector3 = xf.origin + Vector3.UP * wall_ray_height_m
-	var to: Vector3 = xf.origin - dir * base + Vector3.UP * height_m
-	_ray.from = from
-	_ray.to = to
-	_ray.collision_mask = wall_mask
-	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(_ray)
+	var rear: Vector3 = xf.origin - dir * base
+	var hit: Dictionary = _cast(xf.origin + Vector3.UP * wall_ray_height_m, rear + Vector3.UP * height_m)
 	_wall_limit = INF
 	if not hit.is_empty():
 		var hp: Vector3 = hit["position"]
 		_wall_limit = maxf((hp - xf.origin).dot(-dir) - wall_margin_m, 0.0)
+	_ceiling_height_m = INF
+	var roof: Dictionary = _cast(rear + Vector3.UP * wall_ray_height_m, rear + Vector3.UP * (height_m + ceiling_probe_m))
+	if not roof.is_empty():
+		var roof_y: float = (roof["position"] as Vector3).y
+		_ceiling_height_m = maxf(roof_y - xf.origin.y - wall_margin_m, MIN_CAMERA_HEIGHT_M)
+	_side_limit_right_m = _side_limit(xf.origin, right)
+	_side_limit_left_m = _side_limit(xf.origin, -right)
 
 
 func _process(delta: float) -> void:
@@ -122,8 +152,10 @@ func _process(delta: float) -> void:
 	var xf: Transform3D = target.get_global_transform_interpolated()
 	trauma = maxf(0.0, trauma - trauma_decay * delta)
 	_shake_clock += delta
+	_kick_clock += delta
 	_orbit_angle += orbit_rate_rad_s * delta
 	_update_lens(delta)
+	_update_feel(delta)
 	var pos: Vector3
 	match mode:
 		Mode.HOOD:
@@ -135,7 +167,9 @@ func _process(delta: float) -> void:
 			pos = _chase_pos(xf, _dir, _off)
 	global_position = pos
 	look_at(_look_point(xf), Vector3.UP)
-	global_position = pos + _shake_offset(global_transform.basis)
+	_apply_roll()
+	var b: Basis = global_transform.basis
+	global_position = pos + _shake_offset(b) + _speed_shake_offset(b)
 
 
 ## Where the camera should be right now, without smoothing or shake.
@@ -178,6 +212,11 @@ func toggle_mode() -> void:
 	set_mode(Mode.HOOD if mode == Mode.CHASE else Mode.CHASE)
 
 
+## Results-screen camera: a slow orbit around the car (ORBIT). Call when the race finishes.
+func start_finish_orbit() -> void:
+	set_mode(Mode.ORBIT)
+
+
 func add_trauma(amount: float) -> void:
 	trauma = clampf(trauma + amount, 0.0, 1.0)
 
@@ -193,6 +232,45 @@ func _on_car_hit(impulse: float, _world_pos: Vector3) -> void:
 
 func _on_nitro_started() -> void:
 	add_trauma(nitro_trauma)
+	_kick_clock = 0.0
+
+
+## One physics-state ray from from to to; the result dictionary is empty on no hit.
+func _cast(from: Vector3, to: Vector3) -> Dictionary:
+	_ray.from = from
+	_ray.to = to
+	_ray.collision_mask = wall_mask
+	return get_world_3d().direct_space_state.intersect_ray(_ray)
+
+
+## How far the camera may swing along side (a unit vector) before a wall, in metres from the car.
+func _side_limit(origin: Vector3, side: Vector3) -> float:
+	var hit: Dictionary = _cast(origin + Vector3.UP * wall_ray_height_m, origin + Vector3.UP * height_m + side * side_probe_m)
+	if hit.is_empty():
+		return INF
+	var hp: Vector3 = hit["position"]
+	return maxf((hp - origin).dot(side) - wall_margin_m, 0.0)
+
+
+## Smoothed look shift, roll and nitro push-back, all frame-rate independent.
+func _update_feel(delta: float) -> void:
+	var kick_t: float = clampf(_kick_clock / maxf(nitro_kick_back_s, MIN_DIV), 0.0, 1.0)
+	kick_back_m = nitro_kick_back_m * (1.0 - smoothstep(0.0, 1.0, kick_t))
+	var yaw_norm: float = clampf(target.angular_velocity.y / maxf(yaw_full_rad_s, MIN_DIV), -1.0, 1.0)
+	# Positive yaw turns left, so the inside of the corner is -right.
+	look_side = lerpf(look_side, -yaw_norm, 1.0 - exp(-delta / maxf(look_smooth_s, MIN_DIV)))
+	var roll_goal: float = 0.0
+	if mode == Mode.CHASE:
+		roll_goal = -yaw_norm * deg_to_rad(max_roll_deg)
+	roll_rad = lerpf(roll_rad, roll_goal, 1.0 - exp(-delta / maxf(roll_smooth_s, MIN_DIV)))
+
+
+func _apply_roll() -> void:
+	if absf(roll_rad) < MIN_DIV * MIN_DIV:
+		return
+	var t: Transform3D = global_transform
+	t.basis = Basis(-t.basis.z, roll_rad) * t.basis
+	global_transform = t
 
 
 ## Critically damped spring on the offsets (Unity SmoothDamp form with the exact exponential).
@@ -234,16 +312,23 @@ func _goal_dir(xf: Transform3D) -> Vector3:
 
 
 func _goal_offset() -> Vector3:
-	var dist: float = lerpf(distance_rest_m, distance_top_m, _speed_t())
+	var dist: float = lerpf(distance_rest_m, distance_top_m, _speed_t()) + kick_back_m
 	dist = maxf(minf(dist, _wall_limit), min_distance_m)
 	var slip: float = target.drift_angle_deg
 	var swing: float = -clampf(slip / maxf(drift_swing_norm_deg, MIN_DIV), -1.0, 1.0) * drift_swing_m
+	swing = minf(swing, _side_limit_right_m)
+	swing = maxf(swing, -_side_limit_left_m)
 	return Vector3(dist, swing, 0.0)
+
+
+## Camera height at this speed: a few centimetres lower at top speed, never above the ceiling limit.
+func _chase_height() -> float:
+	return minf(height_m - speed_drop_m * _speed_t(), _ceiling_height_m)
 
 
 func _chase_pos(xf: Transform3D, dir: Vector3, off: Vector3) -> Vector3:
 	var right: Vector3 = dir.cross(Vector3.UP)
-	return xf.origin - dir * off.x + Vector3.UP * height_m + right * off.y
+	return xf.origin - dir * off.x + Vector3.UP * _chase_height() + right * off.y
 
 
 func _look_point(xf: Transform3D) -> Vector3:
@@ -252,7 +337,8 @@ func _look_point(xf: Transform3D) -> Vector3:
 			return xf * hood_look_local
 		Mode.ORBIT:
 			return xf.origin + Vector3.UP * orbit_look_height_m
-	return xf.origin + _dir * look_ahead_m + Vector3.UP * look_height_m
+	var right: Vector3 = _dir.cross(Vector3.UP)
+	return xf.origin + _dir * look_ahead_m + Vector3.UP * look_height_m + right * (look_side * look_inside_m)
 
 
 func _orbit_pos(xf: Transform3D) -> Vector3:
@@ -277,6 +363,16 @@ func _shake_offset(b: Basis) -> Vector3:
 	var sx: float = sin(ph) + 0.5 * sin(ph * 1.31 + 1.7)
 	var sy: float = sin(ph * 0.87 + 0.6) + 0.5 * sin(ph * 1.73 + 2.9)
 	return (b.x * sx + b.y * sy) * amp
+
+
+## Very small high-frequency shake that ramps in above speed_shake_from_kmh, scaled by camera_shake.
+func _speed_shake_offset(b: Basis) -> Vector3:
+	var k: float = clampf((target.speed_kmh - speed_shake_from_kmh) / maxf(speed_shake_full_kmh - speed_shake_from_kmh, MIN_DIV), 0.0, 1.0)
+	var amp: float = speed_shake_m * k * _shake_scale()
+	if amp <= 0.0:
+		return Vector3.ZERO
+	var ph: float = _shake_clock * TAU * speed_shake_hz
+	return (b.x * sin(ph) + b.y * 0.5 * sin(ph * 1.37 + 0.8)) * amp
 
 
 func _shake_scale() -> float:
