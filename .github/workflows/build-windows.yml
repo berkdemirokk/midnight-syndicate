@@ -1,0 +1,122 @@
+# MIDNIGHT SYNDICATE - Windows build. MANUAL ONLY (workflow_dispatch).
+#
+# Manual on purpose: nothing runs on push or pull_request, which protects the free Actions quota.
+# Cost: Linux runner. Free for public repos [S][E]; private repos draw from the $12/mo allowance [S][E].
+#
+# WARNING: the export templates are a separate download of about 1.28 GB [owner brief; not yet
+# approved by the owner]. A run downloads it on a cache miss. Do not run this workflow until the owner
+# approves that download. The Actions cache limit is 10 GB per repo [S], shared with ci.yml.
+#
+# If game/export_presets.cfg or a "Windows Desktop" preset is missing, the job prints a notice and
+# exits 0. It does not build. Creating the preset is an owner/lead step (see RELEASE_CHECKLIST.md).
+#
+# UNVERIFIED (no run has happened): the templates archive name and its install path, the unzip
+# method for the .tpl file, the export command and output name, and the preset name string match.
+
+name: build-windows (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: export Windows Desktop
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GODOT_TAG: "4.7.2-stable"
+      GODOT_ZIP: "Godot_v4.7.2-stable_linux.x86_64.zip"
+      TPL_FILE: "Godot_v4.7.2-stable_export_templates.tpl"
+      TPL_DIR_NAME: "4.7.2.stable"
+    steps:
+      - name: Checkout (no LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Check for the Windows Desktop export preset
+        id: preset
+        run: |
+          if [ -f game/export_presets.cfg ] && grep -q 'name="Windows Desktop"' game/export_presets.cfg; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No 'Windows Desktop' preset in game/export_presets.cfg. Nothing to build. Exiting 0."
+          fi
+
+      - name: Cache Godot editor
+        if: steps.preset.outputs.present == 'true'
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/godot
+          key: godot-4.7.2-stable-linux-x86_64-v1
+
+      - name: Cache export templates
+        if: steps.preset.outputs.present == 'true'
+        id: cache-tpl
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates/4.7.2.stable
+          key: godot-4.7.2-stable-export-templates-v1
+
+      - name: Download and verify Godot editor (cache miss only)
+        if: steps.preset.outputs.present == 'true' && steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          cd "$RUNNER_TEMP/godot"
+          BASE="https://github.com/godotengine/godot/releases/download/$GODOT_TAG"
+          curl -fsSL -o "$GODOT_ZIP" "$BASE/$GODOT_ZIP"
+          curl -fsSL -o SHA512-SUMS.txt "$BASE/SHA512-SUMS.txt"
+          grep -F "$GODOT_ZIP" SHA512-SUMS.txt | sha512sum -c -
+          unzip -q -o "$GODOT_ZIP"
+          mv "Godot_v4.7.2-stable_linux.x86_64" godot
+          chmod +x godot
+          rm -f "$GODOT_ZIP"
+
+      - name: Download and verify export templates (cache miss only, about 1.28 GB)
+        if: steps.preset.outputs.present == 'true' && steps.cache-tpl.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/tpl"
+          cd "$RUNNER_TEMP/tpl"
+          BASE="https://github.com/godotengine/godot/releases/download/$GODOT_TAG"
+          curl -fsSL -o "$TPL_FILE" "$BASE/$TPL_FILE"
+          curl -fsSL -o SHA512-SUMS.txt "$BASE/SHA512-SUMS.txt"
+          grep -F "$TPL_FILE" SHA512-SUMS.txt | sha512sum -c -
+          mkdir -p "$HOME/.local/share/godot/export_templates/$TPL_DIR_NAME"
+          # The .tpl is assumed to be a zip of the templates folder. Unverified.
+          unzip -q -o "$TPL_FILE" -d "$HOME/.local/share/godot/export_templates/$TPL_DIR_NAME"
+
+      - name: Put Godot on PATH
+        if: steps.preset.outputs.present == 'true'
+        run: echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+
+      - name: Import project (headless)
+        if: steps.preset.outputs.present == 'true'
+        run: godot --headless --path game --import
+
+      - name: Export Windows Desktop (release)
+        if: steps.preset.outputs.present == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/build/windows"
+          godot --headless --path game --export-release "Windows Desktop" "$GITHUB_WORKSPACE/build/windows/MidnightSyndicate.exe"
+          ls -la "$GITHUB_WORKSPACE/build/windows"
+
+      - name: Upload Windows build
+        if: steps.preset.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: build/windows
+          if-no-files-found: error
+          retention-days: 14

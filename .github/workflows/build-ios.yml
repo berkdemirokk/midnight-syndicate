@@ -1,0 +1,201 @@
+# =====================================================================
+# MIDNIGHT SYNDICATE - iOS export and Xcode archive. MANUAL ONLY, macOS runner.
+#
+# RUN ONLY AFTER THE ACCOUNT OWNER CONFIRMS THE RUN. Never on push, PR or schedule.
+#
+# COST (docs/research/07-ios-release-and-ci.md):
+#  - macOS minutes are billed at about 10x the Linux rate [E]. $0.062/min macOS vs $0.006/min
+#    Linux 2-core [S].
+#  - Private repo: draws from the $12/mo Free allowance, about 190 macOS minutes/mo [E].
+#  - Public repo: standard hosted runners are free [S][E]. Repo visibility is an owner decision.
+#
+# SIGNING:
+#  - Signing is skipped unless the secrets below are set. Without them the job makes an UNSIGNED
+#    .xcarchive for a build check only. It cannot be uploaded to App Store Connect.
+#  - Secret NAMES this workflow expects (values live only in GitHub repository secrets, never in
+#    this file, never in git):
+#      APPLE_TEAM_ID                      Team ID. Godot's iOS export needs a Team ID [S].
+#      IOS_DIST_CERT_P12_BASE64           base64 of the Apple Distribution .p12 (owner creates) [E]
+#      IOS_DIST_CERT_PASSWORD             password of that .p12 [E]
+#      IOS_PROVISIONING_PROFILE_BASE64    base64 of the App Store provisioning profile [E]
+#    Reserved for a later upload step, NOT used here: ASC_API_KEY_ID, ASC_API_ISSUER_ID,
+#    ASC_API_KEY_P8_BASE64 [E].
+#  - The owner creates all of these. The Apple Developer account ($99/yr [S]) is required first.
+#
+# REQUIRED REPO FILE (not present yet): game/export_presets.cfg with an iOS preset named "iOS".
+# The job exits 1 with a clear error if it is missing. A manual run on a missing preset is a mistake,
+# so it fails rather than passing green.
+#
+# UNVERIFIED - NO macOS RUN HAS HAPPENED. Every step is unverified, specifically:
+#  - the macOS editor zip name, the Godot.app binary path, the template install path, and the
+#    template .tpl unzip method;
+#  - the iOS preset name, the output path (assumed to be an .xcodeproj folder), the Xcode project and
+#    scheme names, the Xcode version on the runner, and the xcodebuild flags;
+#  - the keychain and provisioning-profile commands.
+#  - Xcode 26 / iOS 26 SDK is required for uploads since 2026-04-28 [E: search snippet only].
+#    Check the runner's Xcode version before any upload step is added.
+# =====================================================================
+
+name: build-ios (manual, macOS)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export-and-archive:
+    name: iOS export and archive (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      GODOT_TAG: "4.7.2-stable"
+      GODOT_MAC_ZIP: "Godot_v4.7.2-stable_macos.universal.zip"
+      TPL_FILE: "Godot_v4.7.2-stable_export_templates.tpl"
+      TPL_DIR_NAME: "4.7.2.stable"
+    steps:
+      - name: Checkout (no LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Check for the iOS export preset
+        run: |
+          if [ ! -f game/export_presets.cfg ] || ! grep -q 'name="iOS"' game/export_presets.cfg; then
+            echo "::error::game/export_presets.cfg has no iOS preset. Create it in the Godot editor first (owner or lead)."
+            exit 1
+          fi
+
+      - name: Detect signing secrets
+        id: signing
+        env:
+          P12: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ -n "$P12" ] && [ -n "$PROFILE" ] && [ -n "$TEAM" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Signing secrets not set. Building an UNSIGNED archive for a build check only."
+          fi
+
+      - name: Cache Godot macOS editor
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/godot-mac
+          key: godot-4.7.2-stable-macos-universal-v1
+
+      - name: Cache export templates
+        id: cache-tpl
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Application Support/Godot/export_templates/4.7.2.stable
+          key: godot-4.7.2-stable-export-templates-v1
+
+      - name: Download and verify Godot macOS editor (cache miss only)
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot-mac"
+          cd "$RUNNER_TEMP/godot-mac"
+          BASE="https://github.com/godotengine/godot/releases/download/$GODOT_TAG"
+          curl -fsSL -o "$GODOT_MAC_ZIP" "$BASE/$GODOT_MAC_ZIP"
+          curl -fsSL -o SHA512-SUMS.txt "$BASE/SHA512-SUMS.txt"
+          # macOS runners have shasum, not sha512sum.
+          grep -F "$GODOT_MAC_ZIP" SHA512-SUMS.txt | shasum -a 512 -c -
+          unzip -q -o "$GODOT_MAC_ZIP"
+          xattr -dr com.apple.quarantine Godot.app || true
+          rm -f "$GODOT_MAC_ZIP"
+
+      - name: Download and verify export templates (cache miss only, about 1.28 GB)
+        if: steps.cache-tpl.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/tpl"
+          cd "$RUNNER_TEMP/tpl"
+          BASE="https://github.com/godotengine/godot/releases/download/$GODOT_TAG"
+          curl -fsSL -o "$TPL_FILE" "$BASE/$TPL_FILE"
+          curl -fsSL -o SHA512-SUMS.txt "$BASE/SHA512-SUMS.txt"
+          grep -F "$TPL_FILE" SHA512-SUMS.txt | shasum -a 512 -c -
+          mkdir -p "$HOME/Library/Application Support/Godot/export_templates/$TPL_DIR_NAME"
+          # The .tpl is assumed to be a zip of the templates folder. Unverified.
+          unzip -q -o "$TPL_FILE" -d "$HOME/Library/Application Support/Godot/export_templates/$TPL_DIR_NAME"
+
+      - name: Import project and export iOS Xcode project
+        run: |
+          set -euo pipefail
+          GODOT="$RUNNER_TEMP/godot-mac/Godot.app/Contents/MacOS/Godot"
+          "$GODOT" --headless --path game --import
+          mkdir -p build/ios
+          # Output path is an .xcodeproj folder. Unverified until the first run.
+          "$GODOT" --headless --path game --export-release "iOS" "$GITHUB_WORKSPACE/build/ios/MidnightSyndicate.xcodeproj"
+          ls -la build/ios
+
+      - name: Print Xcode and SDK versions (no xcode-select change)
+        run: |
+          xcodebuild -version
+          xcrun --show-sdk-version
+
+      - name: Create temporary keychain and import signing files
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          P12_B64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          P12_PW: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+          PROFILE_B64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          KC="$RUNNER_TEMP/build.keychain-db"
+          KC_PW="$(openssl rand -hex 16)"
+          echo "$P12_B64" | base64 --decode > "$RUNNER_TEMP/dist.p12"
+          echo "$PROFILE_B64" | base64 --decode > "$RUNNER_TEMP/profile.mobileprovision"
+          security create-keychain -p "$KC_PW" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KC_PW" "$KC"
+          security list-keychains -d user -s "$KC" "$HOME/Library/Keychains/login.keychain-db"
+          security import "$RUNNER_TEMP/dist.p12" -k "$KC" -P "$P12_PW" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KC_PW" "$KC" >/dev/null
+          UUID=$(security cms -D -i "$RUNNER_TEMP/profile.mobileprovision" | plutil -extract UUID raw -)
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$RUNNER_TEMP/profile.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
+
+      - name: Archive with xcodebuild (signed only when secrets are present)
+        env:
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          SIGNED: ${{ steps.signing.outputs.enabled }}
+        run: |
+          set -euo pipefail
+          ARGS=(
+            -project build/ios/MidnightSyndicate.xcodeproj
+            -scheme MidnightSyndicate
+            -configuration Release
+            -destination 'generic/platform=iOS'
+            -archivePath "$GITHUB_WORKSPACE/build/ios/MidnightSyndicate.xcarchive"
+          )
+          if [ "$SIGNED" = "true" ]; then
+            ARGS+=(DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="Apple Distribution")
+          else
+            ARGS+=(CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO)
+          fi
+          xcodebuild "${ARGS[@]}" archive
+
+      - name: Upload Xcode project and archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          # Free plan artifact storage is 500 MB [S]. An archive may exceed that. Check the size on the first run.
+          path: |
+            build/ios/MidnightSyndicate.xcodeproj
+            build/ios/MidnightSyndicate.xcarchive
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Remove temporary keychain
+        if: always() && steps.signing.outputs.enabled == 'true'
+        run: security delete-keychain "$RUNNER_TEMP/build.keychain-db" || true

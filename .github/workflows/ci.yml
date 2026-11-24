@@ -1,0 +1,110 @@
+# MIDNIGHT SYNDICATE - CI. Linux runners only.
+#
+# Free-minute budget facts (source: docs/research/07-ios-release-and-ci.md):
+#  - Standard GitHub-hosted runners are free for PUBLIC repositories [S][E: from GitHub billing summary].
+#  - Repository visibility is NOT decided yet (owner decision) [E]. Private repos draw from the allowance.
+#  - Free plan Actions allowance is $12/mo; Pro and Team are $18/mo [S].
+#  - Linux 2-core rate is $0.006/min [S]. $12 / $0.006 = about 2000 Linux minutes/mo [E].
+#  - macOS is billed about 10x the Linux rate [E]. This file never uses macOS (see build-ios.yml).
+#  - Cache limit 10 GB per repository [S]. Artifacts + Packages on Free: 500 MB [S].
+#
+# Triggers: every push and every pull request. A push to a PR branch runs twice (push + pull_request);
+# this is a free-minute cost. Superseded runs are cancelled (concurrency below).
+# UNVERIFIED (no run has happened): Godot release asset names, the SHA512-SUMS.txt asset name and
+# line format, the headless editor running on ubuntu-latest, and the action major versions below.
+# Actions are pinned to major tags, not commit SHAs. Pinning to SHAs is a follow-up.
+
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  logic-tests:
+    name: logic-tests (Godot 4.7.2 headless)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GODOT_TAG: "4.7.2-stable"
+      GODOT_ZIP: "Godot_v4.7.2-stable_linux.x86_64.zip"
+    steps:
+      - name: Checkout (no LFS; logic tests do not need binary assets)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Cache Godot editor
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/godot
+          key: godot-4.7.2-stable-linux-x86_64-v1
+
+      - name: Download and verify Godot editor (cache miss only)
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          cd "$RUNNER_TEMP/godot"
+          BASE="https://github.com/godotengine/godot/releases/download/$GODOT_TAG"
+          curl -fsSL -o "$GODOT_ZIP" "$BASE/$GODOT_ZIP"
+          curl -fsSL -o SHA512-SUMS.txt "$BASE/SHA512-SUMS.txt"
+          # Fails if the zip has no line in the official checksum file, or if the hash differs.
+          grep -F "$GODOT_ZIP" SHA512-SUMS.txt | sha512sum -c -
+          unzip -q -o "$GODOT_ZIP"
+          mv "Godot_v4.7.2-stable_linux.x86_64" godot
+          chmod +x godot
+          rm -f "$GODOT_ZIP"
+
+      - name: Put Godot on PATH
+        run: echo "$RUNNER_TEMP/godot" >> "$GITHUB_PATH"
+
+      - name: Print Godot version
+        run: godot --version
+
+      - name: Import project (headless)
+        run: godot --headless --path game --import
+
+      - name: Run logic tests (headless, fixed 60 fps)
+        run: godot --headless --fixed-fps 60 --path game -s res://tests/run_tests.gd
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: evidence/test_results.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  asset-validation:
+    name: asset-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout (no LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Validate assets if the asset factory exists
+        run: |
+          if [ -f tools/asset_factory.py ]; then
+            python tools/asset_factory.py validate
+          else
+            # tools/ is empty in the repo today. This is a skip, not a pass.
+            echo "::notice::tools/asset_factory.py is not in the repo yet. Asset validation was SKIPPED, not passed."
+          fi
