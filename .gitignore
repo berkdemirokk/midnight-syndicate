@@ -30,3 +30,6 @@ export_credentials.cfg
 assets_src/textures/cc0/
 assets_src/**/out/*.blend
 assets_src/**/*.blend1
+# Rejected car attempts (judge panel round 1) stay local
+assets_src/vehicles/noctra_sable/attempt_*/
+evidence/tmp/
