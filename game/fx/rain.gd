@@ -7,6 +7,8 @@ extends Node3D
 @export var box_height: float = 14.0
 @export var streak_amount: int = 900  ## at particle_amount_scale 1.0
 @export var splash_amount: int = 160
+@export var near_fade_start_m: float = 1.0  ## streaks closer than this are invisible
+@export var near_fade_end_m: float = 5.0  ## fully visible from here on
 @export var ground_y: float = 0.0
 @export var fall_speed: float = 22.0
 @export var rain_layer: int = 10  ## render layer bit (1 << 9) excluded from planar reflections
@@ -18,7 +20,13 @@ var _cam: Camera3D = null
 
 
 func _ready() -> void:
-	_streaks = FxUtil.emitter(streak_amount, 0.9, _streak_process(), FxUtil.billboard_material(true, Color(0.42, 0.52, 0.7, 0.5), false), Vector2(0.02, 0.8))
+	var streak_mat: StandardMaterial3D = FxUtil.billboard_material(true, Color(0.42, 0.52, 0.7, 0.5), false) as StandardMaterial3D
+	if streak_mat != null:
+		# Streaks right in front of the lens read as thick poles: fade them out near the camera.
+		streak_mat.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_ALPHA
+		streak_mat.distance_fade_min_distance = near_fade_start_m
+		streak_mat.distance_fade_max_distance = near_fade_end_m
+	_streaks = FxUtil.emitter(streak_amount, 0.9, _streak_process(), streak_mat, Vector2(0.012, 0.8))
 	_streaks.visibility_aabb = AABB(Vector3(-40, -20, -40), Vector3(80, 40, 80))
 	_splash = FxUtil.emitter(splash_amount, 0.25, _splash_process(), FxUtil.billboard_material(true, Color(0.5, 0.7, 0.9, 0.35)), Vector2(0.05, 0.05))
 	_splash.visibility_aabb = AABB(Vector3(-40, -4, -40), Vector3(80, 8, 80))

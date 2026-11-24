@@ -57,3 +57,29 @@ Source: `evidence/screens/garage/*.json` after the lighting, tab and upgrade-row
 | overview | 2556x1179 | 205 | 108 109 | 347 | 1.99 | 5.32 | 567 |
 
 Dev PC numbers only, not phone numbers. Frame times are single 60-frame probes. Video memory is the process figure.
+
+## City 01 in engine
+
+Machine: dev PC, NVIDIA GeForce RTX 5060 Ti, Windows 11, Godot 4.7.2 Mobile renderer, 1920x1080 window (viewport 1920x1061), preset `high`. Dev PC numbers only, not phone numbers.
+Sources: `evidence/screens/city_districts/*.json` (district run after the material round 3: window glow tint, facade albedo, ambient, ceiling strip scale) and `evidence/screens/race_city/*.json` (race run, one lap, autopilot). Each shot carries a 60-frame probe; the `_measure` files carry a 300-frame probe. Frame times are single runs and noisy.
+
+Scene: 1127 instances, 850 MultiMeshes, 148 occluders, 37 reflection probes, 150 lights built (28 dropped by the budget), worst per mesh 8 omni and 8 spot, probes 3 (test_city_01). Scene load about 1.2 s.
+
+| shot | draw calls | primitives | frame ms avg | p95 | p99 | video MB (process) |
+|---|---|---|---|---|---|---|
+| city_districts neon_strip | 369 | 215 400 | 2.37 | 3.44 | 6.08 | 707 |
+| city_districts neon_strip, 300-frame | 369 | - | 1.70 | 2.03 | 3.73 | 707 |
+| city_districts downtown | 108 | - | 1.62 | 1.82 | 5.76 | 707 |
+| city_districts establishing_60m | 256 | - | 2.52 | 2.73 | 6.03 | 707 |
+| city_districts underpass | 281 | - | 1.44 | 5.69 | 9.92 | 707 |
+| city_districts underpass, 300-frame | 281 | - | 0.95 | 1.01 | 1.23 | 707 |
+| city_districts waterfront | 92 | - | 1.45 | 1.68 | 5.99 | 707 |
+| city_districts old_market | 163 | - | 1.74 | 5.36 | 5.98 | 707 |
+| race_city grid | 179 | - | 1.96 | 3.14 | 5.72 | 781 |
+| race_city countdown_2 | 220 | - | 1.47 | 2.10 | 5.74 | 785 |
+| race_city racing_5s | 380 | - | 2.21 | 2.79 | 6.55 | 786 |
+| race_city racing_20s_nitro | 324 | - | 2.08 | 3.11 | 7.12 | 787 |
+| race_city results | 439 | - | 2.39 | 3.00 | 6.10 | 788 |
+
+Reading: the brief target is 350 draw calls. The race shots are over it (380 racing, 439 with the results screen up). Of the district shots only neon_strip (369) is over it; the others are 92 to 281.
+The p99 spikes of 5 to 10 ms in single 60-frame probes are shader or first-frame compile noise, not confirmed. Use the 300-frame `_measure` files for any claim. No phone measurement exists for this scene.

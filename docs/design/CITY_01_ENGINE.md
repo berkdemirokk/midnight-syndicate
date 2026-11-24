@@ -59,9 +59,9 @@ City01 (CityBuilder)            Track contract; builds everything in _ready from
   clearance at the kerb. Layout issue (guardrail offset 7.25 m), not moved by the engine.
 - Ground collider removed: it sat at -0.3 m above the underpass approach and dropped the car about 0.3 m at 1378 m.
   Road and sidewalk colliders cover the drivable surface now. The layout owner should check the ground mesh there.
-- `test_race_scene::test_autopilot_completes_one_lap_with_results` now fails: it expects the dev watermark, which
+- (Fixed in the test tree: the full suite is 110 of 110 now. Earlier note: `test_race_scene::test_autopilot_completes_one_lap_with_results` expected the dev watermark, which
   race_scene.gd only creates on the dev circuit. The city exists now, so the check is stale. Owner must update it.
-- No city capture scenario: devtools is not owned here. Only race_dev shots exist as harness evidence.
+- City capture scenarios: `city_districts` (districts) and `race_city` (one-lap race flow, added in this pass). The race_city nitro shot fails: the autopilot player car slowed to 5 km/h in the race (see CITY_01_LOOK.md round 3).
 - Sign facing: `flip_signs` is false. Checked only from the chase camera (readable); not checked in a side view.
 - Light energy scale 0.35 and fog density are unverified beyond the race_dev shots. Sky is a flat colour, the CC0 HDRI is not tested.
 - Waterfront side wall: the stop at 13.2 m is an unidentified obstacle, not the 19.8 m quay railing.

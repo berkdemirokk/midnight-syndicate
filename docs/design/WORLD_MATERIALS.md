@@ -43,11 +43,15 @@ Import: no `.import` overrides set. Godot's default GLB import handles the `-col
 | neon_energy_scale | 1.0 | x JSON emission (signs 9, tunnel light 12, sodium lamp 14) |
 | window_energy_scale | 1.0 | x JSON window emission (3.0) and shop interior (2.0) |
 | window_glow_threshold | 0.6 | atlas values below this do not glow |
-| window_glow_saturation | 0.5 | 0 grey glow, 1 raw atlas colour |
+| window_glow_saturation | 0.15 | 0 grey glow, 1 raw atlas colour (was 0.5: violet and blue windows) |
 | road_paint_glow | 0.18 | road marking self-glow |
 | glass_alpha | 0.35 | shopfront glass opacity |
 | water_scroll | (0.012, 0.007) | UV units per second |
 | lod0_end_m / lod1_end_m | 110 / 260 | building LOD switch distances |
+| facade_albedo_scale | 2.2 | window and shop atlas tint x (JSON #202838 was near black, walls read black) |
+| window_glow_tint | (1.0, 0.78, 0.5) | colour of lit window glow (warm) |
+| ceiling_energy_scale | 0.06 | x JSON energy of M_CeilingStrip and M_TunnelLight (5 and 12 blew out to white) |
+| CityBuilder ambient_color, ambient_energy | #2A3F6E, 1.6 | night fill for unlit walls (was #1B2B4D, 0.6) |
 
 ## Why the window threshold exists
 `M_WindowAtlas` is bright across most of its emissive atlas (pale blue and orange bands, about 27% of

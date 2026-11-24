@@ -62,10 +62,23 @@ func _run() -> void:
 			t.tree = self
 			total += 1
 			var errors_before: int = _err.script_errors
+			var root_before: Array[Node] = root.get_children()
 			await t.call(mname)
 			var fails: Array = t.failures
 			if _err.script_errors > errors_before:
 				fails.append("script error during the test: " + _err.last)
+			# Isolation: a test that crashed before its cleanup must not leave a scene for the next one.
+			var leaked := 0
+			for n: Node in root.get_children():
+				if not root_before.has(n):
+					leaked += 1
+					n.queue_free()
+			if leaked > 0:
+				await physics_frame
+				fails.append("left %d node(s) in the tree (freed by the runner)" % leaked)
+			if paused:
+				paused = false
+				fails.append("left the tree paused")
 			if fails.is_empty():
 				print("[PASS] %s::%s %s" % [f, mname, JSON.stringify(t.metrics)])
 			else:

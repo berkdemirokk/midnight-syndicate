@@ -181,9 +181,16 @@ static func _build(mat_name: String) -> Material:
 	if mat_name == "M_Water":
 		return _water()
 	if mat_name == "M_WindowAtlas":
-		return _emissive_atlas(mat_name, BUILDING_TEX + "window_atlas_basecolor.png", BUILDING_TEX + "window_atlas_emissive.png", tuning.window_energy_scale)
+		var w: ShaderMaterial = _emissive_atlas(mat_name, BUILDING_TEX + "window_atlas_basecolor.png", BUILDING_TEX + "window_atlas_emissive.png", tuning.window_energy_scale)
+		# Panes are glass, not lit plaster: dark, glossy, reflective.
+		w.set_shader_parameter("albedo_scale", tuning.pane_albedo_scale)
+		w.set_shader_parameter("roughness_value", tuning.pane_roughness)
+		w.set_shader_parameter("metallic_value", tuning.pane_metallic)
+		w.set_shader_parameter("cell_size_m", tuning.pane_cell_size_m)
+		w.set_shader_parameter("lit_fraction", tuning.pane_lit_fraction)
+		return w
 	if mat_name == "M_ShopInterior":
-		return _emissive_atlas(mat_name, BUILDING_TEX + "shop_interior_basecolor.png", BUILDING_TEX + "shop_interior_emissive.png", tuning.window_energy_scale)
+		return _emissive_atlas(mat_name, BUILDING_TEX + "shop_interior_basecolor.png", BUILDING_TEX + "shop_interior_emissive.png", tuning.shop_energy_scale)
 	if mat_name == "M_ShopGlass":
 		return _glass(mat_name, r)
 	if _is_neon(mat_name):
@@ -232,6 +239,10 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		return m
 	var emit_strength: float = float(r["emit_strength"])
 	if mat_name == "M_RoadPaint":
+		# Wet worn paint: grey-white, glossy, readable under lamps and headlights, never brighter
+		# than the lit scene around it.
+		m.albedo_color = Color(tuning.road_paint_albedo, tuning.road_paint_albedo, tuning.road_paint_albedo * 0.97)
+		m.roughness = tuning.road_paint_roughness
 		emit_strength = tuning.road_paint_glow
 	if emit_strength > 0.0:
 		m.emission_enabled = true
@@ -247,6 +258,8 @@ static func _neon(mat_name: String, r: Dictionary) -> ShaderMaterial:
 	var colour: Color = r["emit"] if r["emit"] != Color.BLACK else r["colour"]
 	sm.set_shader_parameter("base_color", colour)
 	var energy: float = float(r["emit_strength"]) * tuning.neon_energy_scale
+	if mat_name.begins_with("M_CeilingStrip") or mat_name.begins_with("M_TunnelLight"):
+		energy *= tuning.ceiling_energy_scale
 	sm.set_shader_parameter("energy", clampf(energy, 0.0, 16.0))
 	return sm
 
@@ -283,7 +296,9 @@ static func _emissive_atlas(mat_name: String, base_path: String, emit_path: Stri
 	var r: Dictionary = _recipes[mat_name]
 	sm.set_shader_parameter("albedo_tex", _tex(base_path))
 	sm.set_shader_parameter("emissive_tex", _tex(emit_path))
-	sm.set_shader_parameter("tint", Color(r["colour"].r, r["colour"].g, r["colour"].b))
+	var facade: Color = r["colour"] * tuning.facade_albedo_scale
+	sm.set_shader_parameter("tint", Color(facade.r, facade.g, facade.b))
+	sm.set_shader_parameter("glow_tint", Vector3(tuning.window_glow_tint.r, tuning.window_glow_tint.g, tuning.window_glow_tint.b))
 	sm.set_shader_parameter("glow_energy", float(r["emit_strength"]) * scale)
 	sm.set_shader_parameter("glow_threshold", tuning.window_glow_threshold)
 	sm.set_shader_parameter("glow_saturation", tuning.window_glow_saturation)
@@ -300,16 +315,22 @@ static func _glass(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 	return m
 
 
-static func _impostor(building_id: String) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.resource_name = "M_ImpostorAtlas"
-	m.albedo_texture = _tex(BUILDING_TEX + "impostor_%s_basecolor.png" % building_id)
-	m.roughness = 0.8
-	m.emission_enabled = true
-	m.emission = Color.WHITE
-	m.emission_texture = _tex(BUILDING_TEX + "impostor_%s_emissive.png" % building_id)
-	m.emission_energy_multiplier = float(_recipes["M_ImpostorAtlas"]["emit_strength"]) * tuning.window_energy_scale
-	return m
+## Far buildings. The impostor emissive texture is grey across the whole facade, so it goes through
+## the same threshold as the window atlas; without it a far tower renders as a white slab.
+static func _impostor(building_id: String) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.resource_name = "M_ImpostorAtlas"
+	sm.shader = load(WINDOW_SHADER) as Shader
+	sm.set_shader_parameter("albedo_tex", _tex(BUILDING_TEX + "impostor_%s_basecolor.png" % building_id))
+	sm.set_shader_parameter("emissive_tex", _tex(BUILDING_TEX + "impostor_%s_emissive.png" % building_id))
+	sm.set_shader_parameter("tint", Color.WHITE)
+	sm.set_shader_parameter("albedo_scale", tuning.impostor_albedo_scale)
+	sm.set_shader_parameter("roughness_value", 0.8)
+	sm.set_shader_parameter("glow_tint", Vector3(tuning.window_glow_tint.r, tuning.window_glow_tint.g, tuning.window_glow_tint.b))
+	sm.set_shader_parameter("glow_energy", float(_recipes["M_ImpostorAtlas"]["emit_strength"]) * tuning.window_energy_scale)
+	sm.set_shader_parameter("glow_threshold", tuning.window_glow_threshold)
+	sm.set_shader_parameter("glow_saturation", tuning.window_glow_saturation)
+	return sm
 
 
 static func _cc0_set(set_id: String) -> Dictionary:

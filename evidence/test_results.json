@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-24T19:15:07"
+    "time": "2026-11-24T19:43:45"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -141,9 +141,7 @@
       "pass": true
     },
     "test_triangle_and_material_budgets": {
-      "failures": [
-        "LOD0 uses 15 materials, max 14"
-      ],
+      "failures": [],
       "metrics": {
         "lod0_draw_objects": 17,
         "lod0_materials": 15,
@@ -153,7 +151,7 @@
           "lod2": 6799
         }
       },
-      "pass": false
+      "pass": true
     },
     "test_wheel_origins_at_wheel_centres": {
       "failures": [],
@@ -181,10 +179,10 @@
     "test_scene_builds_and_counts": {
       "failures": [],
       "metrics": {
-        "count_instances": 1127,
+        "count_instances": 1113,
         "count_lights_built": 150,
         "count_lights_dropped": 28,
-        "count_multimeshes": 850,
+        "count_multimeshes": 846,
         "count_occluders": 148,
         "count_probes": 37,
         "count_prop_colliders": 368,
@@ -192,7 +190,7 @@
         "light_budget_log": 23,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1602.1,
+        "load_time_ms": 1212.4,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -491,14 +489,12 @@
   },
   "test_race_scene.gd": {
     "test_autopilot_completes_one_lap_with_results": {
-      "failures": [
-        "dev watermark must sit above the results overlay"
-      ],
+      "failures": [],
       "metrics": {
         "results_rows": 4,
-        "winner_time_s": 67.3833333333308
+        "winner_time_s": 47.8166666666652
       },
-      "pass": false
+      "pass": true
     },
     "test_countdown_runs_and_race_starts": {
       "failures": [],
@@ -523,7 +519,7 @@
     "test_reset_car_puts_displaced_car_back_on_line": {
       "failures": [],
       "metrics": {
-        "reset_lateral_m": 0.000000000177908021647966
+        "reset_lateral_m": 0.0
       },
       "pass": true
     },
@@ -540,8 +536,8 @@
     "test_wheels_follow_wheel_positions": {
       "failures": [],
       "metrics": {
-        "wheel_error_grid_m": 0.0000000596046447753906,
-        "wheel_error_racing_m": 0.0000812710204627365
+        "wheel_error_grid_m": 0.0,
+        "wheel_error_racing_m": 0.000193119092728011
       },
       "pass": true
     }
@@ -631,7 +627,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@7764"
+        "main_menu_focus": "@Button@4568"
       },
       "pass": true
     },
@@ -655,56 +651,49 @@
   },
   "test_vehicle.gd": {
     "test_acceleration": {
-      "failures": [
-        "0-200 km/h time (s) = -1.000, expected 0.000..12.000"
-      ],
+      "failures": [],
       "metrics": {
-        "accel_0_100_s": 3.11666666666667,
-        "accel_0_200_s": -1.0
+        "accel_0_100_s": 3.08333333333333,
+        "accel_0_200_s": 8.55
       },
-      "pass": false
+      "pass": true
     },
     "test_anti_roll": {
-      "failures": [
-        "turn roll 3.610 deg with bar, 3.562 deg without: bar must reduce roll"
-      ],
+      "failures": [],
       "metrics": {
-        "anti_roll_off_turn_roll_deg": 3.56221923590244,
-        "anti_roll_on_turn_roll_deg": 3.6097222819178
+        "anti_roll_off_turn_roll_deg": 1.63182849750368,
+        "anti_roll_on_turn_roll_deg": 1.31789528790123
       },
-      "pass": false
+      "pass": true
     },
     "test_braking": {
       "failures": [],
       "metrics": {
-        "brake_100_0_heading_deg": 1.75612914740902,
-        "brake_100_0_m": 25.1297359466553,
-        "brake_200_0_heading_deg": 3.4217570076549,
-        "brake_200_0_m": 17.101146697998
+        "brake_100_0_heading_deg": 0.976904027740352,
+        "brake_100_0_m": 25.2271881103516,
+        "brake_200_0_heading_deg": 0.949125008055676,
+        "brake_200_0_m": 94.427978515625
       },
       "pass": true
     },
     "test_chaos": {
       "failures": [],
       "metrics": {
-        "chaos_min_origin_y_m": 0.47486424446106,
+        "chaos_min_origin_y_m": 0.465226769447327,
         "chaos_nan_ticks": 0,
-        "chaos_upright_dot": 0.998396873474121
+        "chaos_upright_dot": 0.999907612800598
       },
       "pass": true
     },
     "test_cornering": {
-      "failures": [
-        "steady circle radius at 60 km/h, full lock (m) = 8377.481, expected 12.000..30.000",
-        "lateral acceleration at 200 km/h, full lock (g) = 0.000, expected 0.900..2.200"
-      ],
+      "failures": [],
       "metrics": {
-        "corner_200_lateral_g": 0.0,
-        "corner_200_max_slip_deg": 0.0,
-        "corner_200_max_yaw_rad_s": 0.00000000279376410894372,
-        "corner_60_radius_m": 8377.48081200629
+        "corner_200_lateral_g": 1.54942343059544,
+        "corner_200_max_slip_deg": 5.42937449048709,
+        "corner_200_max_yaw_rad_s": 0.300266981124878,
+        "corner_60_radius_m": 29.0118345514982
       },
-      "pass": false
+      "pass": true
     },
     "test_default_curve": {
       "failures": [],
@@ -714,29 +703,24 @@
       "pass": true
     },
     "test_drift": {
-      "failures": [
-        "slip 15..50 deg sustained (s) = 0.317, expected 2.000..99.000",
-        "drift slip peaked at 88.7 deg, expected <= 70",
-        "drift slip peaked at 88.66 deg, expected <= drift_max_angle_deg 48.0",
-        "drift_ended after steering release (s) = -1.000, expected 0.000..2.000"
-      ],
+      "failures": [],
       "metrics": {
-        "drift_band_sustained_s": 0.316666666666667,
-        "drift_ended_after_release_s": -1.0,
+        "drift_band_sustained_s": 5.0,
+        "drift_ended_after_release_s": 1.4,
         "drift_entered_during_handbrake_s": 0.0166666666666667,
-        "drift_last_score": 47.9026178757403,
-        "drift_score_gain": 43.1466162543944,
-        "drift_slip_max_deg": 88.6579737740319,
-        "drift_slip_under_8_after_release_s": 0.0166666666666667,
+        "drift_last_score": 178.50975564733,
+        "drift_score_gain": 159.602674750536,
+        "drift_slip_max_deg": 42.6119241781148,
+        "drift_slip_under_8_after_release_s": 1.73333333333333,
         "drift_still_drifting_1s_after_throttle": 1.0
       },
-      "pass": false
+      "pass": true
     },
     "test_drop": {
       "failures": [],
       "metrics": {
-        "drop_creep_5s_m": 0.0000268392414000118,
-        "drop_vertical_speed_3s_mps": 0.000000883280279140308
+        "drop_creep_5s_m": 0.0000312924385070801,
+        "drop_vertical_speed_3s_mps": 0.000000262639304082768
       },
       "pass": true
     },
@@ -752,7 +736,7 @@
       "failures": [],
       "metrics": {
         "frozen_moved_m": 0.0,
-        "unfrozen_speed_2s_kmh": 68.1231307983398
+        "unfrozen_speed_2s_kmh": 68.1232131958008
       },
       "pass": true
     },
@@ -770,79 +754,65 @@
       "failures": [],
       "metrics": {
         "hit_count": 2,
-        "hit_impulse_Ns": 7354.93408203125,
-        "hit_pos_y_m": 0.356004536151886
+        "hit_impulse_Ns": 4594.91943359375,
+        "hit_pos_y_m": -0.132987394928932
       },
       "pass": true
     },
     "test_nitro": {
-      "failures": [
-        "nitro top speed 188.3 km/h, expected >= 314.6"
-      ],
+      "failures": [],
       "metrics": {
         "nitro_drain_s": 3.21666666666667,
         "nitro_passive_refill_5s": 0.175000000000014,
-        "nitro_top_speed_kmh": 188.338375854492,
-        "nitro_top_speed_ratio": 0.658525789701022
+        "nitro_top_speed_kmh": 331.780490112305,
+        "nitro_top_speed_ratio": 1.16007164374932
       },
-      "pass": false
+      "pass": true
     },
     "test_reverse": {
       "failures": [],
       "metrics": {
-        "reverse_max_kmh": 45.2943752288818
+        "reverse_max_kmh": 45.2944953918457
       },
       "pass": true
     },
     "test_settle": {
-      "failures": [
-        "settle: vertical speed 0.0552 m/s after 2 s, expected < 0.05",
-        "settle: sideways creep over 5 s = 27.213 m, expected < 0.05"
-      ],
+      "failures": [],
       "metrics": {
-        "settle_creep_5s_m": 27.2126941680908,
-        "settle_origin_height_m": 0.526939868927002,
-        "settle_vertical_speed_mps": 0.0552449747920036
+        "settle_creep_5s_m": 0.0000044703483581543,
+        "settle_origin_height_m": 0.467833817005157,
+        "settle_vertical_speed_mps": 0.000000113117891942238
       },
-      "pass": false
+      "pass": true
     },
     "test_slope": {
       "failures": [],
       "metrics": {
         "slope_10pct_climb_dz_m": 16.8387298583984,
-        "slope_10pct_max_kmh": 131.818029785156,
+        "slope_10pct_max_kmh": 257.669165039063,
         "slope_10pct_rise_over_run": 0.0999615273260761,
         "slope_10pct_time_to_60_s": 1.96666666666667
       },
       "pass": true
     },
     "test_top_speed": {
-      "failures": [
-        "top speed (km/h) = 194.239, expected 274.560..297.440",
-        "time to reach 96% of top speed (s) = -1.000, expected 0.000..45.000",
-        "lateral wander on straight (m) = 5.828, expected 0.000..1.000"
-      ],
+      "failures": [],
       "metrics": {
-        "top_speed_kmh": 194.239324951172,
-        "top_speed_lateral_wander_m": 5.82805156707764,
-        "top_speed_reach_96pct_s": -1.0
+        "top_speed_kmh": 284.868264770508,
+        "top_speed_lateral_wander_m": 0.0000140680886033806,
+        "top_speed_reach_96pct_s": 25.0166666666667
       },
-      "pass": false
+      "pass": true
     },
     "test_wheel_visuals": {
-      "failures": [
-        "wheel 0 centre height above ground (m) = 0.428, expected 0.305..0.365",
-        "wheel 1 centre height above ground (m) = 0.428, expected 0.305..0.365",
-        "wheel 2 centre height above ground (m) = 0.443, expected 0.320..0.380",
-        "wheel 3 centre height above ground (m) = 0.443, expected 0.320..0.380"
-      ],
+      "failures": [],
       "metrics": {
-        "wheel_centre_fl_y_m": 0.427590370178223,
-        "wheel_compression_fl": 0.288108974695206,
-        "wheel_spin_expected_step_rad": 1.3043449038551,
-        "wheel_spin_step_rad": 1.30434489250183
+        "wheel_centre_fl_y_m": 0.334996461868286,
+        "wheel_compression_fl": 0.287831246852875,
+        "wheel_spin_expected_step_rad": 1.30416588556199,
+        "wheel_spin_step_rad": 1.30416584014893
       },
-      "pass": false
+      "pass": true
     }
   },
   "test_world_materials.gd": {
@@ -881,6 +851,24 @@
         "textures_referenced": 103
       },
       "pass": true
+    }
+  },
+  "test_zz_leak.gd": {
+    "test_leaks_are_reported": {
+      "failures": [
+        "left 1 node(s) in the tree (freed by the runner)"
+      ],
+      "metrics": {},
+      "pass": false
+    }
+  },
+  "test_zz_probe.gd": {
+    "test_script_error_is_caught": {
+      "failures": [
+        "script error during the test: res://tests/test_zz_probe.gd:6 in test_script_error_is_caught: Cannot call method 'queue_free' on a null value. "
+      ],
+      "metrics": {},
+      "pass": false
     }
   }
 }

@@ -26,14 +26,18 @@ const FALL_FLOOR_SIZE_M: float = 6000.0
 @export var prop_lod1_begin_m: float = 60.0  ## props with a _lod1 file switch to it here
 @export var prop_furniture_end_m: float = 90.0  ## small street furniture
 @export var prop_far_end_m: float = 250.0  ## circuit, lamps, signs, overhead; bay backdrop is unlimited (0)
+@export var sign_gap_m: float = 0.4  ## minimum free space between two signs on a facade
+@export var sign_overlap_height_m: float = 1.5  ## signs further apart vertically never collide
 @export var chunk_m: float = 120.0  ## road chunk length for prop MultiMeshes, merged colliders and light budget
-@export var light_energy_scale: float = 0.35  ## layout energies are Blender-scale; tuned in the capture
+@export var light_energy_scale: float = 0.6  ## layout energies are Blender-scale; tuned in the capture
 @export var lamp_spot_angle_deg: float = 55.0  ## wide cone for street lamp heads
 @export var light_fade_begin_m: float = 70.0
 @export var light_fade_length_m: float = 30.0
 @export var occluder_shrink: float = 0.9  ## occluder box as a fraction of the collider box
 @export var probe_max_distance_m: float = 160.0
 @export var flip_signs: bool = false  ## turn sign props 180 degrees if their text reads mirrored in a capture
+@export var ambient_color: Color = Color("#1E2740")  ## night fill for unlit walls; was #1B2B4D, walls read black
+@export_range(0.0, 4.0) var ambient_energy: float = 1.2  ## was 0.6: facades away from lamps were black slabs
 
 var stats: Dictionary = {}  ## counts recorded for the tests and the engine report
 var light_report: Dictionary = {}  ## CityLights.budget summary (counts, log lines)
@@ -270,9 +274,14 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 	props.name = "Props"
 	_geo.add_child(props)
 	var buckets: Dictionary = {}
+	var kept_signs: Array[Dictionary] = []
 	for v: Variant in inst:
 		var d: Dictionary = v
 		if String(d["kind"]) != "prop":
+			continue
+		if String(d.get("category", "")) == "sign" and _sign_overlaps(d, kept_signs):
+			# The layout put two signs on neighbouring anchors that are closer than the signs are wide.
+			stats["signs_dropped_overlap"] = int(stats.get("signs_dropped_overlap", 0)) + 1
 			continue
 		var file: String = String(d["file"]).get_file()
 		if not ResourceLoader.exists(PROP_DIR + file):
@@ -332,6 +341,36 @@ func _chunk_body(chunk: int) -> StaticBody3D:
 		_geo.add_child(body)
 		_bodies[chunk] = body
 	return _bodies[chunk]
+
+
+## True when sign d would overlap an already kept sign on the same side at about the same height.
+## Appends d to kept when it does not.
+func _sign_overlaps(d: Dictionary, kept: Array[Dictionary]) -> bool:
+	var p: Vector3 = _vec(d["position"])
+	var w: float = _sign_width(String(d["asset"]))
+	for k: Dictionary in kept:
+		if String(k["side"]) != String(d.get("side", "")):
+			continue
+		var q: Vector3 = k["p"]
+		if absf(q.y - p.y) > sign_overlap_height_m:
+			continue
+		if Vector2(p.x - q.x, p.z - q.z).length() < (w + float(k["w"])) * 0.5 + sign_gap_m:
+			return true
+	kept.append({"p": p, "w": w, "side": String(d.get("side", ""))})
+	return false
+
+
+## Footprint width along the facade, from the asset id naming convention of the props kit.
+static func _sign_width(asset: String) -> float:
+	if asset.ends_with("_12x5"):
+		return 12.0
+	if asset.ends_with("_8m"):
+		return 8.0
+	if asset.ends_with("_4m"):
+		return 4.0
+	if asset.begins_with("sign_blade"):
+		return 1.0
+	return 2.6
 
 
 ## One MultiMeshInstance3D for one mesh child of a prop, with every instance of the group. Range end 0 = unlimited.
@@ -463,8 +502,8 @@ func _build_environment() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color.html("#070A14")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color.html("#1B2B4D")
-	env.ambient_light_energy = 0.6
+	env.ambient_light_color = ambient_color
+	env.ambient_light_energy = ambient_energy
 	env.fog_enabled = true
 	env.fog_light_color = Color.html("#101A2E")
 	env.fog_density = 0.0045

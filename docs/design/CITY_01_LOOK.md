@@ -1,7 +1,7 @@
 # CITY 01 look (in engine)
 
 Owner: lighting and look agent. Scenario: `game/devtools/scenarios/city_districts.gd`. Captures: `evidence/screens/city_districts/`.
-Target: `assets_src/world/city_01/layout_renders/neon_strip.png`. Status: PARTIAL (2 of 5 tuning rounds, see below).
+Target: `assets_src/world/city_01/layout_renders/neon_strip.png`. Status: PARTIAL (rounds 0 to 3 done; the black-facade blocker is fixed, downtown, underpass and waterfront still short of the reference).
 
 ## Setup used for every shot
 - Preset High (`--preset=high`), 1920x1080, FOV 70, eye 1.3 m above the racing line, looking 32 m along the race direction.
@@ -54,3 +54,29 @@ Target: `assets_src/world/city_01/layout_renders/neon_strip.png`. Status: PARTIA
 5. Rain particles close to the lens read as thick poles (fx/rain, not owned here).
 6. Planar mirror: all Road meshes (road, kerb, sidewalk) are on layer bit 1 and left out of the mirror. Whether that is right for the sidewalk is not checked.
 7. Lamp heads and lane markings have not been checked for z-fighting at these distances.
+
+## Round 3 (this pass: review findings of the in-engine city)
+Changes (all tunables, no code paths changed):
+- `world_material_tuning.gd`: `facade_albedo_scale` 2.2 (new), `window_glow_saturation` 0.5 -> 0.15, `window_glow_tint` warm (1.0, 0.78, 0.5) (new), `ceiling_energy_scale` 0.06 (new).
+- `material_library.gd`: window and shop atlas tint = JSON colour x `facade_albedo_scale`; `glow_tint` passed to the shader; ceiling strip and tunnel light energy x `ceiling_energy_scale`.
+- `window_atlas.gdshader`: `glow_tint` uniform applied to the luminance part of the glow.
+- `city_builder.gd`: night ambient colour `#2A3F6E` (was `#1B2B4D`) and energy 1.6 (was 0.6), exported as `ambient_color` and `ambient_energy`.
+
+Cause found for the black frames: the M_WindowAtlas JSON base colour is #202838 and the shader multiplies the atlas albedo by it, so every facade was near black under the night ambient. Only lamp-lit walls showed. Lifting the tint and the ambient made the walls readable. This was the blocker in the establishing shot (the window quads were the only lit parts).
+
+Results (captures `evidence/screens/city_districts/`, final run r6):
+- establishing_60m: the facades now show brick, window openings and roofs. It is still a dark night view and the top-left corner is blown out roof light. The blocker (floating quads on black) is gone.
+- downtown: towers read as building blocks with warm and violet windows. Still no cyan or magenta read on the towers; the atlas windows are violet, not neon. Still weak.
+- underpass: ceiling strips are light blue at about 0.7 HDR, no longer white-clipped, but still the largest bright shapes in the frame. The amber wall stripe (M_TunnelStripe, emission 0.4) still reads as a flat band across the horizon. Not changed: the stripe is a wall mesh in the road GLB and its placement was not checked in a side view.
+- waterfront: still dark (lowest readability). Facades and road edge are visible now; no sodium pool is present in this view. Not solved.
+- neon_strip: closest to the reference. Facades show brick texture and window rhythm; sign text (ORBIT RECORDS, VOLT ENERGY, LUMEN CINEMA, KOI NOODLE BAR) is readable; wet road mirrors signs.
+- old_market: captured, not fully assessed in this pass.
+
+Known and not done:
+- Rain streaks near the lens read as thick poles in some shots. This is `fx/rain` (not owned here).
+- The amber stripe and the ceiling strip are both large flat shapes in the underpass. A geometry or placement check in a side view is needed.
+- Waterfront needs a sodium lamp or fill pass. Not done.
+- Downtown needs a cyan or magenta neon read on the towers. Not done. The atlas glow is the only window light source.
+- race_city: a real race capture now exists (`evidence/screens/race_city/`). The nitro shot failed: the autopilot player car sat below 6 km/h for about 30 s at a wall (reverse gear in the shot). AI and physics code are not owned here.
+
+Self-assessment after round 3: the blocker is fixed. Majors are partly fixed (downtown and underpass better, waterfront not). The scene is still not at the reference look.

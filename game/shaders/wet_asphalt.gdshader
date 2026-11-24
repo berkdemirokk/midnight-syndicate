@@ -118,8 +118,11 @@ void fragment() {
 		float smear = reflection_smear * mix(1.0, 0.3, puddle);
 		vec3 refl = vec3(0.0);
 		float wsum = 0.0;
+		// Per-pixel jitter of the taps (interleaved gradient noise): turns the visible stack of
+		// discrete copies into fine grain, which reads as wet asphalt texture.
+		float jit = fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715)))) - 0.5;
 		for (int i = -4; i <= 4; i++) {
-			float fi = float(i);
+			float fi = float(i) + jit;
 			float w = exp(-fi * fi * 0.18);
 			refl += texture(planar_reflection, suv + vec2(0.0, fi * smear)).rgb * w;
 			wsum += w;

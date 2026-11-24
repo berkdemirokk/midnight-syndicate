@@ -1,0 +1,1391 @@
+{
+  "coords": "godot_y_up",
+  "source": "assets_src/world/kit_props/build_props.py",
+  "items": [
+    {
+      "id": "lamp_sodium",
+      "category": "lamp",
+      "file": "prop_lamp_sodium.glb",
+      "size": [
+        0.52,
+        9.39,
+        2.304
+      ],
+      "tris": 912,
+      "lod1_tris": 270,
+      "lod1_file": "prop_lamp_sodium_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Concrete",
+        "M_Lamp_Sodium"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            9.1,
+            1.8
+          ],
+          "color": [
+            1.0,
+            0.7,
+            0.42
+          ],
+          "energy": 14.0,
+          "range": 28.0,
+          "type": "spot",
+          "direction_godot": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Sodium single arm, 9 m pole, curved arm reaching -Y"
+    },
+    {
+      "id": "lamp_led_double",
+      "category": "lamp",
+      "file": "prop_lamp_led_double.glb",
+      "size": [
+        2.7,
+        10.0,
+        0.665
+      ],
+      "tris": 752,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Concrete",
+        "M_Lamp_Cool"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            -0.9,
+            9.5,
+            0.2
+          ],
+          "color": [
+            0.75,
+            0.85,
+            1.0
+          ],
+          "energy": 10.0,
+          "range": 26.0,
+          "type": "spot",
+          "direction_godot": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "pos_godot": [
+            0.9,
+            9.5,
+            0.2
+          ],
+          "color": [
+            0.75,
+            0.85,
+            1.0
+          ],
+          "energy": 10.0,
+          "range": 26.0,
+          "type": "spot",
+          "direction_godot": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Cool double-head LED, 10 m pole, two flat heads"
+    },
+    {
+      "id": "traffic_light",
+      "category": "lamp",
+      "file": "prop_traffic_light.glb",
+      "size": [
+        0.4,
+        6.0,
+        3.4
+      ],
+      "tris": 972,
+      "lod1_tris": 290,
+      "lod1_file": "prop_traffic_light_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Concrete",
+        "M_Signal_Red",
+        "M_Signal_Off"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            5.05,
+            2.95
+          ],
+          "color": [
+            1.0,
+            0.23,
+            0.19
+          ],
+          "energy": 6.0,
+          "range": 10.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Baked state RED (only red lens emissive)"
+    },
+    {
+      "id": "sign_blade_kirin_noodle_bar",
+      "category": "sign",
+      "file": "prop_sign_blade_kirin_noodle_bar.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1816,
+      "lod1_tris": 241,
+      "lod1_file": "prop_sign_blade_kirin_noodle_bar_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Neon_Magenta",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_hotel_arden",
+      "category": "sign",
+      "file": "prop_sign_blade_hotel_arden.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1296,
+      "lod1_tris": 172,
+      "lod1_file": "prop_sign_blade_hotel_arden_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_pixel_arcade",
+      "category": "sign",
+      "file": "prop_sign_blade_pixel_arcade.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1448,
+      "lod1_tris": 191,
+      "lod1_file": "prop_sign_blade_pixel_arcade_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Neon_Amber",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_syndicate_club",
+      "category": "sign",
+      "file": "prop_sign_blade_syndicate_club.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1904,
+      "lod1_tris": 242,
+      "lod1_file": "prop_sign_blade_syndicate_club_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta",
+        "M_Neon_Cyan",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_kapi_doner",
+      "category": "sign",
+      "file": "prop_sign_blade_kapi_doner.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1272,
+      "lod1_tris": 173,
+      "lod1_file": "prop_sign_blade_kapi_doner_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber",
+        "M_Neon_Red",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            1.0,
+            0.761,
+            0.239
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_box_lumen_cinema_4m",
+      "category": "sign",
+      "file": "prop_sign_box_lumen_cinema_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1268,
+      "lod1_tris": 157,
+      "lod1_file": "prop_sign_box_lumen_cinema_4m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.761,
+            0.239
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_box_volt_energy_4m",
+      "category": "sign",
+      "file": "prop_sign_box_volt_energy_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1748,
+      "lod1_tris": 221,
+      "lod1_file": "prop_sign_box_volt_energy_4m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_box_orbit_records_8m",
+      "category": "sign",
+      "file": "prop_sign_box_orbit_records_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 2308,
+      "lod1_tris": 299,
+      "lod1_file": "prop_sign_box_orbit_records_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_blue_heron_sushi_8m",
+      "category": "sign",
+      "file": "prop_sign_box_blue_heron_sushi_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 2260,
+      "lod1_tris": 281,
+      "lod1_file": "prop_sign_box_blue_heron_sushi_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_arrow_night_owl_diner",
+      "category": "sign",
+      "file": "prop_sign_arrow_night_owl_diner.glb",
+      "size": [
+        2.1,
+        1.4,
+        0.222
+      ],
+      "tris": 1648,
+      "lod1_tris": 230,
+      "lod1_file": "prop_sign_arrow_night_owl_diner_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber",
+        "M_Neon_Red"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.0,
+            1.3,
+            0.6
+          ],
+          "color": [
+            1.0,
+            0.76,
+            0.24
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Arrow sign pointing +X, neon tube outline"
+    },
+    {
+      "id": "sign_open24h_moto_garage",
+      "category": "sign",
+      "file": "prop_sign_open24h_moto_garage.glb",
+      "size": [
+        1.6,
+        0.9,
+        0.172
+      ],
+      "tris": 2628,
+      "lod1_tris": 329,
+      "lod1_file": "prop_sign_open24h_moto_garage_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Neon_Red",
+        "M_Neon_White"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.45,
+            0.5
+          ],
+          "color": [
+            1.0,
+            0.23,
+            0.19
+          ],
+          "energy": 2.0,
+          "range": 8.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Open / 24H sign"
+    },
+    {
+      "id": "sign_billboard_zenith_tower_12x5",
+      "category": "sign",
+      "file": "prop_sign_billboard_zenith_tower_12x5.glb",
+      "size": [
+        12.4,
+        9.1,
+        2.176
+      ],
+      "tris": 2288,
+      "lod1_tris": 468,
+      "lod1_file": "prop_sign_billboard_zenith_tower_12x5_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Metal_Grey"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            9.4,
+            1.4
+          ],
+          "color": [
+            0.1,
+            0.9,
+            1.0
+          ],
+          "energy": 1.0,
+          "range": 14.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "roof",
+      "notes": "12 x 5 m rooftop billboard, lattice, catwalk"
+    },
+    {
+      "id": "poster_01",
+      "category": "poster",
+      "file": "prop_poster_01.glb",
+      "size": [
+        2.1,
+        1.1,
+        0.055
+      ],
+      "tris": 110,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Poster_01",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Billboard poster plane 2 x 1 m, back-lit"
+    },
+    {
+      "id": "poster_02",
+      "category": "poster",
+      "file": "prop_poster_02.glb",
+      "size": [
+        2.1,
+        1.1,
+        0.055
+      ],
+      "tris": 110,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Poster_02",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Billboard poster plane 2 x 1 m, back-lit"
+    },
+    {
+      "id": "poster_03",
+      "category": "poster",
+      "file": "prop_poster_03.glb",
+      "size": [
+        2.1,
+        1.1,
+        0.055
+      ],
+      "tris": 110,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Poster_03",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Billboard poster plane 2 x 1 m, back-lit"
+    },
+    {
+      "id": "poster_04",
+      "category": "poster",
+      "file": "prop_poster_04.glb",
+      "size": [
+        2.1,
+        1.1,
+        0.055
+      ],
+      "tris": 110,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Poster_04",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Billboard poster plane 2 x 1 m, back-lit"
+    },
+    {
+      "id": "poster_05",
+      "category": "poster",
+      "file": "prop_poster_05.glb",
+      "size": [
+        2.1,
+        1.1,
+        0.055
+      ],
+      "tris": 110,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Poster_05",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Billboard poster plane 2 x 1 m, back-lit"
+    },
+    {
+      "id": "poster_06",
+      "category": "poster",
+      "file": "prop_poster_06.glb",
+      "size": [
+        2.1,
+        1.1,
+        0.055
+      ],
+      "tris": 110,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Poster_06",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Billboard poster plane 2 x 1 m, back-lit"
+    },
+    {
+      "id": "bus_shelter",
+      "category": "furniture",
+      "file": "prop_bus_shelter.glb",
+      "size": [
+        3.4,
+        2.72,
+        1.6
+      ],
+      "tris": 626,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Glass",
+        "M_Poster_01",
+        "M_Wood_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            2.2,
+            0.1
+          ],
+          "color": [
+            1.0,
+            0.92,
+            0.8
+          ],
+          "energy": 3.0,
+          "range": 6.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Bus shelter, lit advert panel on the back wall"
+    },
+    {
+      "id": "bollard",
+      "category": "furniture",
+      "file": "prop_bollard.glb",
+      "size": [
+        0.4,
+        0.93,
+        0.4
+      ],
+      "tris": 480,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Bollard",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Bollard"
+    },
+    {
+      "id": "litter_bin",
+      "category": "furniture",
+      "file": "prop_litter_bin.glb",
+      "size": [
+        0.62,
+        0.96,
+        0.62
+      ],
+      "tris": 204,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Green",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Litter bin"
+    },
+    {
+      "id": "bench",
+      "category": "furniture",
+      "file": "prop_bench.glb",
+      "size": [
+        1.8,
+        1.03,
+        0.655
+      ],
+      "tris": 252,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Wood_Dark",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Bench"
+    },
+    {
+      "id": "planter_shrub",
+      "category": "furniture",
+      "file": "prop_planter_shrub.glb",
+      "size": [
+        1.3,
+        1.31,
+        0.73
+      ],
+      "tris": 708,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Concrete",
+        "M_Foliage"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Planter with low-poly shrub"
+    },
+    {
+      "id": "newspaper_box",
+      "category": "furniture",
+      "file": "prop_newspaper_box.glb",
+      "size": [
+        0.55,
+        1.1,
+        0.545
+      ],
+      "tris": 324,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Red",
+        "M_Glass",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Newspaper box"
+    },
+    {
+      "id": "fire_hydrant",
+      "category": "furniture",
+      "file": "prop_fire_hydrant.glb",
+      "size": [
+        0.28,
+        0.75,
+        0.54
+      ],
+      "tris": 384,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Hydrant_Red",
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Fire hydrant"
+    },
+    {
+      "id": "utility_cabinet",
+      "category": "furniture",
+      "file": "prop_utility_cabinet.glb",
+      "size": [
+        1.1,
+        1.5,
+        0.48
+      ],
+      "tris": 972,
+      "lod1_tris": 290,
+      "lod1_file": "prop_utility_cabinet_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Green",
+        "M_Metal_Dark",
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Utility cabinet"
+    },
+    {
+      "id": "market_stall",
+      "category": "furniture",
+      "file": "prop_market_stall.glb",
+      "size": [
+        2.6,
+        2.5,
+        2.238
+      ],
+      "tris": 256,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Wood_Dark",
+        "M_Awning_A",
+        "M_Awning_B"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Market stall with striped awning"
+    },
+    {
+      "id": "roller_shutter",
+      "category": "furniture",
+      "file": "prop_roller_shutter.glb",
+      "size": [
+        2.6,
+        2.3,
+        0.14
+      ],
+      "tris": 312,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Shutter",
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Roller shutter panel"
+    },
+    {
+      "id": "jersey_barrier",
+      "category": "circuit",
+      "file": "prop_jersey_barrier.glb",
+      "size": [
+        2.0,
+        0.8,
+        0.6
+      ],
+      "tris": 36,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 12,
+      "materials": [
+        "M_Concrete"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Jersey barrier 2 m, box collider -colonly"
+    },
+    {
+      "id": "guardrail_segment",
+      "category": "circuit",
+      "file": "prop_guardrail_segment.glb",
+      "size": [
+        4.12,
+        0.85,
+        0.199
+      ],
+      "tris": 108,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 12,
+      "materials": [
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Steel guardrail 4 m, box collider -colonly"
+    },
+    {
+      "id": "chevron_board",
+      "category": "circuit",
+      "file": "prop_chevron_board.glb",
+      "size": [
+        0.7,
+        2.3,
+        0.31
+      ],
+      "tris": 168,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Chevron_White",
+        "M_Chevron_Red",
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Chevron board, reflective red/white"
+    },
+    {
+      "id": "traffic_cone",
+      "category": "circuit",
+      "file": "prop_traffic_cone.glb",
+      "size": [
+        0.5,
+        0.7,
+        0.5
+      ],
+      "tris": 396,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Cone_Orange",
+        "M_Cone_White",
+        "M_Collider"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Traffic cone"
+    },
+    {
+      "id": "quay_railing",
+      "category": "circuit",
+      "file": "prop_quay_railing.glb",
+      "size": [
+        2.06,
+        1.03,
+        0.06
+      ],
+      "tris": 340,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Quay railing 2 m"
+    },
+    {
+      "id": "tunnel_fan",
+      "category": "circuit",
+      "file": "prop_tunnel_fan.glb",
+      "size": [
+        1.4,
+        1.4,
+        0.48
+      ],
+      "tris": 312,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Grey",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "wall",
+      "notes": "Tunnel ventilation fan, origin on wall"
+    },
+    {
+      "id": "tunnel_wall_light",
+      "category": "circuit",
+      "file": "prop_tunnel_wall_light.glb",
+      "size": [
+        1.2,
+        0.12,
+        0.076
+      ],
+      "tris": 120,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Grey",
+        "M_Lamp_Cool"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.0,
+            0.12
+          ],
+          "color": [
+            0.75,
+            0.85,
+            1.0
+          ],
+          "energy": 6.0,
+          "range": 14.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Tunnel wall light fixture, origin on wall"
+    },
+    {
+      "id": "cable_span",
+      "category": "overhead",
+      "file": "prop_cable_span.glb",
+      "size": [
+        20.25,
+        7.0,
+        0.25
+      ],
+      "tris": 588,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "span",
+      "notes": "Cable span 20 m, origin at left anchor base"
+    },
+    {
+      "id": "string_lights_span",
+      "category": "overhead",
+      "file": "prop_string_lights_span.glb",
+      "size": [
+        16.005,
+        1.068,
+        0.104
+      ],
+      "tris": 1164,
+      "lod1_tris": 394,
+      "lod1_file": "prop_string_lights_span_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Bulb_Amber",
+        "M_Bulb_Red"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            -0.809,
+            -0.0
+          ],
+          "color": [
+            1.0,
+            0.7,
+            0.3
+          ],
+          "energy": 0.4,
+          "range": 5.0,
+          "type": "omni",
+          "direction_godot": null
+        },
+        {
+          "pos_godot": [
+            4.5,
+            -1.428,
+            -0.0
+          ],
+          "color": [
+            1.0,
+            0.7,
+            0.3
+          ],
+          "energy": 0.4,
+          "range": 5.0,
+          "type": "omni",
+          "direction_godot": null
+        },
+        {
+          "pos_godot": [
+            8.5,
+            -1.596,
+            -0.0
+          ],
+          "color": [
+            1.0,
+            0.7,
+            0.3
+          ],
+          "energy": 0.4,
+          "range": 5.0,
+          "type": "omni",
+          "direction_godot": null
+        },
+        {
+          "pos_godot": [
+            12.5,
+            -1.315,
+            -0.0
+          ],
+          "color": [
+            1.0,
+            0.7,
+            0.3
+          ],
+          "energy": 0.4,
+          "range": 5.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "span",
+      "notes": "String lights 16 m, origin at left anchor; 4 representative lights"
+    },
+    {
+      "id": "container_stack",
+      "category": "bay",
+      "file": "prop_container_stack.glb",
+      "size": [
+        18.18,
+        5.18,
+        4.98
+      ],
+      "tris": 1872,
+      "lod1_tris": 560,
+      "lod1_file": "prop_container_stack_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Container_Red",
+        "M_Container_Blue",
+        "M_Container_Green",
+        "M_Container_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Container stack 3x2x2, four colours"
+    },
+    {
+      "id": "gantry_crane",
+      "category": "bay",
+      "file": "prop_gantry_crane.glb",
+      "size": [
+        57.8,
+        45.938,
+        4.3
+      ],
+      "tris": 2456,
+      "lod1_tris": 752,
+      "lod1_file": "prop_gantry_crane_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Crane",
+        "M_Neon_Red"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            45.6,
+            0
+          ],
+          "color": [
+            1.0,
+            0.23,
+            0.19
+          ],
+          "energy": 4.0,
+          "range": 40.0,
+          "type": "omni",
+          "direction_godot": null
+        },
+        {
+          "pos_godot": [
+            52.0,
+            44.1,
+            0
+          ],
+          "color": [
+            1.0,
+            0.23,
+            0.19
+          ],
+          "energy": 4.0,
+          "range": 40.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Gantry crane silhouette 45 m, red tip lights"
+    },
+    {
+      "id": "skyline_card",
+      "category": "bay",
+      "file": "prop_skyline_card.glb",
+      "size": [
+        396.716,
+        120.0,
+        22.131
+      ],
+      "tris": 80,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Skyline"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Far skyline curved card, 400 m long, night texture"
+    }
+  ]
+}
