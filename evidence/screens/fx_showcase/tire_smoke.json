@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.305,
+  "luma_max": 0.688,
   "luma_min": 0.0,
   "name": "tire_smoke",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 5,
     "draw_calls_min": 5,
     "driver": "vulkan",
-    "fps": 2286.237,
-    "frame_ms_avg": 0.437,
-    "frame_ms_p95": 0.555,
-    "frame_ms_p99": 0.742,
+    "fps": 1805.815,
+    "frame_ms_avg": 0.554,
+    "frame_ms_p95": 1.301,
+    "frame_ms_p99": 4.654,
     "frames": 60,
     "objects": 5,
     "os": "Windows",
-    "primitives": 72,
+    "primitives": 160,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 104.026,
+    "video_mem_mb": 104.074,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/fx_showcase/tire_smoke.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_35745c05-68f-10/evidence/screens/fx_showcase/tire_smoke.png",
   "preset": "high",
   "scenario": "fx_showcase"
 }

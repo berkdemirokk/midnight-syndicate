@@ -56,8 +56,9 @@ func _ready() -> void:
 		break
 	flames = NitroFlame.new()
 	smoke = TireSmoke.new()
-	smoke.puff_layer = body_layers
+	smoke.set_puff_layers(body_layers)
 	skid = SkidMarks.new()
+	skid.layers = body_layers  ## the car fill light and test expect every car mesh on the body layers
 	sparks = Sparks.new()
 	headlights = Headlights.new()
 	add_child(flames)

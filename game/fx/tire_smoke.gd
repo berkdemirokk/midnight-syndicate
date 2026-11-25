@@ -2,25 +2,27 @@ class_name TireSmoke
 extends Node3D
 ## Soft grey puffs from the rear wheel contacts while the car slides. CarFx decides when and how much;
 ## this node places puffs, trails them back with the car's wind and fades them over FADE_S.
-## Lit (matte, not unshaded or emissive) so street lights and the car fill light show them at night.
+## Lit shading (matte) plus a dim emission floor, so street lights and the car fill light show them at night.
 ## Puff count follows Settings particle_amount_scale.
 
 const FADE_S: float = 1.6
-const PUFF_COLOR: Color = Color(0.62, 0.64, 0.68, 1.0)
-const PUFF_PEAK_ALPHA: float = 0.42
+const PUFF_COLOR: Color = Color(0.78, 0.8, 0.84, 1.0)
+const PUFF_PEAK_ALPHA: float = 0.6
 const MAX_DRIFT_MS: float = 4.0  ## sideways puff speed cap
 const MAX_WIND_MS: float = 8.0  ## trail speed cap, so puffs stay near the car's wake
-const QUAD_M: float = 1.2
+const QUAD_M: float = 2.0
 const TRAIL_M: float = 20.0  ## culling radius around each emitter, longer than any trail
 ## shortcut: one emitter per rear wheel, drift and wind capped, upgrade if trails need per-wheel tuning
 @export var puff_amount: int = 36  ## at particle_amount_scale 1.0; slip ratio scales it down
-@export var puff_layer: int = 1  ## render layer of the puffs; CarFx sets the car body's layers
+@export var puff_layers: int = 1  ## render layer mask of the puffs; CarFx passes the car body's mask
 
 const BURST_PUFFS: int = 6  ## puffs per wheel on the first frame of a slide
+const BURST_REARM_FRAMES: int = 30  ## physics frames (~0.5 s) before a wheel may burst again: no spam on flicker
 
 var _emitters: Array[GPUParticles3D] = []
 var _pms: Array[ParticleProcessMaterial] = []
 var _was_on: PackedByteArray = PackedByteArray([0, 0])
+var _burst_frame: PackedInt32Array = PackedInt32Array([-1000000, -1000000])
 
 
 func _ready() -> void:
@@ -37,7 +39,7 @@ func _ready() -> void:
 	mat.metallic_specular = 0.0
 	## A dim self-light floor so the grey stays readable on the night road; lit shading still gives the form.
 	mat.emission_enabled = true
-	mat.emission = Color(0.3, 0.32, 0.36, 1.0)
+	mat.emission = Color(0.45, 0.47, 0.5, 1.0)
 	mat.emission_energy_multiplier = 0.6
 	mat.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_ALPHA
 	mat.distance_fade_min_distance = 1.5  ## fully transparent inside this distance
@@ -59,12 +61,12 @@ func _ready() -> void:
 		pm.initial_velocity_min = 0.3
 		pm.initial_velocity_max = 0.8
 		pm.gravity = Vector3(0.0, 0.3, 0.0)
-		pm.scale_min = 0.9
-		pm.scale_max = 1.3
+		pm.scale_min = 1.0
+		pm.scale_max = 1.6
 		pm.scale_curve = grow_tex
 		pm.color_ramp = FxUtil.ramp(ramp_colors)
 		var e := FxUtil.emitter(puff_amount, FADE_S, pm, mat, Vector2(QUAD_M, QUAD_M))
-		e.layers = 1 << (puff_layer - 1)
+		e.layers = puff_layers
 		## The default culling box is 8 m around the emitter, and puffs trail up to ~13 m behind it: without this they are culled.
 		e.visibility_aabb = AABB(Vector3(-TRAIL_M, -TRAIL_M, -TRAIL_M), Vector3(2.0 * TRAIL_M, 2.0 * TRAIL_M, 2.0 * TRAIL_M))
 		add_child(e)
@@ -90,6 +92,7 @@ func _apply_settings() -> void:
 
 
 func set_puff_layers(mask: int) -> void:
+	puff_layers = mask
 	for e: GPUParticles3D in _emitters:
 		e.layers = mask
 
@@ -115,7 +118,9 @@ func update_puffs(world_points: PackedVector3Array, slip: PackedFloat32Array, la
 		pm.initial_velocity_min = speed * 0.5 + 0.2
 		pm.initial_velocity_max = speed * 0.8 + 0.5
 		# On the first frame of a slide, puff at once: the continuous emitter needs a moment to fill.
-		if on and _was_on[i] == 0:
+		var frame: int = Engine.get_physics_frames()
+		if on and _was_on[i] == 0 and frame - _burst_frame[i] >= BURST_REARM_FRAMES:
+			_burst_frame[i] = frame
 			for k: int in BURST_PUFFS:
 				e.emit_particle(Transform3D(Basis.IDENTITY, world_points[i]), dir.normalized() * (speed * 0.5 + 0.3),
 					Color.WHITE, Color.WHITE, GPUParticles3D.EMIT_FLAG_POSITION | GPUParticles3D.EMIT_FLAG_VELOCITY)

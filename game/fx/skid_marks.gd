@@ -11,6 +11,7 @@ const MAX_POINTS: int = 160  ## per wheel: 64 m of mark at STEP_M
 const LIFT_M: float = 0.015  ## above the road, against z-fighting
 const RAY_UP_M: float = 0.6
 const RAY_DOWN_M: float = 1.5
+const JUMP_M: float = 15.0  ## a wheel this far from its last point in one update was teleported: new run
 const RUBBER: Color = Color(0.03, 0.03, 0.035, 1.0)  ## dark wet rubber; the glossy material picks up the road
 
 ## Flat arrays, slot = wheel * MAX_POINTS + ring index (nested packed arrays would copy on write).
@@ -20,7 +21,7 @@ var _run: PackedInt32Array = PackedInt32Array()
 var _head: PackedInt32Array = PackedInt32Array([0, 0])
 var _count: PackedInt32Array = PackedInt32Array([0, 0])
 var _open: PackedByteArray = PackedByteArray([0, 0])  ## 1 while a wheel is marking
-var _last: PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
+var _last_raw: PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])  ## wheel point of the last mark, before the road probe
 var _runs: int = 0
 var _now: float = 0.0
 var _tris: int = 0
@@ -52,18 +53,24 @@ func _ready() -> void:
 ## space: physics space to find the road under each point (null: the point is used as it is).
 func update(points: PackedVector3Array, marking: PackedByteArray, delta: float, space: PhysicsDirectSpaceState3D = null, exclude: Array[RID] = []) -> void:
 	_now += delta
+	var pushed: bool = false
 	for w: int in 2:
 		if w >= points.size() or w >= marking.size() or marking[w] == 0:
 			_open[w] = 0
 			continue
-		var p: Vector3 = _road_point(points[w], space, exclude)
+		var raw: Vector3 = points[w]
+		var moved: float = raw.distance_to(_last_raw[w])
+		if _open[w] == 1 and moved < STEP_M:
+			continue
+		if _open[w] == 1 and moved > JUMP_M:
+			_open[w] = 0  # teleport: the new mark must not join the old one
 		if _open[w] == 0:
 			_runs += 1
 			_open[w] = 1
-			_push(w, p)
-		elif p.distance_to(_last[w]) >= STEP_M:
-			_push(w, p)
-	_rebuild()
+		_push(w, _road_point(raw, space, exclude), raw)
+		pushed = true
+	if pushed or _tris > 0:  # fading needs a rebuild each frame; nothing alive means nothing to build
+		_rebuild()
 
 
 ## Points on wheel w that have not faded yet.
@@ -80,14 +87,14 @@ func triangle_count() -> int:
 	return _tris
 
 
-func _push(w: int, p: Vector3) -> void:
+func _push(w: int, p: Vector3, raw: Vector3) -> void:
 	var s: int = w * MAX_POINTS + _head[w]
 	_pos[s] = p
 	_born[s] = _now
 	_run[s] = _runs
 	_head[w] = (_head[w] + 1) % MAX_POINTS
 	_count[w] = mini(_count[w] + 1, MAX_POINTS)
-	_last[w] = p
+	_last_raw[w] = raw
 
 
 ## Slot of the k-th point of wheel w, oldest first.

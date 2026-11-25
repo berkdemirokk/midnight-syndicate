@@ -128,3 +128,24 @@ func test_skid_ribbon_is_one_draw_call() -> void:
 	check(sk.mesh is ArrayMesh and (sk.mesh as ArrayMesh).get_surface_count() <= 1, "skid marks use more than one surface")
 	check(sk.get_surface_override_material_count() <= 1, "skid marks use more than one material")
 	await cleanup([sk])
+
+
+func test_smoke_puffs_take_a_multi_bit_layer_mask() -> void:
+	var sm := TireSmoke.new()
+	add(sm)
+	await frames(1)
+	var mask: int = 1 | (1 << 4)  # the car body mask: default layer plus the car fill layer
+	sm.set_puff_layers(mask)
+	check(sm._emitters[0].layers == mask and sm._emitters[1].layers == mask, "puffs on layers %d, expected mask %d" % [sm._emitters[0].layers, mask])
+	await cleanup([sm])
+
+
+func test_skid_teleport_starts_a_new_run() -> void:
+	var sk := SkidMarks.new()
+	add(sk)
+	await frames(1)
+	sk.update(PackedVector3Array([Vector3.ZERO, Vector3.ZERO]), PackedByteArray([1, 0]), 0.016)
+	sk.update(PackedVector3Array([Vector3(0.5, 0, 0), Vector3.ZERO]), PackedByteArray([1, 0]), 0.016)
+	sk.update(PackedVector3Array([Vector3(300, 0, 0), Vector3.ZERO]), PackedByteArray([1, 0]), 0.016)
+	check(sk._runs == 2, "teleport joined the old mark (runs %d, expected 2)" % sk._runs)
+	await cleanup([sk])
