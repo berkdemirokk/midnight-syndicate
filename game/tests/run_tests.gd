@@ -25,6 +25,12 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# The audio singletons live under root for the whole game, as they do at runtime: create them before any
+	# test snapshots root, so the leak check does not count (and free) them.
+	MusicPlayer.get_instance()
+	UiSounds.get_instance()
+	await process_frame
+	await process_frame
 	var only := PackedStringArray()
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
