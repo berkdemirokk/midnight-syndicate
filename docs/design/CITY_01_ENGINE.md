@@ -29,6 +29,13 @@ City01 (CityBuilder)            Track contract; builds everything in _ready from
 - Props: one MultiMeshInstance3D per (file, chunk, category, mesh child). Range: furniture 0-90 m, circuit/lamp/
   sign/overhead 0-250 m, bay unlimited. Files with `_lod1` split at 60 m (near LOD0, far LOD1, 4 m fades).
 - Props without a collider in the GLB (quay railings) get a box from their mesh AABB.
+- Street dressing (`_dress_districts`, after `_build_props`, before parked cars): kit props placed by `_dress_fit`
+  against the corridor, the building lines of the centreline (`_c_land`, `_c_water`), `_solid` boxes and furniture circles.
+  Grouped and emitted like layout props under `Geometry/Dressing`. Every placement in `stats["dressing"]`, misses by
+  reason in `stats["dressing_reasons"]`. Downtown props only at street level (y <= 0.5 m).
+- Walking-lane rule: the free width from a sidewalk prop out to the first solid, or to the building line, is at least 1.2 m.
+  Building colliders sit about 1.5 m in front of the building line (downtown: faces at 9.3 m, line at 10.8 m), so
+  downtown sidewalks are about 2.0 m clear and only bollards and the gaps between buildings pass.
 - Lights: layout energy x 0.35, colour from hex, no shadows, distance fade from 70 m over 30 m. Lamp heads 55 deg cone.
 - Occluders: one BoxOccluder3D per first-row building, 90 % of the collider box, at its centre.
 

@@ -25,6 +25,24 @@ const CORRIDOR_SEARCH: int = 40  ## centreline samples either side of a building
 const CORRIDOR_NEAR_M: float = 12.0  ## footprint points further than this from every sample are not in the corridor
 const PUSH_STEP_M: float = 0.25
 const PUSH_MAX_M: float = 40.0
+const SIDEWALK_LIFT_M: float = 0.2  ## sidewalk top above the road centreline height
+## Kit props of the street dressing. cat sets the visibility band as in _build_props. front "road" turns the prop's
+## front (local +Z) to the race line with its long axis (local X) along the road; "across" turns the long axis across it.
+## half_l and half_w are the footprint half sizes along X and Z. walk: a sidewalk prop that keeps a walking lane.
+const DRESS_KIT: Dictionary = {
+	"bus_shelter": {"file": "prop_bus_shelter.glb", "cat": "furniture", "half_l": 1.7, "half_w": 0.8, "front": "road", "walk": true},
+	"bench": {"file": "prop_bench.glb", "cat": "furniture", "half_l": 0.9, "half_w": 0.33, "front": "road", "walk": true},
+	"litter_bin": {"file": "prop_litter_bin.glb", "cat": "furniture", "half_l": 0.31, "half_w": 0.31, "front": "road", "walk": true},
+	"planter_shrub": {"file": "prop_planter_shrub.glb", "cat": "furniture", "half_l": 0.65, "half_w": 0.37, "front": "road", "walk": true},
+	"newspaper_box": {"file": "prop_newspaper_box.glb", "cat": "furniture", "half_l": 0.28, "half_w": 0.28, "front": "road", "walk": true},
+	"bollard": {"file": "prop_bollard.glb", "cat": "furniture", "half_l": 0.2, "half_w": 0.2, "front": "road", "walk": true},
+	"lamp_sodium": {"file": "prop_lamp_sodium.glb", "cat": "lamp", "half_l": 0.26, "half_w": 0.26, "front": "road", "walk": true},
+	"container_stack": {"file": "prop_container_stack.glb", "cat": "circuit", "half_l": 9.1, "half_w": 2.5, "front": "road", "walk": false},
+	"gantry_crane": {"file": "prop_gantry_crane.glb", "cat": "circuit", "half_l": 28.9, "half_w": 2.15, "front": "road", "walk": false},
+}
+const DRESS_FREE_STEP_M: float = 0.25  ## step of the walking-lane scan outward from a sidewalk prop
+const DRESS_SLACK_M: float = 0.1  ## kerb-side props sit this much inside the clearance line, not on it
+const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 10.0, -10.0, 12.0, -12.0, 14.0, -14.0, 16.0, -16.0, 18.0, -18.0, 20.0, -20.0]  ## along-road search order, 2 m steps: finds the gaps between buildings
 
 @export var lod0_end_m: float = 70.0  ## first-row building LOD0 up to here, LOD1 to lod1_end_m, LOD2 beyond
 @export var lod1_end_m: float = 180.0
@@ -67,14 +85,29 @@ const PUSH_MAX_M: float = 40.0
 @export var wall_wash_spacing_m: float = 35.0
 ## Waterfront floodlights: one cool-white spot above each container stack and gantry crane base, aimed at it.
 ## No distance fade: the stacks sit 100 to 300 m from the promenade, past the normal fade.
-@export var parked_car_count: int = 0  ## off until a dedicated low-poly traffic car exists: the LOD2 hero car read as a faceted white blob up close (2026-11-25)
+@export var parked_car_count: int = 80  ## Arden Civic traffic sedan (docs/art/TRAFFIC_CAR_BRIEF.md), LOD by distance
+const PARKED_LOD_END_M: Array[float] = [35.0, 90.0, 150.0]  ## LOD0 to 35 m, LOD1 to 90 m, LOD2 to 150 m (from the cell centre)
 @export var parked_spacing_m: float = 12.0  ## candidate spacing along the lap, both kerbs
 @export var parked_clear_m: float = 1.0  ## free gap between the corridor edge and a parked car's near side
 @export var parked_box_clear_m: float = 0.5  ## free space kept around building and prop boxes
 @export var parked_seed: int = 7
-@export var parked_cell_m: float = 80.0  ## parked cars are grouped in cells this size and culled per cell
-@export var parked_visible_m: float = 110.0  ## a cell is hidden beyond this distance (cell centre)
+@export var parked_cell_m: float = 40.0  ## parked cars are grouped in cells this size and culled per cell
 @export var parked_worst_limit_m: float = -0.4  ## every car corner must sit at least this far outside the corridor
+
+@export_group("Street dressing")
+@export var dressing_enabled: bool = true
+@export var dress_clear_m: float = 0.3  ## free gap between a dressing prop and the race corridor edge
+@export var dress_walk_m: float = 1.2  ## a sidewalk prop leaves at least this much walking lane beside it
+@export var dress_bollard_step_m: float = 6.0  ## quay-edge bollards on the water side
+@export var dress_bollard_inset_m: float = 1.2  ## bollard centre this far in from the water-side building line
+@export var dress_promenade_step_m: float = 40.0  ## bench and bin pair on the waterfront promenade
+@export var dress_lamp_step_m: float = 30.0  ## sodium lamp grid on the promenade, filled where the layout has none
+@export var dress_lamp_gap_m: float = 14.0  ## a grid lamp is skipped when a lamp is nearer than this
+@export var dress_stack_lat_m: float = 34.0  ## land-side container stacks, lateral distance from the centreline
+@export var dress_crane_lat_m: float = 46.0  ## land-side gantry crane, lateral distance from the centreline
+@export var dress_shelter_step_m: float = 120.0  ## downtown bus shelters, alternating sides
+@export var dress_deck_y_m: float = 0.5  ## centreline height above which the overpass deck is up
+@export var dress_approach_m: float = 12.0  ## bollards stand this far out on each overpass approach
 
 @export var floodlight_energy: float = 9.0  ## JSON-scale energy, x light_energy_scale
 @export var floodlight_color: String = "#FFF1D6"
@@ -99,8 +132,15 @@ var _c_pos: PackedVector2Array = PackedVector2Array()  ## centreline samples (x,
 var _c_right: PackedVector2Array = PackedVector2Array()  ## unit right vector per sample (x, z)
 var _c_half: PackedFloat32Array = PackedFloat32Array()  ## corridor half width per sample: kerb + margin
 var _c_y: PackedFloat32Array = PackedFloat32Array()  ## centreline height per sample
+var _c_land: PackedFloat32Array = PackedFloat32Array()  ## lateral distance to the land-side building line (right)
+var _c_water: PackedFloat32Array = PackedFloat32Array()  ## lateral distance to the water-side building line (left)
+var _c_dist: PackedStringArray = PackedStringArray()  ## district name per centreline sample
 var _c_spacing: float = 2.0
 var _solid: Array[Dictionary] = []  ## {inv, half}: world-to-box transform and half size of every building and box prop collider
+var _dress_lap: float = 0.0
+var _dress_obs: Array[Dictionary] = []  ## {pos: Vector2, r: float}: street furniture the dressing keeps clear of
+var _dress_recs: Array[Dictionary] = []  ## placed dressing props: kit, footprint, transform and log fields
+var _dress_lights: Array = []  ## lights of the dressing props, in the layout's light format
 
 
 func _ready() -> void:
@@ -130,6 +170,7 @@ func _ready() -> void:
 	_load_corridor()
 	_build_buildings(inst, lap)
 	_build_props(inst, lap, n_chunks)
+	_dress_districts(inst, lap, n_chunks)
 	_build_parked_cars(lap)
 	_build_lights(d["lights"], inst)
 	_build_probes(d["reflection_probes"])
@@ -332,8 +373,14 @@ func _load_corridor() -> void:
 		var rk: Vector3 = _vec(e["right_kerb"]) - p
 		_c_y.append(p.y)
 		_c_pos.append(Vector2(p.x, p.z))
-		_c_right.append(Vector2(r.x, r.z).normalized())
+		var rt: Vector2 = Vector2(r.x, r.z).normalized()
+		_c_right.append(rt)
 		_c_half.append(maxf(Vector2(lk.x, lk.z).length(), Vector2(rk.x, rk.z).length()) + CORRIDOR_MARGIN_M)
+		var rb: Vector3 = _vec(e["right_building"]) - p
+		var lb: Vector3 = _vec(e["left_building"]) - p
+		_c_land.append(Vector2(rb.x, rb.z).dot(rt))
+		_c_water.append(-Vector2(lb.x, lb.z).dot(rt))
+		_c_dist.append(String(s.get("district_name", "")))
 
 
 ## Signed margin of point q (x, z) inside the corridor: positive = inside kerb line + margin.
@@ -448,38 +495,50 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 		stats["prop_instances"] = int(stats["prop_instances"]) + 1
 	for key: String in buckets.keys():
 		var b: Dictionary = buckets[key]
-		var path: String = PROP_DIR + String(b["file"])
 		var xfs: Array = b["xfs"]
-		var end_m: float = prop_far_end_m
-		if String(b["cat"]) == "furniture":
-			end_m = prop_furniture_end_m
-		elif String(b["cat"]) == "bay":
-			end_m = 0.0
-		var near: Dictionary = _prototype(path, "")
-		var lod1_path: String = path.replace(".glb", "_lod1.glb")
-		var has_lod1: bool = ResourceLoader.exists(lod1_path)
-		var base: String = "%s_%02d" % [String(b["file"]).get_basename(), int(b["chunk"])]
-		var near_end: float = prop_lod1_begin_m if has_lod1 else end_m
-		for m: Dictionary in near["meshes"]:
-			props.add_child(_multimesh_node(m, xfs, base + "_" + String(m["name"]), 0.0, near_end))
-			stats["prop_multimeshes"] = int(stats["prop_multimeshes"]) + 1
-		if has_lod1:
-			var lod1: Dictionary = _prototype(lod1_path, "")
-			for m: Dictionary in lod1["meshes"]:
-				props.add_child(_multimesh_node(m, xfs, base + "_far_" + String(m["name"]), prop_lod1_begin_m, end_m))
-				stats["prop_multimeshes"] = int(stats["prop_multimeshes"]) + 1
+		var near: Dictionary = _emit_prop_meshes(props, String(b["file"]), int(b["chunk"]), String(b["cat"]), xfs)
 		var shapes: Array = near["shapes"]
 		if shapes.is_empty() and String(b["file"]).contains("railing"):
 			shapes = [_box_shape_of(near["meshes"])]  # the quay railings ship without a collider
-		if not shapes.is_empty():
-			var body: StaticBody3D = _chunk_body(int(b["chunk"]))
-			for xf_v: Variant in xfs:
-				for s: Dictionary in shapes:
-					var cs := CollisionShape3D.new()
-					cs.shape = s["shape"]
-					cs.transform = (xf_v as Transform3D) * (s["xf"] as Transform3D)
-					body.add_child(cs)
-					stats["prop_colliders"] = int(stats["prop_colliders"]) + 1
+		_add_prop_colliders(shapes, xfs, int(b["chunk"]))
+
+
+## Mesh children of one prop group (one file, chunk and category): a near MultiMesh per mesh and a far LOD1 band
+## when the kit ships a _lod1 file. Returns the prototype; the caller turns its shapes into colliders.
+func _emit_prop_meshes(parent: Node3D, file: String, chunk: int, cat: String, xfs: Array) -> Dictionary:
+	var path: String = PROP_DIR + file
+	var end_m: float = prop_far_end_m
+	if cat == "furniture":
+		end_m = prop_furniture_end_m
+	elif cat == "bay":
+		end_m = 0.0
+	var near: Dictionary = _prototype(path, "")
+	var lod1_path: String = path.replace(".glb", "_lod1.glb")
+	var has_lod1: bool = ResourceLoader.exists(lod1_path)
+	var base: String = "%s_%02d" % [file.get_basename(), chunk]
+	var near_end: float = prop_lod1_begin_m if has_lod1 else end_m
+	for m: Dictionary in near["meshes"]:
+		parent.add_child(_multimesh_node(m, xfs, base + "_" + String(m["name"]), 0.0, near_end))
+		stats["prop_multimeshes"] = int(stats["prop_multimeshes"]) + 1
+	if has_lod1:
+		var lod1: Dictionary = _prototype(lod1_path, "")
+		for m: Dictionary in lod1["meshes"]:
+			parent.add_child(_multimesh_node(m, xfs, base + "_far_" + String(m["name"]), prop_lod1_begin_m, end_m))
+			stats["prop_multimeshes"] = int(stats["prop_multimeshes"]) + 1
+	return near
+
+
+func _add_prop_colliders(shapes: Array, xfs: Array, chunk: int) -> void:
+	if shapes.is_empty():
+		return
+	var body: StaticBody3D = _chunk_body(chunk)
+	for xf_v: Variant in xfs:
+		for s: Dictionary in shapes:
+			var cs := CollisionShape3D.new()
+			cs.shape = s["shape"]
+			cs.transform = (xf_v as Transform3D) * (s["xf"] as Transform3D)
+			body.add_child(cs)
+			stats["prop_colliders"] = int(stats["prop_colliders"]) + 1
 
 
 func _chunk_body(chunk: int) -> StaticBody3D:
@@ -582,10 +641,310 @@ func _library_mesh(src: Mesh, owner_id: String) -> Mesh:
 	return m
 
 
+# --- street dressing ------------------------------------------------------------------------
+
+## Waterfront and downtown street dressing, placed after the layout props from kit props only. The water-side quay edge
+## gets bollards every dress_bollard_step_m; the land-side promenade gets a bench and bin pair every
+## dress_promenade_step_m and a sodium lamp wherever the 30 m lamp grid has none; two container stacks and a gantry crane
+## stand on the land side behind the warehouses. Downtown gets a bus shelter every dress_shelter_step_m on alternating
+## sides, benches, planters and newspaper boxes between, and bollards on both approaches to the overpass deck.
+## Every spot is checked against the corridor, the building lines, the boxes and the furniture; each placement is in
+## stats["dressing"], each miss in stats["dressing_missed"].
+func _dress_districts(inst: Array, lap: float, n_chunks: int) -> void:
+	_dress_recs.clear()
+	_dress_lights.clear()
+	stats["dressing_missed"] = {}
+	stats["dressing_reasons"] = {}
+	stats["dressing"] = []
+	if not dressing_enabled or _c_pos.is_empty():
+		return
+	_dress_lap = lap
+	_dress_obs = _dress_obstacles(inst)
+	var wf: Vector2 = _district_span("Waterfront")
+	var dt: Vector2 = _district_span("Downtown canyon")
+	if wf.y > wf.x:
+		var s: float = wf.x
+		while s <= wf.y:  # water side of the quay edge
+			_dress_at("bollard", s, -1.0, _c_water[_c_index(s)] - dress_bollard_inset_m, "waterfront", lap)
+			s += dress_bollard_step_m
+		s = wf.x + 20.0
+		while s <= wf.y - 10.0:  # promenade: bench and bin pair
+			_dress_at("bench", s, 1.0, _kerb_lat(s, 0.33), "waterfront", lap)
+			_dress_at("litter_bin", s + 4.0, 1.0, _kerb_lat(s + 4.0, 0.31), "waterfront", lap)
+			s += dress_promenade_step_m
+		s = wf.x + 15.0
+		while s <= wf.y - 5.0:  # sodium lamp grid
+			if _lamp_gap(inst, s) > dress_lamp_gap_m:
+				_dress_at("lamp_sodium", s, 1.0, _kerb_lat(s, 0.26), "waterfront", lap)
+			s += dress_lamp_step_m
+		_dress_at("container_stack", wf.x + 100.0, 1.0, dress_stack_lat_m, "waterfront", lap, [40.0, 46.0, 52.0, 58.0])
+		_dress_at("container_stack", wf.x + 210.0, 1.0, dress_stack_lat_m, "waterfront", lap, [40.0, 46.0, 52.0, 58.0])
+		_dress_at("gantry_crane", wf.x + 150.0, 1.0, dress_crane_lat_m, "waterfront", lap, [40.0, 52.0, 58.0])
+	if dt.y > dt.x:
+		var k: int = 0
+		var t: float = dt.x + 25.0
+		while t <= dt.y - 10.0:  # downtown street level: shelter, then bench, newspaper box and planter between shelters
+			var side: float = 1.0 if k % 2 == 0 else -1.0
+			_dress_at("bus_shelter", t, side, _kerb_lat(t, 0.8), "downtown", lap)
+			_dress_at("bench", t + 45.0, -side, _kerb_lat(t + 45.0, 0.33), "downtown", lap)
+			_dress_at("newspaper_box", t + 70.0, side, _kerb_lat(t + 70.0, 0.28), "downtown", lap)
+			_dress_at("planter_shrub", t + 95.0, -side, _kerb_lat(t + 95.0, 0.37), "downtown", lap)
+			k += 1
+			t += dress_shelter_step_m
+	_dress_approaches(lap)
+	_dress_emit(lap, n_chunks)
+
+
+## Bollards on both sidewalks at each end of the overpass deck: three at each end, dress_approach_m out from the ramp.
+func _dress_approaches(lap: float) -> void:
+	var runs: Array[Vector2] = []
+	var start: float = -1.0
+	for i: int in _c_pos.size():
+		var up: bool = _c_y[i] > dress_deck_y_m
+		if up and start < 0.0:
+			start = i * _c_spacing
+		elif not up and start >= 0.0:
+			runs.append(Vector2(start, i * _c_spacing))
+			start = -1.0
+	for run: Vector2 in runs:
+		for side: float in [-1.0, 1.0]:
+			for off: float in [-dress_approach_m, -dress_approach_m + 4.0, -dress_approach_m + 8.0]:
+				_dress_at("bollard", run.x + off, side, _kerb_lat(run.x + off, 0.2), _district_at(run.x + off), lap)
+			for off: float in [dress_approach_m - 8.0, dress_approach_m - 4.0, dress_approach_m]:
+				_dress_at("bollard", run.y + off, side, _kerb_lat(run.y + off, 0.2), _district_at(run.y + off), lap)
+
+
+## Places one kit prop near arc length s on side sgn (+1 right, -1 left) at lateral distance lat. Tries the offsets in
+## DRESS_OFFSETS in order. Returns false, and counts the miss, when none fits.
+func _dress_at(kit: String, s: float, sgn: float, lat: float, district: String, lap: float, lat_extra: Array = []) -> bool:
+	var lats: Array = [lat]
+	if bool(DRESS_KIT[kit]["walk"]):
+		lats.append_array([lat + 0.6, lat + 1.2])  # a sidewalk prop may sit a little further out when the kerb side is full
+	lats.append_array(lat_extra)
+	for lat_try: Variant in lats:
+		for off: Variant in DRESS_OFFSETS:
+			var at: float = fposmod(s + float(off), lap)
+			if district == "downtown" and _c_y[_c_index(at)] > dress_deck_y_m:
+				_dress_why(kit, "deck")  # downtown props stand at street level, not on the overpass deck
+				continue
+			var rec: Dictionary = _dress_fit(kit, at, sgn, float(lat_try), lap)
+			if rec.has("why"):
+				_dress_why(kit, String(rec["why"]))
+				continue
+			rec["kit"] = kit
+			rec["district"] = district
+			rec["s"] = at
+			rec["side"] = "right" if sgn > 0.0 else "left"
+			rec["lat"] = float(lat_try)
+			_dress_recs.append(rec)
+			if kit == "bus_shelter" or kit == "lamp_sodium":
+				_dress_light(kit, rec, district)
+			return true
+	var missed: Dictionary = stats["dressing_missed"]
+	missed[kit] = int(missed.get(kit, 0)) + 1
+	return false
+
+
+func _dress_why(kit: String, why: String) -> void:
+	var reasons: Dictionary = stats["dressing_reasons"]
+	var key: String = kit + ":" + why
+	reasons[key] = int(reasons.get(key, 0)) + 1
+
+
+## The record of one prop at this spot, or {} when it does not fit: outside the corridor by dress_clear_m, a walking lane
+## of dress_walk_m beside a sidewalk prop inside the building line, clear of boxes and furniture.
+func _dress_fit(kit: String, s: float, sgn: float, lat: float, lap: float) -> Dictionary:
+	var k: Dictionary = DRESS_KIT[kit]
+	var i: int = _c_index(s)
+	var r: Vector2 = _c_right[i]
+	var t: Vector2 = Vector2(r.y, -r.x)  # tangent: the right vector turned by 90 degrees
+	var u: Vector2 = r * sgn
+	var front: Vector2 = t if String(k["front"]) == "across" else -u
+	var along: Vector2 = Vector2(front.y, -front.x)  # local X: the long axis of the footprint
+	var hl: float = float(k["half_l"])
+	var hw: float = float(k["half_w"])
+	var c: Vector2 = _c_pos[i] + u * lat
+	var pts: Array[Vector2] = _footprint_points(c, along, front, hl, hw)
+	var worst: float = -INF
+	var lo: float = INF
+	var hi: float = -INF
+	for p: Vector2 in pts:
+		worst = maxf(worst, _corridor_margin(p, i))
+		var l: float = (p - _c_pos[i]).dot(u)
+		lo = minf(lo, l)
+		hi = maxf(hi, l)
+	if worst > -dress_clear_m:
+		return {"why": "corridor"}
+	var walk: float = -1.0
+	if bool(k["walk"]):
+		var build: float = _c_land[i] if sgn > 0.0 else _c_water[i]
+		if build - hi < 0.0:
+			return {"why": "building"}
+		walk = maxf(lo - _c_half[i], _free_out(_c_pos[i], t, u, hl, hi, build))
+		if walk < dress_walk_m:
+			return {"why": "walk"}
+	if _hits_solid(pts, c):
+		return {"why": "box"}
+	if _dress_clash(pts, c, along, front, hl, hw):
+		return {"why": "clash"}
+	var yaw: float = atan2(front.x, front.y)
+	return {"xf": Transform3D(Basis(Vector3.UP, yaw), Vector3(c.x, _c_y[i] + SIDEWALK_LIFT_M, c.y)),
+		"c": c, "pts": pts, "along": along, "front": front, "hl": hl, "hw": hw,
+		"walk_m": walk, "worst_margin": worst}
+
+
+## Free distance outward from lateral hi to the first solid (wall, box) or to the building line, along three points of
+## the footprint's road-side extent. Between two buildings the building line is the limit; against a wall, the wall is.
+func _free_out(p0: Vector2, t: Vector2, u: Vector2, hl: float, hi: float, build: float) -> float:
+	var x: float = hi
+	while x <= build:
+		for a: float in [-hl * 0.9, 0.0, hl * 0.9]:
+			var q: Vector2 = p0 + u * x + t * a
+			if _hits_solid([q], q, 0.0):
+				return x - hi
+		x += DRESS_FREE_STEP_M
+	return build - hi
+
+
+## True when the footprint touches a furniture circle or another dressing footprint (both grown by dress_clear_m).
+func _dress_clash(pts: Array[Vector2], c: Vector2, along: Vector2, front: Vector2, hl: float, hw: float) -> bool:
+	for o: Dictionary in _dress_obs:
+		var d: Vector2 = (o["pos"] as Vector2) - c
+		var gx: float = d.dot(along) - clampf(d.dot(along), -hl, hl)
+		var gz: float = d.dot(front) - clampf(d.dot(front), -hw, hw)
+		if Vector2(gx, gz).length() < float(o["r"]):
+			return true
+	for rec: Dictionary in _dress_recs:
+		var rc: Vector2 = rec["c"]
+		var ra: Vector2 = rec["along"]
+		var rf: Vector2 = rec["front"]
+		var rl: float = float(rec["hl"]) + dress_clear_m
+		var rw: float = float(rec["hw"]) + dress_clear_m
+		for p: Vector2 in pts:
+			if _in_box(p - rc, ra, rf, rl, rw):
+				return true
+		for q: Vector2 in rec["pts"]:
+			if _in_box(q - c, along, front, hl + dress_clear_m, hw + dress_clear_m):
+				return true
+	return false
+
+
+static func _in_box(v: Vector2, along: Vector2, front: Vector2, hl: float, hw: float) -> bool:
+	return absf(v.dot(along)) <= hl and absf(v.dot(front)) <= hw
+
+
+## Lights of a placed prop in the layout's light format: the shelter advert and the sodium lamp head.
+func _dress_light(kit: String, rec: Dictionary, district: String) -> void:
+	var xf: Transform3D = rec["xf"]
+	if kit == "bus_shelter":
+		_dress_lights.append({"type": "omni", "position": _arr(xf * Vector3(0.0, 2.2, 0.1)), "range": 6.0,
+			"source": "bus_shelter_panel", "district": district, "color": "#FFEBCC", "energy": 3.0})
+	else:
+		_dress_lights.append({"type": "spot", "position": _arr(xf * Vector3(0.0, 9.1, 1.8)), "range": 28.0,
+			"source": "lamp_head", "district": district, "color": "#FFB26B", "energy": 14.0,
+			"direction": [0.0, -1.0, 0.0]})  # clamped to lamp_range_m like every lamp head
+
+
+## Builds the placed props in groups of one file, chunk and category, as the layout props are.
+func _dress_emit(lap: float, n_chunks: int) -> void:
+	var root := Node3D.new()
+	root.name = "Dressing"
+	_geo.add_child(root)
+	var groups: Dictionary = {}
+	var counts: Dictionary = {}
+	var rows: Array = []
+	for rec: Dictionary in _dress_recs:
+		var kit: String = rec["kit"]
+		var file: String = DRESS_KIT[kit]["file"]
+		var cat: String = DRESS_KIT[kit]["cat"]
+		var chunk: int = _chunk_of(float(rec["s"]), lap, n_chunks)
+		var key: String = "%s|%d|%s" % [file, chunk, cat]
+		if not groups.has(key):
+			groups[key] = {"file": file, "chunk": chunk, "cat": cat, "xfs": []}
+		((groups[key] as Dictionary)["xfs"] as Array).append(rec["xf"])
+		counts[kit] = int(counts.get(kit, 0)) + 1
+		var origin: Vector3 = (rec["xf"] as Transform3D).origin
+		rows.append({"kit": kit, "district": rec["district"], "side": rec["side"], "s": snappedf(float(rec["s"]), 0.1),
+			"lat": snappedf(float(rec["lat"]), 0.01), "pos": _arr(origin), "walk_m": snappedf(float(rec["walk_m"]), 0.01),
+			"worst_margin": snappedf(float(rec["worst_margin"]), 0.01)})
+	for key: String in groups.keys():
+		var g: Dictionary = groups[key]
+		var near: Dictionary = _emit_prop_meshes(root, String(g["file"]), int(g["chunk"]), String(g["cat"]), g["xfs"])
+		_add_prop_colliders(near["shapes"], g["xfs"], int(g["chunk"]))
+	stats["dressing"] = rows
+	stats["dressing_counts"] = counts
+	print("CityBuilder: dressing placed %d %s, missed %s, reasons %s" % [_dress_recs.size(), counts, stats["dressing_missed"], stats["dressing_reasons"]])
+
+
+## Furniture the dressing keeps clear of: the layout's street furniture and lamps as circles of their catalog size.
+## Boxes (guardrails, barriers, railings) are already in _solid.
+func _dress_obstacles(inst: Array) -> Array[Dictionary]:
+	var half: Dictionary = {}
+	var cat: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(PROP_DIR + "catalog.json"))
+	for it: Variant in cat["items"]:
+		var d: Dictionary = it
+		var sz: Array = d["size"]
+		half[String(d["id"])] = maxf(float(sz[0]), float(sz[2])) * 0.5
+	var out: Array[Dictionary] = []
+	for v: Variant in inst:
+		var d: Dictionary = v
+		if String(d["kind"]) != "prop" or not (String(d.get("category", "")) in ["furniture", "lamp"]):
+			continue
+		var p: Vector3 = _vec(d["position"])
+		out.append({"pos": Vector2(p.x, p.z), "r": float(half.get(String(d["asset"]), 0.5)) + dress_clear_m})
+	return out
+
+
+## Distance along the road from s to the nearest sodium lamp of the waterfront, layout or placed.
+func _lamp_gap(inst: Array, s: float) -> float:
+	var best: float = INF
+	for v: Variant in inst:
+		var d: Dictionary = v
+		if String(d["kind"]) == "prop" and String(d["asset"]) == "lamp_sodium" and String(d.get("district", "")) == "waterfront":
+			best = minf(best, absf(float(d["s_offset_m"]) - s))
+	for rec: Dictionary in _dress_recs:
+		if String(rec["kit"]) == "lamp_sodium":
+			best = minf(best, absf(float(rec["s"]) - s))
+	return best
+
+
+## Lateral distance from the centreline to the kerb-side edge of a sidewalk prop of half width half_w, with a clear gap.
+func _kerb_lat(s: float, half_w: float) -> float:
+	return _c_half[_c_index(s)] + dress_clear_m + half_w + DRESS_SLACK_M
+
+
+func _c_index(s: float) -> int:
+	return posmod(roundi(fposmod(s, _dress_lap) / _c_spacing), _c_pos.size())
+
+
+## Arc length span [start, end) of a district by its name in the centreline data. Zero span when it is missing.
+func _district_span(name: String) -> Vector2:
+	var first: int = -1
+	var last: int = -1
+	for i: int in _c_dist.size():
+		if _c_dist[i] == name:
+			if first < 0:
+				first = i
+			last = i
+	if first < 0:
+		return Vector2.ZERO
+	return Vector2(first * _c_spacing, (last + 1) * _c_spacing)
+
+
+func _district_at(s: float) -> String:
+	return _c_dist[_c_index(s)]
+
+
+static func _arr(v: Vector3) -> Array:
+	return [v.x, v.y, v.z]
+
+
 # --- parked cars ----------------------------------------------------------------------------
 
-func _parked_range(mmi: MultiMeshInstance3D) -> void:
-	mmi.visibility_range_end = parked_visible_m
+func _parked_range(mmi: MultiMeshInstance3D, begin_m: float, end_m: float) -> void:
+	mmi.visibility_range_begin = begin_m
+	mmi.visibility_range_begin_margin = lod_fade_m if begin_m > 0.0 else 0.0
+	mmi.visibility_range_end = end_m
 	mmi.visibility_range_end_margin = lod_fade_m
 	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -596,7 +955,8 @@ func _parked_range(mmi: MultiMeshInstance3D) -> void:
 ## parked_car_count. Each colour is one MultiMesh (a paint override), plus one body MultiMesh for all cars.
 ## Cars get no colliders, so the corridor test cannot see them: the placement itself keeps them out of the corridor.
 func _build_parked_cars(lap: float) -> void:
-	var car: Dictionary = ParkedCars.bake()
+	var car: Dictionary = ParkedCars.bake(2)
+	var lods: Array[Dictionary] = [ParkedCars.bake(0), ParkedCars.bake(1), car]
 	var aabb: AABB = car["aabb"]
 	var half_w: float = aabb.size.x * 0.5
 	var half_l: float = aabb.size.z * 0.5
@@ -684,23 +1044,26 @@ func _build_parked_cars(lap: float) -> void:
 		var bx: Array[Transform3D] = []
 		for xf3: Transform3D in (cells[key3]["body"] as Array):
 			bx.append(to_local * xf3)
-		var body := MultiMeshInstance3D.new()
-		body.name = "Parked_body"
-		body.multimesh = _multimesh_of(car["body"], bx)
-		_parked_range(body)
-		cell.add_child(body)
-		for c5: int in colours.size():
-			var px: Array[Transform3D] = []
-			for xf4: Transform3D in ((cells[key3]["paint"] as Array)[c5] as Array):
-				px.append(to_local * xf4)
-			if px.is_empty():
-				continue
-			var mmi := MultiMeshInstance3D.new()
-			mmi.name = "Parked_paint_" + names[c5]
-			mmi.multimesh = _multimesh_of(car["paint"], px)
-			mmi.material_override = paint_mats[c5]
-			_parked_range(mmi)
-			cell.add_child(mmi)
+		for lod: int in lods.size():
+			var near_m: float = 0.0 if lod == 0 else PARKED_LOD_END_M[lod - 1]
+			var far_m: float = PARKED_LOD_END_M[lod]
+			var body := MultiMeshInstance3D.new()
+			body.name = "Parked_body_lod%d" % lod
+			body.multimesh = _multimesh_of(lods[lod]["body"], bx)
+			_parked_range(body, near_m, far_m)
+			cell.add_child(body)
+			for c5: int in colours.size():
+				var px: Array[Transform3D] = []
+				for xf4: Transform3D in ((cells[key3]["paint"] as Array)[c5] as Array):
+					px.append(to_local * xf4)
+				if px.is_empty():
+					continue
+				var mmi := MultiMeshInstance3D.new()
+				mmi.name = "Parked_paint_%s_lod%d" % [names[c5], lod]
+				mmi.multimesh = _multimesh_of(lods[lod]["paint"], px)
+				mmi.material_override = paint_mats[c5]
+				_parked_range(mmi, near_m, far_m)
+				cell.add_child(mmi)
 	stats["parked_cells"] = cells.size()
 	stats["parked_cars"] = count
 	stats["parked_candidates"] = found.size()
@@ -720,13 +1083,14 @@ func _footprint_points(centre: Vector2, fwd: Vector2, right: Vector2, half_l: fl
 
 
 ## True when any footprint point, at car height, is inside a solid box grown by parked_box_clear_m.
-func _hits_solid(pts: Array[Vector2], centre: Vector2) -> bool:
+func _hits_solid(pts: Array[Vector2], centre: Vector2, clear: float = -1.0) -> bool:
+	var grow: float = parked_box_clear_m if clear < 0.0 else clear
 	for box: Dictionary in _solid:
 		var o: Vector3 = box["pos"]
-		if Vector2(o.x - centre.x, o.z - centre.y).length() > parked_box_clear_m + 30.0:
+		if Vector2(o.x - centre.x, o.z - centre.y).length() > grow + 30.0:
 			continue
 		var inv: Transform3D = box["inv"]
-		var half: Vector3 = (box["half"] as Vector3) + Vector3.ONE * parked_box_clear_m
+		var half: Vector3 = (box["half"] as Vector3) + Vector3.ONE * grow
 		for p: Vector2 in pts:
 			var l: Vector3 = inv * Vector3(p.x, 0.6, p.y)
 			if absf(l.x) <= half.x and absf(l.y) <= half.y and absf(l.z) <= half.z:
@@ -764,7 +1128,7 @@ func _multimesh_of(mesh: Mesh, xfs: Array) -> MultiMesh:
 func _build_lights(raw: Array, inst: Array) -> void:
 	var lights: Array = []
 	var lamp_pos: Array[Vector3] = []
-	for v: Variant in raw:
+	for v: Variant in raw + _dress_lights:
 		var d: Dictionary = v
 		var p: Vector3 = _vec(d["position"])
 		var rng: float = float(d["range"])
@@ -790,6 +1154,15 @@ func _build_lights(raw: Array, inst: Array) -> void:
 	light_report = {"dropped": report["dropped"], "worst_all": report["worst_all"], "worst_kept": report["worst_kept"],
 		"over_volumes": report["over_volumes"], "volumes": light_volumes.size(), "log": report["log"]}
 	stats["lights_dropped"] = report["dropped"]
+	# Sodium lamp heads of the waterfront promenade that survived the budget: [kept, total].
+	var lamp_total: int = 0
+	var lamp_kept: int = 0
+	for i: int in lights.size():
+		var sl: Dictionary = lights[i]["src"]
+		if String(sl.get("source", "")) == "lamp_head" and String(sl.get("district", "")) == "waterfront":
+			lamp_total += 1
+			lamp_kept += int(keep[i])
+	stats["waterfront_lamps_kept"] = [lamp_kept, lamp_total]
 	for i: int in lights.size():
 		if not keep[i]:
 			continue

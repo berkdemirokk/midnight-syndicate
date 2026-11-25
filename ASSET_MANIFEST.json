@@ -5854,6 +5854,57 @@
       "test_result": "pass",
       "added": "2026-11-24",
       "notes": "Garage pegboard, generated 512x512 tan board with holes, 0.5 m tile (M_Pegboard_Tan)"
+    },
+    {
+      "id": "arden_civic_lod0",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_civic/arden_civic_lod0.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "Midnight Syndicate (generated)",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 209784,
+      "sha256": "6374df3288c7ec84b52b78dbe56a9392d559d249bd638922974a17ba85b9b761",
+      "test_result": "pass",
+      "added": "2026-11-25",
+      "notes": "traffic/parked sedan LOD0, docs/art/TRAFFIC_CAR_BRIEF.md"
+    },
+    {
+      "id": "arden_civic_lod1",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_civic/arden_civic_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "Midnight Syndicate (generated)",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 85148,
+      "sha256": "fee3018a26506bafb340ce53f675439e38c2408a572dbba062c56b5d45e7ac3c",
+      "test_result": "pass",
+      "added": "2026-11-25",
+      "notes": "traffic/parked sedan LOD1, docs/art/TRAFFIC_CAR_BRIEF.md"
+    },
+    {
+      "id": "arden_civic_lod2",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_civic/arden_civic_lod2.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "Midnight Syndicate (generated)",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 35728,
+      "sha256": "8a724ed27d5d6e50bba88f5798122049ca83160c785efcc3b9b39dfc0d13113a",
+      "test_result": "pass",
+      "added": "2026-11-25",
+      "notes": "traffic/parked sedan LOD2, docs/art/TRAFFIC_CAR_BRIEF.md"
     }
   ]
 }

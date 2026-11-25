@@ -1,0 +1,111 @@
+{
+  "name": "arden_civic",
+  "units": "metres, blender Z up (glTF Y up in the GLBs)",
+  "dims_lod0": {
+    "width_x": 1.9,
+    "length_y": 4.666,
+    "height_z": 1.45,
+    "brief": {
+      "width_x": 1.8,
+      "length_y": 4.6,
+      "height_z": 1.45
+    }
+  },
+  "lods": {
+    "0": {
+      "tris": 7000,
+      "budget": 7000,
+      "within_budget": true,
+      "decimated": true,
+      "verts": 3496,
+      "materials": [
+        "M_Glass",
+        "M_LightFront",
+        "M_LightRear",
+        "M_Paint",
+        "M_Rim",
+        "M_Tire",
+        "M_Trim"
+      ]
+    },
+    "1": {
+      "tris": 2500,
+      "budget": 2500,
+      "within_budget": true,
+      "decimated": true,
+      "verts": 1246,
+      "materials": [
+        "M_Glass",
+        "M_LightFront",
+        "M_LightRear",
+        "M_Paint",
+        "M_Rim",
+        "M_Tire",
+        "M_Trim"
+      ]
+    },
+    "2": {
+      "tris": 800,
+      "budget": 800,
+      "within_budget": true,
+      "decimated": true,
+      "verts": 396,
+      "materials": [
+        "M_Glass",
+        "M_LightFront",
+        "M_LightRear",
+        "M_Paint",
+        "M_Rim",
+        "M_Tire",
+        "M_Trim"
+      ]
+    }
+  },
+  "materials": [
+    "M_Paint",
+    "M_Glass",
+    "M_Trim",
+    "M_LightFront",
+    "M_LightRear",
+    "M_Tire",
+    "M_Rim"
+  ],
+  "checks": [
+    {
+      "name": "width_max_w",
+      "value": 1.8,
+      "target": 1.8,
+      "err_pct": 0.0,
+      "ok": true
+    },
+    {
+      "name": "height_max_ztop",
+      "value": 1.45,
+      "target": 1.45,
+      "err_pct": 0.0,
+      "ok": true
+    },
+    {
+      "name": "length_mesh",
+      "value": 4.6475,
+      "target": 4.6,
+      "err_pct": 1.03,
+      "ok": true
+    },
+    {
+      "name": "width_mesh",
+      "value": 1.8,
+      "target": 1.8,
+      "err_pct": 0.0,
+      "ok": true
+    },
+    {
+      "name": "height_mesh_above_ground",
+      "value": 1.4499,
+      "target": 1.45,
+      "err_pct": 0.0,
+      "ok": true
+    }
+  ],
+  "checks_dims_lod0_ok": false
+}

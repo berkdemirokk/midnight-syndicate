@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-25T08:33:45"
+    "time": "2026-11-25T09:17:00"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -197,7 +197,7 @@
       "metrics": {
         "parked_candidates": 131,
         "parked_cars": 90,
-        "parked_worst_margin_m": -0.91
+        "parked_worst_margin_m": -0.9
       },
       "pass": true
     },
@@ -205,9 +205,9 @@
       "failures": [],
       "metrics": {
         "count_instances": 1113,
-        "count_lights_built": 148,
+        "count_lights_built": 153,
         "count_lights_dropped": 12,
-        "count_multimeshes": 565,
+        "count_multimeshes": 611,
         "count_occluders": 148,
         "count_probes": 37,
         "count_prop_colliders": 368,
@@ -215,7 +215,7 @@
         "light_budget_log": 13,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1686.0,
+        "load_time_ms": 1552.1,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -239,6 +239,19 @@
       },
       "pass": true
     },
+    "test_street_dressing": {
+      "failures": [],
+      "metrics": {
+        "dressing_benches_waterfront": 8,
+        "dressing_bollards_waterfront": 77,
+        "dressing_lamps_waterfront": 4,
+        "dressing_missed": "{ \"bench\": 6, \"litter_bin\": 2, \"bus_shelter\": 3, \"newspaper_box\": 3, \"planter_shrub\": 3, \"bollard\": 2 }",
+        "dressing_placed": 115,
+        "dressing_shelters_downtown": 1,
+        "waterfront_lamps_kept": "[15, 15]"
+      },
+      "pass": true
+    },
     "test_track_data_and_grid": {
       "failures": [],
       "metrics": {
@@ -253,11 +266,11 @@
       "failures": [],
       "metrics": {
         "8car_orderA_nitro100_finish_events": 1,
-        "8car_orderA_nitro100_min_upright_y": 0.9961,
-        "8car_orderA_nitro100_race_time_s": 81.38,
-        "8car_orderA_nitro100_stuck_events": 3,
-        "8car_orderA_nitro100_stuck_worst_car": 1,
-        "8car_orderA_nitro100_wall_s": 6.6
+        "8car_orderA_nitro100_min_upright_y": 0.981,
+        "8car_orderA_nitro100_race_time_s": 85.92,
+        "8car_orderA_nitro100_stuck_events": 5,
+        "8car_orderA_nitro100_stuck_worst_car": 2,
+        "8car_orderA_nitro100_wall_s": 5.7
       },
       "pass": true
     },
@@ -266,10 +279,10 @@
       "metrics": {
         "8car_orderA_nitro140_finish_events": 1,
         "8car_orderA_nitro140_min_upright_y": 0.9961,
-        "8car_orderA_nitro140_race_time_s": 77.43,
+        "8car_orderA_nitro140_race_time_s": 77.47,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 6.5
+        "8car_orderA_nitro140_wall_s": 4.7
       },
       "pass": true
     },
@@ -278,10 +291,10 @@
       "metrics": {
         "8car_orderA_nitro0_finish_events": 1,
         "8car_orderA_nitro0_min_upright_y": 0.9963,
-        "8car_orderA_nitro0_race_time_s": 82.28,
+        "8car_orderA_nitro0_race_time_s": 82.23,
         "8car_orderA_nitro0_stuck_events": 1,
         "8car_orderA_nitro0_stuck_worst_car": 1,
-        "8car_orderA_nitro0_wall_s": 6.0
+        "8car_orderA_nitro0_wall_s": 5.2
       },
       "pass": true
     },
@@ -289,11 +302,11 @@
       "failures": [],
       "metrics": {
         "8car_orderB_nitro100_finish_events": 1,
-        "8car_orderB_nitro100_min_upright_y": 0.9949,
-        "8car_orderB_nitro100_race_time_s": 83.93,
+        "8car_orderB_nitro100_min_upright_y": 0.9766,
+        "8car_orderB_nitro100_race_time_s": 85.58,
         "8car_orderB_nitro100_stuck_events": 6,
         "8car_orderB_nitro100_stuck_worst_car": 2,
-        "8car_orderB_nitro100_wall_s": 5.6
+        "8car_orderB_nitro100_wall_s": 5.8
       },
       "pass": true
     },
@@ -301,11 +314,11 @@
       "failures": [],
       "metrics": {
         "8car_orderB_nitro140_finish_events": 1,
-        "8car_orderB_nitro140_min_upright_y": 0.9934,
-        "8car_orderB_nitro140_race_time_s": 81.22,
-        "8car_orderB_nitro140_stuck_events": 3,
-        "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 5.7
+        "8car_orderB_nitro140_min_upright_y": 0.9883,
+        "8car_orderB_nitro140_race_time_s": 84.48,
+        "8car_orderB_nitro140_stuck_events": 5,
+        "8car_orderB_nitro140_stuck_worst_car": 2,
+        "8car_orderB_nitro140_wall_s": 5.8
       },
       "pass": true
     },
@@ -313,11 +326,11 @@
       "failures": [],
       "metrics": {
         "8car_orderB_nitro0_finish_events": 1,
-        "8car_orderB_nitro0_min_upright_y": 0.9644,
-        "8car_orderB_nitro0_race_time_s": 80.2,
-        "8car_orderB_nitro0_stuck_events": 5,
-        "8car_orderB_nitro0_stuck_worst_car": 1,
-        "8car_orderB_nitro0_wall_s": 5.6
+        "8car_orderB_nitro0_min_upright_y": 0.9912,
+        "8car_orderB_nitro0_race_time_s": 83.47,
+        "8car_orderB_nitro0_stuck_events": 7,
+        "8car_orderB_nitro0_stuck_worst_car": 2,
+        "8car_orderB_nitro0_wall_s": 5.5
       },
       "pass": true
     },
@@ -336,11 +349,11 @@
       "failures": [],
       "metrics": {
         "6car_nitro100_finish_events": 1,
-        "6car_nitro100_min_upright_y": 0.9796,
-        "6car_nitro100_race_time_s": 76.28,
+        "6car_nitro100_min_upright_y": 0.9961,
+        "6car_nitro100_race_time_s": 74.93,
         "6car_nitro100_stuck_events": 1,
         "6car_nitro100_stuck_worst_car": 1,
-        "6car_nitro100_wall_s": 3.2
+        "6car_nitro100_wall_s": 3.0
       },
       "pass": true
     },
@@ -352,7 +365,7 @@
         "6car_nitro140_race_time_s": 73.77,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.1
+        "6car_nitro140_wall_s": 2.8
       },
       "pass": true
     },
@@ -361,10 +374,10 @@
       "metrics": {
         "6car_nitro0_finish_events": 1,
         "6car_nitro0_min_upright_y": 0.9963,
-        "6car_nitro0_race_time_s": 73.9,
+        "6car_nitro0_race_time_s": 73.83,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 3.1
+        "6car_nitro0_wall_s": 2.9
       },
       "pass": true
     }
@@ -915,7 +928,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@10770"
+        "main_menu_focus": "@Button@11144"
       },
       "pass": true
     },

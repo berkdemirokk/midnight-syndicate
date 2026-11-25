@@ -282,3 +282,24 @@ rooftops), glass and car-paint read in the race, camera replay/cinematics, a pho
 
 Verdict: **not passed** (lead average 6.6). Below 7: materials, environment, performance (needs a
 phone). Next: a dedicated low-poly traffic/parked car, waterfront and downtown dressing, glass/paint read.
+
+### Round 8 — 2026-11-25 (traffic car and street dressing)
+
+| criterion | art lens | tech lens | lead |
+|---|---|---|---|
+| vehicle geometry | 7 | 6 | 7 |
+| materials | 6 | 6 | 6 |
+| lighting | 6.5 | 6 | 7 |
+| environment detail | 6 | 5 | 6 — 115 kit props placed (quay bollards, benches, bins, extra stacks and crane); parked Arden Civic sedans now read as cars along the quay; downtown sidewalks too narrow for more than 1 bus shelter; land-side stacks hidden behind the parking structures |
+| camera | 6.5 | 6 | 7 |
+| UI | 7 | 6 | 7 |
+| effects | 6.5 | 6 | 7 |
+| performance | 6 | 5 | 6 (desktop only) — race pack High 481 draw calls / 398k primitives (budgets 500 / 450k), Neon Strip unchanged at 300 / 213k |
+
+Traffic car (lead fixes after the agent stopped): Blender 5.3 `materials.clear()` resets every
+face's material index to 0 (verified with a probe), which had collapsed the whole sedan onto
+M_Paint; slots are now reassigned in place (7 materials per LOD). Decimated LODs get the full
+mesh's shading normals by data transfer. Remaining: shading streaks from the arch boolean near
+the rear doors (visible only at LOD0, under 35 m).
+
+Verdict: **not passed** (lead average 6.6; the art-lens reviewer now gives 7 on geometry and UI).

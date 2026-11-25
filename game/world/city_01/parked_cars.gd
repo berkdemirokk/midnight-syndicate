@@ -1,10 +1,14 @@
 class_name ParkedCars
 extends RefCounted
-## Shared meshes for the parked cars of city 01, baked from the Noctra Sable LOD2 model in model space.
+## Shared meshes for the parked cars of city 01, baked from the Arden Civic traffic sedan (LOD0-2) in model space.
 ## "body" holds every non-paint surface (headlights left out), "paint" holds the M_Paint surfaces so one
 ## MultiMesh per colour can colour them with a material override. Placement is done by CityBuilder.
 
-const LOD2_PATH: String = "res://assets/vehicles/noctra_sable/noctra_sable_lod2.glb"
+const LOD_PATHS: PackedStringArray = [
+	"res://assets/vehicles/arden_civic/arden_civic_lod0.glb",
+	"res://assets/vehicles/arden_civic/arden_civic_lod1.glb",
+	"res://assets/vehicles/arden_civic/arden_civic_lod2.glb",
+]
 const PAINT_NAME: String = "M_Paint"
 const HEADLIGHT_NAME: String = "M_LightFront"  ## parked cars have their headlights off
 
@@ -20,8 +24,8 @@ static func paint_names() -> PackedStringArray:
 
 
 ## Returns {body: ArrayMesh, paint: ArrayMesh, aabb: AABB} with the model's own origin and orientation.
-static func bake() -> Dictionary:
-	var root: Node3D = (load(LOD2_PATH) as PackedScene).instantiate() as Node3D
+static func bake(lod: int = 2) -> Dictionary:
+	var root: Node3D = (load(LOD_PATHS[clampi(lod, 0, LOD_PATHS.size() - 1)]) as PackedScene).instantiate() as Node3D
 	var body := ArrayMesh.new()
 	var paint := ArrayMesh.new()
 	var box := AABB()

@@ -385,6 +385,62 @@ func test_no_collider_in_corridor() -> void:
 
 ## Parked cars (off by default until a low-poly traffic car exists; the placement is tested with 90):
 ## 60 to 120 on the kerb side, no colliders, and every car corner outside the corridor margin.
+func test_street_dressing() -> void:
+	var city: CityBuilder = await _load_city()
+	var rows: Array = city.stats["dressing"]
+	var centre: Array = _load_centre()
+	var corridor_bad: int = 0
+	var lane_short: int = 0
+	var kerb_bad: int = 0
+	var n_bollard_wf: int = 0
+	var n_bench_wf: int = 0
+	var n_lamp_wf: int = 0
+	var n_shelter_dt: int = 0
+	var n_stack: int = 0
+	var n_crane: int = 0
+	for row: Dictionary in rows:
+		var kit: String = row["kit"]
+		var district: String = row["district"]
+		var walks: bool = not (kit in ["container_stack", "gantry_crane"])
+		var lat: float = _centre_lateral(city, centre, _v3(row["pos"]))
+		if float(row["worst_margin"]) > -city.dress_clear_m + 0.01:
+			corridor_bad += 1
+		if walks and absf(lat) < 7.0:
+			kerb_bad += 1  # a sidewalk prop inside the kerb line
+		if walks and float(row["walk_m"]) < city.dress_walk_m - 0.01:
+			lane_short += 1
+		if kit == "bollard" and district == "waterfront":
+			n_bollard_wf += 1
+		if kit == "bench" and district == "waterfront":
+			n_bench_wf += 1
+		if kit == "lamp_sodium" and district == "waterfront":
+			n_lamp_wf += 1
+		if kit == "bus_shelter" and district == "downtown":
+			n_shelter_dt += 1
+		if kit == "container_stack":
+			n_stack += 1
+		if kit == "gantry_crane":
+			n_crane += 1
+	metric("dressing_placed", rows.size())
+	metric("dressing_missed", str(city.stats["dressing_missed"]))
+	metric("dressing_bollards_waterfront", n_bollard_wf)
+	metric("dressing_benches_waterfront", n_bench_wf)
+	metric("dressing_lamps_waterfront", n_lamp_wf)
+	metric("dressing_shelters_downtown", n_shelter_dt)
+	metric("waterfront_lamps_kept", str(city.stats["waterfront_lamps_kept"]))
+	check(corridor_bad == 0, "%d dressing props reach into the corridor" % corridor_bad)
+	check(kerb_bad == 0, "%d sidewalk props sit inside the kerb line" % kerb_bad)
+	check(lane_short == 0, "%d sidewalk props leave less than %.1f m of walking lane" % [lane_short, city.dress_walk_m])
+	check(n_bollard_wf >= 60, "waterfront quay bollards %d, expected at least 60 (every 6 m)" % n_bollard_wf)
+	check(n_bench_wf >= 8, "waterfront benches %d, expected at least 8" % n_bench_wf)
+	check(n_lamp_wf >= 3, "waterfront sodium lamps added %d, expected at least 3" % n_lamp_wf)
+	check(n_shelter_dt >= 1, "downtown bus shelters %d, expected at least 1" % n_shelter_dt)
+	check(n_stack == 2 and int(city.stats["dressing_counts"].get("gantry_crane", 0)) == 1,
+		"waterfront lot: %d container stacks and %d cranes, expected 2 and 1" % [n_stack, n_crane])
+	var nodes: Array[Node] = [city]
+	await cleanup(nodes)
+
+
 func test_parked_cars_outside_corridor() -> void:
 	var city: CityBuilder = await _load_city(90)
 	var s: Dictionary = city.stats

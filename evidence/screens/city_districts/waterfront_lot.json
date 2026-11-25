@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.873,
+  "luma_min": 0.0,
+  "name": "waterfront_lot",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 202,
+    "driver": "vulkan",
+    "fps": 278.488,
+    "frame_ms_avg": 3.591,
+    "frame_ms_p95": 5.576,
+    "frame_ms_p99": 8.15,
+    "frames": 60,
+    "objects": 202,
+    "os": "Windows",
+    "primitives": 89540,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 707.414,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/city_districts/waterfront_lot.png",
+  "preset": "high",
+  "scenario": "city_districts"
+}

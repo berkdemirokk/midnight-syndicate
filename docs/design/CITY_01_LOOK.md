@@ -250,3 +250,36 @@ Scope this pass: rooftops only. Parked cars, waterfront bollards and boats, down
 - Brief item 4 (downtown: bus shelters, benches, overpass lamp pools, parapet light): not changed.
 - Brief item 3 (rooftop plant): already changed in the earlier pass; not revisited.
 - Capture-look-fix rounds: 1 of the 4 required. race_city run: not done in this pass.
+
+## Dressing pass (Environment Agent, brief of 2026-11-25: waterfront and downtown street dressing)
+Built in `city_builder.gd` `_dress_districts`, called after the layout props. Kit props only (`assets/world/kits/props`).
+Every spot is checked against the corridor (0.3 m clear), building boxes (0.5 m), the layout's furniture and lamps
+(circles), and the dressing already placed. Sidewalk props keep a 1.2 m walking lane to the kerb or the wall.
+
+### Round 0 (baseline, dressing pass off, same code otherwise)
+- Waterfront: 45 draw calls, 52,971 primitives. Downtown: 153 draw calls, 132,468 primitives. Neon strip: 300 draw calls, 213,260 primitives.
+- The old `evidence/screens` perf JSON from earlier builds (55 draws, 134,823 primitives for the waterfront) does not match this code and is not used.
+
+### Round 1 to 4 (placements, one capture per round, looked at waterfront, waterfront_stacks, downtown)
+- Quay bollards: every 6 m on the water side, 1.2 m in from the building line. Bollards in total: 87 placed (77 tagged waterfront, which includes the quay run and the far approach; 10 tagged downtown, the near approach), 2 missed. Visible as small lit posts on the left of waterfront.png.
+- Promenade: bench and bin pairs every 40 m on the land side (9 benches, 9 bins). Sodium lamp grid at 30 m: 4 lamps added where the layout left gaps (ends of the run, 1007 to 1022 m and 1382 to 1442 m). All 15 waterfront lamp heads survive the light budget (`waterfront_lamps_kept` 15 of 15), so the neon fill ranges were not shortened.
+- Land-side lot: 2 container stacks and 1 gantry crane (rails along the road). Only the lateral 58 m spots are free: 34 to 52 m are taken by the parking structures (`bld_parking`). The lot is behind the parking deck; `waterfront_lot` shot shows the deck, not the stacks.
+- Downtown: the sidewalks are about 2.0 m wide between the corridor edge (7.3 m) and the building colliders (faces at 9.3 m), so a 1.6 m shelter plus the 1.2 m lane fits only in the gaps between buildings. One shelter fits (s 539, right side, with its advert light); the shelter at s 648 and the other three intended shelters do not fit. Benches, planters and newspaper boxes: one each at street level.
+- Downtown dressing is limited to street level (overpass deck y above 0.5 m excluded).
+- Overpass approaches: bollards searched within 12 m of both deck ends (the near end at 680 m, the far end at 1052 m), counted in the bollard totals above.
+- Lights: the shelter advert (omni, 3 x 0.6 energy) and the new lamp heads (spot, catalog sodium colour) go through the same budget as the layout lights.
+
+### Numbers (desktop, high preset, RTX 5060 Ti, measure run)
+- Waterfront: 45 to 60 draw calls, 52,971 to 56,089 primitives.
+- Downtown: 153 to 161 draw calls, 132,468 to 134,348 primitives.
+- Neon strip: 300 draw calls, 213,260 primitives both before and after; dressing adds nothing there.
+- Waterfront stacks shot: 26 to 32 draw calls, 34,294 to 36,974 primitives.
+
+### Tests
+- `test_street_dressing` (new): no placed prop reaches the corridor, every sidewalk prop keeps 1.2 m of lane, every kerb prop is outside the 7.0 m kerb line, counts (77 bollards, 8 benches, 4 lamps, 1 shelter, 2 stacks, 1 crane). test_city_01 9/9 pass.
+
+### Not done or not right
+- Downtown does not get its shelters every 120 m: 1 of 4 intended. Fix is in the layout (wider sidewalks or setbacks), not the dressing pass.
+- Land-side stacks and crane are not visible from the racing line in any shot: they sit behind the parking deck at 58 m. Owner of the layout should decide on a position.
+- The overpass bollard at the start of the deck (downtown, 668 to 680 m) lands on the deck edge in some sides; not checked in a capture.
+- `waterfront_lot` shot added to `city_districts` (yaw -55, facing the land side).

@@ -22,6 +22,7 @@ const SHOTS: Array[Dictionary] = [
 	{"name": "downtown", "s": 590.0},  ## downtown lamp run is s 514 to 665; the old s 750 looked past every lamp
 	{"name": "waterfront", "s": 1250.0, "yaw": 27.0},  ## yaw 27: promenade lamp run ahead-left (heading -15..-21) and the bay on the right edge; yaw 80 looked past every lamp
 	{"name": "waterfront_stacks", "s": 1279.0, "yaw": 80.0},  ## yaw 80 faces the container stack and gantry crane across the quay (about 360 m east)
+	{"name": "waterfront_lot", "s": 1175.0, "yaw": -55.0},  ## yaw -55 faces the land side: two container stacks and the gantry crane 40 to 60 m out behind the warehouses
 	{"name": "underpass", "s": 1620.0},
 	{"name": "old_market", "s": 1950.0},
 ]
@@ -40,6 +41,9 @@ func run() -> void:
 	for line: String in city.get("light_report")["log"]:
 		print("city_districts: budget " + line)
 	print("city_districts: floodlights in scene=%d" % city.find_children("floodlight_*", "SpotLight3D", true, false).size())
+	for row: Dictionary in city.get("stats")["dressing"]:
+		if String(row["kit"]) != "bollard":
+			print("city_districts: dressing %s %s %s s=%.1f lat=%.2f pos=%s" % [row["kit"], row["district"], row["side"], float(row["s"]), float(row["lat"]), row["pos"]])
 	_line = _load_line()
 	if _line.size() < LOOK_AHEAD_IDX + 2:
 		cap.fail("racing line missing in layout")
