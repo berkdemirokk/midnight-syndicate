@@ -1,13 +1,15 @@
 class_name RaceHUD
 extends CanvasLayer
 ## Race HUD. Reads ArcadeCar and RaceManager state and reacts to race signals; it never drives race logic.
-## Every displayed string is cached in _shown, so a label is rewritten only when its value changes.
+## Every displayed string is cached in _shown, so a text is reshaped only when its value changes.
 ## get_readout() returns that cache for tests and captures.
+## Draw cost: the whole HUD is painted from one canvas item (_paint) in four passes (rects, lines, dots, text) so
+## Godot batches each pass into one draw call. Text is HudText, not Label: see hud_text.gd. Budget: <= 25 draws.
 
 const GAUGE_W: float = 320.0
 const GAUGE_H: float = 264.0
 const GAUGE_CENTRE_FRAC: float = 0.6  ## horizontal centre of the speedometer, fraction of the safe frame
-const GAUGE_CENTRE_Y: float = 120.0  ## passed to SpeedGauge.centre_y_px in _build_speedo
+const GAUGE_CENTRE_Y: float = 120.0  ## arc centre, from the top of the gauge box
 const GAUGE_GEAR_Y: float = 224.0
 const GAUGE_GEAR_W: float = 56.0
 const GAUGE_GEAR_H: float = 34.0
@@ -16,9 +18,7 @@ const UNIT_Y: float = 184.0
 const NITRO_W: float = 320.0
 const NITRO_H: float = 20.0
 const NITRO_LEFT_FRAC: float = 0.3
-const NITRO_BLOCK_H: float = 56.0
 const MINIMAP_PX: float = 240.0
-const CENTRE_BOX_W: float = 480.0
 const CENTRE_TOP_PX: float = 120.0
 const POS_PX: int = 72
 const POS_SUFFIX_PX: int = 24
@@ -28,6 +28,8 @@ const UNIT_PX: int = 20
 const LAP_PX: int = 40
 const TOP_SCRIM_PX: float = 300.0  ## height of the dark gradient behind the top HUD clusters
 const TOP_SCRIM_ALPHA: float = 0.6
+const SCRIM_STEP_PX: int = 3  ## the gradient is stacked rects of this height, so it joins the rect batch
+const SCRIM_HOLD_AT: float = 0.75  ## the gradient holds 60 percent of its alpha here, under the lap/time rows
 const SMALL_PX: int = 18
 const TIME_PX: int = 24
 const NITRO_LABEL_PX: int = 18
@@ -36,6 +38,8 @@ const DRIFT_PX: int = 40
 const BANK_PX: int = 28
 const WRONG_PX: int = 48
 const FINISH_PX: int = 28
+const GEAR_PAD_X: float = 24.0
+const GEAR_PAD_Y: float = 12.0
 const COUNTDOWN_HOLD_S: float = 0.8
 const COUNTDOWN_FADE_S: float = 0.25
 const COUNTDOWN_PUNCH: float = 1.5
@@ -48,6 +52,17 @@ const WRONG_MIN_KMH: float = 20.0
 const WRONG_MAX_STEP: float = 0.5  ## larger progress jumps are a lap wrap, not a reversal
 const WRONG_BLINK_HZ: float = 3.0
 const REVERSE_MS: float = 0.5
+const PANEL_SKEW: float = MSTheme.SKEW_RATIO * 0.5  ## same shear as MSTheme.box()
+
+
+## The single canvas item the HUD paints into.
+class HudCanvas:
+	extends Control
+	var painter: Callable
+
+	func _draw() -> void:
+		painter.call(self)
+
 
 var _car: ArcadeCar = null
 var _race: RaceManager = null
@@ -64,25 +79,32 @@ var _ints: Dictionary = {}  ## last integer behind each readout; strings are bui
 var _bank_tw: Tween = null
 
 var _root: Control
-var _frame: Control
+var _frame: HudCanvas
 var _speed_fx: Control
-var _pos_num: Label
-var _pos_suffix: Label
-var _pos_total: Label
 var _minimap: MiniMap
-var _lap_val: Label
-var _time_val: Label
-var _lap_cur_val: Label
-var _best_val: Label
 var _speedo: SpeedGauge
-var _speed_label: Label
-var _gear_label: Label
 var _nitro: NitroBar
-var _countdown: Label
-var _drift_label: Label
-var _bank_label: Label
-var _wrong_label: Label
-var _finish_label: Label
+var _texts: Array[HudText] = []  ## sorted by pixel size, the order HudText.paint needs
+var _pos_num: HudText
+var _pos_suffix: HudText
+var _pos_total: HudText
+var _lap_head: HudText
+var _lap_val: HudText
+var _cap_time: HudText
+var _cap_lap: HudText
+var _cap_best: HudText
+var _time_val: HudText
+var _lap_cur_val: HudText
+var _best_val: HudText
+var _speed_label: HudText
+var _unit_label: HudText
+var _gear_label: HudText
+var _nitro_label: HudText
+var _countdown: HudText
+var _drift_label: HudText
+var _bank_label: HudText
+var _wrong_label: HudText
+var _finish_label: HudText
 
 
 func _ready() -> void:
@@ -93,7 +115,6 @@ func _ready() -> void:
 func _build() -> void:
 	_root = Control.new()
 	_root.name = "Root"
-	_root.theme = MSTheme.build()
 	_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_root)
@@ -104,183 +125,51 @@ func _build() -> void:
 	_speed_fx.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_speed_fx)
 
-	# Top scrim: a soft dark gradient under the position and lap clusters, so bright neon behind
-	# them never washes out the labels (the TIME caption disappeared over a sign).
-	var scrim := TextureRect.new()
-	scrim.name = "TopScrim"
-	var grad := Gradient.new()
-	grad.set_color(0, Color(0.0, 0.0, 0.0, TOP_SCRIM_ALPHA))
-	grad.set_color(1, Color(0.0, 0.0, 0.0, 0.0))
-	grad.add_point(0.75, Color(0.0, 0.0, 0.0, TOP_SCRIM_ALPHA * 0.6))  # holds dark under the lap/time rows
-	var gtex := GradientTexture2D.new()
-	gtex.gradient = grad
-	gtex.fill_from = Vector2(0.5, 0.0)
-	gtex.fill_to = Vector2(0.5, 1.0)
-	gtex.width = 4
-	gtex.height = 64
-	scrim.texture = gtex
-	scrim.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	scrim.stretch_mode = TextureRect.STRETCH_SCALE
-	scrim.anchor_right = 1.0
-	scrim.offset_bottom = TOP_SCRIM_PX
-	scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_root.add_child(scrim)
-
-	_frame = Control.new()
+	_frame = HudCanvas.new()
 	_frame.name = "Frame"
+	_frame.painter = _paint
 	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_frame)
 
-	_build_position_block()
-	_build_lap_block()
-	_build_speedo()
-	_build_nitro()
-	_build_centre_column()
-	_build_countdown()
-
-
-func _build_position_block() -> void:
-	var box := VBoxContainer.new()
-	box.name = "Position"
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", MSTheme.GRID_PX)
-	_pos_num = MSTheme.make_label("1", "digits", POS_PX, MSTheme.TEXT, true)
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 0)
-	_pos_suffix = MSTheme.make_label("ST", "slant", POS_SUFFIX_PX, MSTheme.CYAN, true)
-	_pos_total = MSTheme.make_label("/ 1", "digits", POS_TOTAL_PX, MSTheme.MUTED, true)
-	col.add_child(_pos_suffix)
-	col.add_child(_pos_total)
-	row.add_child(_pos_num)
-	row.add_child(col)
-	box.add_child(row)
-	_minimap = MiniMap.new()
-	_minimap.custom_minimum_size = Vector2(MINIMAP_PX, MINIMAP_PX)
-	box.add_child(_minimap)
-	_frame.add_child(box)
-
-
-func _build_lap_block() -> void:
-	var box := VBoxContainer.new()
-	box.name = "Lap"
-	box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	box.anchor_left = 1.0
-	box.anchor_right = 1.0
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var lap_head: Label = MSTheme.make_label(I18n.t("hud.lap"), "tracked", SMALL_PX, MSTheme.MUTED, true)
-	lap_head.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	box.add_child(lap_head)
-	_lap_val = MSTheme.make_label("1 / 1", "digits", LAP_PX, MSTheme.TEXT, true)
-	_lap_val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	box.add_child(_lap_val)
-	var grid := GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", MSTheme.GRID_PX * 3)
-	_time_val = _add_stat(grid, I18n.t("hud.time"))
-	_lap_cur_val = _add_stat(grid, I18n.t("hud.lap_time"))
-	_best_val = _add_stat(grid, I18n.t("hud.best"))
-	box.add_child(grid)
-	_frame.add_child(box)
-
-
-func _add_stat(grid: GridContainer, caption: String) -> Label:
-	grid.add_child(MSTheme.make_label(caption, "tracked", SMALL_PX, MSTheme.MUTED, true))
-	var v: Label = MSTheme.make_label(I18n.t("hud.no_time"), "digits", TIME_PX, MSTheme.TEXT, true)
-	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	grid.add_child(v)
-	return v
-
-
-func _build_speedo() -> void:
 	_speedo = SpeedGauge.new()
-	_speedo.name = "Speedo"
-	_speedo.custom_minimum_size = Vector2(GAUGE_W, GAUGE_H)
-	_speedo.anchor_left = GAUGE_CENTRE_FRAC
-	_speedo.anchor_right = GAUGE_CENTRE_FRAC
-	_speedo.anchor_top = 1.0
-	_speedo.anchor_bottom = 1.0
-	_speedo.offset_left = -GAUGE_W * 0.5
-	_speedo.offset_right = GAUGE_W * 0.5
-	_speedo.offset_top = -GAUGE_H
-	_speedo.offset_bottom = 0.0
-	_speedo.centre_y_px = GAUGE_CENTRE_Y
-	_speedo.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_frame.add_child(_speedo)
-	_speed_label = MSTheme.make_label("0", "digits", SPEED_PX, MSTheme.TEXT, true)
-	_speed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_speed_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_speed_label.position = Vector2(0.0, GAUGE_CENTRE_Y - SPEED_H * 0.5)
-	_speed_label.size = Vector2(GAUGE_W, SPEED_H)
-	_speedo.add_child(_speed_label)
-	var unit: Label = MSTheme.make_label(I18n.t("hud.kmh"), "tracked", UNIT_PX, MSTheme.MUTED, true)
-	unit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	unit.position = Vector2(0.0, UNIT_Y)
-	unit.size = Vector2(GAUGE_W, UNIT_PX + MSTheme.GRID_PX)
-	_speedo.add_child(unit)
-	var gear_box := PanelContainer.new()
-	gear_box.custom_minimum_size = Vector2(GAUGE_GEAR_W, GAUGE_GEAR_H)
-	gear_box.position = Vector2(GAUGE_W * 0.5 - GAUGE_GEAR_W * 0.5, GAUGE_GEAR_Y)
-	gear_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_gear_label = MSTheme.make_label("N", "digits", POS_SUFFIX_PX, MSTheme.CYAN, true)
-	_gear_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	gear_box.add_child(_gear_label)
-	_speedo.add_child(gear_box)
-
-
-func _build_nitro() -> void:
-	var box := VBoxContainer.new()
-	box.name = "Nitro"
-	box.anchor_left = NITRO_LEFT_FRAC
-	box.anchor_right = NITRO_LEFT_FRAC
-	box.anchor_top = 1.0
-	box.anchor_bottom = 1.0
-	box.offset_left = 0.0
-	box.offset_right = NITRO_W
-	box.offset_top = -NITRO_BLOCK_H
-	box.offset_bottom = 0.0
-	box.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(MSTheme.make_label(I18n.t("hud.nitro"), "tracked", NITRO_LABEL_PX, MSTheme.CYAN, true))
 	_nitro = NitroBar.new()
-	_nitro.custom_minimum_size = Vector2(NITRO_W, NITRO_H)
-	box.add_child(_nitro)
-	_frame.add_child(box)
+	_minimap = MiniMap.new()
+	_minimap.size_px = Vector2(MINIMAP_PX, MINIMAP_PX)
+	_build_texts()
 
 
-## Drift popup, wrong-way warning and finish text share one centred column under the top edge.
-func _build_centre_column() -> void:
-	var box := VBoxContainer.new()
-	box.name = "CentreColumn"
-	box.anchor_left = 0.5
-	box.anchor_right = 0.5
-	box.offset_left = -CENTRE_BOX_W * 0.5
-	box.offset_right = CENTRE_BOX_W * 0.5
-	box.offset_top = CENTRE_TOP_PX
-	box.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_drift_label = MSTheme.make_label("", "digits", DRIFT_PX, MSTheme.CYAN, true)
-	_bank_label = MSTheme.make_label("", "digits", BANK_PX, MSTheme.MAGENTA, true)
-	_wrong_label = MSTheme.make_label(I18n.t("hud.wrong_way"), "slant", WRONG_PX, MSTheme.DANGER, true)
-	_finish_label = MSTheme.make_label(I18n.t("hud.finished"), "slant", FINISH_PX, MSTheme.TEXT, true)
-	for l: Label in [_drift_label, _bank_label, _wrong_label, _finish_label]:
-		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.visible = false
-		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.add_child(l)
-	_frame.add_child(box)
+func _text(kind: String, px: int, col: Color, initial: String) -> HudText:
+	var t := HudText.new(kind, px, col, true)
+	t.set_text(initial)
+	_texts.append(t)
+	return t
 
 
-func _build_countdown() -> void:
-	_countdown = MSTheme.make_label("", "slant", COUNTDOWN_PX, MSTheme.TEXT, true)
-	_countdown.name = "Countdown"
-	_countdown.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_countdown.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_countdown.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_countdown.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_countdown.visible = false
-	_frame.add_child(_countdown)
+func _build_texts() -> void:
+	_pos_num = _text("digits", POS_PX, MSTheme.TEXT, "1")
+	_pos_suffix = _text("digits", POS_SUFFIX_PX, MSTheme.CYAN, "ST")
+	_pos_total = _text("digits", POS_TOTAL_PX, MSTheme.MUTED, "/ 1")
+	_lap_head = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.lap"))
+	_lap_val = _text("digits", LAP_PX, MSTheme.TEXT, "1 / 1")
+	_cap_time = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.time"))
+	_cap_lap = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.lap_time"))
+	_cap_best = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.best"))
+	_time_val = _text("digits", TIME_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
+	_lap_cur_val = _text("digits", TIME_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
+	_best_val = _text("digits", TIME_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
+	_speed_label = _text("digits", SPEED_PX, MSTheme.TEXT, "0")
+	_unit_label = _text("tracked", UNIT_PX, MSTheme.MUTED, I18n.t("hud.kmh"))
+	_gear_label = _text("digits", POS_SUFFIX_PX, MSTheme.CYAN, "N")
+	_nitro_label = _text("tracked", NITRO_LABEL_PX, MSTheme.CYAN, I18n.t("hud.nitro"))
+	_drift_label = _text("digits", DRIFT_PX, MSTheme.CYAN, "")
+	_bank_label = _text("digits", BANK_PX, MSTheme.MAGENTA, "")
+	_wrong_label = _text("digits", WRONG_PX, MSTheme.DANGER, I18n.t("hud.wrong_way"))
+	_finish_label = _text("digits", FINISH_PX, MSTheme.TEXT, I18n.t("hud.finished"))
+	_countdown = _text("digits", COUNTDOWN_PX, MSTheme.TEXT, "")
+	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label, _countdown]:
+		t.visible = false
+	_texts.sort_custom(func(a: HudText, b: HudText) -> bool: return a.size_px < b.size_px)
 
 
 ## Keeps the HUD clear of notches and rounded corners. Zero insets on desktop.
@@ -290,6 +179,105 @@ func _apply_insets() -> void:
 	_frame.offset_top = ins.y + MSTheme.SAFE_MARGIN_PX
 	_frame.offset_right = -(ins.z + MSTheme.SAFE_MARGIN_PX)
 	_frame.offset_bottom = -(ins.w + MSTheme.SAFE_MARGIN_PX)
+
+
+## Lays every element out and paints it. Pass order is what makes the batches: rects, lines, dots, text.
+func _paint(c: Control) -> void:
+	var sz: Vector2 = c.size
+	var sep: float = float(MSTheme.GRID_PX * 2)
+
+	# Top-left: position, suffix and total on one row, minimap under it.
+	_pos_num.pos = Vector2.ZERO
+	var col_x: float = _pos_num.width() + float(MSTheme.GRID_PX)
+	_pos_suffix.pos = Vector2(col_x, 0.0)
+	_pos_total.pos = Vector2(col_x, _pos_suffix.height())
+	var row_h: float = maxf(_pos_num.height(), _pos_suffix.height() + _pos_total.height())
+	var map_origin: Vector2 = Vector2(0.0, row_h + sep)
+
+	# Top-right: LAP header, lap value, then a two column grid of timers.
+	var cap_w: float = maxf(_cap_time.width(), maxf(_cap_lap.width(), _cap_best.width()))
+	var val_w: float = maxf(_time_val.width(), maxf(_lap_cur_val.width(), _best_val.width()))
+	var grid_w: float = cap_w + float(MSTheme.GRID_PX * 3) + val_w
+	var box_x: float = sz.x - maxf(grid_w, maxf(_lap_head.width(), _lap_val.width()))
+	_lap_head.pos = Vector2(sz.x - _lap_head.width(), 0.0)
+	var lap_y: float = _lap_head.height() + sep
+	_lap_val.pos = Vector2(sz.x - _lap_val.width(), lap_y)
+	var grid_y: float = lap_y + _lap_val.height() + sep
+	var stat_h: float = maxf(_cap_time.height(), _time_val.height())
+	var stats: Array = [[_cap_time, _time_val], [_cap_lap, _lap_cur_val], [_cap_best, _best_val]]
+	for i: int in stats.size():
+		var cap: HudText = stats[i][0]
+		var val: HudText = stats[i][1]
+		var y: float = grid_y + float(i) * (stat_h + float(MSTheme.GRID_PX))
+		cap.pos = Vector2(box_x, y + (stat_h - cap.height()) * 0.5)  # labels centre vertically in their cell
+		val.pos = Vector2(box_x + cap_w + float(MSTheme.GRID_PX * 3) + (val_w - val.width()), y)
+
+	# Bottom: speedometer (arc, speed, unit, gear box) and nitro bar.
+	var gauge_l: float = sz.x * GAUGE_CENTRE_FRAC - GAUGE_W * 0.5
+	var gauge_t: float = sz.y - GAUGE_H
+	var arc_centre: Vector2 = Vector2(gauge_l + GAUGE_W * 0.5, gauge_t + GAUGE_CENTRE_Y)
+	_speed_label.pos = Vector2(gauge_l + (GAUGE_W - _speed_label.width()) * 0.5,
+		gauge_t + GAUGE_CENTRE_Y - SPEED_H * 0.5 + maxf((SPEED_H - _speed_label.height()) * 0.5, 0.0))
+	_unit_label.pos = Vector2(gauge_l + (GAUGE_W - _unit_label.width()) * 0.5,
+		gauge_t + UNIT_Y + (float(UNIT_PX + MSTheme.GRID_PX) - _unit_label.height()) * 0.5)
+	var gear_size: Vector2 = Vector2(maxf(GAUGE_GEAR_W, _gear_label.width() + GEAR_PAD_X * 2.0),
+		maxf(GAUGE_GEAR_H, _gear_label.height() + GEAR_PAD_Y * 2.0))
+	var gear_rect: Rect2 = Rect2(Vector2(gauge_l + GAUGE_W * 0.5 - GAUGE_GEAR_W * 0.5, gauge_t + GAUGE_GEAR_Y), gear_size)
+	_gear_label.pos = gear_rect.position + Vector2(GEAR_PAD_X, GEAR_PAD_Y)
+	var nitro_rect: Rect2 = Rect2(sz.x * NITRO_LEFT_FRAC, sz.y - NITRO_H, NITRO_W, NITRO_H)
+	_nitro_label.pos = Vector2(nitro_rect.position.x, nitro_rect.position.y - sep - _nitro_label.height())
+
+	# Centre column: drift popup, bank flash, wrong-way and finish text stack under the top edge.
+	var cy: float = CENTRE_TOP_PX
+	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label]:
+		if t.visible:
+			t.pos = Vector2((sz.x - t.width()) * 0.5, cy)
+			cy += t.height() + sep
+	_countdown.pos = (sz - Vector2(_countdown.width(), _countdown.height())) * 0.5
+	_countdown.pivot = sz * 0.5
+
+	# Pass 1: rects.
+	_paint_scrim(c)
+	_minimap.paint_rects(c, map_origin)
+	_paint_skew_fill(c, gear_rect)
+	_nitro.paint_rects(c, nitro_rect)
+	# Pass 2: lines.
+	_speedo.paint_lines(c, arc_centre)
+	_minimap.paint_lines(c, map_origin)
+	_paint_skew_border(c, gear_rect)
+	_nitro.paint_lines(c, nitro_rect)
+	# Pass 3: dots, one shared texture.
+	_minimap.paint_dots(c, map_origin)
+	# Pass 4: text, outlines first.
+	HudText.paint(c, _texts)
+
+
+## Dark gradient under the top clusters, as stacked rects. The top edge is the screen edge, not the safe frame.
+func _paint_scrim(c: Control) -> void:
+	var left: float = -c.position.x
+	var top: float = -c.position.y
+	var steps: int = ceili(TOP_SCRIM_PX / float(SCRIM_STEP_PX))
+	for i: int in steps:
+		var t: float = (float(i) + 0.5) / float(steps)
+		var a: float = TOP_SCRIM_ALPHA * 0.6 * (1.0 - t) / (1.0 - SCRIM_HOLD_AT) if t >= SCRIM_HOLD_AT \
+			else lerpf(TOP_SCRIM_ALPHA, TOP_SCRIM_ALPHA * 0.6, t / SCRIM_HOLD_AT)
+		c.draw_rect(Rect2(left, top + float(i * SCRIM_STEP_PX), _root.size.x, float(SCRIM_STEP_PX)), Color(0.0, 0.0, 0.0, a))
+
+
+## Panel fill sheared like MSTheme.box(): a skewed rect keeps the rect batch.
+func _paint_skew_fill(c: CanvasItem, r: Rect2) -> void:
+	c.draw_set_transform_matrix(Transform2D(Vector2(1.0, 0.0), Vector2(PANEL_SKEW, 1.0), Vector2(-PANEL_SKEW * (r.position.y + r.size.y * 0.5), 0.0)))
+	c.draw_rect(r, MSTheme.PANEL_BG)
+	c.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+
+func _paint_skew_border(c: CanvasItem, r: Rect2) -> void:
+	var inner: Rect2 = r.grow(-0.5)
+	var mid: float = r.position.y + r.size.y * 0.5
+	var pts := PackedVector2Array()
+	for p: Vector2 in [inner.position, Vector2(inner.end.x, inner.position.y), inner.end, Vector2(inner.position.x, inner.end.y)]:
+		pts.append(Vector2(p.x + PANEL_SKEW * (p.y - mid), p.y))
+	c.draw_multiline(PackedVector2Array([pts[0], pts[1], pts[1], pts[2], pts[2], pts[3], pts[3], pts[0]]), MSTheme.BORDER, 1.0, true)
 
 
 ## Connects to one car and one race. Earlier bindings are dropped first.
@@ -364,6 +352,8 @@ func _points_from(v: Variant) -> PackedVector2Array:
 
 
 func _process(delta: float) -> void:
+	if _frame != null:
+		_frame.queue_redraw()  # timers and the rpm arc change every frame, so one redraw per frame is the floor
 	if _car == null:
 		return
 	_pulse_t += delta
@@ -490,18 +480,17 @@ func _on_countdown_tick(seconds_left: int) -> void:
 	var col: Color = MSTheme.CYAN
 	if not go:
 		col = MSTheme.DANGER if seconds_left == 1 else MSTheme.AMBER
-	_countdown.add_theme_color_override("font_color", col)
-	_countdown.text = text
+	_countdown.color = col
+	_countdown.set_text(text)
 	_shown["countdown"] = text
 	_countdown.visible = true
 	_shown["countdown_visible"] = true
 	_countdown.modulate.a = 1.0
-	_countdown.pivot_offset = _countdown.size * 0.5
-	_countdown.scale = Vector2.ONE * COUNTDOWN_PUNCH
+	_countdown.scale = COUNTDOWN_PUNCH
 	if _countdown_tw != null and _countdown_tw.is_valid():
 		_countdown_tw.kill()
 	_countdown_tw = create_tween()
-	_countdown_tw.tween_property(_countdown, "scale", Vector2.ONE, COUNTDOWN_PUNCH_S) \
+	_countdown_tw.tween_property(_countdown, "scale", 1.0, COUNTDOWN_PUNCH_S) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if go:
 		_countdown_tw.tween_interval(COUNTDOWN_HOLD_S)
@@ -528,11 +517,11 @@ func _on_race_finished(_results: Array[Dictionary]) -> void:
 	_shown["finished_visible"] = true
 
 
-func _set_text(key: String, label: Label, text: String) -> void:
+func _set_text(key: String, label: HudText, text: String) -> void:
 	if _shown.get(key, "") == text:
 		return
 	_shown[key] = text
-	label.text = text
+	label.set_text(text)
 
 
 ## mm:ss.cc, the layout every race timer uses.

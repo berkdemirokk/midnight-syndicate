@@ -8,25 +8,26 @@
   "name": "iphone_2556x1179",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 35,
+    "draw_calls": 12,
+    "draw_calls_min": 12,
     "driver": "vulkan",
-    "fps": 1499.213,
-    "frame_ms_avg": 0.667,
-    "frame_ms_p95": 0.642,
-    "frame_ms_p99": 5.701,
+    "fps": 962.603,
+    "frame_ms_avg": 1.039,
+    "frame_ms_p95": 2.027,
+    "frame_ms_p99": 2.203,
     "frames": 60,
-    "objects": 284,
+    "objects": 860,
     "os": "Windows",
-    "primitives": 1142,
+    "primitives": 1144,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 45.468,
+    "video_mem_mb": 45.692,
     "viewport_size": [
       2556,
       1179
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/ui_results_mock/iphone_2556x1179.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_5367fe4f-123-1/evidence/screens/ui_results_mock/iphone_2556x1179.png",
   "preset": "high",
   "scenario": "ui_results_mock"
 }

@@ -1,42 +1,27 @@
 class_name NitroBar
-extends Control
+extends RefCounted
 ## Segmented nitro meter. Glows while nitro is firing; pulses when the tank is full.
-
-@export var segments: int = 12
-@export var gap_px: float = 4.0
-@export var pulse_hz: float = 4.0
-@export var glow_px: float = 4.0
+## Paints into the HUD's own canvas: segment rects in the rect pass, the firing glow in the line pass.
 
 const FULL_EPS: float = 0.999
 
+var segments: int = 12
+var gap_px: float = 4.0
+var pulse_hz: float = 4.0
+var glow_px: float = 4.0
 var amount: float = 0.0
 var active: bool = false
 var _pulse_t: float = 0.0
-var _last_amount: float = -1.0
-var _last_active: bool = false
 
 
 func set_state(value: float, firing: bool, t_s: float) -> void:
-	var v: float = clampf(value, 0.0, 1.0)
-	_pulse_t = t_s
-	var full: bool = v >= FULL_EPS
-	if is_equal_approx(v, _last_amount) and firing == _last_active and not firing and not full:
-		return
-	amount = v
+	amount = clampf(value, 0.0, 1.0)
 	active = firing
-	_last_amount = v
-	_last_active = firing
-	queue_redraw()
+	_pulse_t = t_s
 
 
-func _process(_delta: float) -> void:
-	# Redraw every frame only while the glow or pulse is animating.
-	if active or amount >= FULL_EPS:
-		queue_redraw()
-
-
-func _draw() -> void:
-	var seg_w: float = (size.x - gap_px * float(segments - 1)) / float(segments)
+func paint_rects(c: CanvasItem, r: Rect2) -> void:
+	var seg_w: float = (r.size.x - gap_px * float(segments - 1)) / float(segments)
 	var lit: float = amount * float(segments)
 	var full: bool = amount >= FULL_EPS
 	var col: Color = MSTheme.CYAN
@@ -45,11 +30,27 @@ func _draw() -> void:
 	var pulse: float = 1.0
 	if full:
 		pulse = 0.6 + 0.4 * sin(_pulse_t * TAU * pulse_hz)
+	var bg: Color = MSTheme.tint(MSTheme.TEXT, 0.08)
 	for i: int in segments:
-		var x: float = float(i) * (seg_w + gap_px)
+		var x: float = r.position.x + float(i) * (seg_w + gap_px)
+		c.draw_rect(Rect2(x, r.position.y, seg_w, r.size.y), bg)
 		var fill: float = clampf(lit - float(i), 0.0, 1.0)
-		draw_rect(Rect2(x, 0.0, seg_w, size.y), MSTheme.tint(MSTheme.TEXT, 0.08))
 		if fill > 0.0:
-			draw_rect(Rect2(x, 0.0, seg_w * fill, size.y), MSTheme.tint(col, pulse))
-		if active and fill > 0.0:
-			draw_rect(Rect2(x, 0.0, seg_w, size.y).grow(glow_px), MSTheme.tint(col, 0.18), false, 2.0)
+			c.draw_rect(Rect2(x, r.position.y, seg_w * fill, r.size.y), MSTheme.tint(col, pulse))
+
+
+func paint_lines(c: CanvasItem, r: Rect2) -> void:
+	if not active:
+		return
+	var seg_w: float = (r.size.x - gap_px * float(segments - 1)) / float(segments)
+	var lit: float = amount * float(segments)
+	var glow: Color = MSTheme.tint(MSTheme.CYAN.lightened(0.35), 0.18)
+	for i: int in segments:
+		if lit - float(i) <= 0.0:
+			continue
+		var box: Rect2 = Rect2(r.position.x + float(i) * (seg_w + gap_px), r.position.y, seg_w, r.size.y).grow(glow_px)
+		var tl: Vector2 = box.position
+		var tr: Vector2 = Vector2(box.end.x, box.position.y)
+		var br: Vector2 = box.end
+		var bl: Vector2 = Vector2(box.position.x, box.end.y)
+		c.draw_multiline(PackedVector2Array([tl, tr, tr, br, br, bl, bl, tl]), glow, 2.0, true)
