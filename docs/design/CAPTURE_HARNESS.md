@@ -6,7 +6,7 @@ Owner: Core Systems. Code: `game/devtools/`. Only screenshots made by this harne
 From the repo root (`C:\Users\berk\car race`):
 
 ```
-"C:\Users\berk\tools\godot\Godot_v4.7.2-stable_win64_console.exe" --path "game" --resolution 1920x1080 --position 40,40 res://devtools/capture_boot.tscn -- --capture=<scenario> [--size=WxH] [--preset=low|medium|high]
+"C:\Users\berk\tools\godot\Godot_v4.7.2-stable_win64_console.exe" --path "game" --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=<scenario> [--size=WxH] [--preset=low|medium|high]
 ```
 
 - `--capture=<scenario>` runs `game/devtools/scenarios/<scenario>.gd`. Without it, `Capture` does nothing.

@@ -5,6 +5,7 @@ extends Node
 ## Usage (from the repo root):
 ##   Godot_v4.7.2-stable_win64_console.exe --path "game" --resolution 1920x1080 --position 40,40 res://devtools/capture_boot.tscn -- --capture=<scenario> [--size=WxH] [--preset=low|medium|high]
 
+const OFFSCREEN_MARGIN_PX: int = 200  ## gap between the hidden capture window and the rightmost monitor
 const SCENARIO_DIR: String = "res://devtools/scenarios/"
 const EVIDENCE_REL: String = "../evidence/screens/"
 const SHOT_PROBE_FRAMES: int = 60
@@ -34,8 +35,24 @@ func _ready() -> void:
 	_parse_args()
 	if scenario_name.is_empty():
 		return
+	_hide_window()
 	get_tree().create_timer(timeout_s).timeout.connect(_on_timeout)
 	_run.call_deferred()
+
+
+## Captures must not pop up on the owner's desktop or steal focus while they work: the window never
+## takes focus, stays out of the taskbar and lives to the right of every monitor. The GPU still
+## renders it, so the screenshots are unchanged. --show-window keeps it visible for debugging.
+func _hide_window() -> void:
+	if DisplayServer.get_name() == "headless" or OS.get_cmdline_user_args().has("--show-window"):
+		return
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_NO_FOCUS, true)
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_ALWAYS_ON_TOP, false)
+	var right: int = 0
+	for i: int in DisplayServer.get_screen_count():
+		var r: Rect2i = DisplayServer.screen_get_usable_rect(i)
+		right = maxi(right, r.position.x + r.size.x)
+	DisplayServer.window_set_position(Vector2i(right + OFFSCREEN_MARGIN_PX, 0))
 
 
 func _parse_args() -> void:
