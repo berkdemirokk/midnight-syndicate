@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://blqa5wkdcmrgk"
-path="res://.godot/imported/noctra_sable_lod1_plate_base.png-654fe51a6fab686a0d0072cdf2be0ffa.ctex"
+path.s3tc="res://.godot/imported/noctra_sable_lod1_plate_base.png-654fe51a6fab686a0d0072cdf2be0ffa.s3tc.ctex"
+path.etc2="res://.godot/imported/noctra_sable_lod1_plate_base.png-654fe51a6fab686a0d0072cdf2be0ffa.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "7c081a7d36620261d406d7c32acb70ee"
@@ -14,11 +16,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/vehicles/noctra_sable/noctra_sable_lod1_plate_base.png"
-dest_files=["res://.godot/imported/noctra_sable_lod1_plate_base.png-654fe51a6fab686a0d0072cdf2be0ffa.ctex"]
+dest_files=["res://.godot/imported/noctra_sable_lod1_plate_base.png-654fe51a6fab686a0d0072cdf2be0ffa.s3tc.ctex", "res://.godot/imported/noctra_sable_lod1_plate_base.png-654fe51a6fab686a0d0072cdf2be0ffa.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

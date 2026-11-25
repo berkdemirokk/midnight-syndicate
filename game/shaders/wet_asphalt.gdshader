@@ -6,9 +6,9 @@ shader_type spatial;
 
 render_mode blend_mix, depth_draw_opaque, cull_back, specular_schlick_ggx;
 
-uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap, repeat_enable;
-uniform sampler2D roughness_tex : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform sampler2D roughness_tex : hint_default_white, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D planar_reflection : source_color, filter_linear_mipmap, repeat_disable;
 
 // One texture tile per this many metres.

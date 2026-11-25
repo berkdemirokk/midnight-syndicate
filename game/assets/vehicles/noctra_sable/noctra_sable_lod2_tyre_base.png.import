@@ -3,9 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2x3k7w0oqwop"
-path="res://.godot/imported/noctra_sable_lod2_tyre_base.png-b3d8b966a6574ca70025e01ecbf416a9.ctex"
+path.s3tc="res://.godot/imported/noctra_sable_lod2_tyre_base.png-b3d8b966a6574ca70025e01ecbf416a9.s3tc.ctex"
+path.etc2="res://.godot/imported/noctra_sable_lod2_tyre_base.png-b3d8b966a6574ca70025e01ecbf416a9.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 generator_parameters={
 "md5": "0b2dab9195b840bb3f9dfeb0bd3f30dd"
@@ -14,11 +16,11 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/vehicles/noctra_sable/noctra_sable_lod2_tyre_base.png"
-dest_files=["res://.godot/imported/noctra_sable_lod2_tyre_base.png-b3d8b966a6574ca70025e01ecbf416a9.ctex"]
+dest_files=["res://.godot/imported/noctra_sable_lod2_tyre_base.png-b3d8b966a6574ca70025e01ecbf416a9.s3tc.ctex", "res://.godot/imported/noctra_sable_lod2_tyre_base.png-b3d8b966a6574ca70025e01ecbf416a9.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
