@@ -324,6 +324,36 @@ func test_eight_cars_on_grid() -> void:
 	await cleanup(nodes)
 
 
+## First-row LOD2 impostors are MultiMeshes per (asset, chunk), not one MeshInstance3D per building, and the shown subset
+## follows the distance from the eye (beyond lod1_end_m only).
+func test_first_row_lod2_is_instanced() -> void:
+	var city: CityBuilder = await _load_city()
+	var first: Node = city.get_node("Geometry/FirstRow")
+	var lod2_nodes: int = 0
+	for n: Node in first.find_children("LOD2", "MeshInstance3D", true, false):
+		lod2_nodes += 1
+	check(lod2_nodes == 0, "%d per-building LOD2 MeshInstance3D left under FirstRow" % lod2_nodes)
+	var mmis: Array[Node] = first.get_node("LOD2_Batches").get_children()
+	var total: int = 0
+	for m: Node in mmis:
+		total += ((m as MultiMeshInstance3D).multimesh).instance_count
+	metric("first_row_lod2_multimeshes", mmis.size())
+	check(total == int(city.stats["first_row"]), "LOD2 instances %d for %d buildings" % [total, int(city.stats["first_row"])])
+	check(mmis.size() > 0 and mmis.size() < int(city.stats["first_row"]), "LOD2 batches %d not fewer than %d buildings" % [mmis.size(), int(city.stats["first_row"])])
+	city.update_far_lod(Vector3(0.0, 1000.0, 0.0))
+	var far_shown: int = 0
+	for m: Node in mmis:
+		far_shown += ((m as MultiMeshInstance3D).multimesh).visible_instance_count
+	check(far_shown == total, "from 1 km up every LOD2 should show, %d of %d" % [far_shown, total])
+	var near_shown: int = 0
+	var eye: Vector3 = (first.get_child(0) as Node3D).global_position
+	city.update_far_lod(eye)
+	for m: Node in mmis:
+		near_shown += ((m as MultiMeshInstance3D).multimesh).visible_instance_count
+	check(near_shown < total, "next to a building the LOD2 set did not shrink (%d of %d)" % [near_shown, total])
+	await cleanup([city])
+
+
 ## Every building footprint and every box collider of the props must stay outside the corridor (kerb line + 0.5 m).
 ## Sampled every 2 m along the centreline and across the corridor in 0.5 m steps, at car height.
 func test_no_collider_in_corridor() -> void:

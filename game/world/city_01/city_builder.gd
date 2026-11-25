@@ -6,6 +6,8 @@ extends Track
 ## environment, racing line, start grid and checkpoints. The JSON is the source of truth; nothing is cached.
 ## Build notes and numbers: docs/design/CITY_01_ENGINE.md.
 
+const FAR_LOD_UPDATE_MS: int = 100
+const FAR_LOD_CHUNKS: int = 3  ## prop chunks per LOD2 batch
 const LAYOUT_PATH: String = "res://assets/world/city_01/city_01_layout.json"
 const ROAD_GLB: String = "res://assets/world/city_01/city_01_road.glb"
 const BUILDING_DIR: String = "res://assets/world/kits/buildings/"
@@ -149,6 +151,8 @@ var _solid: Array[Dictionary] = []  ## {inv, half}: world-to-box transform and h
 var _dress_lap: float = 0.0
 var _dress_obs: Array[Dictionary] = []  ## {pos: Vector2, r: float}: street furniture the dressing keeps clear of
 var _dress_recs: Array[Dictionary] = []  ## placed dressing props: kit, footprint, transform and log fields
+var _far_groups: Dictionary = {}  ## "asset|chunk" -> {asset, chunk, xfs, mm, centres, active}: first-row LOD2 batches
+var _far_next_ms: int = 0
 var _dress_lights: Array = []  ## lights of the dressing props, in the layout's light format
 
 
@@ -310,6 +314,7 @@ func _build_buildings(inst: Array, lap: float) -> void:
 		root.transform = xf
 		MaterialLibrary.apply(root, asset)
 		_set_lod_ranges(root)
+		_collect_far_lod(root, asset, d, xf, lap)
 		if colliders.has(asset):
 			_add_occluder(root, colliders[asset])
 		first.add_child(root)
@@ -317,6 +322,7 @@ func _build_buildings(inst: Array, lap: float) -> void:
 			var box_centre: Vector3 = _collider_centre(d, xf, colliders[asset]["center"] as Vector3)
 			_solid.append(_box_entry(_rel_xf(root, self) * Transform3D(Basis(), box_centre), colliders[asset]["size"] as Vector3))
 		stats["first_row"] = int(stats["first_row"]) + 1
+	_emit_far_lod(first)
 	for asset: String in lod2_xfs.keys():
 		var arr: Array = lod2_xfs[asset]
 		if colliders.has(asset):
@@ -339,6 +345,99 @@ func _build_buildings(inst: Array, lap: float) -> void:
 		second.add_child(mmi)
 		stats["second_row_multimeshes"] = int(stats["second_row_multimeshes"]) + 1
 		stats["second_row_instances"] = int(stats["second_row_instances"]) + arr.size()
+
+
+## Pulls the LOD2 impostor out of a first-row building (one MeshInstance3D per building was ~1 draw each) and files it
+## under (asset, chunk). _emit_far_lod turns every group into one MultiMesh, _update_far_lod picks the instances by distance.
+func _collect_far_lod(root: Node3D, asset: String, d: Dictionary, xf: Transform3D, lap: float) -> void:
+	var lod2: Node = null
+	for n: Node in _all_nodes(root):
+		if n is MeshInstance3D and String(n.name) == "LOD2":
+			lod2 = n
+			break
+	if lod2 == null:
+		return
+	var rel: Transform3D = _rel_xf(lod2, root)
+	lod2.get_parent().remove_child(lod2)
+	lod2.free()
+	var chunk: int = _chunk_of(float(d.get("s_offset_m", 0.0)), lap, maxi(1, ceili(lap / chunk_m)))
+	chunk = chunk / FAR_LOD_CHUNKS  # coarser than the prop chunks: fewer batches, still frustum-culled
+	var key: String = "%s|%d" % [asset, chunk]
+	if not _far_groups.has(key):
+		_far_groups[key] = {"asset": asset, "chunk": chunk, "xfs": []}
+	((_far_groups[key] as Dictionary)["xfs"] as Array).append(xf * rel)
+
+
+## One MultiMeshInstance3D per (asset, chunk) holding the far LOD2 of every building in it, under first/LOD2_Batches.
+## A MultiMesh has one visibility range for all instances, so the range is not used: the instance subset beyond lod1_end_m
+## is chosen per building in _update_far_lod (visible_instance_count), which keeps the per-building switch of the old nodes.
+## shortcut: no dithered fade at the LOD1 to LOD2 switch (far, night, fog), fade needs a per-instance range.
+func _emit_far_lod(first: Node3D) -> void:
+	var holder := Node3D.new()
+	holder.name = "LOD2_Batches"
+	first.add_child(holder)
+	for key: String in _far_groups.keys():
+		var g: Dictionary = _far_groups[key]
+		var asset: String = String(g["asset"])
+		var lod2: Dictionary = _find_mesh(_prototype(BUILDING_DIR + asset + ".glb", asset), "LOD2")
+		if lod2.is_empty():
+			continue
+		var xfs: Array = g["xfs"]
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.mesh = lod2["mesh"]
+		mm.instance_count = xfs.size()
+		mm.visible_instance_count = 0
+		var box: AABB = (lod2["mesh"] as Mesh).get_aabb()
+		var centres := PackedVector3Array()
+		var all_box := AABB()
+		for i: int in xfs.size():
+			var t: Transform3D = xfs[i]
+			mm.set_instance_transform(i, t)
+			centres.append(t * box.get_center())
+			all_box = (t * box) if i == 0 else all_box.merge(t * box)
+		var mmi := MultiMeshInstance3D.new()
+		mmi.name = "%s_LOD2_%02d" % [asset, int(g["chunk"])]
+		mmi.multimesh = mm
+		mmi.custom_aabb = all_box  # cull the batch as a whole even when the subset changes
+		holder.add_child(mmi)
+		g["mm"] = mm
+		g["centres"] = centres
+		g["active"] = PackedInt32Array()
+		stats["far_lod_multimeshes"] = int(stats.get("far_lod_multimeshes", 0)) + 1
+		stats["far_lod_instances"] = int(stats.get("far_lod_instances", 0)) + xfs.size()
+
+
+func _process(_delta: float) -> void:
+	var now: int = Time.get_ticks_msec()  # wall clock: the draw_breakdown freeze sets time_scale 0
+	if now < _far_next_ms:
+		return
+	_far_next_ms = now + FAR_LOD_UPDATE_MS
+	var cam: Camera3D = get_viewport().get_camera_3d() if is_inside_tree() else null
+	if cam != null:
+		update_far_lod(cam.global_position)
+
+
+## Shows, per batch, the buildings whose LOD2 centre is at least lod1_end_m from eye. Rewrites a batch only when its set changed.
+func update_far_lod(eye: Vector3) -> void:
+	var lim2: float = lod1_end_m * lod1_end_m
+	for key: String in _far_groups.keys():
+		var g: Dictionary = _far_groups[key]
+		if not g.has("mm"):
+			continue
+		var centres: PackedVector3Array = g["centres"]
+		var xfs: Array = g["xfs"]
+		var act := PackedInt32Array()
+		for i: int in centres.size():
+			if eye.distance_squared_to(centres[i]) >= lim2:
+				act.append(i)
+		if act == (g["active"] as PackedInt32Array):
+			continue
+		g["active"] = act
+		var mm: MultiMesh = g["mm"]
+		for k: int in act.size():
+			mm.set_instance_transform(k, xfs[act[k]] as Transform3D)
+		mm.visible_instance_count = act.size()
 
 
 ## Centre of a first-row building's collider box in building space. Downtown boxes sit downtown_collider_back_m in front

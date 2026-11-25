@@ -8,320 +8,310 @@
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "cars: all rivals (not player)",
-      "d_draws_min": 52,
-      "d_draws_peak": 106,
-      "d_prims": 213076,
-      "draws_min": 92,
-      "draws_peak": 171,
-      "objects": 192,
-      "prims_peak": 213108
+      "d_draws_min": 0,
+      "d_draws_peak": 0,
+      "d_prims": 0,
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "cars: player",
       "d_draws_min": 21,
       "d_draws_peak": 42,
       "d_prims": 78022,
-      "draws_min": 123,
-      "draws_peak": 235,
-      "objects": 256,
-      "prims_peak": 348162
+      "draws_min": 73,
+      "draws_peak": 135,
+      "objects": 156,
+      "prims_peak": 150656
     },
     {
       "category": "car LOD LOD0 (all cars incl. player)",
-      "d_draws_min": 68,
-      "d_draws_peak": 136,
-      "d_prims": 288164,
-      "draws_min": 76,
-      "draws_peak": 141,
-      "objects": 162,
-      "prims_peak": 138020
+      "d_draws_min": 17,
+      "d_draws_peak": 34,
+      "d_prims": 77254,
+      "draws_min": 77,
+      "draws_peak": 143,
+      "objects": 164,
+      "prims_peak": 151424
     },
     {
       "category": "car LOD LOD1 (all cars incl. player)",
-      "d_draws_min": 1,
-      "d_draws_peak": 4,
-      "d_prims": 2166,
-      "draws_min": 143,
-      "draws_peak": 273,
-      "objects": 294,
-      "prims_peak": 424018
+      "d_draws_min": 0,
+      "d_draws_peak": 0,
+      "d_prims": 0,
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "car LOD LOD2 (all cars incl. player)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "car FX (CarFx particles/smoke/sparks/flame)",
       "d_draws_min": 4,
       "d_draws_peak": 8,
       "d_prims": 768,
-      "draws_min": 140,
-      "draws_peak": 269,
-      "objects": 290,
-      "prims_peak": 425416
+      "draws_min": 90,
+      "draws_peak": 169,
+      "objects": 190,
+      "prims_peak": 227910
     },
     {
       "category": "car lights (headlights etc, all cars)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "city: road + start grid",
-      "d_draws_min": 5,
-      "d_draws_peak": 9,
-      "d_prims": 35366,
-      "draws_min": 139,
-      "draws_peak": 268,
-      "objects": 289,
-      "prims_peak": 390818
+      "d_draws_min": 7,
+      "d_draws_peak": 12,
+      "d_prims": 38922,
+      "draws_min": 87,
+      "draws_peak": 165,
+      "objects": 186,
+      "prims_peak": 189756
     },
     {
       "category": "city: ALL building geometry (FirstRow+SecondRow)",
-      "d_draws_min": 9,
-      "d_draws_peak": 20,
-      "d_prims": 59630,
-      "draws_min": 135,
-      "draws_peak": 257,
-      "objects": 278,
-      "prims_peak": 366554
+      "d_draws_min": 16,
+      "d_draws_peak": 34,
+      "d_prims": 68598,
+      "draws_min": 78,
+      "draws_peak": 143,
+      "objects": 164,
+      "prims_peak": 160080
     },
     {
       "category": "city: FirstRow buildings LOD0",
-      "d_draws_min": 4,
-      "d_draws_peak": 10,
-      "d_prims": 59150,
-      "draws_min": 140,
-      "draws_peak": 267,
-      "objects": 288,
-      "prims_peak": 367034
+      "d_draws_min": 5,
+      "d_draws_peak": 11,
+      "d_prims": 65972,
+      "draws_min": 89,
+      "draws_peak": 166,
+      "objects": 187,
+      "prims_peak": 162706
     },
     {
       "category": "city: FirstRow buildings LOD1",
       "d_draws_min": 0,
-      "d_draws_peak": 0,
-      "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
-    },
-    {
-      "category": "city: FirstRow buildings LOD2",
-      "d_draws_min": 0,
-      "d_draws_peak": 0,
-      "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "d_draws_peak": 1,
+      "d_prims": 1726,
+      "draws_min": 94,
+      "draws_peak": 176,
+      "objects": 197,
+      "prims_peak": 226952
     },
     {
       "category": "city: SecondRow skyline/impostor MultiMeshes",
       "d_draws_min": 5,
       "d_draws_peak": 10,
       "d_prims": 480,
-      "draws_min": 139,
-      "draws_peak": 267,
-      "objects": 288,
-      "prims_peak": 425704
+      "draws_min": 89,
+      "draws_peak": 167,
+      "objects": 188,
+      "prims_peak": 228198
     },
     {
       "category": "props: layout prop MultiMeshes (Props)",
-      "d_draws_min": 43,
-      "d_draws_peak": 86,
-      "d_prims": 37342,
-      "draws_min": 101,
-      "draws_peak": 191,
-      "objects": 212,
-      "prims_peak": 388842
+      "d_draws_min": 36,
+      "d_draws_peak": 75,
+      "d_prims": 40388,
+      "draws_min": 58,
+      "draws_peak": 102,
+      "objects": 123,
+      "prims_peak": 188290
     },
     {
       "category": "dressing props (Dressing)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "parked cars (ParkedCars)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "signs/neon (name contains sign|neon|billboard; overlaps props/dressing)",
-      "d_draws_min": 40,
-      "d_draws_peak": 80,
-      "d_prims": 34334,
-      "draws_min": 104,
-      "draws_peak": 197,
-      "objects": 218,
-      "prims_peak": 391850
+      "d_draws_min": 39,
+      "d_draws_peak": 81,
+      "d_prims": 37656,
+      "draws_min": 55,
+      "draws_peak": 96,
+      "objects": 117,
+      "prims_peak": 191022
     },
     {
       "category": "lights: city (Lighting, non-directional)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "lights: ALL Light3D in scene (incl. moon, cars, cam fill/rim)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "lights: camera fill/rim only",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "lights: moon (directional) hidden",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "reflection probes",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "rain (RainFx)",
       "d_draws_min": 3,
       "d_draws_peak": 3,
       "d_prims": 2440,
-      "draws_min": 141,
-      "draws_peak": 274,
-      "objects": 295,
-      "prims_peak": 423744
+      "draws_min": 91,
+      "draws_peak": 174,
+      "objects": 195,
+      "prims_peak": 226238
     },
     {
       "category": "speed lines (SpeedLines)",
       "d_draws_min": 1,
       "d_draws_peak": 1,
       "d_prims": 2,
-      "draws_min": 143,
-      "draws_peak": 276,
-      "objects": 297,
-      "prims_peak": 426182
+      "draws_min": 93,
+      "draws_peak": 176,
+      "objects": 197,
+      "prims_peak": 228676
     },
     {
       "category": "overlay (pause + results CanvasLayer)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "ALL CanvasLayers + replay UI (2D off)",
       "d_draws_min": 11,
       "d_draws_peak": 11,
       "d_prims": 308,
-      "draws_min": 133,
-      "draws_peak": 266,
-      "objects": 266,
-      "prims_peak": 425876
+      "draws_min": 83,
+      "draws_peak": 166,
+      "objects": 166,
+      "prims_peak": 228370
     },
     {
       "category": "planar reflection: disabled (mirror pass off)",
       "d_draws_min": 0,
-      "d_draws_peak": 133,
-      "d_prims": 197133,
-      "draws_min": 144,
-      "draws_peak": 144,
-      "objects": 165,
-      "prims_peak": 229051
+      "d_draws_peak": 83,
+      "d_prims": 106047,
+      "draws_min": 94,
+      "draws_peak": 94,
+      "objects": 115,
+      "prims_peak": 122631
     },
     {
       "category": "env: glow off",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "env: sky off (background -> colour)",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "env: fog off",
       "d_draws_min": 0,
       "d_draws_peak": 0,
       "d_prims": 0,
-      "draws_min": 144,
-      "draws_peak": 277,
-      "objects": 298,
-      "prims_peak": 426184
+      "draws_min": 94,
+      "draws_peak": 177,
+      "objects": 198,
+      "prims_peak": 228678
     },
     {
       "category": "[2D ONLY] viewport disable_3d (absolute draws remaining)",
-      "d_draws_min": 133,
-      "d_draws_peak": 133,
-      "d_prims": 228743,
+      "d_draws_min": 83,
+      "d_draws_peak": 83,
+      "d_prims": 122323,
       "draws_min": 11,
-      "draws_peak": 144,
-      "objects": 165,
-      "prims_peak": 197441
+      "draws_peak": 94,
+      "objects": 115,
+      "prims_peak": 106355
     }
   ],
   "viewport": [
