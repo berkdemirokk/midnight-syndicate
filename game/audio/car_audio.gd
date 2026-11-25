@@ -100,6 +100,11 @@ func _build() -> void:
 			var p := _make_player(true)
 			p.max_polyphony = 2
 			_shots.append(p)
+	# Engine layers on the Engine bus (its own volume slider in Settings) when it exists.
+	if AudioServer.get_bus_index(&"Engine") >= 0:
+		for p: AudioStreamPlayer3D in [low, mid, high]:
+			if p != null:
+				p.bus = &"Engine"
 	for p: AudioStreamPlayer3D in [low, mid, high, squeal, hiss, nitro, scrape]:
 		if p != null and p.stream != null and p.is_inside_tree():
 			p.play()

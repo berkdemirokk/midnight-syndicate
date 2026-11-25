@@ -5905,6 +5905,23 @@
       "test_result": "pass",
       "added": "2026-11-25",
       "notes": "traffic/parked sedan LOD2, docs/art/TRAFFIC_CAR_BRIEF.md"
+    },
+    {
+      "id": "audio_procedural_set",
+      "kind": "audio",
+      "path": "game/assets/audio",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "Midnight Syndicate (tools/audio_synth.py)",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 14112041,
+      "sha256": "26b302b477c971d337eface8060285eb1c3a67acf3194ab97470aa3744de308d",
+      "test_result": "pass",
+      "added": "2026-11-25",
+      "notes": "25 procedurally synthesised SFX/UI/music WAVs, stdlib only, deterministic; per-file data in game/assets/audio/audio_manifest.json"
     }
   ]
 }

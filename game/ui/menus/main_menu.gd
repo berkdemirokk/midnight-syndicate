@@ -42,6 +42,7 @@ class SlashBar extends Control:
 
 
 func _ready() -> void:
+	MusicPlayer.get_instance().play_menu()
 	theme = MSTheme.build()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var bg := ColorRect.new()
@@ -141,6 +142,7 @@ func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W, MSTheme.BUTTON_MIN_H)
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.pressed.connect(func() -> void: UiSounds.click())
 	b.pressed.connect(handler)
 	parent.add_child(b)
 	_text_nodes.append([b, key])

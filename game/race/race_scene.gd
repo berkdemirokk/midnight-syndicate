@@ -249,6 +249,7 @@ func _build_race() -> void:
 	_make_camera()
 	_apply_reflection()
 	race.race_started.connect(_on_race_started)
+	race.countdown_tick.connect(_on_countdown_tick)
 	race.race_finished.connect(_on_race_finished)
 	race.wrong_way_changed.connect(_on_wrong_way)
 	hud.bind(player, race, track)
@@ -315,8 +316,17 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	if lod != null:
 		if rival:
 			lod.lod1_start_m = config_used.rival_lod1_start_m
+			if Settings.get_preset_id() == "low":
+				lod.lod1_start_m = config_used.rival_lod1_start_low_m
+				lod.lod2_start_m = config_used.rival_lod2_start_low_m
 			lod.set_forced(lod.force_lod)  # rewrites the visibility ranges with the new switch distance
 		lod.build_mirror_lod()
+	# Engine, tyres, nitro and impacts; rivals get the cheaper, quieter positional set.
+	var audio := CarAudio.new()
+	audio.name = "CarAudio"
+	audio.is_player = not rival
+	audio.wetness = 1.0  # the city road is always wet (rain or not, the asphalt shader is wet)
+	car.add_child(audio)
 	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
 		# Not the mirror-only copy: bit 19 would put it in the main camera's view. The fill lights see its own layer instead.
@@ -569,7 +579,12 @@ func end_replay() -> void:
 	_set_results_up(true)
 
 
+func _on_countdown_tick(seconds_left: int) -> void:
+	UiSounds.countdown(seconds_left)
+
+
 func _on_race_started() -> void:
+	MusicPlayer.get_instance().play_race()
 	if recorder != null:
 		recorder.start()
 	camera.set_mode(ChaseCamera.Mode.CHASE)
@@ -579,6 +594,13 @@ func _on_race_started() -> void:
 
 func _on_race_finished(results: Array[Dictionary]) -> void:
 	last_results = results
+	MusicPlayer.get_instance().duck(-10.0, 0.15)
+	UiSounds.finish()
+	get_tree().create_timer(2.5).timeout.connect(func() -> void: MusicPlayer.get_instance().unduck(1.0))
+	for car: ArcadeCar in cars:
+		var ca: CarAudio = car.get_node_or_null("CarAudio") as CarAudio
+		if ca != null and not ca.is_player:
+			ca.set_enabled(false)  # rivals fall silent behind the results; the player car idles on
 	var rewards: Dictionary = {}
 	for r: Dictionary in results:
 		if bool(r.get("is_player", false)):

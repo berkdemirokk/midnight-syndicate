@@ -93,6 +93,7 @@ func pause() -> void:
 	_open = true
 	visible = true
 	get_tree().paused = true
+	MusicPlayer.get_instance().duck(-8.0)
 	_resume_btn.grab_focus()
 
 
@@ -102,6 +103,7 @@ func resume() -> void:
 	_open = false
 	visible = false
 	get_tree().paused = false
+	MusicPlayer.get_instance().unduck()
 	resumed.emit()
 
 

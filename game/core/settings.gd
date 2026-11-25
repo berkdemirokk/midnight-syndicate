@@ -12,8 +12,8 @@ const PRESET_IDS: PackedStringArray = ["low", "medium", "high"]
 const STEERING_MODES: PackedStringArray = ["buttons", "tilt"]
 const LANGUAGES: PackedStringArray = ["tr", "en"]
 ## Settings key -> AudioServer bus name. Missing buses are created at startup.
-const AUDIO_BUSES: Dictionary = {"master": "Master", "music": "Music", "sfx": "SFX", "engine": "Engine"}
-const DEFAULT_VOLUMES: Dictionary = {"master": 1.0, "music": 0.8, "sfx": 1.0, "engine": 1.0}
+const AUDIO_BUSES: Dictionary = {"master": "Master", "music": "Music", "sfx": "SFX", "engine": "Engine", "ui": "UI"}
+const DEFAULT_VOLUMES: Dictionary = {"master": 1.0, "music": 0.8, "sfx": 1.0, "engine": 1.0, "ui": 1.0}
 const MUTE_DB: float = -80.0
 ## Float slack so that a step lands once per interval even after summing many frame deltas.
 const TIME_EPS: float = 0.0001

@@ -24,6 +24,7 @@ var _duck_speed: float = 60.0
 
 
 func _init() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS  # keeps playing and fading in the pause menu
 	name = "MusicPlayer"
 	for i: int in 2:
 		var p := AudioStreamPlayer.new()

@@ -12,6 +12,7 @@ var _next: int = 0
 
 
 func _init() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS  # keeps playing and fading in the pause menu
 	name = "UiSounds"
 	for i: int in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
