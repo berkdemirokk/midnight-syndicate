@@ -1,0 +1,258 @@
+{
+ "_meta": {
+  "generator": "tools/audio_synth.py",
+  "license": "original, procedurally synthesised, project-owned"
+ },
+ "files": {
+  "backfire_1": {
+   "bytes": 26504,
+   "channels": 1,
+   "frames": 13230,
+   "loop": false,
+   "path": "res://assets/audio/sfx/backfire_1.wav",
+   "sample_rate": 44100,
+   "seconds": 0.3,
+   "sha256": "4b75df15e9b7a6b28ec8cae5c3914692f0311d719767006475dc2398d48f62c6"
+  },
+  "backfire_2": {
+   "bytes": 30912,
+   "channels": 1,
+   "frames": 15434,
+   "loop": false,
+   "path": "res://assets/audio/sfx/backfire_2.wav",
+   "sample_rate": 44100,
+   "seconds": 0.35,
+   "sha256": "97653fcda55ab3765730fb9483fd692160defd0ab84ae302b227c9379b31a2dc"
+  },
+  "backfire_3": {
+   "bytes": 35324,
+   "channels": 1,
+   "frames": 17640,
+   "loop": false,
+   "path": "res://assets/audio/sfx/backfire_3.wav",
+   "sample_rate": 44100,
+   "seconds": 0.4,
+   "sha256": "cfbf1e89cdc0a40736e34ce96bf98ceaf1930666cf89c3b415cf332a779f3cb6"
+  },
+  "blowoff": {
+   "bytes": 79424,
+   "channels": 1,
+   "frames": 39690,
+   "loop": false,
+   "path": "res://assets/audio/sfx/blowoff.wav",
+   "sample_rate": 44100,
+   "seconds": 0.9,
+   "sha256": "18ed7d3a76028029a90d3bafa002bed3b83b50c23a086f3a58c1dc969bd7fdcc"
+  },
+  "cash_tick": {
+   "bytes": 30914,
+   "channels": 1,
+   "frames": 15435,
+   "loop": false,
+   "path": "res://assets/audio/ui/cash_tick.wav",
+   "sample_rate": 44100,
+   "seconds": 0.35,
+   "sha256": "32b007c2f9ae2f3eff3e60b9ed22ec4a650914e8c6ca491df50b84525839093c"
+  },
+  "countdown_beep": {
+   "bytes": 17684,
+   "channels": 1,
+   "frames": 8820,
+   "loop": false,
+   "path": "res://assets/audio/ui/countdown_beep.wav",
+   "sample_rate": 44100,
+   "seconds": 0.2,
+   "sha256": "4cb955a7ca09b77d3423fb83bafa6422282c11e6cfe968ac28a11923a700875d"
+  },
+  "countdown_go": {
+   "bytes": 70604,
+   "channels": 1,
+   "frames": 35280,
+   "loop": false,
+   "path": "res://assets/audio/ui/countdown_go.wav",
+   "sample_rate": 44100,
+   "seconds": 0.8,
+   "sha256": "964d709f2558c60ec7b314832cb6b5ff050ca00c70a05099e8464a1f79b47da8"
+  },
+  "engine_high_loop": {
+   "bytes": 88312,
+   "channels": 1,
+   "frames": 44100,
+   "loop": true,
+   "path": "res://assets/audio/sfx/engine_high_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 1.0,
+   "sha256": "e473d65dd10d2ab033889fee13e15f3575b811daa64e8dbb9b66ee7a85b92471"
+  },
+  "engine_low_loop": {
+   "bytes": 176432,
+   "channels": 1,
+   "frames": 88160,
+   "loop": true,
+   "path": "res://assets/audio/sfx/engine_low_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 1.999,
+   "sha256": "0cf97882e715df1da84bf75405b940d1fa1a98f5d76ac0d231487a935fd57554"
+  },
+  "engine_mid_loop": {
+   "bytes": 88332,
+   "channels": 1,
+   "frames": 44110,
+   "loop": true,
+   "path": "res://assets/audio/sfx/engine_mid_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 1.0,
+   "sha256": "e3b26fbb605208497b47a2685b93f8ce94260f393886b268f9c42631ac5ba0ea"
+  },
+  "impact_heavy": {
+   "bytes": 97064,
+   "channels": 1,
+   "frames": 48510,
+   "loop": false,
+   "path": "res://assets/audio/sfx/impact_heavy.wav",
+   "sample_rate": 44100,
+   "seconds": 1.1,
+   "sha256": "f87220235729c43ac31d5fa204659b295b836b75e47166f18b6f0adfdbaeac87"
+  },
+  "impact_light": {
+   "bytes": 39734,
+   "channels": 1,
+   "frames": 19845,
+   "loop": false,
+   "path": "res://assets/audio/sfx/impact_light.wav",
+   "sample_rate": 44100,
+   "seconds": 0.45,
+   "sha256": "3840196f63bf9f5962b0e28d6e045bb41268d288451b71b02ecaf9cb0afd2a8a"
+  },
+  "music_menu_loop": {
+   "bytes": 4096112,
+   "channels": 2,
+   "frames": 1024000,
+   "loop": true,
+   "path": "res://assets/audio/music/music_menu_loop.wav",
+   "sample_rate": 24000,
+   "seconds": 42.667,
+   "sha256": "866b33fa31890e5b5bef160e1885d20ec297a7657d74609530028bc71e41d9d4"
+  },
+  "music_race_loop": {
+   "bytes": 7680112,
+   "channels": 2,
+   "frames": 1920000,
+   "loop": true,
+   "path": "res://assets/audio/music/music_race_loop.wav",
+   "sample_rate": 32000,
+   "seconds": 60.0,
+   "sha256": "d604a87bbc66ebf0ca8691f9a5720030dfe50eae448ebed069ca9f1fd7b58930"
+  },
+  "nitro_ignite": {
+   "bytes": 97064,
+   "channels": 1,
+   "frames": 48510,
+   "loop": false,
+   "path": "res://assets/audio/sfx/nitro_ignite.wav",
+   "sample_rate": 44100,
+   "seconds": 1.1,
+   "sha256": "48441a3e3f10495710177554655cc1983da61b6449fe049532c1ce64641f58bc"
+  },
+  "nitro_loop": {
+   "bytes": 176572,
+   "channels": 1,
+   "frames": 88230,
+   "loop": true,
+   "path": "res://assets/audio/sfx/nitro_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 2.001,
+   "sha256": "68e5c3f2aff65a1d24094619fefe74108acfc63d3a46314f2783ea2148d055d0"
+  },
+  "race_finish_sting": {
+   "bytes": 229364,
+   "channels": 1,
+   "frames": 114660,
+   "loop": false,
+   "path": "res://assets/audio/ui/race_finish_sting.wav",
+   "sample_rate": 44100,
+   "seconds": 2.6,
+   "sha256": "9d2cb26b78339c79c06f93ec3bae6ad9c3a1bf0a926cd1d4741898bd762d5b95"
+  },
+  "rain_loop": {
+   "bytes": 352912,
+   "channels": 1,
+   "frames": 176400,
+   "loop": true,
+   "path": "res://assets/audio/sfx/rain_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 4.0,
+   "sha256": "f592150bad810703f8ec855e0263a45ccfc5669e3da8ceea476beb714b460174"
+  },
+  "scrape_loop": {
+   "bytes": 132412,
+   "channels": 1,
+   "frames": 66150,
+   "loop": true,
+   "path": "res://assets/audio/sfx/scrape_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 1.5,
+   "sha256": "47cfda71f174b742ee81887a9efad4596b1cc131f651c18e188d80cf5f3891b2"
+  },
+  "turbo_whoosh": {
+   "bytes": 123522,
+   "channels": 1,
+   "frames": 61739,
+   "loop": false,
+   "path": "res://assets/audio/sfx/turbo_whoosh.wav",
+   "sample_rate": 44100,
+   "seconds": 1.4,
+   "sha256": "108682ea888040a8fe3e4bc23c6a9f6ace5f12e2f3a9938726ac262b89863da4"
+  },
+  "tyre_hiss_wet_loop": {
+   "bytes": 220612,
+   "channels": 1,
+   "frames": 110250,
+   "loop": true,
+   "path": "res://assets/audio/sfx/tyre_hiss_wet_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 2.5,
+   "sha256": "b4a551c0f204e0fed69364d44c4e1373798059661359df8c43d57d55408159f7"
+  },
+  "tyre_squeal_loop": {
+   "bytes": 132412,
+   "channels": 1,
+   "frames": 66150,
+   "loop": true,
+   "path": "res://assets/audio/sfx/tyre_squeal_loop.wav",
+   "sample_rate": 44100,
+   "seconds": 1.5,
+   "sha256": "0efc3ecc801322a12fa9bb122f77a1147c5a14eb6464b3346ea06ee814811d93"
+  },
+  "ui_back": {
+   "bytes": 33118,
+   "channels": 1,
+   "frames": 16537,
+   "loop": false,
+   "path": "res://assets/audio/ui/ui_back.wav",
+   "sample_rate": 44100,
+   "seconds": 0.375,
+   "sha256": "087a210e3910de3e9d7153b062b2070521f67722dc15719e4dae2f45b989f69e"
+  },
+  "ui_click": {
+   "bytes": 6218,
+   "channels": 1,
+   "frames": 3087,
+   "loop": false,
+   "path": "res://assets/audio/ui/ui_click.wav",
+   "sample_rate": 44100,
+   "seconds": 0.07,
+   "sha256": "d56a39ec22ae411905809946d3a718a47317f402da0015f1e432804a239604ca"
+  },
+  "ui_confirm": {
+   "bytes": 43262,
+   "channels": 1,
+   "frames": 21609,
+   "loop": false,
+   "path": "res://assets/audio/ui/ui_confirm.wav",
+   "sample_rate": 44100,
+   "seconds": 0.49,
+   "sha256": "f2eed72e3b4efb3ad785326f1daaf3d65e4b1fac92b08dbf8e54011e388e1c52"
+  }
+ }
+}
