@@ -62,7 +62,8 @@ const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 1
 @export var lamp_range_m: float = 18.0  ## was 22: a street lamp only has to reach the road below it; shorter range touches fewer volumes
 @export var neon_fill_range_m: float = 8.0  ## was 12 to 14: the omni fills used up the 8-per-mesh budget on the overpass
 @export var lamp_merge_m: float = 3.0  ## lamp heads closer than this are one double lamp: one spot is kept
-@export_range(0.0, 8.0) var tunnel_light_energy_scale: float = 3.0  ## underpass ceiling omnis: walls and road get a pool every 12 m
+@export_range(0.0, 8.0) var tunnel_light_energy_scale: float = 6.0  ## underpass ceiling omnis: walls and road get a pool every 12 m
+@export_range(0, 8) var split_min_excess: int = 1  ## a mesh is only split when it is touched by more than 8 + this many lights of one type: every split costs draw calls, one or two lights over are cheaper to drop
 @export_range(0.0, 8.0) var string_light_energy_scale: float = 3.0  ## market string lights: warm dapple on the street under them
 @export var lamp_spot_angle_deg: float = 55.0  ## wide cone for street lamp heads
 @export var light_fade_begin_m: float = 70.0
@@ -104,6 +105,8 @@ const PARKED_LOD_END_M: Array[float] = [35.0, 90.0, 150.0]  ## LOD0 to 35 m, LOD
 @export var dress_promenade_step_m: float = 40.0  ## bench and bin pair on the waterfront promenade
 @export var dress_lamp_step_m: float = 30.0  ## sodium lamp grid on the promenade, filled where the layout has none
 @export var dress_lamp_gap_m: float = 14.0  ## a grid lamp is skipped when a lamp is nearer than this
+@export var dress_downtown_lamp_step_m: float = 30.0  ## downtown street lamps, alternating sides, where the layout has none (s 666-1008 had none)
+@export var dress_downtown_lamp_color: String = "#DCE6FF"  ## cool white LED heads downtown, against the sodium waterfront
 @export var dress_stack_lat_m: float = 22.0  ## land-side container stacks, lateral distance from the centreline
 @export var dress_stack_from_end_m: float = 100.0  ## first land-side container stack, this far before the waterfront end
 @export var dress_crane_from_end_m: float = 40.0  ## land-side gantry crane (58 m long), this far before the waterfront end
@@ -124,6 +127,7 @@ const DOWNTOWN_DISTRICT: String = "Downtown canyon"
 var stats: Dictionary = {}  ## counts recorded for the tests and the engine report
 var light_report: Dictionary = {}  ## CityLights.budget summary (counts, log lines)
 var light_volumes: Array = []  ## AABBs the light budget was checked against (tests recount with them)
+var light_volumes_hard: Array = []  ## the same without prop MultiMeshes (soft volumes): the 8-lights rule is enforced on these
 var load_time_ms: float = 0.0
 
 var _geo: Node3D
@@ -718,6 +722,14 @@ func _dress_districts(inst: Array, lap: float, n_chunks: int) -> void:
 			_dress_at("planter_shrub", t + 95.0, -side, _kerb_lat(t + 95.0, 0.37), "downtown", lap)
 			k += 1
 			t += dress_shelter_step_m
+		# Street lamps: the layout lights the Neon Strip only, so the downtown canyon road was black from s 666 on.
+		var j: int = 0
+		var u: float = dt.x + 10.0
+		while u <= dt.y - 5.0:
+			if _lamp_gap(inst, u, true) > dress_lamp_gap_m:
+				_dress_at("lamp_sodium", u, 1.0 if j % 2 == 0 else -1.0, _kerb_lat(u, 0.26), "downtown", lap)
+				j += 1
+			u += dress_downtown_lamp_step_m
 	_dress_approaches(lap)
 	_dress_emit(lap, n_chunks)
 
@@ -751,8 +763,8 @@ func _dress_at(kit: String, s: float, sgn: float, lat: float, district: String, 
 	for lat_try: Variant in lats:
 		for off: Variant in DRESS_OFFSETS:
 			var at: float = fposmod(s + float(off), lap)
-			if district == "downtown" and _c_y[_c_index(at)] > dress_deck_y_m:
-				_dress_why(kit, "deck")  # downtown props stand at street level, not on the overpass deck
+			if district == "downtown" and kit != "lamp_sodium" and _c_y[_c_index(at)] > dress_deck_y_m:
+				_dress_why(kit, "deck")  # downtown furniture stands at street level; lamps also stand on the deck sidewalks
 				continue
 			var rec: Dictionary = _dress_fit(kit, at, sgn, float(lat_try), lap)
 			if rec.has("why"):
@@ -868,7 +880,8 @@ func _dress_light(kit: String, rec: Dictionary, district: String) -> void:
 			"source": "bus_shelter_panel", "district": district, "color": "#FFEBCC", "energy": 3.0})
 	else:
 		_dress_lights.append({"type": "spot", "position": _arr(xf * Vector3(0.0, 9.1, 1.8)), "range": 28.0,
-			"source": "lamp_head", "district": district, "color": "#FFB26B", "energy": 14.0,
+			"source": "lamp_head", "district": district,
+			"color": dress_downtown_lamp_color if district == "downtown" else "#FFB26B", "energy": 14.0,
 			"direction": [0.0, -1.0, 0.0]})  # clamped to lamp_range_m like every lamp head
 
 
@@ -923,11 +936,17 @@ func _dress_obstacles(inst: Array) -> Array[Dictionary]:
 
 
 ## Distance along the road from s to the nearest sodium lamp of the waterfront, layout or placed.
-func _lamp_gap(inst: Array, s: float) -> float:
+## Distance along the lap to the nearest lamp: waterfront sodium lamps of the layout (any_lamp: every layout lamp prop)
+## and every placed dressing lamp.
+func _lamp_gap(inst: Array, s: float, any_lamp: bool = false) -> float:
 	var best: float = INF
 	for v: Variant in inst:
 		var d: Dictionary = v
-		if String(d["kind"]) == "prop" and String(d["asset"]) == "lamp_sodium" and String(d.get("district", "")) == "waterfront":
+		if String(d["kind"]) != "prop":
+			continue
+		var asset: String = String(d["asset"])
+		var hit: bool = asset.begins_with("lamp") if any_lamp else (asset == "lamp_sodium" and String(d.get("district", "")) == "waterfront")
+		if hit:
 			best = minf(best, absf(float(d["s_offset_m"]) - s))
 	for rec: Dictionary in _dress_recs:
 		if String(rec["kit"]) == "lamp_sodium":
@@ -1174,12 +1193,17 @@ func _build_lights(raw: Array, inst: Array) -> void:
 		lights.append({"type": String(d["type"]), "pos": p, "range": rng, "src": d})
 	lights.append_array(_wall_wash_lights(inst))
 	lights.append_array(_floodlights(inst))
+	_split_over_budget(lights)
 	var vols: Dictionary = _budget_volumes()
 	light_volumes = vols["aabbs"]
-	var report: Dictionary = CityLights.budget(lights, light_volumes, vols["names"])
+	light_volumes_hard = []
+	for i: int in light_volumes.size():
+		if not bool(vols["soft"][i]):
+			light_volumes_hard.append(light_volumes[i])
+	var report: Dictionary = CityLights.budget(lights, light_volumes, vols["names"], vols["soft"])
 	var keep: Array = report["keep"]
 	light_report = {"dropped": report["dropped"], "worst_all": report["worst_all"], "worst_kept": report["worst_kept"],
-		"over_volumes": report["over_volumes"], "volumes": light_volumes.size(), "log": report["log"]}
+		"over_volumes": report["over_volumes"], "soft_over": report["soft_over"], "volumes": light_volumes.size(), "log": report["log"]}
 	stats["lights_dropped"] = report["dropped"]
 	# Sodium lamp heads of the waterfront promenade that survived the budget: [kept, total].
 	var lamp_total: int = 0
@@ -1351,24 +1375,47 @@ func _scene(path: String) -> PackedScene:
 	return _packed[path]
 
 
+## Cuts every budgeted mesh that more than 8 omni or 8 spot lights touch into pieces that fewer lights touch,
+## so the budget keeps the lights instead of dropping them (MeshSplitter). Same node filter as _budget_volumes.
+func _split_over_budget(lights: Array) -> void:
+	var pieces: int = 0
+	var cut: int = 0
+	for n: Node in _all_nodes(_geo):
+		if not n is MeshInstance3D or _budget_skip(String(n.name)):
+			continue
+		var k: int = MeshSplitter.split(n as MeshInstance3D, lights, split_min_excess)
+		if k > 0:
+			cut += 1
+			pieces += k
+	stats["split_meshes"] = cut
+	stats["split_pieces"] = pieces
+
+
+static func _budget_skip(nm: String) -> bool:
+	return nm.begins_with("ground") or nm.begins_with("decals_") or nm.begins_with("markings_") or nm.begins_with("water_") or nm.begins_with("Parked")
+
+
 ## World AABBs of the meshes that are lit up close: road pieces, building LOD0 and near prop MultiMeshes.
 ## Far groups (LOD1/LOD2, prop far bands) are left out: their lights are faded by then. The map-sized ground
 ## plane and the flat paint decals and water are left out too: their AABBs cover the whole circuit.
 func _budget_volumes() -> Dictionary:
 	var aabbs: Array = []
 	var names: PackedStringArray = PackedStringArray()
+	var soft: Array = []
 	for n: Node in _all_nodes(_geo):
 		var nm: String = String(n.name)
-		if nm.begins_with("ground") or nm.begins_with("decals_") or nm.begins_with("markings_") or nm.begins_with("water_") or nm.begins_with("Parked"):
+		if _budget_skip(nm):
 			continue
 		if n is MeshInstance3D and (n as MeshInstance3D).mesh != null and nm not in ["LOD1", "LOD2"]:
 			aabbs.append((n as Node3D).global_transform * (n as MeshInstance3D).get_aabb())
 			names.append(nm)
+			soft.append(n is MultiMeshInstance3D)
 		elif n is MultiMeshInstance3D and (n as MultiMeshInstance3D).multimesh != null and "_LOD2" not in nm and "_far_" not in nm:
 			var mm: MultiMesh = (n as MultiMeshInstance3D).multimesh
-			aabbs.append((n as Node3D).global_transform * mm.get_aabb())
+			aabbs.append((n as Node3D).global_transform * _multimesh_box(mm))
 			names.append(nm)
-	return {"aabbs": aabbs, "names": names}
+			soft.append(n is MultiMeshInstance3D)
+	return {"aabbs": aabbs, "names": names, "soft": soft}
 
 
 func _chunk_of(s: float, lap: float, n_chunks: int) -> int:
@@ -1401,3 +1448,13 @@ func _all_nodes(n: Node) -> Array[Node]:
 static func _vec(v: Variant) -> Vector3:
 	var a: Array = v
 	return Vector3(float(a[0]), float(a[1]), float(a[2]))
+
+
+## Local AABB of a MultiMesh from its instances (MultiMesh.get_aabb is empty under the headless renderer, which hid the overlaps in tests).
+func _multimesh_box(mm: MultiMesh) -> AABB:
+	var base: AABB = mm.mesh.get_aabb() if mm.mesh != null else AABB()
+	var box: AABB = AABB()
+	for i: int in mm.instance_count:
+		var b: AABB = mm.get_instance_transform(i) * base
+		box = b if i == 0 else box.merge(b)
+	return box

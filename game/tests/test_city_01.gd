@@ -25,6 +25,8 @@ const LOAD_LIMIT_MS: float = 5000.0
 const LAYOUT_LAP_M: float = 2203.225
 const PROBE_LIMIT: int = 8
 const LIGHT_LIMIT: int = 8
+const TUNNEL_STRIP_LIGHTS: int = 29  ## layout lights with source tunnel_strip (s 1467..1803, every 12 m)
+const LIGHTS_DROPPED_MAX: int = 4
 
 var _lap_log: Array[Dictionary] = []
 
@@ -113,7 +115,7 @@ func test_scene_builds_and_counts() -> void:
 			lights.append({"type": "spot", "pos": (n as Node3D).global_position, "range": (n as SpotLight3D).spot_range})
 		elif n is OmniLight3D:
 			lights.append({"type": "omni", "pos": (n as Node3D).global_position, "range": (n as OmniLight3D).omni_range})
-	var worst: Dictionary = CityLights.worst_per_volume(lights, city.light_volumes)
+	var worst: Dictionary = CityLights.worst_per_volume(lights, city.light_volumes_hard)
 	metric("light_worst_per_mesh_omni", int(worst["omni"]))
 	metric("light_worst_per_mesh_spot", int(worst["spot"]))
 	check(int(worst["omni"]) <= LIGHT_LIMIT and int(worst["spot"]) <= LIGHT_LIMIT,
@@ -133,6 +135,21 @@ func test_scene_builds_and_counts() -> void:
 	metric("probe_worst_per_mesh", worst_probes)
 	check(worst_probes <= PROBE_LIMIT, "a mesh is touched by %d reflection probes" % worst_probes)
 	metric("light_budget_log", city.light_report.get("log", PackedStringArray()).size())
+	var nodes: Array[Node] = [city]
+	await cleanup(nodes)
+
+
+## Over-budget meshes are split into pieces (MeshSplitter), so the budget keeps every light: all 29 underpass strip lights
+## survive and at most 4 lights are dropped. Measured: 13 dropped before the split, 4 after (meshes only 1 light over stay whole: fewer draw calls).
+func test_split_keeps_tunnel_lights() -> void:
+	var city: CityBuilder = await _load_city()
+	var strips: int = city.get_node("Lighting").find_children("tunnel_strip_*", "OmniLight3D", false, false).size()
+	metric("count_tunnel_strip_lights", strips)
+	metric("count_split_meshes", int(city.stats.get("split_meshes", 0)))
+	metric("count_split_pieces", int(city.stats.get("split_pieces", 0)))
+	check(strips == TUNNEL_STRIP_LIGHTS, "tunnel strip lights kept %d of %d" % [strips, TUNNEL_STRIP_LIGHTS])
+	check(int(city.stats["lights_dropped"]) <= LIGHTS_DROPPED_MAX, "lights dropped %d, limit %d" % [int(city.stats["lights_dropped"]), LIGHTS_DROPPED_MAX])
+	check(int(city.stats.get("split_pieces", 0)) > 0, "no mesh was split")
 	var nodes: Array[Node] = [city]
 	await cleanup(nodes)
 

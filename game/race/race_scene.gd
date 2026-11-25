@@ -43,6 +43,7 @@ const CAR_FILL_LAYER: int = 19
 const ASPHALT_MATERIAL_NAME: String = "M_Asphalt"
 const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
 const FILL_LIGHT_NAME: String = "CarFillLight"
+const RIM_LIGHT_NAME: String = "CarRimLight"
 const REFLECTION_NAME: String = "PlanarReflection"
 const WORLD_LAYER_MASK: int = 1  ## physics layer 1: world and static, the road surface
 const PLANE_PROBE_UP_M: float = 1.0  ## the road probe starts this far above the car origin...
@@ -352,6 +353,16 @@ func _make_camera() -> void:
 	fill.light_cull_mask = 1 << CAR_FILL_LAYER
 	fill.shadow_enabled = false
 	camera.add_child(fill)
+	# Directional, camera-relative: shines from beyond the car toward the lens and down, on the car layer only.
+	var rim := DirectionalLight3D.new()
+	rim.name = RIM_LIGHT_NAME
+	rim.light_color = config_used.car_rim_color
+	rim.light_energy = config_used.car_rim_energy
+	rim.light_cull_mask = 1 << CAR_FILL_LAYER
+	rim.shadow_enabled = false
+	var el: float = deg_to_rad(config_used.car_rim_elevation_deg)
+	rim.basis = Basis.looking_at(Vector3(0.0, -sin(el), cos(el)), Vector3.UP)
+	camera.add_child(rim)
 
 
 ## Wet road meshes (M_Asphalt on wet_asphalt.gdshader) go on the road layer, which the mirror skips.

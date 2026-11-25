@@ -352,3 +352,54 @@ almost black, rain reads as screen pinstripes, studio car shots lit by one strip
 Verdict: **not passed** (lead average 6.4, art 6.0, tech 5.7). The drop against round 8 is mostly the
 corrected performance measurement. Next: budgets (opponent LOD at the grid, results-screen draws, a
 Low world-detail scale), car contact shadows, dark-frame floor, rain.
+
+### Round 10 — 2026-11-25 (lighting and rain)
+
+Root cause of the black tunnel and dark streets: Godot Mobile lights at most 8 omni + 8 spot per mesh
+instance, and `CityLights.budget` dropped every light that pushed a 240 m road/sidewalk/structure chunk
+over that. 64-68 lights were dropped, 14 of the 29 tunnel lights among them.
+
+Changes:
+- `MeshSplitter` (new): only meshes over the light budget are cut by triangle centroid into pieces
+  that each see at most 8 + 8 lights (10 meshes into 21 pieces). Lights dropped 64 -> 4, all 29
+  tunnel lights kept, tunnel light scale 3 -> 6. Prop MultiMeshes are "soft" volumes now (they
+  never cause a drop; 120 of them see more than 8 lights and get an arbitrary 8, not checked visually).
+- Downtown street lamps: the layout lit the Neon Strip only, so the downtown canyon and overpass
+  (s 666-1008) had no lamp at all. The dressing pass adds cool white LED lamps there (11 placed,
+  allowed on the deck sidewalks).
+- Car rim light: warm directional on the car layer only, camera-relative from beyond the car, so the
+  body edges catch light when the violet sky dominates the paint reflections.
+- Rain rewritten: stops under cover (ray up from the camera, 0.3 s fade; no rain in the tunnel),
+  splashes at the real road height (ray down), small double-ring ripples on the road, streaks vary in
+  length/alpha and fade with distance (25-40 m) and near the lens (3-10 m), streak axis slants with
+  the camera's speed (drops still fall straight down in the world), camera cuts reset the slant.
+  3 draw calls for all rain.
+
+Peak numbers (fixed probe, RTX 5060 Ti desktop, not phone):
+
+| shot | preset | draw calls peak / min | primitives | budget |
+|---|---|---|---|---|
+| race_city pack | high | 501 / 298 | 420 880 | FAIL by 1 draw |
+| race_city racing_10s | high | 501 / 301 | 430 557 | FAIL by 1 draw |
+| race_city grid | high | 487 / 282 | 483 340 | FAIL primitives |
+| race_city results | high | 646 / 388 | 447 458 | FAIL draws |
+| race_city drift / underpass | high | 361 / 323 | 366 820 / 226 734 | pass |
+| city_presets pack (120 frames) | low / high | 276 / 493 max | — | Low FAIL (250), High pass |
+
+High race views moved from 497 to 501 (deck lamps and split pieces, within the ~±12 run-to-run spread
+the lighting agent measured). Budgets are the next round.
+
+| criterion | art lens | tech lens | lead |
+|---|---|---|---|
+| vehicle geometry | 5.5 | 6 | 7 |
+| materials | 6 | 5.5 | 6.5 |
+| lighting | 6.5 | 5.5 | 6.5 — tunnel road lit, deck and canyon lamps, rim on the car; studio shots still one hard bar, waterfront foreground crushed |
+| environment detail | 5 | 6 | 6.5 |
+| camera | 6.5 | 6 | 7 |
+| UI | 5.5 | 6 | 6.5 — neon signs sit behind the top-right timers; results panel half empty |
+| effects | 6 | 5 | 6.5 — rain stops under cover, ripples, depth falloff; no tyre smoke on the drift |
+| performance | 5 | 5 | 5 (desktop only) |
+
+Verdict: **not passed** (lead 6.4, art 5.75, tech 5.6). Haiku reviewer scores move by up to 1.5 on
+criteria that did not change (environment, UI), so single-round deltas are noise; both now name the
+rain and puddle rings as convincing in the waterfront and finish-orbit shots.

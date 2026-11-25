@@ -253,6 +253,13 @@ func test_car_fill_light_reaches_only_the_car_layer() -> void:
 	if fill != null:
 		check(fill.light_cull_mask == fill_bit, "fill light mask %d, expected only the car layer %d" % [fill.light_cull_mask, fill_bit])
 		check(not fill.shadow_enabled, "fill light must not cast shadows")
+	var rim: DirectionalLight3D = scene.camera.get_node_or_null(RaceScene.RIM_LIGHT_NAME) as DirectionalLight3D
+	check(rim != null, "car rim light missing under the chase camera")
+	if rim != null:
+		check(rim.light_cull_mask == fill_bit, "rim light mask %d, expected only the car layer %d" % [rim.light_cull_mask, fill_bit])
+		check(not rim.shadow_enabled, "rim light must not cast shadows")
+		var dir: Vector3 = -rim.basis.z  # travel direction in camera space: toward the lens (+z) and down
+		check(dir.z > 0.5 and dir.y < 0.0, "rim light must shine from beyond the car toward the camera, got %s" % dir)
 	var car_meshes: int = 0
 	for car: ArcadeCar in scene.cars:
 		for n: Node in car.find_children("*", "MeshInstance3D", true, false):

@@ -4,23 +4,27 @@ extends RefCounted
 ## Checked per volume: the AABB of each mesh that can be lit up close (road piece, building LOD0, prop MultiMesh).
 ## A light counts where its range sphere meets the volume. A volume over the limit keeps the PER_TYPE_LIMIT
 ## lights nearest its centre and drops the rest. A light dropped in any volume is dropped from the scene.
+## A soft volume (a prop MultiMesh: many small props in one draw) only reports: the renderer applies 8 lights to it
+## and ignores the rest, which costs less than dropping a light the road and walls need.
 ## Stateless helpers.
 
 const PER_TYPE_LIMIT: int = 8
 
 
 ## lights: Array of Dictionary {type: "omni" | "spot", pos: Vector3, range: float}.
-## volumes: Array of AABB; names: one label per volume for the log.
-## Returns {keep: Array[bool], dropped: int, worst_all, worst_kept, over_volumes: int, log: PackedStringArray}.
+## volumes: Array of AABB; names: one label per volume for the log; soft: optional bool per volume.
+## Returns {keep: Array[bool], dropped: int, worst_all, worst_kept, over_volumes: int, soft_over: int, log: PackedStringArray}.
 ## worst_* hold the largest count per type (keys omni, spot) and the volume index.
-static func budget(lights: Array, volumes: Array, names: PackedStringArray) -> Dictionary:
+static func budget(lights: Array, volumes: Array, names: PackedStringArray, soft: Array = []) -> Dictionary:
 	var keep: Array[bool] = []
 	keep.resize(lights.size())
 	keep.fill(true)
 	var worst_all: Dictionary = {"omni": 0, "spot": 0, "volume": -1}
 	var over: Array = []  # [volume, type, Array of light indices sorted nearest first]
 	var log: PackedStringArray = PackedStringArray()
+	var soft_over: int = 0
 	for v: int in volumes.size():
+		var is_soft: bool = v < soft.size() and bool(soft[v])
 		var box: AABB = volumes[v]
 		var hits: Dictionary = {"omni": [], "spot": []}
 		for i: int in lights.size():
@@ -33,7 +37,9 @@ static func budget(lights: Array, volumes: Array, names: PackedStringArray) -> D
 			if idx.size() > int(worst_all[t]):
 				worst_all[t] = idx.size()
 				worst_all["volume"] = v
-			if idx.size() > PER_TYPE_LIMIT:
+			if idx.size() > PER_TYPE_LIMIT and is_soft:
+				soft_over += 1
+			elif idx.size() > PER_TYPE_LIMIT:
 				idx.sort_custom(func(a: int, b: int) -> bool: return _pos(lights[a]).distance_squared_to(centre) < _pos(lights[b]).distance_squared_to(centre))
 				over.append([v, t, idx])
 				log.append("%s: %s %d lights, keeping %d nearest" % [names[v], t, idx.size(), PER_TYPE_LIMIT])
@@ -58,7 +64,7 @@ static func budget(lights: Array, volumes: Array, names: PackedStringArray) -> D
 				worst_kept[t2] = kept_hits[t2]
 				worst_kept["volume"] = v
 	return {"keep": keep, "dropped": dropped, "worst_all": worst_all, "worst_kept": worst_kept,
-		"over_volumes": over.size(), "log": log}
+		"over_volumes": over.size(), "soft_over": soft_over, "log": log}
 
 
 ## Largest number of lights of each type whose range touches one volume (for the tests and reports).

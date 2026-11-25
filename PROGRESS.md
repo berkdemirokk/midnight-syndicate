@@ -70,6 +70,10 @@ c0c065d (see `git log`).
 - PerfProbe fixed to report peak counters: it exposed High over budget on the grid (483k
   primitives), results (646 draws) and finish orbit (577k), and Low races at 280-303 draws (250).
 - Gate round 9: lead 6.4, art 6.0, tech 5.7. Not passed. 146 tests pass.
+- Round 10 (lighting and rain): per-mesh light budget fixed by splitting over-budget meshes
+  (lights dropped 64 -> 4, tunnel lit), downtown/overpass street lamps, car rim light, rain rewrite
+  (shelter, road-height ripples, depth falloff, speed slant). Gate: lead 6.4, art 5.75, tech 5.6.
+  149 tests pass. High race views at 501 draws (budget 500), Low 276 (250): budgets next.
 
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.

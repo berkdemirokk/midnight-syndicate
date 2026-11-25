@@ -280,6 +280,60 @@ func test_drifting_car_emits_tyre_smoke() -> void:
 	await cleanup([car, ground])
 
 
+## Static box with its centre at pos (default collision layer 1, the world mask rain.gd probes).
+func _box_body(size: Vector3, pos: Vector3) -> StaticBody3D:
+	var body := StaticBody3D.new()
+	var shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	shape.shape = box
+	body.add_child(shape)
+	body.position = pos
+	return body
+
+
+func test_rain_shelter_fades_out_and_back() -> void:
+	var holder := Node3D.new()
+	add(holder)
+	holder.add_child(_box_body(Vector3(20, 0.5, 20), Vector3(0, 6, 0)))  # roof 4.5 m above the camera
+	var cam := Camera3D.new()
+	cam.position = Vector3(0, 1.5, 0)
+	holder.add_child(cam)
+	cam.current = true
+	var rain := load("res://fx/rain.tscn").instantiate() as RainFx
+	holder.add_child(rain)
+	await frames(40)
+	check(rain.is_covered(), "roof 4.5 m above the camera not seen as cover")
+	check(rain.rain_factor() < 0.01, "rain still at %.2f under cover after 0.67 s" % rain.rain_factor())
+	check(not rain.is_raining(), "streaks still emitting or visible under cover")
+	cam.position = Vector3(40, 1.5, 0)  # clear of the roof (x -10..10)
+	await frames(40)
+	check(not rain.is_covered(), "open sky reported as cover")
+	check(rain.rain_factor() > 0.99, "rain did not come back in the open (%.2f)" % rain.rain_factor())
+	check(rain.is_raining(), "streaks not emitting or visible in the open")
+	await cleanup([holder])
+
+
+func test_rain_splash_follows_road_height() -> void:
+	var holder := Node3D.new()
+	add(holder)
+	holder.add_child(FlatWorld.make_ground(0.0))
+	holder.add_child(FlatWorld.make_drop_platform(Vector2(10, 10), 2.0, Vector2(80, 0)))  # road top at y = 2
+	var cam := Camera3D.new()
+	cam.position = Vector3(0, 4, 0)
+	holder.add_child(cam)
+	cam.current = true
+	var rain := load("res://fx/rain.tscn").instantiate() as RainFx
+	holder.add_child(rain)
+	await frames(10)
+	check(absf(rain.ground_height() - 0.0) < 0.01, "splash height %.3f over flat ground, expected 0" % rain.ground_height())
+	cam.position = Vector3(80, 4, 0)
+	await frames(10)
+	check(absf(rain.ground_height() - 2.0) < 0.01, "splash height %.3f over the platform, expected 2" % rain.ground_height())
+	check(not rain.is_covered(), "platform top reported as cover")
+	await cleanup([holder])
+
+
 func _smoke_emitting(fx: CarFx) -> bool:
 	for e: GPUParticles3D in fx.smoke._emitters:
 		if e.emitting:
