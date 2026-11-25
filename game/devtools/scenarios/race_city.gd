@@ -63,6 +63,7 @@ var _go_ms_value: int = 0
 
 func run() -> void:
 	var cfg := RaceConfig.new()
+	cfg.use_garage_paint = false  # evidence shots use the brief's candy red, not whatever this machine's save holds
 	cfg.autopilot = true
 	cfg.laps = LAPS
 	cfg.opponent_count = OPPONENTS

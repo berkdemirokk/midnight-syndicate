@@ -283,3 +283,28 @@ Every spot is checked against the corridor (0.3 m clear), building boxes (0.5 m)
 - Land-side stacks and crane are not visible from the racing line in any shot: they sit behind the parking deck at 58 m. Owner of the layout should decide on a position.
 - The overpass bollard at the start of the deck (downtown, 668 to 680 m) lands on the deck edge in some sides; not checked in a capture.
 - `waterfront_lot` shot added to `city_districts` (yaw -55, facing the land side).
+
+
+## Environment pass (Environment Agent, 2026-11-25: sidewalks, harbour, establishing shot)
+Captures: `evidence/screens/city_districts/` (`waterfront_harbour.png` new, `establishing_60m.png` reframed), race: `evidence/screens/race_city/pack.png`, `racing_10s.png`. Logs `evidence/logs/env_cap_districts_c.log`, `env_cap_race_city.log`.
+
+- Sidewalks: downtown collider boxes moved onto the building line (see CITY_01_ENGINE.md). Bus shelters: 2 on the street-level stretch, 120 m apart, alternating sides (528.8 m right, 648.8 m left). The deck from 652 m takes the other slots, so no more fit. Benches, newspaper box and planter between shelters are placed on the same stretch.
+- Harbour: the stacks and crane moved to the open lot past the warehouse row. The crane reads as a lattice tower over the promenade; the stacks read as small coloured boxes at the horizon. Not as strong as the brief wants.
+- Establishing: 60 m up, 117 m back along the Neon Strip, looking at the strip point (about 27 deg down). The street, the lit ZENITH TOWER sign and the skyline read. The top of the frame is dark sky. Floating window cells on the dark side walls are still there (not in scope).
+- Race (`pack.png`, `racing_10s.png`): nothing in the road. Shoulders are clear. One blue rival is in both frames; the other rival paints were not checked here.
+- Tests: `test_city_01` 9 of 9, `test_city_race` 10 of 10, full suite 146 of 146 (`evidence/logs/env_test_full.log`). Corridor test and parked-car test pass.
+- Not done: no new floodlight for the harbour stacks; no change to the deck section (it stays free of dressing).
+
+
+## Environment pass 2 (QA findings on the environment pass, 2026-11-25)
+Captures: `evidence/screens/city_districts/` (`waterfront_stacks_line.png` new, `establishing_60m.png` reframed), `evidence/screens/race_city/pack.png`, `racing_10s.png`. Logs `evidence/logs/env2_*.log`.
+
+- Harbour from the racing line: `waterfront_stacks_line` (line s 1425, aimed at the nearest land-side stack) shows a container block beside the gantry crane on the right of the frame. Stacks moved to 22 m lateral (was 34) and given floodlights (none had one past s 1420). The stack reads as a silhouette; the container colours are still faint in the dark.
+- Establishing: the frame is now 95 deg vertical FOV, still 60 m up and about 27 deg down along the strip. The skyline towers read in the upper middle, the street runs down the centre with lit pools. A lens shift (`v_offset`) was tried and rejected: it moved the frame by a few pixels. The street stays a canyon; the mid-street lamps are beyond the 70 m light fade from this camera.
+- Race (`pack.png`, `racing_10s.png`): the road is clear of static objects in both frames. Player hit impulses in the log (s 321, 370, 703, 711) are not attributed to a rival or a prop; not resolved here.
+- Tests: `test_city_01` 9 of 9, `test_city_race` 10 of 10, full suite 146 of 146 (`evidence/logs/env2_tests_full3.log`).
+
+### Not done or not right (pass 2)
+- Bus shelters: 2, 120 m apart, alternating (528.8 m right, 648.8 m left). Only 148 m of street-level downtown exists before the deck, so 4 do not fit. Unchanged.
+- Light counts: the test build reports 156 built and 13 dropped; the capture build prints 67 to 68 dropped. Both read `report["dropped"]` from the same budget code. Cause not found (the capture and the test build the scene differently); not reconciled.
+- Downtown collider move is a fixed 1.5 m shift, not the per-sample building line; the mesh does not move. This is the requested collider-only fix.

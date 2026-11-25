@@ -2,7 +2,8 @@ extends "res://devtools/capture_scenario.gd"
 ## City 01 district looks on the racing line: eye height 1.3 m, FOV 70, race direction, wet road at wetness 1
 ## with rain on. Planar reflection on the High preset only (plane = local road height under the camera).
 ## Shots: neon_strip (start grid), downtown (overpass), waterfront, underpass (inside), old_market (hairpin),
-## establishing_60m (60 m up, across the Neon Strip). Each shot carries a 300-frame perf probe.
+## waterfront_stacks_line (racing line, aimed at the nearest land-side container stack), establishing_60m (60 m up, about
+## 27 deg down, along the Neon Strip, lens shifted up so the skyline reads). Each shot carries a 300-frame perf probe.
 
 const SCENE: String = "res://world/city_01/city_01.tscn"
 const LAYOUT: String = "res://assets/world/city_01/city_01_layout.json"
@@ -14,7 +15,8 @@ const SETTLE_FRAMES: int = 60
 const MEASURE_FRAMES: int = 300
 const ROAD_RAIN_INTENSITY: float = 1.0
 const ESTABLISH_HEIGHT_M: float = 60.0
-const ESTABLISH_SIDE_M: float = 40.0
+const ESTABLISH_BACK_M: float = 117.0  ## 60 m up and 117 m back from the Neon Strip point: the view looks about 27 deg down
+const ESTABLISH_FOV_DEG: float = 95.0  ## wider frame than the racing shots: more rooftops and skyline above the street canyon
 const NEON_MID_S: float = 144.0
 const ROAD_LAYER_BIT: int = 1 << 1  ## road is kept out of the planar mirror (see PlanarReflection.excluded_layers)
 const SHOTS: Array[Dictionary] = [
@@ -23,6 +25,8 @@ const SHOTS: Array[Dictionary] = [
 	{"name": "waterfront", "s": 1250.0, "yaw": 27.0},  ## yaw 27: promenade lamp run ahead-left (heading -15..-21) and the bay on the right edge; yaw 80 looked past every lamp
 	{"name": "waterfront_stacks", "s": 1279.0, "yaw": 80.0},  ## yaw 80 faces the container stack and gantry crane across the quay (about 360 m east)
 	{"name": "waterfront_lot", "s": 1175.0, "yaw": -55.0},  ## yaw -55 faces the land side: two container stacks and the gantry crane 40 to 60 m out behind the warehouses
+	{"name": "waterfront_harbour", "s": 1385.0, "yaw": -40.0},  ## past the warehouse row: the sightline to the stack and crane clears its end
+	{"name": "waterfront_stacks_line", "s": 1425.0, "aim": "container_stack"},  ## racing line past the warehouse row, looking at the nearest stack ahead
 	{"name": "underpass", "s": 1620.0},
 	{"name": "old_market", "s": 1950.0},
 ]
@@ -75,15 +79,29 @@ func run() -> void:
 		var fwd: Vector3 = _line[idx + LOOK_AHEAD_IDX] - p
 		fwd.y = 0.0
 		fwd = fwd.rotated(Vector3.UP, deg_to_rad(float(shot.get("yaw", 0.0))))
-		_place(p + Vector3(0.0, EYE_M, 0.0), p + fwd + Vector3(0.0, EYE_M, 0.0), p.y)
+		var target: Vector3 = p + fwd + Vector3(0.0, EYE_M, 0.0)
+		if shot.has("aim"):
+			target = _aim_point(city, String(shot["aim"]), float(shot["s"]))
+		_place(p + Vector3(0.0, EYE_M, 0.0), target, p.y)
 		await _take(str(shot["name"]))
 
 	var mid: int = roundi(NEON_MID_S / SAMPLE_M)
 	var c: Vector3 = _line[mid]
 	var f: Vector3 = (_line[mid + 1] - c).normalized()
-	var right: Vector3 = f.cross(Vector3.UP).normalized()
-	_place(c + right * ESTABLISH_SIDE_M + Vector3(0.0, ESTABLISH_HEIGHT_M, 0.0), c, c.y)
+	_place(c - f * ESTABLISH_BACK_M + Vector3(0.0, ESTABLISH_HEIGHT_M, 0.0), c, c.y)  # looks down the strip
+	_cam.fov = ESTABLISH_FOV_DEG
 	await _take("establishing_60m")
+	_cam.fov = FOV_DEG
+
+
+## Centre height of the nearest placed prop of this kit ahead of arc length s, from the dressing log of the build.
+func _aim_point(city: Node, kit: String, s: float) -> Vector3:
+	var best: Dictionary = {}
+	for row: Dictionary in city.get("stats")["dressing"]:
+		if String(row["kit"]) == kit and float(row["s"]) > s and (best.is_empty() or float(row["s"]) < float(best["s"])):
+			best = row
+	var pos: Array = best["pos"]
+	return Vector3(float(pos[0]), float(pos[1]) + 8.0, float(pos[2]))
 
 
 func _place(eye: Vector3, target: Vector3, plane_y: float) -> void:

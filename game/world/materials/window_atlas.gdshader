@@ -33,6 +33,13 @@ uniform float lit_fraction : hint_range(0.0, 1.0) = 0.45;
 // Dark gap between cells, in metres, so lit cells read as separate windows.
 uniform float cell_mullion_m : hint_range(0.0, 0.5) = 0.12;
 
+// Skyline cards: > 0 cuts the flat card into a row of tower silhouettes (this many towers across
+// the card), so the far skyline does not read as a black rectangle with a straight top edge.
+uniform float skyline_towers = 0.0;
+uniform float skyline_min_h : hint_range(0.0, 1.0) = 0.35;
+// true when UV.y = 0 is the top of the card
+uniform bool skyline_v_down = true;
+
 varying vec3 world_pos;
 
 float hash13(vec3 p3) {
@@ -46,6 +53,19 @@ void vertex() {
 }
 
 void fragment() {
+	if (skyline_towers > 0.0) {
+		float col = floor(UV.x * skyline_towers);
+		float h = mix(skyline_min_h, 1.0, hash13(vec3(col, 3.1, 7.7)));
+		// a setback crown on some towers
+		float sub = fract(UV.x * skyline_towers);
+		if (hash13(vec3(col, 9.2, 1.3)) > 0.6 && (sub < 0.2 || sub > 0.8)) {
+			h -= 0.06;
+		}
+		float up = skyline_v_down ? 1.0 - UV.y : UV.y;  // 0 at the bottom of the card, 1 at the top
+		if (up > h) {
+			discard;
+		}
+	}
 	ALBEDO = texture(albedo_tex, UV).rgb * tint.rgb * albedo_scale;
 	ROUGHNESS = roughness_value;
 	METALLIC = metallic_value;

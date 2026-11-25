@@ -19,6 +19,9 @@ const NEON_SHADER: String = "res://shaders/neon.gdshader"
 const TUNNEL_SHADER: String = "res://shaders/tunnel_light.gdshader"
 const WATER_SHADER: String = "res://world/materials/water.gdshader"
 const WINDOW_SHADER: String = "res://world/materials/window_atlas.gdshader"
+const FACADE_SHADER: String = "res://shaders/wet_facade.gdshader"
+## Wall materials that get wet_facade.gdshader (only when the CC0 set has all three maps).
+const FACADE_PREFIXES: Array[String] = ["M_Brick_", "M_Concrete_", "M_Plaster_", "M_Facade_Tile"]
 ## CC0 set used for names whose JSON entry carries no texture of its own.
 const CC0_SETS: Dictionary = {
 	"M_Curb": "brushed_concrete_03",
@@ -196,6 +199,8 @@ static func _build(mat_name: String) -> Material:
 		return _glass(mat_name, r)
 	if mat_name == "M_Skyline":
 		return _skyline(r)
+	if tuning.use_wet_facade and _is_facade(mat_name) and _wall_set(mat_name, r).size() == 3:
+		return _facade(mat_name, r, _wall_set(mat_name, r))
 	if mat_name == "M_TunnelLight":
 		return _tunnel_light(r)
 	if _is_neon(mat_name):
@@ -264,8 +269,9 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 	if mat_name == "M_Roof_Bitumen":
 		m.albedo_color = _scale_rgb(m.albedo_color, tuning.roof_albedo_scale)
 	if mat_name == "M_Metal_Corrugated" or mat_name == "M_Metal_Painted":
-		# Rooftop plant and fire-escape metal: lighter and less mirror-like so it reads under night light.
-		m.albedo_color = _scale_rgb(m.albedo_color, tuning.rooftop_metal_albedo_scale)
+		# Rooftop plant and fire-escape metal: neutral grey (the painted plate was saturated blue from 60 m).
+		m.albedo_texture = null
+		m.albedo_color = tuning.rooftop_plant_colour
 		m.metallic = tuning.rooftop_metal_metallic
 	if mat_name == "M_Curb":
 		m.albedo_color = _scale_rgb(m.albedo_color, tuning.kerb_albedo_scale)
@@ -282,6 +288,56 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		m.emission = r["emit"]
 		m.emission_energy_multiplier = emit_strength
 	return m
+
+
+static func _is_facade(mat_name: String) -> bool:
+	for p: String in FACADE_PREFIXES:
+		if mat_name.begins_with(p):
+			return true
+	return false
+
+
+## The three CC0 maps for a wall name (JSON textures, or the CC0_SETS fallback). Empty when there are none.
+static func _wall_set(mat_name: String, r: Dictionary) -> Dictionary:
+	var tex: Dictionary = r["textures"]
+	if tex.is_empty() and CC0_SETS.has(mat_name):
+		tex = _cc0_set(CC0_SETS[mat_name])
+	if tex.has("basecolor") and tex.has("normal") and tex.has("roughness"):
+		return tex
+	return {}
+
+
+## Wall with the wet look. Albedo and roughness get the same wetness and wall scaling as _standard(),
+## then the shader adds the wet band, rain streaks and grime (tuning facade_*).
+static func _facade(mat_name: String, r: Dictionary, tex: Dictionary) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.resource_name = mat_name
+	sm.shader = load(FACADE_SHADER) as Shader
+	var wet: float = tuning.wetness
+	var c: Color = r["colour"]
+	var scaled: bool = mat_name.begins_with("M_Brick") or mat_name.begins_with("M_Concrete") or mat_name == "M_Facade_Tile"
+	var tint: Vector3 = Vector3(c.r, c.g, c.b) * (1.0 - 0.3 * wet) * (tuning.wall_albedo_scale if scaled else 1.0)
+	sm.set_shader_parameter("albedo_tex", _tex(tex["basecolor"]))
+	sm.set_shader_parameter("normal_tex", _tex(tex["normal"]))
+	sm.set_shader_parameter("roughness_tex", _tex(tex["roughness"]))
+	sm.set_shader_parameter("tile_m", float(r["tile_m"]))
+	sm.set_shader_parameter("albedo_tint", tint)
+	sm.set_shader_parameter("roughness_base", clampf(float(r["roughness"]) * (1.0 - 0.5 * wet), 0.08, 1.0))
+	sm.set_shader_parameter("wall_darken", tuning.facade_wall_darken)
+	sm.set_shader_parameter("wall_gloss", tuning.facade_wall_gloss)
+	sm.set_shader_parameter("wet_band_m", tuning.facade_wet_band_m)
+	sm.set_shader_parameter("wet_soft_m", tuning.facade_wet_soft_m)
+	sm.set_shader_parameter("wet_darken", tuning.facade_wet_darken)
+	sm.set_shader_parameter("wet_gloss", tuning.facade_wet_gloss)
+	sm.set_shader_parameter("storey_m", tuning.facade_storey_m)
+	sm.set_shader_parameter("streak_density", tuning.facade_streak_density)
+	sm.set_shader_parameter("streak_stretch", tuning.facade_streak_stretch)
+	sm.set_shader_parameter("streak_threshold", tuning.facade_streak_threshold)
+	sm.set_shader_parameter("streak_darken", tuning.facade_streak_darken)
+	sm.set_shader_parameter("streak_gloss", tuning.facade_streak_gloss)
+	sm.set_shader_parameter("sill_boost", tuning.facade_sill_boost)
+	sm.set_shader_parameter("grime", tuning.facade_grime)
+	return sm
 
 
 static func _neon(mat_name: String, r: Dictionary) -> ShaderMaterial:
@@ -348,6 +404,7 @@ static func _skyline(r: Dictionary) -> ShaderMaterial:
 	sm.set_shader_parameter("tint", tuning.skyline_tint)
 	sm.set_shader_parameter("albedo_scale", 1.0)
 	sm.set_shader_parameter("roughness_value", 0.9)
+	sm.set_shader_parameter("skyline_towers", tuning.skyline_towers)
 	return sm
 
 

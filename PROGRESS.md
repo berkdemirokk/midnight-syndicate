@@ -60,6 +60,17 @@ c0c065d (see `git log`).
 - Gate round 6: lead average 6.5, independent 5.75 / 5.9. Not passed. 138 tests pass.
 - Commits up to ddce0ba.
 
+### Session 2, later — 2026-11-25 (gate rounds 7-9)
+- Round 7: race replay with trackside cameras, grid intro, rooftops. Round 8: Arden Civic traffic
+  sedan (7 materials, 7000/2500/800 tris) parked along the lap, 115 street dressing props.
+- Textures: mipmaps and VRAM compression on every 3D texture, anisotropic road.
+- Captures run off-screen without focus (owner complaint about Godot windows popping up).
+- Round 9: wet facades, skyline tower silhouettes, gradient night sky, downtown sidewalks and
+  shelters, harbour stacks/crane in view, evidence races in candy red.
+- PerfProbe fixed to report peak counters: it exposed High over budget on the grid (483k
+  primitives), results (646 draws) and finish orbit (577k), and Low races at 280-303 draws (250).
+- Gate round 9: lead 6.4, art 6.0, tech 5.7. Not passed. 146 tests pass.
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,

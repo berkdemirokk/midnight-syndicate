@@ -34,8 +34,18 @@ City01 (CityBuilder)            Track contract; builds everything in _ready from
   Grouped and emitted like layout props under `Geometry/Dressing`. Every placement in `stats["dressing"]`, misses by
   reason in `stats["dressing_reasons"]`. Downtown props only at street level (y <= 0.5 m).
 - Walking-lane rule: the free width from a sidewalk prop out to the first solid, or to the building line, is at least 1.2 m.
-  Building colliders sit about 1.5 m in front of the building line (downtown: faces at 9.3 m, line at 10.8 m), so
-  downtown sidewalks are about 2.0 m clear and only bollards and the gaps between buildings pass.
+  Downtown first-row collider boxes now sit on the building line (`_collider_centre`, moved `downtown_collider_back_m`
+  = 1.5 m back, 30 buildings). The catalog box used to sit 1.5 m in front of the line, which left about 2.0 m of sidewalk
+  and let only one of four bus shelters fit. The mesh and the physics are unchanged. Clear sidewalk, corridor edge to the
+  line: 3.3 m (checked from the centreline in `test_street_dressing`). The street-level downtown stretch is 504 to 652 m;
+  the overpass deck starts at 652 m, so two shelters (528.8 m right, 648.8 m left) are the most that fit there.
+- Harbour (2026-11-25, environment pass 2): the land-side warehouse row (layout buildings at 10.8 m lateral, s 1025 to 1365) hides
+  anything behind it. The dressing stacks and crane now stand on the open lot past its end: stacks at 22 m lateral
+  (`dress_stack_lat_m`, was 34), s = waterfront end minus 100 m and minus 20 m; crane at 46 m, 40 m before the end.
+  Each placed stack and crane gets a floodlight (`_floodlights`, `stats["floodlights"]`), because the layout floodlight
+  range stopped at s 1420. Proof: `waterfront_stacks_line.png`, a racing-line shot at s 1425 aimed at the nearest stack
+  ahead. The stack reads as a container block beside the crane; it is dark, with the container colours faint.
+  The layout's own two stacks and crane (lateral -340 to -360 m) are across the bay and stay.
 - Lights: layout energy x 0.35, colour from hex, no shadows, distance fade from 70 m over 30 m. Lamp heads 55 deg cone.
 - Occluders: one BoxOccluder3D per first-row building, 90 % of the collider box, at its centre.
 
@@ -59,6 +69,7 @@ City01 (CityBuilder)            Track contract; builds everything in _ready from
   racing shot. The brief target is 350 draw calls; this is over it. Frame average 2.7 ms at 368 fps, dev PC only.
 
 ## Known gaps (not done or not right)
+- Harbour stacks are readable from the racing line (`waterfront_stacks_line.png`) but still dark; the floodlights do not pick out the container colours.
 - An 8-car race does not finish in 170 s headless. Stuck events remain with prop colliders removed (12 vs 14),
   with road walls removed too (13), and with AI traffic disabled (5). A single car is clean. Not isolated; likely
   car-to-car physics or the AI. Not fixed: AI code is read-only here.

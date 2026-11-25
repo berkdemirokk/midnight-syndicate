@@ -303,3 +303,52 @@ mesh's shading normals by data transfer. Remaining: shading streaks from the arc
 the rear doors (visible only at LOD0, under 35 m).
 
 Verdict: **not passed** (lead average 6.6; the art-lens reviewer now gives 7 on geometry and UI).
+
+### Round 9 — 2026-11-25 (materials and environment)
+
+Changes: wet facade shader (rain sheen and streaks on lower walls), car glass tint and specular,
+downtown sidewalks widened (buildings pushed back to 3.3 m) with two bus shelters, land-side harbour
+stacks and gantry crane moved into view, skyline card cut into procedural tower silhouettes
+(`window_atlas.gdshader` `skyline_towers`), gradient night sky with a violet light-pollution glow and a
+faint lit cloud deck (`world/materials/night_sky.gdshader`, replaces the flat background colour),
+evidence races use the brief's candy red instead of the dev machine's saved paint.
+
+Measurement fix: `PerfProbe` read draw calls and primitives from the last sampled frame only. The High
+wet-road mirror renders every second frame, so a capture reported the cheap or the expensive frame by
+parity (race pack: 294 one run, 481 the next). Counters are now the peak over the 60 sampled frames
+(`draw_calls`, plus `draw_calls_min`). Earlier High race numbers in this file may be the cheap frame.
+
+Peak numbers with the fixed probe (RTX 5060 Ti desktop, 1920x1080, not phone numbers):
+
+| shot | preset | draw calls peak / min | primitives peak | budget |
+|---|---|---|---|---|
+| race_city grid | high | 486 / 281 | 483 020 | FAIL primitives (450k) |
+| race_city countdown_2 | high | 488 / 283 | 483 024 | FAIL primitives |
+| race_city pack | high | 497 / 284 | 409 075 | pass (3 draws spare) |
+| race_city racing_10s | high | 497 / 296 | 424 398 | pass |
+| race_city results | high | 646 / 386 | 422 811 | FAIL draws (500) |
+| race_replay finish_orbit | high | — | 576 573 | FAIL primitives |
+| race_city racing_10s | medium | 305 / 298 | 247 116 | pass (350) |
+| race_city racing_10s | low | 303 / 295 | 245 632 | FAIL draws (250) |
+| city_presets pack (120 frames) | low / medium / high | 280 / 283 / 484 max | — | Low FAIL, Medium and High pass |
+
+Parked cars cost about 2 draws in the Low racing_10s view (measured with them switched off), so the
+Low overrun comes from the rest of the round 7-8 world content; Low culls nothing extra today.
+
+| criterion | art lens | tech lens | lead |
+|---|---|---|---|
+| vehicle geometry | 6.5 | 6 | 7 |
+| materials | 6 | 6.5 | 6.5 |
+| lighting | 6 | 5.5 | 6.5 — sky gradient gives silhouettes against the horizon; drift and tunnel frames still crush to black |
+| environment detail | 6 | 5.5 | 6.5 — skyline reads as towers, harbour crane and stacks in view; tunnel walls bare |
+| camera | 6.5 | 6.5 | 7 |
+| UI | 7 | 6.5 | 7 — results panel lets the HUD show through |
+| effects | 6 | 5 | 6 — rain streaks uniform, no splashes |
+| performance | 4 | 4 | 5 (desktop only) — High over budget on grid, results and finish orbit; Low over 250 |
+
+Both reviewers flagged: cars look like they hover in replay shots (no contact shadow), drift frame
+almost black, rain reads as screen pinstripes, studio car shots lit by one strip light.
+
+Verdict: **not passed** (lead average 6.4, art 6.0, tech 5.7). The drop against round 8 is mostly the
+corrected performance measurement. Next: budgets (opponent LOD at the grid, results-screen draws, a
+Low world-detail scale), car contact shadows, dark-frame floor, rain.

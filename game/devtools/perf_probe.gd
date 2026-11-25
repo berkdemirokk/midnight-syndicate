@@ -1,6 +1,8 @@
 class_name PerfProbe
 extends RefCounted
 ## Frame time and render counters over N frames. Turns vsync and the fps cap off for the run and restores them after.
+## Render counters are the peak over the sampled frames (the budget figure): the High wet-road mirror renders every
+## second frame, so a single-frame read reported either the cheap or the expensive frame depending on parity.
 
 const WARMUP_FRAMES: int = 10
 const PCT_P95: float = 0.95
@@ -19,11 +21,20 @@ func measure(tree: SceneTree, frames: int) -> Dictionary:
 	var times := PackedFloat64Array()
 	times.resize(frames)
 	var last_us: int = Time.get_ticks_usec()
+	var draws_max: int = 0
+	var draws_min: int = 1 << 30
+	var prims_max: int = 0
+	var objects_max: int = 0
 	for i: int in frames:
 		await tree.process_frame
 		var now_us: int = Time.get_ticks_usec()
 		times[i] = (now_us - last_us) / 1000.0
 		last_us = now_us
+		var d: int = RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+		draws_max = maxi(draws_max, d)
+		draws_min = mini(draws_min, d)
+		prims_max = maxi(prims_max, RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME))
+		objects_max = maxi(objects_max, RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME))
 	Engine.max_fps = prev_max_fps
 	DisplayServer.window_set_vsync_mode(prev_vsync)
 
@@ -39,9 +50,10 @@ func measure(tree: SceneTree, frames: int) -> Dictionary:
 		"frame_ms_p95": _round3(_percentile(sorted, PCT_P95)),
 		"frame_ms_p99": _round3(_percentile(sorted, PCT_P99)),
 		"fps": _round3(1000.0 / mean) if mean > 0.0 else 0.0,
-		"draw_calls": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
-		"primitives": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME),
-		"objects": RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME),
+		"draw_calls": draws_max,
+		"draw_calls_min": draws_min,
+		"primitives": prims_max,
+		"objects": objects_max,
 		"video_mem_mb": _round3(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_VIDEO_MEM_USED) / BYTES_PER_MB),
 		"adapter": RenderingServer.get_video_adapter_name(),
 		"renderer": RenderingServer.get_current_rendering_method(),

@@ -383,6 +383,24 @@ func test_no_collider_in_corridor() -> void:
 	await cleanup(nodes)
 
 
+## Least sidewalk width, corridor edge to the building line, over the street-level downtown samples of the centreline.
+## The first-row collider boxes sit on that line (downtown_collider_back_m), so this is the clear walking width.
+func _downtown_sidewalk_clear() -> float:
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CENTRE_PATH))
+	var worst: float = INF
+	for i: int in (data["samples"] as Array).size():
+		var sample: Dictionary = (data["samples"] as Array)[i]
+		if String(sample.get("district_name", "")) != "Downtown canyon" or _v3(sample["pos"]).y > 0.5:
+			continue
+		var p: Vector3 = _v3(sample["pos"])
+		var r: Vector3 = _v3(sample["right"])
+		var edge: Dictionary = (data["edges"] as Array)[i]
+		var kerb: float = maxf(absf(Vector3(_v3(edge["left_kerb"]) - p).dot(r)), absf(Vector3(_v3(edge["right_kerb"]) - p).dot(r)))
+		var land: float = Vector3(_v3(edge["right_building"]) - p).dot(r)
+		worst = minf(worst, land - (kerb + 0.5))
+	return worst
+
+
 ## Parked cars (off by default until a low-poly traffic car exists; the placement is tested with 90):
 ## 60 to 120 on the kerb side, no colliders, and every car corner outside the corridor margin.
 func test_street_dressing() -> void:
@@ -398,6 +416,7 @@ func test_street_dressing() -> void:
 	var n_shelter_dt: int = 0
 	var n_stack: int = 0
 	var n_crane: int = 0
+	var shelter_rows: Array[Dictionary] = []
 	for row: Dictionary in rows:
 		var kit: String = row["kit"]
 		var district: String = row["district"]
@@ -417,6 +436,7 @@ func test_street_dressing() -> void:
 			n_lamp_wf += 1
 		if kit == "bus_shelter" and district == "downtown":
 			n_shelter_dt += 1
+			shelter_rows.append(row)
 		if kit == "container_stack":
 			n_stack += 1
 		if kit == "gantry_crane":
@@ -427,6 +447,7 @@ func test_street_dressing() -> void:
 	metric("dressing_benches_waterfront", n_bench_wf)
 	metric("dressing_lamps_waterfront", n_lamp_wf)
 	metric("dressing_shelters_downtown", n_shelter_dt)
+	metric("downtown_collider_moves", int(city.stats.get("downtown_collider_moves", 0)))
 	metric("waterfront_lamps_kept", str(city.stats["waterfront_lamps_kept"]))
 	check(corridor_bad == 0, "%d dressing props reach into the corridor" % corridor_bad)
 	check(kerb_bad == 0, "%d sidewalk props sit inside the kerb line" % kerb_bad)
@@ -434,7 +455,16 @@ func test_street_dressing() -> void:
 	check(n_bollard_wf >= 60, "waterfront quay bollards %d, expected at least 60 (every 6 m)" % n_bollard_wf)
 	check(n_bench_wf >= 8, "waterfront benches %d, expected at least 8" % n_bench_wf)
 	check(n_lamp_wf >= 3, "waterfront sodium lamps added %d, expected at least 3" % n_lamp_wf)
-	check(n_shelter_dt >= 1, "downtown bus shelters %d, expected at least 1" % n_shelter_dt)
+	check(n_shelter_dt >= 2, "downtown bus shelters %d, expected at least 2 on the street-level stretch" % n_shelter_dt)
+	var shelters_ok: bool = true
+	for k: int in range(1, shelter_rows.size()):
+		var gap: float = float(shelter_rows[k]["s"]) - float(shelter_rows[k - 1]["s"])
+		if absf(gap - city.dress_shelter_step_m) > 1.0 or shelter_rows[k]["side"] == shelter_rows[k - 1]["side"]:
+			shelters_ok = false  # every 120 m, alternating sides
+	check(shelters_ok, "downtown bus shelters not every %.0f m on alternating sides" % city.dress_shelter_step_m)
+	var dt_clear: float = _downtown_sidewalk_clear()
+	metric("downtown_sidewalk_clear_m", snappedf(dt_clear, 0.01))
+	check(dt_clear >= 3.0, "downtown sidewalk %.2f m from the corridor to the collider line, expected at least 3.0" % dt_clear)
 	check(n_stack == 2 and int(city.stats["dressing_counts"].get("gantry_crane", 0)) == 1,
 		"waterfront lot: %d container stacks and %d cranes, expected 2 and 1" % [n_stack, n_crane])
 	var nodes: Array[Node] = [city]

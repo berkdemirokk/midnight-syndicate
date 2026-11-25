@@ -74,7 +74,36 @@ extends Resource
 ## Multiplies the concrete wall albedo (M_Concrete_Wall, the textured facade walls). Dark brick walls read as
 ## black slabs from 60 m; raised so the walls read as buildings under the night ambient.
 @export_range(1.0, 4.0) var wall_albedo_scale: float = 2.2
-## Rooftop plant (AC units, tanks, vents) is M_Metal_Painted and M_Metal_Corrugated at metallic 0.5: it reflects the
-## dark night sky and reads as black hexagons from 60 m. Lighter and less metallic so it takes the ambient and moon light.
-@export_range(1.0, 4.0) var rooftop_metal_albedo_scale: float = 2.5
+## Rooftop plant (AC units, tanks, vents) is M_Metal_Painted and M_Metal_Corrugated. The painted plate carried a
+## saturated blue albedo that read as blue boxes from 60 m, so both now use this neutral grey (their albedo texture
+## is dropped; the normal and roughness maps keep the metal detail and roughness variation).
+@export var rooftop_plant_colour: Color = Color(0.3, 0.31, 0.33)
 @export_range(0.0, 1.0) var rooftop_metal_metallic: float = 0.15
+
+## Wet facades (shaders/wet_facade.gdshader) on brick, concrete, plaster and facade-tile walls.
+## False falls back to plain StandardMaterial3D walls (A/B perf runs and a kill switch).
+@export var use_wet_facade: bool = true
+## Whole-wall rain film: darkening and roughness drop on every metre of wall.
+@export_range(0.0, 1.0) var facade_wall_darken: float = 0.2
+@export_range(0.0, 1.0) var facade_wall_gloss: float = 0.35
+## Wet band at the foot of the wall: height in metres and soft edge width.
+@export_range(0.0, 3.0) var facade_wet_band_m: float = 1.2
+@export_range(0.0, 1.0) var facade_wet_soft_m: float = 0.3
+## Darkening and roughness drop inside the wet band.
+@export_range(0.0, 1.0) var facade_wet_darken: float = 0.35
+@export_range(0.0, 1.0) var facade_wet_gloss: float = 0.6
+## Storey height for the height-periodic streak and grime bands (metres).
+@export_range(0.5, 8.0) var facade_storey_m: float = 3.4
+## Vertical rain streaks: density across the wall (per metre), vertical noise frequency (per metre, lower = longer),
+## threshold (higher = fewer streaks), darkening and roughness drop along streaks.
+@export_range(0.0, 20.0) var facade_streak_density: float = 6.0
+@export_range(0.0, 2.0) var facade_streak_stretch: float = 0.3
+@export_range(0.0, 1.0) var facade_streak_threshold: float = 0.6
+@export_range(0.0, 1.0) var facade_streak_darken: float = 0.2
+@export_range(0.0, 1.0) var facade_streak_gloss: float = 0.4
+## Extra streak strength at the foot of each storey band (under sills and ledges).
+@export_range(0.0, 2.0) var facade_sill_boost: float = 0.6
+## Darkening at the foot of each storey band.
+@export_range(0.0, 1.0) var facade_grime: float = 0.2
+## Far skyline card cut into this many tower silhouettes (0 = flat card).
+@export var skyline_towers: float = 46.0

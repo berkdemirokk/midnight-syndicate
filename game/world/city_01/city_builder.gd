@@ -12,6 +12,7 @@ const BUILDING_DIR: String = "res://assets/world/kits/buildings/"
 const PROP_DIR: String = "res://assets/world/kits/props/"
 const CATALOG_PATH: String = "res://assets/world/kits/buildings/catalog.json"
 const VEHICLE_LAYER_BIT: int = 1 << 1
+const NIGHT_SKY: Shader = preload("res://world/materials/night_sky.gdshader")
 const TRIGGER_LAYER_BIT: int = 1 << 2
 const CHECKPOINT_HEIGHT_M: float = 6.0
 const CHECKPOINT_DEPTH_M: float = 1.5
@@ -103,11 +104,15 @@ const PARKED_LOD_END_M: Array[float] = [35.0, 90.0, 150.0]  ## LOD0 to 35 m, LOD
 @export var dress_promenade_step_m: float = 40.0  ## bench and bin pair on the waterfront promenade
 @export var dress_lamp_step_m: float = 30.0  ## sodium lamp grid on the promenade, filled where the layout has none
 @export var dress_lamp_gap_m: float = 14.0  ## a grid lamp is skipped when a lamp is nearer than this
-@export var dress_stack_lat_m: float = 34.0  ## land-side container stacks, lateral distance from the centreline
+@export var dress_stack_lat_m: float = 22.0  ## land-side container stacks, lateral distance from the centreline
+@export var dress_stack_from_end_m: float = 100.0  ## first land-side container stack, this far before the waterfront end
+@export var dress_crane_from_end_m: float = 40.0  ## land-side gantry crane (58 m long), this far before the waterfront end
 @export var dress_crane_lat_m: float = 46.0  ## land-side gantry crane, lateral distance from the centreline
 @export var dress_shelter_step_m: float = 120.0  ## downtown bus shelters, alternating sides
 @export var dress_deck_y_m: float = 0.5  ## centreline height above which the overpass deck is up
 @export var dress_approach_m: float = 12.0  ## bollards stand this far out on each overpass approach
+@export var downtown_collider_back_m: float = 1.5  ## downtown building collider boxes move this far onto the building line
+const DOWNTOWN_DISTRICT: String = "Downtown canyon"
 
 @export var floodlight_energy: float = 9.0  ## JSON-scale energy, x light_energy_scale
 @export var floodlight_color: String = "#FFF1D6"
@@ -156,6 +161,7 @@ func _ready() -> void:
 	_grid_root = get_node("StartGrid") as Node3D
 	var racing: Dictionary = d["racing"]
 	var lap: float = float(d["lap_length"])
+	_dress_lap = lap  # _c_index needs the lap before the dressing pass
 	stats ={"first_row": 0, "second_row_instances": 0, "second_row_multimeshes": 0, "prop_instances": 0,
 		"prop_multimeshes": 0, "prop_colliders": 0, "missing_props": 0, "occluders": 0, "lights": 0,
 		"lights_dropped": 0, "probes": 0, "road_surfaces": 0, "road_colliders": 0, "corridor_pushes": []}
@@ -304,7 +310,8 @@ func _build_buildings(inst: Array, lap: float) -> void:
 			_add_occluder(root, colliders[asset])
 		first.add_child(root)
 		if colliders.has(asset):
-			_solid.append(_box_entry(_rel_xf(root, self) * Transform3D(Basis(), colliders[asset]["center"] as Vector3), colliders[asset]["size"] as Vector3))
+			var box_centre: Vector3 = _collider_centre(d, xf, colliders[asset]["center"] as Vector3)
+			_solid.append(_box_entry(_rel_xf(root, self) * Transform3D(Basis(), box_centre), colliders[asset]["size"] as Vector3))
 		stats["first_row"] = int(stats["first_row"]) + 1
 	for asset: String in lod2_xfs.keys():
 		var arr: Array = lod2_xfs[asset]
@@ -328,6 +335,24 @@ func _build_buildings(inst: Array, lap: float) -> void:
 		second.add_child(mmi)
 		stats["second_row_multimeshes"] = int(stats["second_row_multimeshes"]) + 1
 		stats["second_row_instances"] = int(stats["second_row_instances"]) + arr.size()
+
+
+## Centre of a first-row building's collider box in building space. Downtown boxes sit downtown_collider_back_m in front
+## of the building line, which took 1.5 m of the sidewalk; they move back onto the line. The mesh and the physics do not move.
+## shortcut: a fixed shift, not the measured building line per sample; a facade off the line would need the per-sample value.
+func _collider_centre(d: Dictionary, xf: Transform3D, centre: Vector3) -> Vector3:
+	if _c_pos.is_empty():
+		return centre
+	var s: float = float(d.get("s_offset_m", 0.0))
+	var i: int = _c_index(s)
+	if _c_dist[i] != DOWNTOWN_DISTRICT:
+		return centre
+	var wc: Vector3 = xf * centre
+	var lat: float = (Vector2(wc.x, wc.z) - _c_pos[i]).dot(_c_right[i])
+	var away: Vector2 = _c_right[i] * signf(lat)  # away from the centreline, which is the building side
+	var shift: Vector3 = xf.basis.inverse() * Vector3(away.x, 0.0, away.y) * downtown_collider_back_m
+	stats["downtown_collider_moves"] = int(stats.get("downtown_collider_moves", 0)) + 1
+	return centre + shift
 
 
 ## LOD children of a building: LOD0 to lod0_end_m, LOD1 to lod1_end_m, LOD2 beyond, cross-faded.
@@ -646,7 +671,7 @@ func _library_mesh(src: Mesh, owner_id: String) -> Mesh:
 ## Waterfront and downtown street dressing, placed after the layout props from kit props only. The water-side quay edge
 ## gets bollards every dress_bollard_step_m; the land-side promenade gets a bench and bin pair every
 ## dress_promenade_step_m and a sodium lamp wherever the 30 m lamp grid has none; two container stacks and a gantry crane
-## stand on the land side behind the warehouses. Downtown gets a bus shelter every dress_shelter_step_m on alternating
+## stand on the open land-side lot past the warehouse row. Downtown gets a bus shelter every dress_shelter_step_m on alternating
 ## sides, benches, planters and newspaper boxes between, and bollards on both approaches to the overpass deck.
 ## Every spot is checked against the corridor, the building lines, the boxes and the furniture; each placement is in
 ## stats["dressing"], each miss in stats["dressing_missed"].
@@ -677,9 +702,11 @@ func _dress_districts(inst: Array, lap: float, n_chunks: int) -> void:
 			if _lamp_gap(inst, s) > dress_lamp_gap_m:
 				_dress_at("lamp_sodium", s, 1.0, _kerb_lat(s, 0.26), "waterfront", lap)
 			s += dress_lamp_step_m
-		_dress_at("container_stack", wf.x + 100.0, 1.0, dress_stack_lat_m, "waterfront", lap, [40.0, 46.0, 52.0, 58.0])
-		_dress_at("container_stack", wf.x + 210.0, 1.0, dress_stack_lat_m, "waterfront", lap, [40.0, 46.0, 52.0, 58.0])
-		_dress_at("gantry_crane", wf.x + 150.0, 1.0, dress_crane_lat_m, "waterfront", lap, [40.0, 52.0, 58.0])
+		# The land-side warehouse row ends about 115 m before the waterfront end: the open lot there is where the stacks
+		# and the crane can be seen from the racing line. Behind the row (old s) they were hidden by the warehouses.
+		_dress_at("gantry_crane", wf.y - dress_crane_from_end_m, 1.0, dress_crane_lat_m, "waterfront", lap, [40.0, 52.0, 58.0])
+		_dress_at("container_stack", wf.y - dress_stack_from_end_m, 1.0, dress_stack_lat_m, "waterfront", lap, [40.0, 46.0, 52.0, 58.0])
+		_dress_at("container_stack", wf.y - 20.0, 1.0, dress_stack_lat_m, "waterfront", lap, [40.0, 46.0, 52.0, 58.0])
 	if dt.y > dt.x:
 		var k: int = 0
 		var t: float = dt.x + 25.0
@@ -1226,7 +1253,8 @@ func _wall_wash_lights(inst: Array) -> Array:
 	return out
 
 
-## One cool-white spot above each waterfront container stack and gantry crane, aimed down at its base.
+## One cool-white spot above each waterfront container stack and gantry crane, aimed down at its base. Layout props in the
+## s range, and every placed dressing stack or crane (their s is past floodlight_s_max, so no range test for those).
 func _floodlights(inst: Array) -> Array:
 	var out: Array = []
 	for v: Variant in inst:
@@ -1239,13 +1267,21 @@ func _floodlights(inst: Array) -> Array:
 		var s: float = float(d["s_offset_m"])
 		if s < floodlight_s_min or s > floodlight_s_max:
 			continue
-		var b: Vector3 = _vec(d["position"])
-		var spot_pos: Vector3 = b + Vector3(0.0, floodlight_height_m, 0.0)
-		var dir: Vector3 = (b + Vector3(0.0, 4.0, 0.0) - spot_pos).normalized()
-		out.append({"type": "spot", "pos": spot_pos, "range": floodlight_range_m,
-			"src": {"source": "floodlight", "district": "waterfront", "color": floodlight_color,
-				"energy": floodlight_energy, "direction": [dir.x, dir.y, dir.z]}})
+		out.append(_floodlight_at(_vec(d["position"])))
+	for rec: Dictionary in _dress_recs:
+		var kit: String = rec["kit"]
+		if (kit == "container_stack" or kit == "gantry_crane") and String(rec["district"]) == "waterfront":
+			out.append(_floodlight_at((rec["xf"] as Transform3D).origin))
+	stats["floodlights"] = out.size()
 	return out
+
+
+func _floodlight_at(b: Vector3) -> Dictionary:
+	var spot_pos: Vector3 = b + Vector3(0.0, floodlight_height_m, 0.0)
+	var dir: Vector3 = (b + Vector3(0.0, 4.0, 0.0) - spot_pos).normalized()
+	return {"type": "spot", "pos": spot_pos, "range": floodlight_range_m,
+		"src": {"source": "floodlight", "district": "waterfront", "color": floodlight_color,
+			"energy": floodlight_energy, "direction": [dir.x, dir.y, dir.z]}}
 
 
 func _build_probes(raw: Array) -> void:
@@ -1269,8 +1305,14 @@ func _build_probes(raw: Array) -> void:
 
 func _build_environment() -> void:
 	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color.html("#070A14")
+	# Gradient night sky with a horizon light-pollution glow; a flat colour read as a dead backdrop behind the skyline.
+	var sky_mat := ShaderMaterial.new()
+	sky_mat.shader = NIGHT_SKY
+	var sky := Sky.new()
+	sky.sky_material = sky_mat
+	sky.radiance_size = Sky.RADIANCE_SIZE_64
+	env.background_mode = Environment.BG_SKY
+	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = ambient_color
 	env.ambient_light_energy = ambient_energy
@@ -1280,6 +1322,7 @@ func _build_environment() -> void:
 	env.fog_mode = Environment.FOG_MODE_DEPTH
 	env.fog_depth_begin = fog_begin_m
 	env.fog_depth_end = fog_end_m
+	env.fog_sky_affect = 0.2
 	env.glow_enabled = true
 	env.glow_intensity = 0.55
 	env.glow_bloom = 0.05

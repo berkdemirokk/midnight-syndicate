@@ -12,16 +12,16 @@ const KNOWN: PackedStringArray = [
 ]
 const DEFAULT_PAINT: Color = Color(0.557, 0.059, 0.118)  ## #8E0F1E candy red from the brief
 const DEFAULT_RIM: Color = Color(0.314, 0.333, 0.369)  ## gunmetal, the GLB source albedo (was 0.08: read as black)
-const GLASS_TINT: Color = Color(0.02, 0.03, 0.04, 0.62)  ## near-black smoked glass, alpha = opacity
-const GLASS_SPECULAR: float = 0.25
+const GLASS_TINT: Color = Color(0.02, 0.03, 0.04, 0.85)  ## near-black smoked glass, alpha = opacity (0.62 read light grey; 0.42 brighter)
+const GLASS_SPECULAR: float = 0.08  ## was 0.25; grazing Fresnel dominates, so the grey comes mostly from alpha (see WORLD_MATERIALS.md)
 const PAINT_METALLIC: float = 0.85
 const PAINT_ROUGHNESS: float = 0.32
 const PAINT_CLEAR: float = 1.0
 const PAINT_CLEAR_ROUGHNESS: float = 0.04
 const PAINT_FLAKE_SCALE: float = 0.12  ## flake normal strength, low on purpose
 const PAINT_FLAKE_TILING: float = 4.0  ## fine tiling of the 512 px flake normal
-const GLASS_ALPHA: float = 0.35
-const GLASS_ROUGHNESS: float = 0.03
+const GLASS_ROUGHNESS: float = 0.1  ## base; the streak map scales it to 0.06..0.1 so reflections break into streaks
+const GLASS_STREAK_SCALE: Vector3 = Vector3(1.5, 1.0, 1.5)  ## triplanar repeats per metre of the streak map (about 2 cm columns)
 const LENS_ALPHA: float = 0.25
 const CARBON_CLEAR: float = 0.6
 const CARBON_CLEAR_ROUGHNESS: float = 0.2
@@ -32,6 +32,7 @@ const SHADOW_CASTERS: PackedStringArray = [
 ]
 
 static var _shared: Dictionary = {}
+static var _glass_streaks: ImageTexture
 
 
 ## Gives every known surface its engine material and sets shadow casting by node name. Call once per car.
@@ -97,13 +98,17 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color) -> Standar
 		"M_Glass":
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			m.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY  ## no depth write: the interior behind shows through
-			m.albedo_color = Color(src.albedo_color.r, src.albedo_color.g, src.albedo_color.b, GLASS_ALPHA)
-			m.roughness = GLASS_ROUGHNESS
 			m.metallic = 0.0
-			# Tinted glass: dark, and a reduced specular so a bright ceiling bar does not turn the
-			# whole windscreen into a white plate (it read as an opaque slab in the garage).
+			# Smoked glass: dark, a reduced specular so a bright ceiling bar does not turn the whole
+			# windscreen into a white plate, and a roughness map so the reflections break into streaks.
 			m.albedo_color = GLASS_TINT
 			m.metallic_specular = GLASS_SPECULAR
+			m.roughness = GLASS_ROUGHNESS
+			m.roughness_texture = _glass_streak_map()
+			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+			m.uv1_triplanar = true
+			m.uv1_world_triplanar = true
+			m.uv1_scale = GLASS_STREAK_SCALE
 			m.render_priority = 1  ## draw after opaque, so the glass sits over the interior
 		"M_Lens":
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -121,6 +126,24 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color) -> Standar
 			m.clearcoat = CARBON_CLEAR
 			m.clearcoat_roughness = CARBON_CLEAR_ROUGHNESS
 	return m
+
+
+## Vertical streak map for glass roughness: constant down each column, random across. Red channel 0.6..1.0.
+static func _glass_streak_map() -> ImageTexture:
+	if _glass_streaks != null:
+		return _glass_streaks
+	var size: int = 32
+	var img: Image = Image.create(size, size, false, Image.FORMAT_L8)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7  # fixed, so every run and every car gets the same streaks
+	for x: int in size:
+		var v: float = 0.6 + 0.4 * rng.randf()
+		if rng.randf() < 0.25:
+			v = 1.0  # a few columns at the top of the range: stronger streak contrast
+		for y: int in size:
+			img.set_pixel(x, y, Color(v, v, v))
+	_glass_streaks = ImageTexture.create_from_image(img)
+	return _glass_streaks
 
 
 static func _mesh_instances(root: Node) -> Array[MeshInstance3D]:

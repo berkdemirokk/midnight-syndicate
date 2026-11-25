@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-25T09:21:10"
+    "time": "2026-11-25T10:21:25"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -195,7 +195,7 @@
     "test_parked_cars_outside_corridor": {
       "failures": [],
       "metrics": {
-        "parked_candidates": 131,
+        "parked_candidates": 153,
         "parked_cars": 90,
         "parked_worst_margin_m": -0.9
       },
@@ -205,17 +205,17 @@
       "failures": [],
       "metrics": {
         "count_instances": 1113,
-        "count_lights_built": 153,
-        "count_lights_dropped": 12,
+        "count_lights_built": 156,
+        "count_lights_dropped": 13,
         "count_multimeshes": 611,
         "count_occluders": 148,
         "count_probes": 37,
         "count_prop_colliders": 368,
         "count_unbound_materials": 0,
-        "light_budget_log": 13,
+        "light_budget_log": 15,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 890.1,
+        "load_time_ms": 1099.1,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -242,12 +242,14 @@
     "test_street_dressing": {
       "failures": [],
       "metrics": {
+        "downtown_collider_moves": 30,
+        "downtown_sidewalk_clear_m": 3.3,
         "dressing_benches_waterfront": 8,
         "dressing_bollards_waterfront": 77,
         "dressing_lamps_waterfront": 4,
-        "dressing_missed": "{ \"bench\": 6, \"litter_bin\": 2, \"bus_shelter\": 3, \"newspaper_box\": 3, \"planter_shrub\": 3, \"bollard\": 2 }",
-        "dressing_placed": 115,
-        "dressing_shelters_downtown": 1,
+        "dressing_missed": "{ \"bench\": 6, \"litter_bin\": 2, \"newspaper_box\": 3, \"planter_shrub\": 3, \"bus_shelter\": 2, \"bollard\": 2 }",
+        "dressing_placed": 116,
+        "dressing_shelters_downtown": 2,
         "waterfront_lamps_kept": "[15, 15]"
       },
       "pass": true
@@ -270,7 +272,7 @@
         "8car_orderA_nitro100_race_time_s": 85.92,
         "8car_orderA_nitro100_stuck_events": 5,
         "8car_orderA_nitro100_stuck_worst_car": 2,
-        "8car_orderA_nitro100_wall_s": 5.7
+        "8car_orderA_nitro100_wall_s": 5.4
       },
       "pass": true
     },
@@ -282,7 +284,7 @@
         "8car_orderA_nitro140_race_time_s": 77.47,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 4.5
+        "8car_orderA_nitro140_wall_s": 4.4
       },
       "pass": true
     },
@@ -294,7 +296,7 @@
         "8car_orderA_nitro0_race_time_s": 82.23,
         "8car_orderA_nitro0_stuck_events": 1,
         "8car_orderA_nitro0_stuck_worst_car": 1,
-        "8car_orderA_nitro0_wall_s": 5.0
+        "8car_orderA_nitro0_wall_s": 4.9
       },
       "pass": true
     },
@@ -318,7 +320,7 @@
         "8car_orderB_nitro140_race_time_s": 84.48,
         "8car_orderB_nitro140_stuck_events": 5,
         "8car_orderB_nitro140_stuck_worst_car": 2,
-        "8car_orderB_nitro140_wall_s": 5.7
+        "8car_orderB_nitro140_wall_s": 5.8
       },
       "pass": true
     },
@@ -330,7 +332,7 @@
         "8car_orderB_nitro0_race_time_s": 83.47,
         "8car_orderB_nitro0_stuck_events": 7,
         "8car_orderB_nitro0_stuck_worst_car": 2,
-        "8car_orderB_nitro0_wall_s": 5.4
+        "8car_orderB_nitro0_wall_s": 5.7
       },
       "pass": true
     },
@@ -365,7 +367,7 @@
         "6car_nitro140_race_time_s": 73.77,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 2.8
+        "6car_nitro140_wall_s": 2.9
       },
       "pass": true
     },
@@ -377,7 +379,7 @@
         "6car_nitro0_race_time_s": 73.83,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 2.9
+        "6car_nitro0_wall_s": 3.6
       },
       "pass": true
     }
