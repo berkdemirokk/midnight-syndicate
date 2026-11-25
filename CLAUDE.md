@@ -22,7 +22,8 @@ godot --headless --path game --import
 # logic tests (exit code 0 = pass, results in evidence/test_results.json)
 godot --headless --fixed-fps 60 --path game -s res://tests/run_tests.gd [-- --only=test_x]
 # real screenshots (the only screenshots that count as evidence)
-godot --path game --resolution 1920x1080 res://devtools/capture_boot.tscn -- --capture=<scenario>
+godot --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=<scenario>
+# (opens off-screen and never takes focus; add --show-window after -- to watch it)
 # asset manifest
 py -3.10 tools/asset_factory.py validate
 ```
