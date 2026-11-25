@@ -36,10 +36,20 @@ const FX_RAIN_SCENE: String = "res://fx/rain.tscn"
 ##   bit 0 (layer 1)  default: everything, incl. cars, track props, the wet road is also on bit 1 only
 ##   bit 1 (layer 2)  wet road (M_Asphalt meshes only): the planar mirror leaves it out
 ##   bit 9 (layer 10) rain particles: the planar mirror leaves them out
+## A camera draws an object when ANY of its layer bits is in the cull mask, so an object the mirror must skip
+## has NO default bit and no car fill bit, and the mirror also excludes bit 19 (see PlanarReflection.excluded_layers).
+##   bit 2 (layer 3)  car LOD0 meshes (CarLod.DETAIL_LAYER_BIT), instead of bit 0: the planar mirror leaves them out
+##   bit 3 (layer 4)  mirror-only copy of the car LOD1 (CarLod.MIRROR_LAYER_BIT): every camera except the mirror leaves it out
+##   bit 4 (layer 5)  small props, dressing and parked cars (MIRROR_SKIP_BIT), instead of bit 0: left out of the mirror
 ##   bit 19 (layer 20) car fill: every car mesh also has it; only the car fill light sees it, so the fill
 ##                     lights cars and nothing else (no road, no buildings).
 const ROAD_LAYER_BIT: int = 1 << 1
 const CAR_FILL_LAYER: int = 19
+const MIRROR_SKIP_BIT: int = 1 << 4
+const CAR_LIGHT_MASK: int = (1 << CAR_FILL_LAYER) | CarLod.MIRROR_LAYER_BIT  ## fill and rim lights: car meshes and their mirror copy
+## Prop MultiMesh nodes ("<prop file>_<chunk>_<mesh>") whose file name holds one of these stay out of the mirror.
+const MIRROR_SKIP_PROPS: PackedStringArray = ["bench", "litter_bin", "planter", "newspaper", "bollard", "cone"]
+const MIRROR_SKIP_ROOTS: PackedStringArray = ["Dressing", "ParkedCars"]
 const ASPHALT_MATERIAL_NAME: String = "M_Asphalt"
 const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
 const FILL_LIGHT_NAME: String = "CarFillLight"
@@ -82,6 +92,7 @@ var _default_nitro_curvature: float = 0.0
 var _reflection: PlanarReflection = null  ## wet road mirror; null unless High, or when the track has no wet asphalt
 var _road_mats: Array[ShaderMaterial] = []
 var _nitro_forced: bool = false
+var _results_up: bool = false  ## results overlay showing: mirror off, HUD hidden
 
 
 func _ready() -> void:
@@ -102,6 +113,10 @@ func _config_from_router() -> RaceConfig:
 
 
 func _process(delta: float) -> void:
+	# Whatever camera is current (chase, replay, a capture camera) must not draw the mirror-only car copies.
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam != null and (cam.cull_mask & CarLod.MIRROR_LAYER_BIT) != 0:
+		cam.cull_mask &= ~CarLod.MIRROR_LAYER_BIT
 	if race == null:
 		return
 	# Speed lines follow the player only (never an opponent).
@@ -206,6 +221,8 @@ func _build_race() -> void:
 	_last_s = -1.0
 	wrong_way = false
 	_nitro_forced = false
+	_results_up = false
+	hud.visible = true
 	_reflection = null
 	_road_mats.clear()
 	_world = Node3D.new()
@@ -214,6 +231,7 @@ func _build_race() -> void:
 	track = _load_track()
 	_world.add_child(track)
 	_collect_road()
+	_tag_mirror_skipped()
 	_ensure_environment()
 	_spawn_cars()
 	race = RaceManager.new()
@@ -282,7 +300,7 @@ func _spawn_cars() -> void:
 	var opponents: int = clampi(config_used.opponent_count, 0, MAX_OPPONENTS)
 	for i: int in opponents:
 		var car: ArcadeCar = CarFactory.create(config_used.car_scene, spec, config_used.opponent_paint(i))
-		_add_car(car)
+		_add_car(car, true)
 		_names.append(_opponent_name(i))
 	player = CarFactory.create(config_used.car_scene, spec, _player_paint())
 	_add_car(player)
@@ -290,14 +308,32 @@ func _spawn_cars() -> void:
 	dev_car_used = bool(player.get_meta("dev_car", false))
 
 
-func _add_car(car: ArcadeCar) -> void:
+func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	_world.add_child(car)
 	cars.append(car)
+	var lod: CarLod = _car_lod(car)
+	if lod != null:
+		if rival:
+			lod.lod1_start_m = config_used.rival_lod1_start_m
+			lod.set_forced(lod.force_lod)  # rewrites the visibility ranges with the new switch distance
+		lod.build_mirror_lod()
 	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
-		mi.layers = mi.layers | (1 << CAR_FILL_LAYER)
+		# Not the mirror-only copy: bit 19 would put it in the main camera's view. The fill lights see its own layer instead.
+		if mi.layers & CarLod.MIRROR_LAYER_BIT == 0:
+			mi.layers = mi.layers | (1 << CAR_FILL_LAYER)
 	if ResourceLoader.exists(FX_CAR_SCENE):
 		car.add_child((load(FX_CAR_SCENE) as PackedScene).instantiate())
+
+
+func _car_lod(car: ArcadeCar) -> CarLod:
+	var visual: Node = car.get_node_or_null(CarFactory.VISUAL_NAME)
+	if visual == null:
+		return null
+	for c: Node in visual.get_children():
+		if c is CarLod:
+			return c as CarLod
+	return null
 
 
 func _opponent_name(index: int) -> String:
@@ -343,6 +379,7 @@ func _make_camera() -> void:
 	_world.add_child(camera)
 	camera.set_target(player)
 	camera.set_mode(ChaseCamera.Mode.ORBIT)
+	camera.cull_mask &= ~CarLod.MIRROR_LAYER_BIT
 	camera.make_current()
 	# Cars are dark silhouettes at night without this. Cool, low, no shadow; it sees only the car layer.
 	var fill := OmniLight3D.new()
@@ -350,7 +387,7 @@ func _make_camera() -> void:
 	fill.light_color = config_used.car_fill_color
 	fill.light_energy = config_used.car_fill_energy
 	fill.omni_range = config_used.car_fill_range_m
-	fill.light_cull_mask = 1 << CAR_FILL_LAYER
+	fill.light_cull_mask = CAR_LIGHT_MASK
 	fill.shadow_enabled = false
 	camera.add_child(fill)
 	# Directional, camera-relative: shines from beyond the car toward the lens and down, on the car layer only.
@@ -358,11 +395,30 @@ func _make_camera() -> void:
 	rim.name = RIM_LIGHT_NAME
 	rim.light_color = config_used.car_rim_color
 	rim.light_energy = config_used.car_rim_energy
-	rim.light_cull_mask = 1 << CAR_FILL_LAYER
+	rim.light_cull_mask = CAR_LIGHT_MASK
 	rim.shadow_enabled = false
 	var el: float = deg_to_rad(config_used.car_rim_elevation_deg)
 	rim.basis = Basis.looking_at(Vector3(0.0, -sin(el), cos(el)), Vector3.UP)
 	camera.add_child(rim)
+
+
+## Small street furniture, dressing and parked cars move from the default layer to the mirror-skip layer (the real cameras see both).
+## Signs, lamps, buildings and cars stay in the mirror: the neon streaks on the wet road are the look.
+func _tag_mirror_skipped() -> void:
+	for n: Node in track.find_children("*", "GeometryInstance3D", true, false):
+		var gi: GeometryInstance3D = n as GeometryInstance3D
+		var skip: bool = false
+		for part: String in MIRROR_SKIP_PROPS:
+			if gi.name.contains(part):
+				skip = true
+				break
+		if not skip:
+			var root: Node = gi.get_parent()
+			while root != null and root != track and not skip:
+				skip = MIRROR_SKIP_ROOTS.has(String(root.name))
+				root = root.get_parent()
+		if skip:
+			gi.layers = (gi.layers & ~1) | MIRROR_SKIP_BIT  # a mirror camera skipping this bit must find no other it includes
 
 
 ## Wet road meshes (M_Asphalt on wet_asphalt.gdshader) go on the road layer, which the mirror skips.
@@ -404,8 +460,9 @@ func _apply_reflection() -> void:
 		for m: ShaderMaterial in _road_mats:
 			_reflection.add_target_material(m)
 	_reflection.resolution_fraction = config_used.reflection_fraction_high
+	_reflection.max_distance_m = config_used.reflection_max_distance_m
 	_reflection.every_second_frame = true
-	_reflection.set_enabled(true)
+	_reflection.set_enabled(not _results_up)
 
 
 func _release_reflection() -> void:
@@ -496,6 +553,7 @@ func start_replay() -> void:
 	replay.name = "Replay"
 	_world.add_child(replay)
 	replay.setup(recorder, cars, track, player)
+	_set_results_up(false)  # the replay shows the wet road
 	replay.exited.connect(end_replay)
 
 
@@ -505,10 +563,10 @@ func end_replay() -> void:
 	replay.queue_free()
 	replay = null
 	camera.make_current()
-	hud.visible = true
 	if _touch != null:
 		_touch.visible = true
 	results_screen.visible = true
+	_set_results_up(true)
 
 
 func _on_race_started() -> void:
@@ -534,6 +592,15 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 	results_screen.set_replay_enabled(recorder != null and recorder.has_data())
 	results_screen.show_results(results, rewards)
 	results_screen.visible = true
+	_set_results_up(true)
+
+
+## Results up: no mirror pass and no race HUD behind the panel. The replay and a retry bring both back.
+func _set_results_up(on: bool) -> void:
+	_results_up = on
+	hud.visible = not on and replay == null
+	if _reflection != null:
+		_reflection.set_enabled(not on)
 
 
 func _on_wrong_way(is_wrong: bool) -> void:

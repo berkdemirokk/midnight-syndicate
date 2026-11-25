@@ -8,26 +8,26 @@
   "name": "results",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 646,
-    "draw_calls_min": 388,
+    "draw_calls": 342,
+    "draw_calls_min": 340,
     "driver": "vulkan",
-    "fps": 526.593,
-    "frame_ms_avg": 1.899,
-    "frame_ms_p95": 2.457,
-    "frame_ms_p99": 2.555,
+    "fps": 527.097,
+    "frame_ms_avg": 1.897,
+    "frame_ms_p95": 2.427,
+    "frame_ms_p99": 3.211,
     "frames": 60,
-    "objects": 1188,
+    "objects": 594,
     "os": "Windows",
-    "primitives": 447458,
+    "primitives": 246059,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 562.93,
+    "video_mem_mb": 562.029,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_city/results.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_5367fe4f-123-3/evidence/screens/race_city/results.png",
   "preset": "high",
   "scenario": "race_city"
 }

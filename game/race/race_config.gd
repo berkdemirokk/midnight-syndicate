@@ -20,6 +20,8 @@ extends Resource
 @export_range(0.8, 1.0) var autopilot_skill: float = 0.97
 @export var event_id: String = "dev_circuit"  ## key for GameState.record_result
 @export_range(0.1, 1.0, 0.01) var reflection_fraction_high: float = 0.4  ## wet road mirror size, High preset
+@export_range(20.0, 400.0, 1.0) var reflection_max_distance_m: float = 100.0 ## mirror far clip, High preset
+@export_range(5.0, 60.0, 0.5) var rival_lod1_start_m: float = 18.0 ## rival cars drop from LOD0 to LOD1 here (the player keeps CarLod's default)
 @export_range(0.1, 1.0, 0.01) var reflection_fraction_medium: float = 0.2  ## unused: Medium has no mirror since 2026-11-24 (draw-call budget); kept for a future Medium+ preset
 @export_range(0.0, 4.0, 0.01) var car_fill_energy: float = 1.6 ## fill light on the car layer only, see RaceScene.CAR_FILL_LAYER
 @export var car_fill_color: Color = Color(0.82, 0.9, 1.0)

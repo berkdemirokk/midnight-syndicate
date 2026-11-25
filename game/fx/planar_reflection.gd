@@ -11,15 +11,18 @@ extends Node
 @export var every_second_frame: bool = false
 ## The mirror camera's far plane is min(main far, this): distant buildings do not reach a wet road reflection.
 @export_range(10.0, 1000.0, 1.0) var max_distance_m: float = 150.0
-## Layer bits left out of the mirror view: the road (bit 1, layer 2) and rain particles (bit 9, layer 10).
+## Layer bits left out of the mirror view: the road (bit 1), the car LOD0 detail meshes (bit 2, the mirror
+## sees the mirror-only LOD1 copy on bit 3 instead), small props, dressing and parked cars (bit 4) and rain
+## particles (bit 9) and the car fill bit (19: LOD0 and the other car meshes keep bit 0 or 3 for the mirror). See the layer table at the top of race_scene.gd.
 ## Bit 0 (default layer of every VisualInstance3D) must stay in, or the mirror shows nothing.
-@export var excluded_layers: int = (1 << 1) | (1 << 9)
+@export var excluded_layers: int = (1 << 1) | (1 << 2) | (1 << 4) | (1 << 9) | (1 << 19)
 
 var _vp: SubViewport
 var _cam: Camera3D
 var _materials: Array[ShaderMaterial] = []
 var _enabled: bool = false
 var _frame: int = 0
+var _env_made: bool = false
 
 
 func _ready() -> void:
@@ -72,6 +75,7 @@ func _process(_delta: float) -> void:
 	var target := Vector2i(maxi(16, int(size.x)), maxi(16, int(size.y)))
 	if _vp.size != target:
 		_vp.size = target
+	_make_far_environment()
 	_cam.fov = main.fov
 	_cam.keep_aspect = main.keep_aspect
 	_cam.near = main.near
@@ -94,3 +98,18 @@ func _process(_delta: float) -> void:
 		_vp.render_target_update_mode = SubViewport.UPDATE_ONCE if (_frame % 2 == 0) else SubViewport.UPDATE_DISABLED
 	else:
 		_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+
+
+## Beyond the far clip the mirror camera would show the night sky (a bright violet band on the far road). The mirror
+## camera gets a copy of the world environment whose background is the fog colour, which the far city fades to anyway.
+func _make_far_environment() -> void:
+	if _env_made:
+		return
+	var world: World3D = get_viewport().world_3d
+	if world == null or world.environment == null:
+		return
+	_env_made = true
+	var env: Environment = world.environment.duplicate() as Environment
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = env.fog_light_color if env.fog_enabled else world.environment.background_color
+	_cam.environment = env

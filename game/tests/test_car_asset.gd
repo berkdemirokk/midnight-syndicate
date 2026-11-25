@@ -272,3 +272,28 @@ func test_factory_paint_survives_entering_the_tree() -> void:
 	if m != null:
 		check(m.albedo_color.is_equal_approx(PAINT_TEST), "factory paint lost: %s" % m.albedo_color)
 	await cleanup([car])
+
+
+func test_mirror_lod_stands_in_for_lod0() -> void:
+	var car: CarLod = _spawn()
+	await frames(2)
+	car.build_mirror_lod()
+	car.build_mirror_lod()  # second call is a no-op
+	var copy: Node3D = car.get_mirror_lod()
+	check(copy != null and car.find_children(CarLod.MIRROR_LOD_NAME, "", true, false).size() == 1, "exactly one mirror LOD expected")
+	if copy != null:
+		var lod1_meshes: Array[MeshInstance3D] = _mesh_nodes(car.get_node("LOD1"))
+		var copy_meshes: Array[MeshInstance3D] = _mesh_nodes(copy)
+		check(copy_meshes.size() == lod1_meshes.size() and copy_meshes.size() > 0, "mirror LOD mesh count differs from LOD1")
+		for i: int in mini(copy_meshes.size(), lod1_meshes.size()):
+			check(copy_meshes[i].mesh == lod1_meshes[i].mesh, "mirror LOD must share the LOD1 mesh resource")
+			check(copy_meshes[i].layers == CarLod.MIRROR_LAYER_BIT, "mirror LOD mesh is not on the mirror-only layer")
+			check(is_equal_approx(copy_meshes[i].visibility_range_end, car.lod1_start_m), "mirror LOD range end is not LOD0's")
+	for mi: MeshInstance3D in _mesh_nodes(car.get_node("LOD0")):
+		check(mi.layers == CarLod.DETAIL_LAYER_BIT, "LOD0 mesh %s is not on the detail layer alone" % mi.name)
+	for mi: MeshInstance3D in _mesh_nodes(car.get_node("LOD1")):
+		check((mi.layers & CarLod.DETAIL_LAYER_BIT) == 0, "LOD1 mesh %s is on the detail layer" % mi.name)
+	car.set_forced(2)
+	check(not car.get_mirror_lod().visible, "mirror LOD still visible with LOD2 forced")
+	await cleanup(_spawned)
+	_spawned.clear()

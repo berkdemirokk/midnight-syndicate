@@ -248,15 +248,16 @@ func test_car_fill_light_reaches_only_the_car_layer() -> void:
 	var scene: RaceScene = _make_scene(_cfg_city(true, 2))
 	await frames(3)
 	var fill_bit: int = 1 << RaceScene.CAR_FILL_LAYER
+	var light_mask: int = fill_bit | CarLod.MIRROR_LAYER_BIT  ## cars and their mirror-only copy
 	var fill: OmniLight3D = scene.camera.get_node_or_null(RaceScene.FILL_LIGHT_NAME) as OmniLight3D
 	check(fill != null, "car fill light missing under the chase camera")
 	if fill != null:
-		check(fill.light_cull_mask == fill_bit, "fill light mask %d, expected only the car layer %d" % [fill.light_cull_mask, fill_bit])
+		check(fill.light_cull_mask == light_mask, "fill light mask %d, expected only the car layers %d" % [fill.light_cull_mask, light_mask])
 		check(not fill.shadow_enabled, "fill light must not cast shadows")
 	var rim: DirectionalLight3D = scene.camera.get_node_or_null(RaceScene.RIM_LIGHT_NAME) as DirectionalLight3D
 	check(rim != null, "car rim light missing under the chase camera")
 	if rim != null:
-		check(rim.light_cull_mask == fill_bit, "rim light mask %d, expected only the car layer %d" % [rim.light_cull_mask, fill_bit])
+		check(rim.light_cull_mask == light_mask, "rim light mask %d, expected only the car layers %d" % [rim.light_cull_mask, light_mask])
 		check(not rim.shadow_enabled, "rim light must not cast shadows")
 		var dir: Vector3 = -rim.basis.z  # travel direction in camera space: toward the lens (+z) and down
 		check(dir.z > 0.5 and dir.y < 0.0, "rim light must shine from beyond the car toward the camera, got %s" % dir)
@@ -264,9 +265,12 @@ func test_car_fill_light_reaches_only_the_car_layer() -> void:
 	for car: ArcadeCar in scene.cars:
 		for n: Node in car.find_children("*", "MeshInstance3D", true, false):
 			var mi: MeshInstance3D = n as MeshInstance3D
+			if (mi.layers & CarLod.MIRROR_LAYER_BIT) != 0:
+				check(mi.layers == CarLod.MIRROR_LAYER_BIT, "mirror-only car mesh %s is visible to the main camera (layers %d)" % [mi.name, mi.layers])
+				continue
 			car_meshes += 1
 			check((mi.layers & fill_bit) != 0, "car mesh %s is not on the car fill layer" % mi.name)
-			check((mi.layers & 1) != 0, "car mesh %s lost its default layer" % mi.name)
+			check((mi.layers & scene.camera.cull_mask) != 0, "car mesh %s is invisible to the chase camera" % mi.name)
 	check(car_meshes > 0, "no car meshes found")
 	var track_meshes: int = 0
 	for n: Node in scene.track.find_children("*", "MeshInstance3D", true, false):
@@ -329,3 +333,40 @@ func _worst_wheel_error(car: ArcadeCar) -> float:
 		var got: Vector3 = cv.wheel_car_origin(i)
 		worst = maxf(worst, want.distance_to(got))
 	return worst
+
+
+func test_mirror_layers_results_and_retry() -> void:
+	var prev_preset: String = Settings.get_preset_id()
+	var prev_autosave: bool = Settings.autosave
+	Settings.autosave = false
+	Settings.set_preset("high")
+	var cfg: RaceConfig = _cfg_city(true, 2)
+	cfg.car_scene = "res://vehicles/noctra_sable/noctra_sable.tscn"
+	var scene: RaceScene = _make_scene(cfg)
+	await frames(3)
+	check(scene.camera.cull_mask & CarLod.MIRROR_LAYER_BIT == 0, "chase camera draws the mirror-only car LOD")
+	for car: ArcadeCar in scene.cars:
+		var lod: CarLod = scene._car_lod(car)
+		check(lod != null and lod.get_mirror_lod() != null, "car has no mirror LOD")
+		if lod != null and car != scene.player:
+			check(is_equal_approx(lod.lod1_start_m, cfg.rival_lod1_start_m), "rival LOD1 distance not applied")
+	var skipped: int = 0
+	for n: Node in scene.track.find_children("*", "GeometryInstance3D", true, false):
+		if ((n as GeometryInstance3D).layers & RaceScene.MIRROR_SKIP_BIT) != 0:
+			skipped += 1
+			check(((n as GeometryInstance3D).layers & scene.camera.cull_mask) != 0, "mirror-skipped %s is invisible to the chase camera" % n.name)
+	check(skipped > 0, "no prop or dressing node was tagged out of the mirror")
+	var refl: PlanarReflection = scene.find_child(RaceScene.REFLECTION_NAME, true, false) as PlanarReflection
+	check(refl != null and refl.is_enabled() and absf(refl.max_distance_m - cfg.reflection_max_distance_m) < 0.01, "mirror missing, off or wrong distance")
+	check(scene.hud.visible, "HUD hidden during the race")
+	scene._set_results_up(true)
+	check(not scene.hud.visible, "HUD still visible behind the results")
+	check(refl != null and not refl.is_enabled(), "mirror still on behind the results")
+	scene.retry()
+	await frames(3)
+	refl = scene.find_child(RaceScene.REFLECTION_NAME, true, false) as PlanarReflection
+	check(scene.hud.visible, "HUD not restored by retry")
+	check(refl != null and refl.is_enabled(), "mirror not restored by retry")
+	Settings.set_preset(prev_preset)
+	Settings.autosave = prev_autosave
+	await cleanup([scene])

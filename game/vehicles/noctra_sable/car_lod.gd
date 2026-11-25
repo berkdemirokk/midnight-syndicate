@@ -8,6 +8,9 @@ const LOD_NAMES: PackedStringArray = ["LOD0", "LOD1", "LOD2"]
 const COL_NAME: String = "col_body"
 const WHEEL_NAMES: PackedStringArray = ["wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR"]
 const BRAKE_NAMES: PackedStringArray = ["brake_FL", "brake_FR", "brake_RL", "brake_RR"]
+const DETAIL_LAYER_BIT: int = 1 << 2  ## LOD0 meshes (instead of the default bit 0): the planar mirror leaves them out
+const MIRROR_LAYER_BIT: int = 1 << 3  ## mirror-only LOD1 copy: the main, chase and replay cameras leave it out
+const MIRROR_LOD_NAME: String = "LOD1Mirror"
 
 @export var lod1_start_m: float = 22.0  ## LOD0 ends and LOD1 starts here (metres from the camera)
 @export var lod2_start_m: float = 70.0  ## LOD1 ends and LOD2 starts here
@@ -18,6 +21,7 @@ const BRAKE_NAMES: PackedStringArray = ["brake_FL", "brake_FR", "brake_RL", "bra
 
 var _lods: Array[Node3D] = []
 var _active: int = 0
+var _mirror_lod: Node3D = null
 
 
 func _ready() -> void:
@@ -34,6 +38,27 @@ func _process(_delta: float) -> void:
 	_active = lod_for_distance(_distance_to_camera())
 	if _forced_index() >= 0:
 		_active = _forced_index()
+
+
+## Race only: a copy of LOD1 (shared meshes and materials) on the mirror-only layer, visible over LOD0's distance
+## range, and LOD0 on the detail layer. With the mirror camera excluding the detail layer and every other camera
+## excluding the mirror layer, the road reflection of a near car costs LOD1 instead of LOD0. Call after _ready().
+func build_mirror_lod() -> void:
+	if _mirror_lod != null or _lods.size() < 2 or _lods[0] == null or _lods[1] == null:
+		return
+	_mirror_lod = _lods[1].duplicate() as Node3D
+	_mirror_lod.name = MIRROR_LOD_NAME
+	add_child(_mirror_lod)
+	for n: Node in _mirror_lod.find_children("*", "MeshInstance3D", true, false):
+		(n as MeshInstance3D).layers = MIRROR_LAYER_BIT
+	for n: Node in _lods[0].find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		mi.layers = (mi.layers & ~1) | DETAIL_LAYER_BIT  # no default bit: a camera that skips the detail layer must not see it
+	_apply_ranges()
+
+
+func get_mirror_lod() -> Node3D:
+	return _mirror_lod
 
 
 ## Forces LOD index (-1 back to distance switching) after the car is in the tree.
@@ -99,6 +124,22 @@ func _apply_ranges() -> void:
 			mi.visibility_range_end = end
 			mi.visibility_range_end_margin = margin
 			mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	_apply_mirror_ranges(f)
+
+
+## The mirror-only copy stands in for LOD0: same range (or, with LOD0 forced, no range); hidden when another LOD is forced.
+func _apply_mirror_ranges(forced: int) -> void:
+	if _mirror_lod == null:
+		return
+	_mirror_lod.visible = forced <= 0
+	var end: float = 0.0 if forced == 0 else lod1_start_m
+	var margin: float = 0.0 if forced == 0 else fade_margin_m
+	for n: Node in _mirror_lod.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		mi.visibility_range_begin = 0.0
+		mi.visibility_range_end = end
+		mi.visibility_range_end_margin = margin
+		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 
 
 func _distance_to_camera() -> float:

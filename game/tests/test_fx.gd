@@ -84,6 +84,10 @@ func test_planar_reflection_keeps_default_layer_and_feeds_material() -> void:
 	if mirror_cam != null:
 		check(mirror_cam.cull_mask & 1 != 0, "mirror camera culls the default layer")
 		check(mirror_cam.cull_mask & (1 << 1) == 0, "mirror camera does not exclude the road layer")
+		check(mirror_cam.cull_mask & CarLod.DETAIL_LAYER_BIT == 0, "mirror camera draws the car LOD0 detail layer")
+		check(mirror_cam.cull_mask & CarLod.MIRROR_LAYER_BIT != 0, "mirror camera misses the mirror-only car LOD")
+		check(mirror_cam.cull_mask & RaceScene.MIRROR_SKIP_BIT == 0, "mirror camera draws the mirror-skip layer")
+		check(mirror_cam.cull_mask & (1 << RaceScene.CAR_FILL_LAYER) == 0, "mirror camera draws the car fill layer")
 	if mirror_cam != null:
 		check(mirror_cam.physics_interpolation_mode == Node.PHYSICS_INTERPOLATION_MODE_OFF, "mirror camera interpolates physics (warning source)")
 	pr.set_enabled(true)
