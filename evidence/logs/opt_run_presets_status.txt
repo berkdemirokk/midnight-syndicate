@@ -1,4 +1,0 @@
-low exit=0
-medium exit=0
-high exit=0
-done

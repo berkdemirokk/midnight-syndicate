@@ -1,3 +1,0 @@
-race_city exit=1
-suite exit=1
-done
