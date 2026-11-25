@@ -20,6 +20,10 @@ const NITRO_FULL_KMH: float = 250.0
 @export var smoke_launch_throttle: float = 0.5
 const SMOKE_SLIP_RANGE_DEG: float = 12.0
 const SMOKE_MIN_SPEED_MS: float = 3.0  ## below this the slip angle is noise
+const DRIFT_SMOKE_MIN: float = 0.8  ## a drift always smokes hard, whatever its slip angle
+const WIND_FRACTION: float = 0.3  ## puffs trail at 30% of the car's velocity
+## Rear slip angle above which a wheel leaves a skid mark (drifts always do).
+@export var skid_slip_deg: float = 15.0
 @export var spark_min_impulse: float = 0.0  ## the car only emits hit above spec.hit_min_impulse already
 @export var headlights_on: bool = true
 ## Full-screen overlay: off by default. race_scene gives every car a CarFx, so only the player's
@@ -32,8 +36,11 @@ var smoke: TireSmoke
 var sparks: Sparks
 var headlights: Headlights
 var speed_lines: SpeedLines
+var skid: SkidMarks
 var _wheel_world: PackedVector3Array = PackedVector3Array([Vector3.ZERO, Vector3.ZERO])
 var _slip_out: PackedFloat32Array = PackedFloat32Array([0.0, 0.0])
+var _marks: PackedByteArray = PackedByteArray([0, 0])
+var _exclude: Array[RID] = []  ## the car itself, for the road probe
 
 
 func _ready() -> void:
@@ -49,12 +56,16 @@ func _ready() -> void:
 		break
 	flames = NitroFlame.new()
 	smoke = TireSmoke.new()
+	smoke.puff_layer = body_layers
+	skid = SkidMarks.new()
 	sparks = Sparks.new()
 	headlights = Headlights.new()
 	add_child(flames)
 	flames.set_mesh_layers(body_layers)
 	add_child(smoke)
+	add_child(skid)
 	add_child(sparks)
+	_exclude.append(car.get_rid())
 	add_child(headlights)
 	if speed_lines_on:
 		speed_lines = SpeedLines.new()
@@ -77,7 +88,7 @@ func _exit_tree() -> void:
 			car.hit.disconnect(_on_hit)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if car == null or not is_instance_valid(car):
 		return
 	var xf: Transform3D = car.global_transform
@@ -86,19 +97,24 @@ func _process(_delta: float) -> void:
 	# Tyre smoke: rear wheels only, and only while sliding. wheel_slip is grip usage (high under
 	# plain acceleration), so it is not used here.
 	var lateral: float = car.linear_velocity.dot(xf.basis.x)
+	var wind: Vector3 = -car.linear_velocity * WIND_FRACTION
+	wind.y = 0.0
 	for i: int in 2:
 		var idx: int = RL + i
 		var amount: float = 0.0
+		_marks[i] = 0
 		if car.wheel_contact[idx]:
 			var slip_deg: float = _rear_slip_deg(i, xf)
 			amount = clampf((slip_deg - smoke_slip_deg) / SMOKE_SLIP_RANGE_DEG, 0.0, 1.0)
 			if car.is_drifting:
-				amount = maxf(amount, 0.5)
+				amount = maxf(amount, DRIFT_SMOKE_MIN)
 			elif car.speed_kmh < smoke_launch_max_kmh and car.input.throttle >= smoke_launch_throttle:
 				amount = maxf(amount, 0.6)  ## standing-start wheelspin
+			_marks[i] = 1 if (car.is_drifting or slip_deg >= skid_slip_deg) else 0
 		_slip_out[i] = amount
 		_wheel_world[i] = xf * rear_wheel_offsets[i]
-	smoke.update_puffs(_wheel_world, _slip_out, xf.basis.x * signf(lateral), absf(lateral))
+	smoke.update_puffs(_wheel_world, _slip_out, xf.basis.x * signf(lateral), absf(lateral), wind)
+	skid.update(_wheel_world, _marks, delta, car.get_world_3d().direct_space_state, _exclude)
 	# Speed lines: none below 160 km/h, full at 180 km/h, stronger with nitro (SpeedLines.intensity_for).
 	if speed_lines != null:
 		speed_lines.set_speed(car.speed_kmh, car.nitro_active)
