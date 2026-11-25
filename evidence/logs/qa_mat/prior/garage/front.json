@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "front",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 209,
+    "driver": "vulkan",
+    "fps": 805.683,
+    "frame_ms_avg": 1.241,
+    "frame_ms_p95": 1.512,
+    "frame_ms_p99": 1.777,
+    "frames": 60,
+    "objects": 351,
+    "os": "Windows",
+    "primitives": 106359,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 433.983,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/garage/front.png",
+  "preset": "high",
+  "scenario": "garage"
+}

@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.963,
+  "luma_max": 0.982,
   "luma_min": 0.0,
   "name": "side",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 49,
-    "draw_calls_min": 49,
+    "draw_calls": 20,
+    "draw_calls_min": 20,
     "driver": "vulkan",
-    "fps": 735.411,
-    "frame_ms_avg": 1.36,
-    "frame_ms_p95": 2.428,
-    "frame_ms_p99": 3.737,
+    "fps": 730.736,
+    "frame_ms_avg": 1.368,
+    "frame_ms_p95": 3.189,
+    "frame_ms_p99": 3.511,
     "frames": 60,
-    "objects": 49,
+    "objects": 20,
     "os": "Windows",
-    "primitives": 99468,
+    "primitives": 96141,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 474.48,
+    "video_mem_mb": 402.844,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_35745c05-68f-4/evidence/screens/car_studio/side.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_35745c05-68f-6/evidence/screens/car_studio/side.png",
   "preset": "high",
   "scenario": "car_studio"
 }

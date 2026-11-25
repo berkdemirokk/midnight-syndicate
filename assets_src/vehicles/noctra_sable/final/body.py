@@ -559,6 +559,15 @@ def _well_flags(co, polys):
     return flags
 
 
+def _is_back_wall(c, n):
+    """Face is the inboard end wall of an arch (left by the boolean), facing outboard."""
+    for axle_y, r, x0 in ARCH:
+        if (abs(abs(c[0]) - x0) < 0.004 and abs(n[0]) > 0.9 and n[0] * c[0] > 0
+                and math.hypot(c[1] - axle_y, c[2] - r) < r + 0.06):
+            return True
+    return False
+
+
 def cut_arches(body):
     """Exact boolean wheel arches, bevelled rim, wells and floor moved to 'underbody'.
     Returns the underbody object."""
@@ -591,7 +600,7 @@ def cut_arches(body):
                 lf = e.link_faces
                 if len(lf) == 2 and any(x.index not in wells for x in lf):
                     edges.add(e)
-        bmesh.ops.bevel(bm, geom=list(edges), offset=0.007, segments=2, affect="EDGES",
+        bmesh.ops.bevel(bm, geom=list(edges), offset=0.012, segments=3, affect="EDGES",
                         clamp_overlap=True)
         bm.to_mesh(body.data)
         bm.free()
@@ -602,16 +611,22 @@ def cut_arches(body):
     polys = _polys(body.data)
     flags = _well_flags(co, polys)
     under = []
+    under_mat = []  # slot 0 M_Trim floor, slot 1 M_Interior liner (well cylinder and end wall)
     keep = []
     for pv, f in zip(polys, flags):
         c = co[list(pv)].mean(axis=0)
         n = _centre_normal(co, pv)
         s = c[1] + Y_OFFSET
         is_floor = c[2] < z_bot(min(max(s, 0.0), 4.45)) + 0.006 and n[2] < -0.5
-        (under if (f or is_floor) else keep).append(pv)
+        back = _is_back_wall(c, n)
+        if f or back or is_floor:
+            under.append(pv)
+            under_mat.append(1 if (f or back) else 0)
+        else:
+            keep.append(pv)
     me_body, _ = _new_mesh("body", co, keep)
     _set_body_mesh(body, me_body)
-    me_u, _ = _new_mesh("underbody", co, under)
+    me_u, _ = _new_mesh("underbody", co, under, under_mat)
     ub = bpy.data.objects.new("underbody", me_u)
     bpy.context.collection.objects.link(ub)
     print("ARCH underbody faces %d (wells + floor)" % len(under))
@@ -754,7 +769,14 @@ def split_glazing(body):
             vn[v] += n
     lens = np.linalg.norm(vn, axis=1, keepdims=True)
     vn = vn / np.maximum(lens, 1e-12)
-    co_g = co - 0.002 * vn
+    # Pane border vertices stay exactly on the body surface (shared seam positions: no crack, no
+    # coplanar overlap, the body faces under the glass are removed); the interior sinks 2 mm.
+    depth = np.full(len(co), 0.002)
+    for ek, cnt in ecount.items():
+        if cnt == 1:
+            depth[ek[0]] = 0.0
+            depth[ek[1]] = 0.0
+    co_g = co - depth[:, None] * vn
     me_g, _ = _new_mesh("glass", co_g, [polys[pi] for pi in gl], mats)
     keep = [polys[i] for i in range(len(polys)) if i not in gset]
     # P1: greenhouse above the beltline is one dark canopy (slot 2 pillars, slot 3 roof panel)
@@ -1045,7 +1067,7 @@ def main():
     mats = make_materials()
     _assign(body, [mats["M_Paint"]])
     _assign(glass, [mats["M_Glass"], mats["M_Trim"]])
-    _assign(underbody, [mats["M_Trim"]])
+    _assign(underbody, [mats["M_Trim"], mats["M_Interior"]])
     lights, plate = add_rear_details(mats)
     interior = add_interior(mats)
     add_wheels(mats)

@@ -134,6 +134,7 @@ def build_body_and_details(mats_extra):
     B.cut_panel_lines(body)
     B.checks(body)
     underbody = B.cut_arches(body)
+    B._cut_dlo_edges(body)  # straight window edges: without this the glass edge is a stair-step
     glass = B.split_glazing(body)
     mats = B.make_materials()
     mats.update(D.extra_materials())
@@ -165,7 +166,8 @@ def build_body_and_details(mats_extra):
     glass.data.materials.append(mats["M_Glass"])
     glass.data.materials.append(mats["M_Trim"])
     underbody.data.materials.clear()
-    underbody.data.materials.append(mats["M_Trim"])
+    underbody.data.materials.append(mats["M_Trim"])      # floor
+    underbody.data.materials.append(mats["M_Interior"])  # arch liners: dark grey plastic
     trim = D.build_trim(mats, body)
     lights_f = D.build_lights_front(mats)
     lights_r, plate = D.build_lights_rear_plate(mats)

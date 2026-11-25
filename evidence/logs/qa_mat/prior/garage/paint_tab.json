@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "paint_tab",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 190,
+    "driver": "vulkan",
+    "fps": 586.791,
+    "frame_ms_avg": 1.704,
+    "frame_ms_p95": 2.838,
+    "frame_ms_p99": 5.343,
+    "frames": 60,
+    "objects": 332,
+    "os": "Windows",
+    "primitives": 105527,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 433.983,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/garage/paint_tab.png",
+  "preset": "high",
+  "scenario": "garage"
+}
