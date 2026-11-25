@@ -33,7 +33,7 @@ const KEY_COLOUR: Color = Color(1.0, 0.96, 0.92)  ## near white: a cool key turn
 const FILL_ENERGY: float = 3.0  ## shadowless fill from the viewer's side, so the front and flanks catch light
 const FILL_COLOUR: Color = Color(1.0, 0.98, 0.95)
 const PROBE_INTENSITY: float = 3.5 ## metal reflects the probe only; the room is dark, so the probe needs gain
-const GLOW_INTENSITY: float = 0.8
+const GLOW_INTENSITY: float = 0.6
 const GLOW_BLOOM: float = 0.06
 const BG_COLOUR: Color = Color(0.012, 0.014, 0.022)
 const AMBIENT_COLOUR: Color = Color(0.05, 0.06, 0.09)
@@ -52,6 +52,7 @@ var _camera: Camera3D
 var _probe: ReflectionProbe
 var _key: DirectionalLight3D
 var _env: Environment
+var _set: ShowroomSet
 var _hud: GarageHud
 var _turn_angle: float = 0.0
 var _turn_speed: float = 0.0
@@ -80,6 +81,7 @@ func _ready() -> void:
 	_build_lights()
 	_build_probe()
 	_build_environment()
+	_build_showroom()
 	_camera.fov = CAMERA_FOV
 	_camera.current = true
 	_build_hud()
@@ -307,11 +309,20 @@ func _build_environment() -> void:
 	Settings.apply_to_environment(_env)
 	_env.glow_intensity = GLOW_INTENSITY
 	_env.glow_bloom = GLOW_BLOOM
-	_env.glow_hdr_threshold = 1.0
+	_env.glow_hdr_threshold = 1.5  ## only genuinely hot pixels bloom: the lamp strips no longer clip into flat sprites
+	_env.glow_hdr_scale = 1.5
 	var we := WorldEnvironment.new()
 	we.name = "Environment"
 	we.environment = _env
 	add_child(we)
+
+
+## Mirror floor and turntable plate, soft contact shadow, warm rim and cool fill lights, neon accents.
+func _build_showroom() -> void:
+	_set = ShowroomSet.new()
+	_set.name = "Showroom"
+	add_child(_set)
+	_set.attach_garage(_room, _pivot, CAR_Y, Settings.get_preset_id() != "low")
 
 
 func _build_hud() -> void:

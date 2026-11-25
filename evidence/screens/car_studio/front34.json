@@ -3,30 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 1.0,
+  "luma_max": 0.965,
   "luma_min": 0.0,
   "name": "front34",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 21,
+    "draw_calls": 59,
+    "draw_calls_min": 59,
     "driver": "vulkan",
-    "fps": 1074.172,
-    "frame_ms_avg": 0.931,
-    "frame_ms_p95": 0.972,
-    "frame_ms_p99": 1.069,
+    "fps": 749.972,
+    "frame_ms_avg": 1.333,
+    "frame_ms_p95": 2.243,
+    "frame_ms_p99": 3.068,
     "frames": 60,
-    "objects": 21,
+    "objects": 59,
     "os": "Windows",
-    "primitives": 95197,
+    "primitives": 107400,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 402.732,
+    "video_mem_mb": 474.48,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/car_studio/front34.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_35745c05-68f-4/evidence/screens/car_studio/front34.png",
   "preset": "high",
   "scenario": "car_studio"
 }

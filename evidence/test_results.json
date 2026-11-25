@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-25T13:54:00"
+    "time": "2026-11-25T14:10:23"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -130,11 +130,6 @@
       "metrics": {},
       "pass": true
     },
-    "test_mirror_lod_stands_in_for_lod0": {
-      "failures": [],
-      "metrics": {},
-      "pass": true
-    },
     "test_paint_changes_only_own_car": {
       "failures": [],
       "metrics": {},
@@ -220,7 +215,7 @@
         "light_budget_log": 5,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1619.8,
+        "load_time_ms": 1252.4,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -286,7 +281,7 @@
         "8car_orderA_nitro100_race_time_s": 84.12,
         "8car_orderA_nitro100_stuck_events": 3,
         "8car_orderA_nitro100_stuck_worst_car": 1,
-        "8car_orderA_nitro100_wall_s": 6.0
+        "8car_orderA_nitro100_wall_s": 6.1
       },
       "pass": true
     },
@@ -298,7 +293,7 @@
         "8car_orderA_nitro140_race_time_s": 77.63,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 5.9
+        "8car_orderA_nitro140_wall_s": 5.2
       },
       "pass": true
     },
@@ -310,7 +305,7 @@
         "8car_orderA_nitro0_race_time_s": 82.28,
         "8car_orderA_nitro0_stuck_events": 1,
         "8car_orderA_nitro0_stuck_worst_car": 1,
-        "8car_orderA_nitro0_wall_s": 7.3
+        "8car_orderA_nitro0_wall_s": 6.2
       },
       "pass": true
     },
@@ -322,7 +317,7 @@
         "8car_orderB_nitro100_race_time_s": 81.78,
         "8car_orderB_nitro100_stuck_events": 4,
         "8car_orderB_nitro100_stuck_worst_car": 2,
-        "8car_orderB_nitro100_wall_s": 6.4
+        "8car_orderB_nitro100_wall_s": 5.7
       },
       "pass": true
     },
@@ -334,7 +329,7 @@
         "8car_orderB_nitro140_race_time_s": 79.7,
         "8car_orderB_nitro140_stuck_events": 3,
         "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 6.0
+        "8car_orderB_nitro140_wall_s": 5.7
       },
       "pass": true
     },
@@ -346,7 +341,7 @@
         "8car_orderB_nitro0_race_time_s": 80.62,
         "8car_orderB_nitro0_stuck_events": 6,
         "8car_orderB_nitro0_stuck_worst_car": 1,
-        "8car_orderB_nitro0_wall_s": 6.0
+        "8car_orderB_nitro0_wall_s": 5.8
       },
       "pass": true
     },
@@ -369,7 +364,7 @@
         "6car_nitro100_race_time_s": 76.28,
         "6car_nitro100_stuck_events": 1,
         "6car_nitro100_stuck_worst_car": 1,
-        "6car_nitro100_wall_s": 6.0
+        "6car_nitro100_wall_s": 3.5
       },
       "pass": true
     },
@@ -381,7 +376,7 @@
         "6car_nitro140_race_time_s": 73.77,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.7
+        "6car_nitro140_wall_s": 3.2
       },
       "pass": true
     },
@@ -393,7 +388,7 @@
         "6car_nitro0_race_time_s": 73.83,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 10.1
+        "6car_nitro0_wall_s": 3.6
       },
       "pass": true
     }
@@ -753,6 +748,18 @@
       "pass": true
     }
   },
+  "test_garage_look.gd": {
+    "test_garage_dressed": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_studio_stage": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
   "test_race_scene.gd": {
     "test_autopilot_completes_one_lap_with_results": {
       "failures": [],
@@ -773,11 +780,6 @@
       "pass": true
     },
     "test_finished_race_pays_table_rewards": {
-      "failures": [],
-      "metrics": {},
-      "pass": true
-    },
-    "test_mirror_layers_results_and_retry": {
       "failures": [],
       "metrics": {},
       "pass": true
@@ -959,7 +961,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@12488"
+        "main_menu_focus": "@Button@11749"
       },
       "pass": true
     },
