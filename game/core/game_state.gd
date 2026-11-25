@@ -165,15 +165,17 @@ func upgrade(car_id: String, part: String) -> bool:
 # --- career -----------------------------------------------------------------
 
 ## Records a finished event and returns the rewards: {cash, rep, stars, new_best}.
+## Rewards scale with the event's multiplier and stars follow its rule (EventCatalog); other ids use position only.
 ## Returns an empty dictionary for a bad event id, time or position.
 func record_result(event_id: String, time_s: float, position: int) -> Dictionary:
 	# Written as a positive test so NaN (every comparison false) and infinity are rejected too.
 	if event_id.is_empty() or not (time_s > 0.0 and time_s <= MAX_TIME_S) or position < 1:
 		push_warning("GameState: bad result for event '%s'" % event_id)
 		return {}
-	var cash_reward: int = _reward(REWARD_CASH, position)
-	var rep_reward: int = _reward(REWARD_REP, position)
-	var stars: int = _reward(REWARD_STARS, position)
+	var mult: float = EventCatalog.reward_multiplier(event_id)
+	var cash_reward: int = roundi(_reward(REWARD_CASH, position) * mult)
+	var rep_reward: int = roundi(_reward(REWARD_REP, position) * mult)
+	var stars: int = EventCatalog.stars_for(event_id, time_s, position)
 	var career: Dictionary = profile["career"]
 	var rec: Dictionary = career.get(event_id, {"best_time": 0.0, "best_position": 0, "stars": 0})
 	var new_best: bool = float(rec["best_time"]) <= 0.0 or time_s < float(rec["best_time"])
@@ -192,6 +194,30 @@ func record_result(event_id: String, time_s: float, position: int) -> Dictionary
 	stats["cash_earned"] = int(stats["cash_earned"]) + cash_reward
 	_commit()
 	return {"cash": cash_reward, "rep": rep_reward, "stars": stars, "new_best": new_best}
+
+
+## Best stars earned on an event (0 = never finished).
+func event_stars(event_id: String) -> int:
+	return int((profile["career"] as Dictionary).get(event_id, {}).get("stars", 0))
+
+
+## Best finishing time on an event in seconds, 0.0 when never finished.
+func best_time(event_id: String) -> float:
+	return float((profile["career"] as Dictionary).get(event_id, {}).get("best_time", 0.0))
+
+
+## The first event is always open; each later one opens with 1 star or more on the one before.
+## Ids outside the ladder (the dev circuit) are always open.
+func is_event_unlocked(event_id: String) -> bool:
+	var prev: String = EventCatalog.previous_id(event_id)
+	return prev.is_empty() or event_stars(prev) >= 1
+
+
+func total_stars() -> int:
+	var n: int = 0
+	for i: int in EventCatalog.count():
+		n += event_stars(EventCatalog.id_at(i))
+	return n
 
 
 # --- persistence ------------------------------------------------------------

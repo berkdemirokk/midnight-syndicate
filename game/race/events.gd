@@ -1,0 +1,103 @@
+class_name EventCatalog
+extends RefCounted
+## Career ladder on City 01 "Neon Wharf Loop": six events, each an id, text keys, a RaceConfig recipe, a reward
+## multiplier and the star rule. Position events: 1st = 3 stars, podium = 2, finish = 1 (GameState.REWARD_STARS).
+## Time events carry star_times = [3 stars, 2 stars, 1 star] in seconds; slower than the last earns 0 stars.
+## Unknown ids (the dev circuit, tests) fall back to position stars and a 1.0 reward multiplier.
+## Tuning note: the autopilot laps the loop in about 64 s (TEST_RESULTS), so the star times below are a first guess for
+## a good human lap and want a play test.
+
+const PODIUM_PLACES: int = 3
+
+const EVENTS: Array[Dictionary] = [
+	{"id": "wharf_sprint", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0},
+	{"id": "neon_strip_circuit", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3},
+	{"id": "midnight_time_trial", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
+	{"id": "overpass_duel", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
+	{"id": "harbour_run", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0},
+	{"id": "syndicate_final", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 3.0},
+]
+
+
+static func count() -> int:
+	return EVENTS.size()
+
+
+static func index_of(id: String) -> int:
+	for i: int in EVENTS.size():
+		if EVENTS[i]["id"] == id:
+			return i
+	return -1
+
+
+## The event dictionary for id, or an empty one.
+static func find(id: String) -> Dictionary:
+	var i: int = index_of(id)
+	return EVENTS[i] if i >= 0 else {}
+
+
+static func id_at(index: int) -> String:
+	return str(EVENTS[index]["id"])
+
+
+## Id of the event before id, or "" for the first event and unknown ids.
+static func previous_id(id: String) -> String:
+	var i: int = index_of(id)
+	return id_at(i - 1) if i > 0 else ""
+
+
+## Id of the event after id, or "" for the last event and unknown ids.
+static func next_id(id: String) -> String:
+	var i: int = index_of(id)
+	return id_at(i + 1) if i >= 0 and i < EVENTS.size() - 1 else ""
+
+
+## Text key prefix, e.g. "event.wharf_sprint" (+ ".name").
+static func name_key(id: String) -> String:
+	return "event.%s.name" % id
+
+
+static func is_time_event(id: String) -> bool:
+	return find(id).has("star_times")
+
+
+static func reward_multiplier(id: String) -> float:
+	return float(find(id).get("mult", 1.0))
+
+
+## Stars for a finish. Time events use the star_times table, every other event the finishing position.
+static func stars_for(id: String, time_s: float, position: int) -> int:
+	var ev: Dictionary = find(id)
+	if ev.has("star_times"):
+		var stars: int = 0
+		for limit: float in ev["star_times"]:
+			if time_s <= limit:
+				stars += 1
+		return stars
+	if position < 1:
+		return 0
+	if ev.is_empty():
+		return GameState.REWARD_STARS[position - 1] if position <= GameState.REWARD_STARS.size() else 0
+	return 3 if position == 1 else (2 if position <= PODIUM_PLACES else 1)  # ladder events: finishing always earns a star
+
+
+## Cash and rep a win pays on this event (the preview shown on the select screen).
+static func win_rewards(id: String) -> Dictionary:
+	var m: float = reward_multiplier(id)
+	return {"cash": roundi(GameState.REWARD_CASH[0] * m), "rep": roundi(GameState.REWARD_REP[0] * m)}
+
+
+## RaceConfig for id; null for an unknown id. race_scene reads it from Router params["config"].
+static func config_for(id: String) -> RaceConfig:
+	var ev: Dictionary = find(id)
+	if ev.is_empty():
+		return null
+	var c := RaceConfig.new()
+	c.event_id = id
+	c.laps = int(ev["laps"])
+	var skills := PackedFloat32Array()
+	for s: float in ev["skills"]:
+		skills.append(s)
+	c.opponent_skills = skills
+	c.opponent_count = skills.size()
+	return c

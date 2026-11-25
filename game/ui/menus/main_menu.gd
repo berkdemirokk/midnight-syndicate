@@ -3,7 +3,7 @@ extends Control
 ## Title screen: logotype, RACE / GARAGE / SETTINGS / QUIT, animated neon backdrop and an optional 3D backdrop.
 ## Keyboard, gamepad and touch all reach the buttons through Godot's focus navigation.
 
-const RACE_SCENE: String = "res://race/race_scene.tscn"
+const EVENT_SELECT_SCENE: String = "res://ui/menus/event_select.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const NEON_SHADER: String = "res://ui/menus/neon_bg.gdshader"
@@ -182,7 +182,7 @@ func _on_settings_changed(section: String) -> void:
 
 
 func _on_race() -> void:
-	_open(RACE_SCENE)
+	_open(EVENT_SELECT_SCENE)
 
 
 func _on_garage() -> void:

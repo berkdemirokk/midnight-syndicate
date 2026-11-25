@@ -10,7 +10,11 @@ signal retry_pressed
 signal garage_pressed
 signal menu_pressed
 signal replay_pressed
+signal next_pressed
 
+const RACE_SCENE: String = "res://race/race_scene.tscn"
+const STAR_R: float = 20.0
+const STAR_STEP: float = 52.0
 const COUNT_UP_S: float = 1.2
 const TITLE_PX: int = 40
 const SUB_PX: int = 18
@@ -56,7 +60,12 @@ var _rep_caption: HudText
 var _cash_val: HudText
 var _rep_val: HudText
 var _all_texts: Array[HudText] = []  ## sorted by pixel size, the order HudText.paint needs
+var _next_btn: Button
 var _retry_btn: Button
+var _show_stars: bool = false  ## the finished event is on the career ladder: paint its stars under the rewards
+var _stars: int = 0
+var _next_id: String = ""  ## the unlocked event the NEXT EVENT button starts, "" = button hidden
+var _event_id_override: String = ""
 var _garage_btn: Button
 var _menu_btn: Button
 var _replay_btn: Button
@@ -113,6 +122,9 @@ func _ready() -> void:
 	footer.alignment = BoxContainer.ALIGNMENT_END
 	footer.add_theme_constant_override("separation", int(BUTTON_GAP_PX))
 	col.add_child(footer)
+	_next_btn = _button(footer, "results.next", _on_next)
+	_next_btn.custom_minimum_size.x = MSTheme.BUTTON_MIN_W * 0.75  # the label is wider than the other footer buttons
+	_next_btn.visible = false
 	_retry_btn = _button(footer, "results.retry", func() -> void: retry_pressed.emit())
 	_replay_btn = _button(footer, "results.replay", func() -> void: replay_pressed.emit())
 	_garage_btn = _button(footer, "results.garage", func() -> void: garage_pressed.emit())
@@ -177,6 +189,34 @@ func _on_settings_changed(section: String) -> void:
 		_refresh_text()
 
 
+## Event the results belong to, for the NEXT EVENT button. Normally read from the RaceScene above this screen;
+## set it by hand where there is none (capture, tests). Call before show_results.
+func set_event_id(id: String) -> void:
+	_event_id_override = id
+
+
+func get_next_event_id() -> String:
+	return _next_id
+
+
+func _current_event_id() -> String:
+	if not _event_id_override.is_empty():
+		return _event_id_override
+	var n: Node = get_parent()
+	while n != null:
+		if n is RaceScene:
+			return (n as RaceScene).config_used.event_id
+		n = n.get_parent()
+	return ""
+
+
+## Starts the next event of the ladder (already unlocked by the result that was just recorded).
+func _on_next() -> void:
+	next_pressed.emit()
+	if not _next_id.is_empty():
+		Router.goto(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(_next_id)})
+
+
 ## Shows the REPLAY button only when the race has a recording to play.
 func set_replay_enabled(on: bool) -> void:
 	_replay_btn.visible = on
@@ -213,7 +253,13 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 		_row_player.append(bool(r.get("is_player", false)))
 	_sort_texts()
 	_count_rewards(int(rewards.get("cash", 0)), int(rewards.get("rep", 0)))
-	_retry_btn.grab_focus()
+	var event_id: String = _current_event_id()
+	_show_stars = EventCatalog.index_of(event_id) >= 0
+	_stars = int(rewards.get("stars", 0))
+	var next: String = EventCatalog.next_id(event_id)
+	_next_id = next if not next.is_empty() and GameState.is_event_unlocked(next) else ""
+	_next_btn.visible = not _next_id.is_empty()
+	(_next_btn if _next_btn.visible else _retry_btn).grab_focus()
 	_board.queue_redraw()
 
 
@@ -337,6 +383,7 @@ func _paint_board(c: Control) -> void:
 	_rep_caption.pos = Vector2(rx, ry)
 	ry += _rep_caption.height() + sep
 	_rep_val.pos = Vector2(rx, ry)
+	var star_y: float = ry + _rep_val.height() + sep + STAR_R
 
 	# Pass 1: rects.
 	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.96))
@@ -344,6 +391,8 @@ func _paint_board(c: Control) -> void:
 	_fill_skewed(c, rewards, MSTheme.PANEL_BG)
 	if has_highlight:
 		_fill_skewed(c, highlight, MSTheme.tint(MSTheme.CYAN, 0.14))
+	if _show_stars:
+		EventSelect.draw_stars(c, rx + STAR_STEP * 2.0 + STAR_R * 2.0, star_y, STAR_R, _stars, STAR_STEP)
 	for b: Button in _buttons:
 		if b.visible:
 			_fill_skewed(c, _local_rect(b), _button_fill(b))
