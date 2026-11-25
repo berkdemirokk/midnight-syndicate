@@ -266,3 +266,19 @@ above (Low 253 / Medium 255 / High 458 at race pace, budgets 250 / 350 / 500) su
 Verdict: **not passed** (lead average 6.5; materials, environment, camera and performance below 7;
 performance cannot pass without a phone measurement). Next: environment density (waterfront,
 rooftops), glass and car-paint read in the race, camera replay/cinematics, a phone build.
+
+### Round 7 — 2026-11-25 (environment and camera)
+
+| criterion | art lens | tech lens | lead |
+|---|---|---|---|
+| vehicle geometry | 6 | 6 | 7 |
+| materials | 6 | 6 | 6 |
+| lighting | 6 | 6 | 7 |
+| environment detail | 5.5 | 5.5 | 6 — rooftop plant now reads as equipment; waterfront and downtown street level still sparse; parked cars built and tested but switched off (LOD2 hero car reads as a faceted white blob up close; needs a dedicated low-poly traffic car) |
+| camera | 6 | 6 | 7 — race replay with trackside TV cameras, bumper inserts and a finish orbit (`race_replay/replay_finish_orbit.png`), grid intro ending in the chase pose without a pop (0.023 m step) |
+| UI | 6 | 6 | 7 |
+| effects | 6 | 6 | 7 |
+| performance | 6 | 5 | 6 (desktop only) — parked-car regression found and fixed: one city-wide MultiMesh pushed Neon Strip primitives 213k -> 1.44M; per-cell culling restored 213k. Race pack High: 476 draw calls / 396k primitives (budgets 500 / 450k) |
+
+Verdict: **not passed** (lead average 6.6). Below 7: materials, environment, performance (needs a
+phone). Next: a dedicated low-poly traffic/parked car, waterfront and downtown dressing, glass/paint read.

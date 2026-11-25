@@ -74,3 +74,7 @@ extends Resource
 ## Multiplies the concrete wall albedo (M_Concrete_Wall, the textured facade walls). Dark brick walls read as
 ## black slabs from 60 m; raised so the walls read as buildings under the night ambient.
 @export_range(1.0, 4.0) var wall_albedo_scale: float = 2.2
+## Rooftop plant (AC units, tanks, vents) is M_Metal_Painted and M_Metal_Corrugated at metallic 0.5: it reflects the
+## dark night sky and reads as black hexagons from 60 m. Lighter and less metallic so it takes the ambient and moon light.
+@export_range(1.0, 4.0) var rooftop_metal_albedo_scale: float = 2.5
+@export_range(0.0, 1.0) var rooftop_metal_metallic: float = 0.15

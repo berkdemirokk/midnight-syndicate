@@ -1,0 +1,32 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.995,
+  "luma_min": 0.0,
+  "name": "replay_finish_orbit",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 263,
+    "driver": "vulkan",
+    "fps": 435.18,
+    "frame_ms_avg": 2.298,
+    "frame_ms_p95": 3.171,
+    "frame_ms_p99": 3.233,
+    "frames": 60,
+    "objects": 284,
+    "os": "Windows",
+    "primitives": 929852,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 800.713,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/evidence/screens/race_replay/replay_finish_orbit.png",
+  "preset": "high",
+  "scenario": "race_replay"
+}

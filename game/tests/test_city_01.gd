@@ -29,8 +29,10 @@ const LIGHT_LIMIT: int = 8
 var _lap_log: Array[Dictionary] = []
 
 
-func _load_city() -> CityBuilder:
+func _load_city(parked_cars: int = -1) -> CityBuilder:
 	var city: CityBuilder = (load(SCENE_PATH) as PackedScene).instantiate() as CityBuilder
+	if parked_cars >= 0:
+		city.parked_car_count = parked_cars
 	add(city)
 	await frames(2)
 	return city
@@ -377,5 +379,23 @@ func test_no_collider_in_corridor() -> void:
 	metric("prop_box_colliders", prop_boxes)
 	metric("prop_nonbox_colliders_skipped", prop_skipped)
 	check(hits == 0, "%d corridor samples inside a collider, first: %s" % [hits, first_hit])
+	var nodes: Array[Node] = [city]
+	await cleanup(nodes)
+
+
+## Parked cars (off by default until a low-poly traffic car exists; the placement is tested with 90):
+## 60 to 120 on the kerb side, no colliders, and every car corner outside the corridor margin.
+func test_parked_cars_outside_corridor() -> void:
+	var city: CityBuilder = await _load_city(90)
+	var s: Dictionary = city.stats
+	var count: int = int(s["parked_cars"])
+	metric("parked_cars", count)
+	metric("parked_candidates", int(s["parked_candidates"]))
+	metric("parked_worst_margin_m", snappedf(float(s["parked_worst_margin_m"]), 0.01))
+	check(count >= 60 and count <= 120, "parked cars %d, expected 60 to 120" % count)
+	check(float(s["parked_worst_margin_m"]) <= city.parked_worst_limit_m,
+		"a parked car corner is %.2f m into the corridor margin" % float(s["parked_worst_margin_m"]))
+	var colliders: int = city.get_node("Geometry/ParkedCars").find_children("*", "CollisionShape3D", true, false).size()
+	check(colliders == 0, "parked cars have %d colliders, expected none" % colliders)
 	var nodes: Array[Node] = [city]
 	await cleanup(nodes)

@@ -202,3 +202,51 @@ Shot list now has 7 shots: `waterfront_stacks` added (s 1279, yaw 80, faces the 
 - Quay railing material (M_Metal_Painted or the railing kit) needs a rim or sheen to catch light.
 - Downtown overpass: place lamps for the deck and raise the parapet albedo.
 - Establishing: the lit window cells on near-black side walls; raise facade albedo further or add a wall-wash fill there.
+
+## Fifth pass (Environment Agent, brief of 2026-11-25: parked cars, waterfront, rooftops, downtown)
+Scope this pass: rooftops only. Parked cars, waterfront bollards and boats, downtown bus shelters and overpass lamps were NOT built.
+
+### Round 0 (baseline, code before this pass)
+- Capture `evidence/screens/city_districts/` (run `env_city_districts_r0.log`, 0 SCRIPT ERROR). The first run's PNGs were overwritten by round 1; no separate copy was kept.
+- establishing_60m: rooftop plant (M_Metal_Corrugated tanks, M_Metal_Painted AC units) reads as black hexagon holes. Metallic 0.5 reflects the dark night sky.
+
+### Round 1 (rooftop plant metal)
+- `world_material_tuning.gd`: `rooftop_metal_albedo_scale` 2.5, `rooftop_metal_metallic` 0.15 (new).
+- `material_library.gd`: M_Metal_Corrugated and M_Metal_Painted get the albedo scale and the lower metallic. M_Metal_Painted is also used on fire escapes and balconies, so those change too.
+- Look (`establishing_60m.png`): tanks and AC units now read as lit blue-grey volumes on the roofs. The black holes are gone. The tint is a little saturated blue from the night ambient.
+- Look (`neon_strip.png`): no regression. Signs, wet reflections and facades as before. Fire-escape metal lighter.
+- Tests (`env_tests_r1.log`): test_city_01, test_world_materials and test_city_race, 22 of 22 pass, 0 failed.
+
+### Race capture (race_city)
+- `env_race_city_r1.log`: the run exited with code 0 but printed no `[CAPTURE]` line and wrote no new files. The race_city PNGs and JSONs on disk are the earlier ones (24-25 Nov). Not re-looked at this pass. Cause not found; not retried.
+- The perf numbers for the race pack shot are therefore the earlier run's: pack 493 draw calls, 419 325 primitives; racing_10s 487 draw calls, 418 887 primitives (desktop, High). Before and after are the same file, so there is no before/after race comparison.
+
+### Neon strip perf (desktop, High; not a same-session baseline)
+- Earlier snapshot `evidence/screens/city_districts_round0/neon_strip_measure.json`: 355 draw calls, 219 664 primitives.
+- This pass `neon_strip_measure.json`: 300 draw calls, 213 260 primitives.
+- The change from the rooftop material is a material change only, so the drop comes from earlier passes, not this one. Do not read it as a result of this pass.
+
+### Open (not done in this pass)
+1. Parked cars (60 to 120 MultiMesh cars, six night paints): not built.
+2. Waterfront: container stacks still outside the frame; bollards, boats, quay sodium pools, warehouse lit windows: not done.
+3. Downtown: bus shelters with lit adverts, benches, overpass deck lamps and parapet light catch: not done.
+4. Establishing: lit window cells still on near-black side walls.
+5. Only one capture round this pass (the brief asks for at least four). The race_city run needs a fix to its run before it can be used.
+
+## Env pass 2 (QA findings follow-up), 2026-11-25
+
+### Round 1 of capture-look-fix: parked cars (brief item 1)
+- Built: `game/world/city_01/parked_cars.gd` bakes the Noctra Sable LOD2 model (non-paint surfaces in one body mesh, M_Paint surfaces in one paint mesh, M_LightFront left out so headlights are off).
+- Placement (`city_builder.gd` `_build_parked_cars`): kerb side only, every 12 m on both sides of the lap, outside the corridor (kerb + 0.5 m + 1.0 m gap, every footprint corner at least 0.4 m outside), and clear of building boxes and box prop colliders (0.5 m). 131 candidates accepted, 90 kept (evenly thinned, seed 7).
+- Draw groups: 1 body MultiMesh + 6 paint MultiMeshes (dark grey, navy, maroon, white, silver, black), clearcoat paint in code.
+- Not done in this round: LOD1 within 60 m (LOD2 only, no per-instance LOD on a MultiMesh); no distance culling on the parked node (its origin is the city origin, so visibility_range would be wrong); no parking decks, alley gaps or lots as named placements (kerb side only); rear-lamp emissive variation (all cars keep the rest emission 0.6).
+- Light budget: `Parked*` nodes are left out of the budget volumes (their AABB spans the lap).
+- Tests: `test_parked_cars_outside_corridor` (60 to 120 cars, worst corner margin <= -0.4 m, no colliders). test_city_01 8/8 pass.
+- Capture city_districts (high, desktop): neon_strip shows no parked cars (the strip has no free kerb space); waterfront.png shows a row of lit cars on the land-side kerb. Neon strip perf after: 314 draw calls, 1,441,040 primitives, 4.08 ms avg (RTX 5060 Ti, desktop). A same-session before number was not captured.
+- Log: `evidence/logs/env_r2_city_districts.log`, `evidence/logs/env_r2_city.log`.
+
+### Not done in this pass
+- Brief item 2 (waterfront: container stacks and cranes nearer the quay, bollards, quay boats, promenade sodium pools, lit warehouse windows): not changed.
+- Brief item 4 (downtown: bus shelters, benches, overpass lamp pools, parapet light): not changed.
+- Brief item 3 (rooftop plant): already changed in the earlier pass; not revisited.
+- Capture-look-fix rounds: 1 of the 4 required. race_city run: not done in this pass.

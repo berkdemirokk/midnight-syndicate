@@ -69,6 +69,8 @@ const KICK_CLOCK_IDLE_S: float = 1000.0  ## starts the nitro kick clock far past
 @export var orbit_height_m: float = 2.5
 @export var orbit_rate_rad_s: float = 0.15
 @export var orbit_look_height_m: float = 0.8
+@export_group("Grid intro")
+@export var intro_fov_deg: float = 52.0  ## wide lens at the start of the intro, eased to the live lens
 
 var trauma: float = 0.0  ## 0..1, shake strength is trauma squared
 var nitro_kick: float = 0.0  ## 0..1, eased nitro state that drives the FOV kick
@@ -92,6 +94,10 @@ var _kick_clock: float = KICK_CLOCK_IDLE_S
 var _orbit_angle: float = 0.0
 var _ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()  ## reused every physics tick
 var _exclude: Array[RID] = []  ## the car's RID, kept out of the wall ray
+var _intro_t: float = -1.0  ## seconds into the grid intro, -1 when none runs
+var _intro_s: float = 0.0
+var _intro_from_pos: Vector3 = Vector3.ZERO
+var _intro_from_look: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
@@ -156,6 +162,9 @@ func _process(delta: float) -> void:
 	_orbit_angle += orbit_rate_rad_s * delta
 	_update_lens(delta)
 	_update_feel(delta)
+	if _intro_t >= 0.0:
+		_process_intro(xf, delta)
+		return
 	var pos: Vector3
 	match mode:
 		Mode.HOOD:
@@ -215,6 +224,38 @@ func toggle_mode() -> void:
 ## Results-screen camera: a slow orbit around the car (ORBIT). Call when the race finishes.
 func start_finish_orbit() -> void:
 	set_mode(Mode.ORBIT)
+
+
+## Grid intro: moves from from_pos (looking at from_look) to the live chase pose over duration_s, then hands
+## over to CHASE. Both ends use the same smoothed chase state as CHASE mode, so the hand-over does not pop.
+func start_grid_intro(from_pos: Vector3, from_look: Vector3, duration_s: float) -> void:
+	_intro_from_pos = from_pos
+	_intro_from_look = from_look
+	_intro_s = maxf(duration_s, MIN_DIV)
+	mode = Mode.CHASE
+	snap()  ## resets the smoothed direction and offset, so the chase state the intro hands over to is current
+	_intro_t = 0.0
+
+
+func intro_active() -> bool:
+	return _intro_t >= 0.0
+
+
+## 0..1 through the grid intro, 1 when none runs.
+func intro_progress() -> float:
+	return clampf(_intro_t / _intro_s, 0.0, 1.0) if _intro_t >= 0.0 else 1.0
+
+
+func _process_intro(xf: Transform3D, delta: float) -> void:
+	_intro_t = minf(_intro_t + delta, _intro_s)
+	_step_chase(xf, delta)
+	var w: float = smoothstep(0.0, 1.0, _intro_t / _intro_s)
+	global_position = _intro_from_pos.lerp(_chase_pos(xf, _dir, _off), w)
+	look_at(_intro_from_look.lerp(_look_point(xf), w), Vector3.UP)
+	_apply_roll()
+	fov = lerpf(intro_fov_deg, _fov_now, w)
+	if _intro_t >= _intro_s:
+		_intro_t = -1.0
 
 
 func add_trauma(amount: float) -> void:

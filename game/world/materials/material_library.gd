@@ -263,6 +263,10 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		return m
 	if mat_name == "M_Roof_Bitumen":
 		m.albedo_color = _scale_rgb(m.albedo_color, tuning.roof_albedo_scale)
+	if mat_name == "M_Metal_Corrugated" or mat_name == "M_Metal_Painted":
+		# Rooftop plant and fire-escape metal: lighter and less mirror-like so it reads under night light.
+		m.albedo_color = _scale_rgb(m.albedo_color, tuning.rooftop_metal_albedo_scale)
+		m.metallic = tuning.rooftop_metal_metallic
 	if mat_name == "M_Curb":
 		m.albedo_color = _scale_rgb(m.albedo_color, tuning.kerb_albedo_scale)
 	if mat_name == "M_Paving":

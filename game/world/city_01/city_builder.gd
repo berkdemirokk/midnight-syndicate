@@ -67,6 +67,15 @@ const PUSH_MAX_M: float = 40.0
 @export var wall_wash_spacing_m: float = 35.0
 ## Waterfront floodlights: one cool-white spot above each container stack and gantry crane base, aimed at it.
 ## No distance fade: the stacks sit 100 to 300 m from the promenade, past the normal fade.
+@export var parked_car_count: int = 0  ## off until a dedicated low-poly traffic car exists: the LOD2 hero car read as a faceted white blob up close (2026-11-25)
+@export var parked_spacing_m: float = 12.0  ## candidate spacing along the lap, both kerbs
+@export var parked_clear_m: float = 1.0  ## free gap between the corridor edge and a parked car's near side
+@export var parked_box_clear_m: float = 0.5  ## free space kept around building and prop boxes
+@export var parked_seed: int = 7
+@export var parked_cell_m: float = 80.0  ## parked cars are grouped in cells this size and culled per cell
+@export var parked_visible_m: float = 110.0  ## a cell is hidden beyond this distance (cell centre)
+@export var parked_worst_limit_m: float = -0.4  ## every car corner must sit at least this far outside the corridor
+
 @export var floodlight_energy: float = 9.0  ## JSON-scale energy, x light_energy_scale
 @export var floodlight_color: String = "#FFF1D6"
 @export var floodlight_range_m: float = 30.0
@@ -89,7 +98,9 @@ var _bodies: Dictionary = {}  ## chunk index -> merged StaticBody3D of props wit
 var _c_pos: PackedVector2Array = PackedVector2Array()  ## centreline samples (x, z), 2 m apart
 var _c_right: PackedVector2Array = PackedVector2Array()  ## unit right vector per sample (x, z)
 var _c_half: PackedFloat32Array = PackedFloat32Array()  ## corridor half width per sample: kerb + margin
+var _c_y: PackedFloat32Array = PackedFloat32Array()  ## centreline height per sample
 var _c_spacing: float = 2.0
+var _solid: Array[Dictionary] = []  ## {inv, half}: world-to-box transform and half size of every building and box prop collider
 
 
 func _ready() -> void:
@@ -119,6 +130,7 @@ func _ready() -> void:
 	_load_corridor()
 	_build_buildings(inst, lap)
 	_build_props(inst, lap, n_chunks)
+	_build_parked_cars(lap)
 	_build_lights(d["lights"], inst)
 	_build_probes(d["reflection_probes"])
 	_build_environment()
@@ -250,9 +262,14 @@ func _build_buildings(inst: Array, lap: float) -> void:
 		if colliders.has(asset):
 			_add_occluder(root, colliders[asset])
 		first.add_child(root)
+		if colliders.has(asset):
+			_solid.append(_box_entry(_rel_xf(root, self) * Transform3D(Basis(), colliders[asset]["center"] as Vector3), colliders[asset]["size"] as Vector3))
 		stats["first_row"] = int(stats["first_row"]) + 1
 	for asset: String in lod2_xfs.keys():
 		var arr: Array = lod2_xfs[asset]
+		if colliders.has(asset):
+			for xf_v: Variant in arr:
+				_solid.append(_box_entry((xf_v as Transform3D) * Transform3D(Basis(), colliders[asset]["center"] as Vector3), colliders[asset]["size"] as Vector3))
 		var lod2: Dictionary = _find_mesh(_prototype(BUILDING_DIR + asset + ".glb", asset), "LOD2")
 		if lod2.is_empty():
 			push_warning("CityBuilder: no LOD2 in " + asset)
@@ -313,6 +330,7 @@ func _load_corridor() -> void:
 		var r: Vector3 = _vec(s["right"])
 		var lk: Vector3 = _vec(e["left_kerb"]) - p
 		var rk: Vector3 = _vec(e["right_kerb"]) - p
+		_c_y.append(p.y)
 		_c_pos.append(Vector2(p.x, p.z))
 		_c_right.append(Vector2(r.x, r.z).normalized())
 		_c_half.append(maxf(Vector2(lk.x, lk.z).length(), Vector2(rk.x, rk.z).length()) + CORRIDOR_MARGIN_M)
@@ -564,6 +582,183 @@ func _library_mesh(src: Mesh, owner_id: String) -> Mesh:
 	return m
 
 
+# --- parked cars ----------------------------------------------------------------------------
+
+func _parked_range(mmi: MultiMeshInstance3D) -> void:
+	mmi.visibility_range_end = parked_visible_m
+	mmi.visibility_range_end_margin = lod_fade_m
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## Parked cars on the kerb side outside the race corridor, kept clear of building and box prop colliders.
+## Candidates are every parked_spacing_m along the centreline on both sides; accepted ones are thinned evenly to
+## parked_car_count. Each colour is one MultiMesh (a paint override), plus one body MultiMesh for all cars.
+## Cars get no colliders, so the corridor test cannot see them: the placement itself keeps them out of the corridor.
+func _build_parked_cars(lap: float) -> void:
+	var car: Dictionary = ParkedCars.bake()
+	var aabb: AABB = car["aabb"]
+	var half_w: float = aabb.size.x * 0.5
+	var half_l: float = aabb.size.z * 0.5
+	var lift: float = -aabb.position.y  ## origin height that puts the lowest point of the car on the road
+	for b: Dictionary in _collect_prop_boxes():
+		_solid.append(b)
+	var step: int = maxi(1, roundi(parked_spacing_m / _c_spacing))
+	var found: Array[Dictionary] = []
+	var worst: float = -INF
+	var n: int = _c_pos.size()
+	for i: int in range(0, n, step):
+		var fwd3: Vector3 = Vector3(_c_pos[(i + 1) % n].x - _c_pos[(i - 1 + n) % n].x, 0.0,
+			_c_pos[(i + 1) % n].y - _c_pos[(i - 1 + n) % n].y).normalized()
+		var fwd: Vector2 = Vector2(fwd3.x, fwd3.z)
+		var right: Vector2 = _c_right[i]
+		for side: float in [-1.0, 1.0]:
+			var centre: Vector2 = _c_pos[i] + right * side * (_c_half[i] + parked_clear_m + half_w)
+			var pts: Array[Vector2] = _footprint_points(centre, fwd, right, half_l, half_w)
+			var margin: float = -INF
+			for p: Vector2 in pts:
+				margin = maxf(margin, _corridor_margin(p, i))
+			if margin > parked_worst_limit_m:
+				continue
+			if _hits_solid(pts, centre):
+				continue
+			worst = maxf(worst, margin)
+			var place: Transform3D = Transform3D(Basis.looking_at(Vector3(fwd.x, 0.0, fwd.y), Vector3.UP),
+				Vector3(centre.x, _c_y[i] + lift, centre.y))
+			found.append({"xf": place, "margin": margin})
+	var rng := RandomNumberGenerator.new()
+	rng.seed = parked_seed
+	var parked := Node3D.new()
+	parked.name = "ParkedCars"
+	_geo.add_child(parked)
+	var count: int = mini(parked_car_count, found.size())
+	var colours: Array[Color] = ParkedCars.paint_colours()
+	var names: PackedStringArray = ParkedCars.paint_names()
+	var per_colour: Array = []
+	for c: int in colours.size():
+		per_colour.append([])
+	var body_xfs: Array[Transform3D] = []
+	for k: int in count:
+		var pick: Dictionary = found[(k * found.size()) / count]
+		var place: Transform3D = pick["xf"]
+		# The model is authored nose +Z; the car's Visual turns it 180 degrees. Half the cars face the other way.
+		var model: Transform3D = place * Transform3D(Basis(Vector3.UP, PI), Vector3.ZERO)
+		if rng.randf() < 0.5:
+			model = place
+		body_xfs.append(model)
+		(per_colour[rng.randi_range(0, colours.size() - 1)] as Array).append(model)
+	# Cars are grouped into cells of parked_cell_m with the node at the cell centre, so each group can
+	# be culled by distance (one MultiMesh over the whole city was drawn everywhere: 90 cars x 6.8k
+	# triangles in every view, primitives 213k -> 1.44M in the Neon Strip).
+	var cells: Dictionary = {}  # Vector2i -> {"body": Array[Transform3D], "paint": Array (per colour)}
+	for k2: int in body_xfs.size():
+		var xf: Transform3D = body_xfs[k2]
+		var key := Vector2i(floori(xf.origin.x / parked_cell_m), floori(xf.origin.z / parked_cell_m))
+		if not cells.has(key):
+			var pc: Array = []
+			for c3: int in colours.size():
+				pc.append([])
+			cells[key] = {"body": [], "paint": pc}
+		(cells[key]["body"] as Array).append(xf)
+	for c4: int in colours.size():
+		for xf2: Transform3D in (per_colour[c4] as Array):
+			var key2 := Vector2i(floori(xf2.origin.x / parked_cell_m), floori(xf2.origin.z / parked_cell_m))
+			((cells[key2]["paint"] as Array)[c4] as Array).append(xf2)
+	var paint_mats: Array[StandardMaterial3D] = []
+	for c: int in colours.size():
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = colours[c]
+		mat.metallic = 0.7
+		mat.roughness = 0.3
+		mat.clearcoat_enabled = true
+		mat.clearcoat = 1.0
+		mat.clearcoat_roughness = 0.05
+		paint_mats.append(mat)
+	for key3: Vector2i in cells.keys():
+		var centre3 := Vector3((float(key3.x) + 0.5) * parked_cell_m, 0.0, (float(key3.y) + 0.5) * parked_cell_m)
+		var cell := Node3D.new()
+		cell.name = "ParkedCell_%d_%d" % [key3.x, key3.y]
+		cell.position = centre3
+		parked.add_child(cell)
+		var to_local := Transform3D(Basis.IDENTITY, -centre3)
+		var bx: Array[Transform3D] = []
+		for xf3: Transform3D in (cells[key3]["body"] as Array):
+			bx.append(to_local * xf3)
+		var body := MultiMeshInstance3D.new()
+		body.name = "Parked_body"
+		body.multimesh = _multimesh_of(car["body"], bx)
+		_parked_range(body)
+		cell.add_child(body)
+		for c5: int in colours.size():
+			var px: Array[Transform3D] = []
+			for xf4: Transform3D in ((cells[key3]["paint"] as Array)[c5] as Array):
+				px.append(to_local * xf4)
+			if px.is_empty():
+				continue
+			var mmi := MultiMeshInstance3D.new()
+			mmi.name = "Parked_paint_" + names[c5]
+			mmi.multimesh = _multimesh_of(car["paint"], px)
+			mmi.material_override = paint_mats[c5]
+			_parked_range(mmi)
+			cell.add_child(mmi)
+	stats["parked_cells"] = cells.size()
+	stats["parked_cars"] = count
+	stats["parked_candidates"] = found.size()
+	stats["parked_worst_margin_m"] = worst
+	stats["parked_colour_counts"] = per_colour.map(func(a: Array) -> int: return a.size())
+	print("CityBuilder: parked cars %d of %d candidates, worst corridor margin %.2f m" % [count, found.size(), worst])
+
+
+func _footprint_points(centre: Vector2, fwd: Vector2, right: Vector2, half_l: float, half_w: float) -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for a: float in [-1.0, 0.0, 1.0]:
+		for b: float in [-1.0, 0.0, 1.0]:
+			if a == 0.0 and b == 0.0:
+				continue
+			out.append(centre + fwd * (a * half_l) + right * (b * half_w))
+	return out
+
+
+## True when any footprint point, at car height, is inside a solid box grown by parked_box_clear_m.
+func _hits_solid(pts: Array[Vector2], centre: Vector2) -> bool:
+	for box: Dictionary in _solid:
+		var o: Vector3 = box["pos"]
+		if Vector2(o.x - centre.x, o.z - centre.y).length() > parked_box_clear_m + 30.0:
+			continue
+		var inv: Transform3D = box["inv"]
+		var half: Vector3 = (box["half"] as Vector3) + Vector3.ONE * parked_box_clear_m
+		for p: Vector2 in pts:
+			var l: Vector3 = inv * Vector3(p.x, 0.6, p.y)
+			if absf(l.x) <= half.x and absf(l.y) <= half.y and absf(l.z) <= half.z:
+				return true
+	return false
+
+
+## Box colliders of the props (building boxes are in _solid already), in this node's space.
+func _collect_prop_boxes() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for body: Variant in _bodies.values():
+		for cs: Node in (body as Node).get_children():
+			if cs is CollisionShape3D and (cs as CollisionShape3D).shape is BoxShape3D:
+				var size: Vector3 = ((cs as CollisionShape3D).shape as BoxShape3D).size
+				out.append(_box_entry(_rel_xf(cs, self), size))
+	return out
+
+
+func _box_entry(xf: Transform3D, size: Vector3) -> Dictionary:
+	return {"inv": xf.affine_inverse(), "half": size * 0.5, "pos": xf.origin}
+
+
+func _multimesh_of(mesh: Mesh, xfs: Array) -> MultiMesh:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = mesh
+	mm.instance_count = xfs.size()
+	for i: int in xfs.size():
+		mm.set_instance_transform(i, xfs[i])
+	return mm
+
+
 # --- lights, probes, environment ------------------------------------------------------------
 
 func _build_lights(raw: Array, inst: Array) -> void:
@@ -748,7 +943,7 @@ func _budget_volumes() -> Dictionary:
 	var names: PackedStringArray = PackedStringArray()
 	for n: Node in _all_nodes(_geo):
 		var nm: String = String(n.name)
-		if nm.begins_with("ground") or nm.begins_with("decals_") or nm.begins_with("markings_") or nm.begins_with("water_"):
+		if nm.begins_with("ground") or nm.begins_with("decals_") or nm.begins_with("markings_") or nm.begins_with("water_") or nm.begins_with("Parked"):
 			continue
 		if n is MeshInstance3D and (n as MeshInstance3D).mesh != null and nm not in ["LOD1", "LOD2"]:
 			aabbs.append((n as Node3D).global_transform * (n as MeshInstance3D).get_aabb())

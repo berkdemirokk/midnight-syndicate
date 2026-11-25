@@ -6,6 +6,7 @@ extends Control
 signal retry_pressed
 signal garage_pressed
 signal menu_pressed
+signal replay_pressed
 
 const COUNT_UP_S: float = 1.2
 const TITLE_PX: int = 40
@@ -34,6 +35,7 @@ var _rep_caption: Label
 var _retry_btn: Button
 var _garage_btn: Button
 var _menu_btn: Button
+var _replay_btn: Button
 var _count_tw: Tween = null
 var _text_nodes: Array = []  ## [node, i18n key]
 
@@ -97,6 +99,7 @@ func _ready() -> void:
 	footer.add_theme_constant_override("separation", int(BUTTON_GAP_PX))
 	col.add_child(footer)
 	_retry_btn = _button(footer, "results.retry", func() -> void: retry_pressed.emit())
+	_replay_btn = _button(footer, "results.replay", func() -> void: replay_pressed.emit())
 	_garage_btn = _button(footer, "results.garage", func() -> void: garage_pressed.emit())
 	_menu_btn = _button(footer, "results.menu", func() -> void: menu_pressed.emit())
 
@@ -124,6 +127,11 @@ func _refresh_text() -> void:
 func _on_settings_changed(section: String) -> void:
 	if section == Settings.SECTION_GENERAL:
 		_refresh_text()
+
+
+## Shows the REPLAY button only when the race has a recording to play.
+func set_replay_enabled(on: bool) -> void:
+	_replay_btn.visible = on
 
 
 ## results: one Dictionary per car, sorted by position. Keys: name, position, total_time, best_lap, is_player.

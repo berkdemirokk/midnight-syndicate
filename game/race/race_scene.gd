@@ -8,6 +8,8 @@ extends Node3D
 
 const CONFIG_PARAM: String = "config"
 const GRID_BEAT_S: float = 1.5  ## time on the grid before the countdown starts
+const GRID_INTRO_BACK_M: float = 30.0  ## grid intro starts this far behind the pack centre...
+const GRID_INTRO_UP_M: float = 14.0  ## ...and this high, then sweeps down to the chase pose at GO
 const MAX_OPPONENTS: int = 7  ## the grid has 8 slots
 const CAR_RESET_HEIGHT_M: float = 0.47  ## car origin height on the line, as in the AI reset
 const DEV_WATERMARK: String = "DEV TRACK"
@@ -59,6 +61,8 @@ var hud: RaceHUD
 var pause_menu: PauseMenu
 var results_screen: ResultsScreen
 var player_ai: AIDriver  ## set only in autopilot mode
+var recorder: ReplayRecorder  ## records the race for the replay, see start_replay()
+var replay: ReplayPlayer  ## null unless a replay is playing
 var _speed_lines: Node = null  ## res://fx/speed_lines.tscn instance under the HUD's SpeedFx node
 var last_results: Array[Dictionary] = []
 var dev_track_used: bool = false
@@ -106,6 +110,7 @@ func _process(delta: float) -> void:
 		_grid_t += delta
 		if _grid_t >= GRID_BEAT_S:
 			race.start_countdown()
+			_start_grid_intro()
 
 
 func _physics_process(delta: float) -> void:
@@ -187,6 +192,7 @@ func _build_chrome() -> void:
 	results_screen.retry_pressed.connect(retry)
 	results_screen.menu_pressed.connect(_to_menu)
 	results_screen.garage_pressed.connect(_to_garage)
+	results_screen.replay_pressed.connect(start_replay)
 	if not ResourceLoader.exists(GARAGE_SCENE):
 		# shortcut: hides the private garage button until ResultsScreen exposes a visibility setter, upgrade then.
 		var garage_btn: Button = results_screen.get("_garage_btn") as Button
@@ -214,6 +220,11 @@ func _build_race() -> void:
 	race.total_laps = config_used.laps
 	_world.add_child(race)
 	race.setup(track, cars, player, _names)
+	recorder = ReplayRecorder.new()
+	recorder.name = "ReplayRecorder"
+	_world.add_child(recorder)
+	recorder.setup(cars)
+	replay = null
 	_apply_opponent_skills()
 	_setup_player_driver()
 	_make_camera()
@@ -450,7 +461,48 @@ func _ensure_watermark() -> void:
 	layer.add_child(_watermark)
 
 
+## Countdown camera: from high behind the pack, down over the cars to the chase pose at GO (see ChaseCamera).
+func _start_grid_intro() -> void:
+	var c: Vector3 = Vector3.ZERO
+	for car: ArcadeCar in cars:
+		c += car.global_position
+	c /= float(cars.size())
+	var fwd: Vector3 = track.get_tangent_at(track.get_progress(c))
+	fwd.y = 0.0
+	fwd = fwd.normalized()
+	camera.start_grid_intro(c - fwd * GRID_INTRO_BACK_M + Vector3.UP * GRID_INTRO_UP_M, c + Vector3.UP, float(race.countdown_seconds))
+
+
+## Replay after the race: results and HUD hide, the replay player takes the camera. Leaving it shows the results.
+func start_replay() -> void:
+	if recorder == null or not recorder.has_data() or replay != null:
+		return
+	results_screen.visible = false
+	hud.visible = false
+	if _touch != null:
+		_touch.visible = false
+	replay = ReplayPlayer.new()
+	replay.name = "Replay"
+	_world.add_child(replay)
+	replay.setup(recorder, cars, track, player)
+	replay.exited.connect(end_replay)
+
+
+func end_replay() -> void:
+	if replay == null:
+		return
+	replay.queue_free()
+	replay = null
+	camera.make_current()
+	hud.visible = true
+	if _touch != null:
+		_touch.visible = true
+	results_screen.visible = true
+
+
 func _on_race_started() -> void:
+	if recorder != null:
+		recorder.start()
 	camera.set_mode(ChaseCamera.Mode.CHASE)
 	if player_ai != null:
 		player_ai.set_racing(true)
@@ -466,6 +518,9 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 		player_ai.set_racing(false)
 	if camera != null:
 		camera.start_finish_orbit()  # slow cinematic orbit behind the results screen
+	if recorder != null:
+		recorder.stop()
+	results_screen.set_replay_enabled(recorder != null and recorder.has_data())
 	results_screen.show_results(results, rewards)
 	results_screen.visible = true
 
