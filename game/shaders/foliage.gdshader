@@ -12,6 +12,8 @@ uniform float sway_amp_m : hint_range(0.0, 0.5) = 0.12;  // leaf displacement at
 uniform float sway_speed : hint_range(0.0, 4.0) = 1.1;
 uniform float sway_height_m : hint_range(1.0, 20.0) = 9.0;
 uniform float roughness_value : hint_range(0.0, 1.0) = 0.75;
+// Sky light scattered inside the crown: without it a tree in a building's shadow is a black scribble by day. 0 at night.
+uniform float shade_fill : hint_range(0.0, 1.0) = 0.0;
 
 varying float v_sway_weight;
 
@@ -35,6 +37,7 @@ void fragment() {
 	}
 	ALBEDO = t.rgb * COLOR.rgb * tint;
 	ROUGHNESS = roughness_value;
+	EMISSION = ALBEDO * shade_fill;
 }
 
 void light() {
@@ -42,7 +45,9 @@ void light() {
 	// when the sun is behind the crown the light comes through the leaves.
 	float wrap = clamp(dot(NORMAL, LIGHT) * 0.5 + 0.5, 0.0, 1.0);
 	float back = pow(clamp(dot(-VIEW, LIGHT), 0.0, 1.0), 3.0) * translucency;
-	vec3 lit = ALBEDO * LIGHT_COLOR * ATTENUATION * (wrap * 0.85 + 0.15);
-	vec3 thru = ALBEDO * translucent_colour * LIGHT_COLOR * ATTENUATION * back;
+	// A crown shadows itself almost everywhere: leaves let about half the sun through, or the tree reads as a black scribble.
+	float att = LIGHT_IS_DIRECTIONAL ? mix(0.5, 1.0, ATTENUATION) : ATTENUATION;
+	vec3 lit = ALBEDO * LIGHT_COLOR * att * (wrap * 0.85 + 0.15);
+	vec3 thru = ALBEDO * translucent_colour * LIGHT_COLOR * att * back;
 	DIFFUSE_LIGHT += lit + thru;
 }

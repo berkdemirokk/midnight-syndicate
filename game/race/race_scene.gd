@@ -261,6 +261,7 @@ func _build_race() -> void:
 		greenery.name = "Greenery"
 		_world.add_child(greenery)
 		greenery.keep_open_view = config_used.track_scene.contains(BOGAZ_TRACK_KEY)
+		Greenery.set_shade_fill(0.0 if tod.is_night() else (0.2 if config_used.time_of_day == "sunset" else 0.5))
 		greenery.setup(track)
 	# Bosphorus coast: the bridge, the far shore, the ferry and their reflections (they replace the flat bridge card).
 	if not dev_track_used and config_used.track_scene.contains(BOGAZ_TRACK_KEY):

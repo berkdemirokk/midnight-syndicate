@@ -54,6 +54,17 @@ var _rng := RandomNumberGenerator.new()
 var _probe := SphereShape3D.new()  ## trunk-and-crown-base clearance probe, radius in m
 
 
+static var _leaf_materials: Array[ShaderMaterial] = []  ## every cached leaf material, so the hour can retune them
+
+
+## Sky light inside the crowns for this race: about 0.5 by day, 0.2 at dusk, 0 at night. Call after setup().
+static func set_shade_fill(v: float) -> void:
+	_shade_fill = v
+	for m: ShaderMaterial in _leaf_materials:
+		m.set_shader_parameter("shade_fill", v)
+
+
+static var _shade_fill: float = 0.0
 var keep_open_view: bool = false  ## coast tracks set this before setup(): the water side stays mostly free of trees
 
 
@@ -273,6 +284,8 @@ static func _lod_mesh(species: String, lod: int) -> Mesh:
 		bark.roughness = 0.95
 		mesh.surface_set_material(0, bark)  # GLB order: surface 0 bark, surface 1 leaves
 		mesh.surface_set_material(1, leaf)
+	leaf.set_shader_parameter("shade_fill", _shade_fill)
+	_leaf_materials.append(leaf)
 	_meshes[id] = mesh
 	return mesh
 
