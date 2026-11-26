@@ -5,7 +5,7 @@ extends RefCounted
 ## drops KHR_materials_clearcoat, so clearcoat is set here (see docs/design/CAR_INTEGRATION.md).
 ## Shared materials are cached by name. M_Paint, M_Rim and M_LightRear are per car, so one car never changes another.
 
-const PER_CAR: PackedStringArray = ["M_Paint", "M_Rim", "M_LightRear"]
+const PER_CAR: PackedStringArray = ["M_Paint", "M_Rim", "M_LightRear", "M_Plate"]  ## the plate is per car: shared, every car wore the first loaded car's number
 const KNOWN: PackedStringArray = [
 	"M_Paint", "M_Pillar", "M_Glass", "M_Lens", "M_LightFront", "M_LightRear", "M_Carbon", "M_Rim", "M_Tire",
 	"M_BrakeDisc", "M_Caliper", "M_Trim", "M_Chrome", "M_Interior", "M_Plate",
@@ -19,10 +19,10 @@ const FINISH_SOLID: int = 0
 const FINISH_METALLIC: int = 1
 const FINISH_PEARL: int = 2
 const DEFAULT_FINISH: int = FINISH_METALLIC
-const PAINT_METALLIC: float = 0.85  ## metallic finish; solid uses 0.0, pearl PAINT_PEARL_METALLIC
+const PAINT_METALLIC: float = 0.55  ## metallic finish; solid uses 0.0, pearl PAINT_PEARL_METALLIC
 const PAINT_PEARL_METALLIC: float = 0.6
 const PAINT_PEARL_RIM: float = 0.35  ## pearl sheen at grazing angles (no iridescence in StandardMaterial3D on Godot 4.7)
-const PAINT_ROUGHNESS: float = 0.24  ## base; the flake roughness map (0.67..1.0 red) gives 0.16..0.24: a tight lobe, so night lamps make crisp highlights instead of a pink wash
+const PAINT_ROUGHNESS: float = 0.3  ## base; the flake roughness map (0.67..1.0 red) gives 0.16..0.24: a tight lobe, so night lamps make crisp highlights instead of a pink wash
 const PAINT_CLEAR: float = 1.0
 const PAINT_CLEAR_ROUGHNESS: float = 0.04
 const PAINT_FLAKE_SCALE: float = 0.035  ## flake normal strength, low on purpose (0.12 read as sandpaper on the wheel close-up)

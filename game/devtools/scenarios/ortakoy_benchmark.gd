@@ -30,7 +30,8 @@ func _one(tod: String) -> void:
 	cfg.use_garage_paint = false
 	cfg.autopilot = true
 	cfg.laps = 2
-	cfg.opponent_count = 2
+	cfg.opponent_count = 3
+	cfg.rival_mix = true  # rivals from the licensed pool (CarCatalog.rival_models)
 	cfg.track_scene = TRACK
 	cfg.car_scene = CAR_SCENE
 	cfg.car_spec_path = CAR_SPEC
