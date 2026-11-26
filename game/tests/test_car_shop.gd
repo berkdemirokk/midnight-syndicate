@@ -70,11 +70,13 @@ func test_old_profile_loads() -> void:
 	f.store_string('{"version":1,"cash":1234,"rep":5,"owned_cars":["noctra_sable"],"selected_car":"noctra_sable","car_setups":{"noctra_sable":{"paint_color":"#112233","rim_color":"#c0c0c0","upgrades":{"engine":2}}}}')
 	f.close()
 	GameState.open_profile(TEMP_SAVE)
-	check(GameState.get_cash() == 1234 and GameState.get_selected_car() == SABLE, "old save loads")
+	# Save version 2 moves a profile that sat in the old starter into the new one; the old car stays owned and usable.
+	check(GameState.get_cash() == 1234 and GameState.get_selected_car() == CarCatalog.STARTER, "old save loads into the new starter")
 	check(GameState.has_car(SABLE), "old save keeps the car it owns")
 	check(GameState.get_upgrade_level(SABLE, "engine") == 2, "setup kept")
 	CarCatalog.cars.append({"id": SABLE, "class": "street", "price": 2500, "rep": 0})
-	check(CarCatalog.race_car_id() == SABLE, "old save still races the car it selected")
+	GameState.select_car(SABLE)
+	check(CarCatalog.race_car_id() == SABLE, "the old car can still be selected and raced")
 	_restore(old)
 
 

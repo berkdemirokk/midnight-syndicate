@@ -163,8 +163,20 @@ func test_migration_from_version_0() -> void:
 	check(gs.get_cash() == 1234, "v0 cash kept")
 	check(gs.has_car("rival_gt"), "v0 'cars' renamed to owned_cars")
 	check(gs.get_selected_car() == "rival_gt", "v0 selected car kept")
-	check(gs.profile["version"] == 1, "migrated to version 1")
+	check(gs.profile["version"] == 2, "migrated to the current version")
+	check(gs.has_car(CarCatalog.STARTER), "old save gets the new starter car")
 	check(not gs.profile.has("cars"), "old 'cars' key removed")
+	_close(gs)
+
+
+func test_migration_moves_old_starter_to_new() -> void:
+	var path := _path("v1_sable")
+	_wipe(path)
+	_write_text(path, JSON.stringify({"version": 1, "cash": 500, "owned_cars": ["noctra_sable"], "selected_car": "noctra_sable"}))
+	var gs: Node = _open(path)
+	check(gs.has_car("noctra_sable"), "old starter stays owned")
+	check(gs.get_selected_car() == CarCatalog.STARTER, "a save in the old starter moves to the new one")
+	check(gs.get_cash() == 500, "cash kept")
 	_close(gs)
 	_wipe(path)
 

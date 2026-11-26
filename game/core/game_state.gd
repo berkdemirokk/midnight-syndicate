@@ -6,8 +6,9 @@ extends Node
 signal cash_changed(new_cash: int)
 signal profile_changed
 
-const CURRENT_VERSION: int = 1
+const CURRENT_VERSION: int = 2
 const STARTER_CAR: String = CarCatalog.STARTER
+const OLD_STARTER_CAR: String = "noctra_sable"  ## starter of save versions 0 and 1
 const STARTER_CASH: int = 5000
 const MAX_CASH: int = 1000000000
 const MAX_UPGRADE_LEVEL: int = 5
@@ -349,6 +350,15 @@ func _migrate(raw: Dictionary) -> Dictionary:
 			data["owned_cars"] = data["cars"]
 		data.erase("cars")
 		version = 1
+	# Version 2: the starter became the licensed Noctra Tayfun. Old saves get it for free; a save still sitting in the
+	# old starter (Noctra Sable) moves into it. Everything owned stays owned.
+	if version < 2:
+		var owned: Variant = data.get("owned_cars")
+		if owned is Array and not (owned as Array).has(STARTER_CAR):
+			(owned as Array).append(STARTER_CAR)
+			if not data.has("selected_car") or data["selected_car"] == OLD_STARTER_CAR:
+				data["selected_car"] = STARTER_CAR
+		version = 2
 	data["version"] = version
 	return data
 
