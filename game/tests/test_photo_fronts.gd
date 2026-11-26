@@ -1,6 +1,6 @@
 extends "res://tests/test_case.gd"
-## Photo-textured row houses (PhotoFronts): houses fill the land-side frontages, stay out of the race corridor, cost a
-## handful of triangles each, and glow at night only.
+## Photo-textured row houses (PhotoFronts): rows replace the first-row kit buildings of the whole lap, stay out of the
+## race corridor, cost a handful of triangles a house, and glow at night only.
 
 const TRACK: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 const ROAD_HALF_WIDTH_M: float = 7.0
@@ -23,16 +23,21 @@ func test_houses_fill_the_frontages_outside_the_corridor() -> void:
 	var made: Array = await _populate("day")
 	var track: Track = made[0]
 	var pf: PhotoFronts = made[1]
-	check(pf._buildings.size() >= 40, "only %d houses placed" % pf._buildings.size())
-	check(pf._replaced.size() >= 10, "only %d kit frontages replaced" % pf._replaced.size())
-	for house: Node3D in pf._buildings:
-		var mi := house as MeshInstance3D
+	check(pf._buildings.size() >= 60, "only %d rows placed" % pf._buildings.size())
+	check(pf._replaced.size() == pf._buildings.size(), "rows %d and replaced kit buildings %d differ" % [pf._buildings.size(), pf._replaced.size()])
+	var houses: int = 0
+	for row: Node3D in pf._buildings:
+		var mi := row as MeshInstance3D
 		var tris: int = 0
 		for s: int in mi.mesh.get_surface_count():
 			tris += (mi.mesh.surface_get_arrays(s)[Mesh.ARRAY_VERTEX] as PackedVector3Array).size() / 3
-		check(tris <= HOUSE_MAX_TRIS, "%s has %d triangles" % [house.name, tris])
-		check(absf(track.get_lateral_offset(house.global_position)) >= ROAD_HALF_WIDTH_M,
-				"%s stands in the race corridor" % house.name)
+		houses += int(row.get_meta("houses"))
+		check(tris <= HOUSE_MAX_TRIS * int(row.get_meta("houses")), "%s has %d triangles" % [row.name, tris])
+		check(mi.mesh.get_surface_count() <= 2, "%s has %d surfaces" % [row.name, mi.mesh.get_surface_count()])
+		check(absf(track.get_lateral_offset(row.global_position)) >= ROAD_HALF_WIDTH_M,
+				"%s stands in the race corridor" % row.name)
+	metric("rows", pf._buildings.size())
+	metric("houses", houses)
 	await cleanup([track])
 
 
