@@ -11452,6 +11452,50 @@
       "notes": "Night picture of the same four houses (lit windows and shops), used as the glow map. Generated on 2026-11-26 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/facade_row_01_night.png."
     },
     {
+      "id": "far_photo_city_day",
+      "kind": "texture",
+      "path": "game/assets/world/far_photo/far_city_day.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "far_city_day.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 745414,
+      "sha256": "f92421c81459860017474443f31b51d061799fe42b079a4ecca33f9b285cc144",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Straight-on picture of a hillside city across water by day, the far shore of the Bosphorus track (game/world/landmarks/far_scenery.gd). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text, logos or real landmarks requested). Source PNG: assets_src/ai_generated/chatgpt/photo_panorama_city_day_01.png, edited from the night picture by a text request, not pixel-aligned (the framing changed a little); resized to 2048x1024 for the shipped file."
+    },
+    {
+      "id": "far_photo_city_night",
+      "kind": "texture",
+      "path": "game/assets/world/far_photo/far_city_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "far_city_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 617591,
+      "sha256": "8eb7e0ac4905c5d6da40ed5f8f658e15187d7ca7326655e3f52264c02e3a21da",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night picture of the same hillside city: thousands of warm windows, minarets and towers in silhouette, dark sky. Shown unshaded at night on the far-shore band; its own lit windows are the glow. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text, logos or people). Source PNG: assets_src/ai_generated/chatgpt/photo_panorama_city_night_01.png; resized to 2048x1024 for the shipped file."
+    },
+    {
       "id": "photo_front_facade_row_02",
       "kind": "texture",
       "path": "game/assets/world/kits/photo_fronts/facade_row_02.jpg",

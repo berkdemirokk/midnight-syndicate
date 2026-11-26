@@ -64,6 +64,29 @@ func test_bridge_towers_and_hill_contract() -> void:
 	check(absf(FarScenery.cable_height(FarScenery.TOWER_X) - (FarScenery.DECK_Y + FarScenery.TOWER_H)) < 0.01, "cable must meet tower top")
 
 
+func test_far_shore_is_photo_behind_bridge() -> void:
+	check(ResourceLoader.exists(FarScenery.PHOTO_DAY), "far shore day picture missing")
+	check(ResourceLoader.exists(FarScenery.PHOTO_NIGHT), "far shore night picture missing")
+	check(FarScenery.PHOTO_X > FarScenery.CENTRE.x + FarScenery.END_X, "photo band must sit behind the bridge's far end")
+	check(FarScenery.PHOTO_SPAN / float(FarScenery.PHOTO_TILES) * 0.5 == FarScenery.PHOTO_H, "picture tile must be 2:1")
+	var fs := FarScenery.new()
+	add(fs)
+	await frames(2)
+	fs.setup(null, "night")
+	await frames(2)
+	var band: MeshInstance3D = fs.get_node("FarShorePhoto") as MeshInstance3D
+	check(band != null, "far shore photo band missing")
+	var mat: StandardMaterial3D = band.material_override as StandardMaterial3D
+	check(mat.albedo_texture != null and mat.albedo_texture.resource_path == FarScenery.PHOTO_NIGHT, "night must show the night picture")
+	check(mat.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED, "far shore photo must be unshaded")
+	fs.setup(null, "day")
+	await frames(2)
+	band = fs.get_node("FarShorePhoto") as MeshInstance3D
+	mat = band.material_override as StandardMaterial3D
+	check(mat.albedo_texture.resource_path == FarScenery.PHOTO_DAY, "day must show the day picture")
+	await cleanup([fs])
+
+
 func test_night_sky_is_static_with_moon() -> void:
 	var src: String = FileAccess.get_file_as_string("res://world/materials/night_sky.gdshader")
 	check(not ("TIME" in src), "night sky must not use TIME (radiance map is drawn once)")

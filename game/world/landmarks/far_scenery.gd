@@ -2,7 +2,7 @@ class_name FarScenery
 extends Node3D
 ## Far scenery across the Bosphorus on the bogaz track, built from code (no asset files):
 ## a 1 km suspension bridge over the strait (it replaces the flat skyline_bridge card, see HIDES_ASSET), a far shore
-## of hills that reads as a city at night (warm point lights, none by day), a two-deck ferry on a line parallel to the
+## that is a photo of a hillside city (day picture by day, night picture with its lit windows at night), a two-deck ferry on a line parallel to the
 ## shore, and light reflections on the water under the bridge. Positions are world metres of the bogaz frame.
 ## Add this node under the Track (the Track sits at the origin) and call setup() after the Track has built its city.
 
@@ -15,9 +15,13 @@ const TOWER_H: float = 130.0  ## tower top above the deck, m
 const TOWER_PANEL_M: float = 8.0  ## height of one tower leg panel
 const CABLE_Z: float = 10.0  ## cable offset from the centre line, m
 const SHORE_X: float = 640.0  ## far shore starts here, sea before it
-const SHORE_RISE: float = 380.0  ## m over which the hills climb to full height
-const SHORE_CELL: Vector2 = Vector2(26.0, 45.0)  ## hill grid cell, m (x, z)
-const SHORE_LIGHTS: int = 900  ## warm point lights on the hillside at night
+const SHORE_RISE: float = 380.0  ## m over which the hills climb to full height (hill_height, the terrain contract)
+const PHOTO_DAY: String = "res://assets/world/far_photo/far_city_day.jpg"  ## far shore by day (ChatGPT picture, 2:1)
+const PHOTO_NIGHT: String = "res://assets/world/far_photo/far_city_night.jpg"  ## same shore at night: its lit windows are the glow
+const PHOTO_X: float = 1200.0  ## far-shore picture band, m: behind the bridge's far end (1150 m), so the deck stays in front
+const PHOTO_H: float = 225.0  ## band height above the sea, m (the picture is 2:1)
+const PHOTO_SPAN: float = 1800.0  ## band width along the track, m
+const PHOTO_TILES: int = 4  ## the picture repeats this many times across the span (its left and right edges join)
 const FERRY_X: float = 470.0  ## ferry line, m, between the coast road and the far shore
 const FERRY_RUN: float = 1040.0  ## m of the out-and-back route, parallel to the shore
 const FERRY_SPEED: float = 5.5  ## m/s
@@ -187,66 +191,33 @@ static func _tower_colour(y: float, panel: int) -> Color:
 
 # --- far shore -------------------------------------------------------------------------------------
 
+## The far shore is a photo: a band of quads at PHOTO_X, facing the track, each tile showing the whole picture. By day
+## the day picture; from sunset on the night picture, unshaded, so its own lit windows are the glow (sunset dims it).
+## Fog still applies, so the far shore fades with distance like the rest of the track.
 func _build_shore() -> void:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var nx: int = 25
-	var nz: int = 40
-	for i: int in nx:
-		for j: int in nz:
-			var xa: float = 600.0 + SHORE_CELL.x * float(i)
-			var za: float = -900.0 + SHORE_CELL.y * float(j)
-			var a: Vector3 = _shore_vertex(xa, za)
-			var b: Vector3 = _shore_vertex(xa + SHORE_CELL.x, za)
-			var c: Vector3 = _shore_vertex(xa, za + SHORE_CELL.y)
-			var d: Vector3 = _shore_vertex(xa + SHORE_CELL.x, za + SHORE_CELL.y)
-			for v: Vector3 in [a, b, d, a, d, c]:
-				st.set_color(_shore_colour(v.x, v.z))
-				st.add_vertex(v)
-	st.generate_normals()
-	var shore_mat: StandardMaterial3D = _mat(Color.WHITE, 0.0, 0.95)
-	shore_mat.vertex_color_use_as_albedo = true
-	add_child(_mesh_node("FarShore", st.commit(), shore_mat))
-	if not _lit:
-		return
-	var rng := RandomNumberGenerator.new()
-	rng.seed = SEED + 1
-	var pos := PackedVector3Array()
-	var cols := PackedColorArray()
-	var scales: Array[float] = []
-	var tries: int = 0
-	while pos.size() < SHORE_LIGHTS and tries < 20000:
-		tries += 1
-		var x: float = 645.0 + pow(rng.randf(), 1.6) * 380.0  # denser at the water
-		var z: float = rng.randf_range(-880.0, 880.0)
-		var h: float = hill_height(x, z)
-		if h < 3.0:
-			continue
-		pos.append(Vector3(x, h + rng.randf_range(0.5, 6.0), z))
-		cols.append(_lamp_colour(rng.randf()) * (1.4 + 0.8 * rng.randf()) * _k)
-		scales.append(rng.randf_range(1.2, 2.8))
-	add_child(_glow_node("ShoreLights", pos, cols, 1.0, scales))
-
-
-func _shore_vertex(x: float, z: float) -> Vector3:
-	return Vector3(x, hill_height(x, z) - 0.8, z)  # the sea-level edge sits just under the water
-
-
-func _shore_colour(x: float, z: float) -> Color:
-	var ridge: float = 0.85 + 0.15 * sin(z * 0.0061 + 0.8)
-	if _lit:
-		return Color(0.035, 0.04, 0.055) * ridge
-	return Color(0.13, 0.19, 0.15) * ridge  # day: dark green-grey, lit by the sun
-
-
-static func _lamp_colour(r: float) -> Color:
-	if r < 0.55:
-		return Color(1.0, 0.62, 0.26)  # sodium
-	if r < 0.85:
-		return Color(1.0, 0.84, 0.58)  # warm white
-	if r < 0.95:
-		return Color(0.82, 0.92, 1.0)  # cool white
-	return Color(1.0, 0.22, 0.16)  # red
+	var tile: float = PHOTO_SPAN / float(PHOTO_TILES)
+	for i: int in PHOTO_TILES:
+		var z0: float = -PHOTO_SPAN * 0.5 + tile * float(i)
+		var z1: float = z0 + tile
+		var y0: float = -4.0  # the foot of the picture sinks under the water
+		var verts: Array[Vector3] = [Vector3(PHOTO_X, y0, z0), Vector3(PHOTO_X, y0, z1), Vector3(PHOTO_X, PHOTO_H, z1), Vector3(PHOTO_X, PHOTO_H, z0)]
+		var uvs: Array[Vector2] = [Vector2(0.0, 1.0), Vector2(1.0, 1.0), Vector2(1.0, 0.0), Vector2(0.0, 0.0)]
+		for k: int in [0, 1, 2, 0, 2, 3]:
+			st.set_normal(Vector3.LEFT)  # faces the track
+			st.set_uv(uvs[k])
+			# the top 40% of the picture fades out, so its sky melts into the real sky instead of a hard slab edge
+			st.set_color(Color(1.0, 1.0, 1.0, clampf((PHOTO_H - verts[k].y) / (PHOTO_H * 0.4), 0.0, 1.0)))
+			st.add_vertex(verts[k])
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.vertex_color_use_as_albedo = true
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.albedo_texture = load(PHOTO_NIGHT if _lit else PHOTO_DAY) as Texture2D
+	mat.albedo_color = Color(_k, _k, _k) if _lit else Color.WHITE
+	add_child(_mesh_node("FarShorePhoto", st.commit(), mat))
 
 
 # --- ferry -----------------------------------------------------------------------------------------
