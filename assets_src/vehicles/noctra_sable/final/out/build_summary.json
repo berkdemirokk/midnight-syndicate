@@ -1,18 +1,18 @@
 {
   "tris": {
-    "lod0": 89319,
-    "lod1": 27500,
-    "lod2": 6793
+    "lod0": 89456,
+    "lod1": 27499,
+    "lod2": 6796
   },
   "tris_by_object": {
     "0": {
-      "body": 28737,
+      "body": 28957,
       "glass": 2465,
       "underbody": 4694,
-      "trim": 2772,
+      "trim": 2700,
       "lights_front": 640,
       "lights_rear": 84,
-      "interior": 2859,
+      "interior": 2848,
       "exhaust": 448,
       "plate_rear": 60,
       "wheel_FL": 8680,
@@ -25,13 +25,13 @@
       "brake_RR": 2704
     },
     "1": {
-      "body": 28737,
+      "body": 28957,
       "glass": 2465,
       "underbody": 4694,
-      "trim": 2772,
+      "trim": 2700,
       "lights_front": 640,
       "lights_rear": 84,
-      "interior": 2859,
+      "interior": 2848,
       "exhaust": 448,
       "plate_rear": 60,
       "wheel_FL": 8680,
@@ -44,10 +44,10 @@
       "brake_RR": 2704
     },
     "2": {
-      "body": 28737,
+      "body": 28957,
       "glass": 2465,
       "underbody": 4694,
-      "trim": 2772,
+      "trim": 2700,
       "lights_front": 640,
       "lights_rear": 84,
       "exhaust": 448,
@@ -59,14 +59,14 @@
     }
   },
   "glb": {
-    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_35745c05-68f-6\\assets_src\\vehicles\\noctra_sable\\final\\out\\noctra_sable_lod0.glb",
-    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_35745c05-68f-6\\assets_src\\vehicles\\noctra_sable\\final\\out\\noctra_sable_lod1.glb",
-    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_35745c05-68f-6\\assets_src\\vehicles\\noctra_sable\\final\\out\\noctra_sable_lod2.glb"
+    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_74ca9b41-d2d-3\\assets_src\\vehicles\\noctra_sable\\final\\out\\noctra_sable_lod0.glb",
+    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_74ca9b41-d2d-3\\assets_src\\vehicles\\noctra_sable\\final\\out\\noctra_sable_lod1.glb",
+    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_74ca9b41-d2d-3\\assets_src\\vehicles\\noctra_sable\\final\\out\\noctra_sable_lod2.glb"
   },
   "glb_bytes": {
-    "0": 7605916,
-    "1": 4905460,
-    "2": 3672468
+    "0": 7620300,
+    "1": 4910296,
+    "2": 3674196
   },
   "textures": {
     "paint_flake_normal": [

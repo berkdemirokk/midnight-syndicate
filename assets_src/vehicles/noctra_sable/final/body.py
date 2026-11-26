@@ -25,6 +25,7 @@ except ImportError:  # pure-maths import outside Blender
 HERE = os.path.dirname(os.path.abspath(__file__))
 RENDER_DIR = os.path.join(HERE, "renders_stage1")
 Y_OFFSET = 2.28  # blender y = s - 2.28
+LEN = 4.45  # shell station range 0 .. LEN (tail cap at LEN + TAIL_DS)
 
 
 # ------------------------------------------------------------------ PCHIP curves
@@ -635,15 +636,15 @@ def cut_arches(body):
 
 # ------------------------------------------------------------------ glazing
 def _greenhouse_slot(co, pv):
-    """Material slot for a paint face that is not glass. 0 paint, 2 gloss-black pillar and
-    roof rail, 3 carbon roof panel between windscreen top and rear screen (top faces only)."""
+    """Material slot for a paint face that is not glass. Round 10: the roof is body colour
+    (paint); only the A/C-pillar band beside the glass stays gloss black (slot 2)."""
     c = co[list(pv)].mean(axis=0)
     s, x, z = c[1] + Y_OFFSET, abs(c[0]), c[2]
     if not (1.30 <= s <= 3.20) or z <= z_sh(s) + 0.03:
         return 0
-    if 1.98 <= s <= 2.74 and x < 0.42 and _centre_normal(co, pv)[2] > 0.5:
-        return 3
-    return 2
+    if WS_EDGE_X - 0.01 <= x <= SIDE_TOP_X + 0.01:
+        return 2
+    return 0
 
 
 # One continuous side window (lead, 2026-11-25): the front edge follows the A-pillar rake, the rear
@@ -788,13 +789,136 @@ def split_glazing(body):
 
 
 # ------------------------------------------------------------------ shading
-def finish_shading(obj):
+def finish_shading(obj, weighted=True):
     bpy.ops.object.select_all(action="DESELECT")
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.shade_smooth_by_angle(angle=math.radians(35))
-    mod = obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL")
-    mod.keep_sharp = True
+    if weighted:
+        mod = obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL")
+        mod.keep_sharp = True
+
+
+def _frame_at(s, cache):
+    """Section arrays at station s (1 mm snap): points, section tangents and d/ds of the points."""
+    key = round(s, 3)
+    if key in cache:
+        return cache[key]
+    h = 0.012
+    A = _half(min(max(key, 0.02), LEN - 0.02))
+    A0, A1 = _half(min(max(key - h, 0.0), LEN)), _half(min(max(key + h, 0.0), LEN))
+    X, Z = A["X"], A["Z"]
+    tx, tz = np.gradient(X), np.gradient(Z)
+    # relax the tangent over 3 points: removes the polyline's piecewise-constant steps
+    k = np.array([0.25, 0.5, 0.25])
+    tx = np.convolve(np.pad(tx, 1, mode="edge"), k, "valid")
+    tz = np.convolve(np.pad(tz, 1, mode="edge"), k, "valid")
+    dx, dz = (A1["X"] - A0["X"]) / (2 * h), (A1["Z"] - A0["Z"]) / (2 * h)
+    cache[key] = (X, Z, tx, tz, dx, dz)
+    return cache[key]
+
+
+def analytic_normals(obj, tol=0.0012):
+    """Overwrite the custom normals of vertices that lie on the smooth paint surface (within tol of
+    the section curve) with the analytic normal of the surface: cross(d/ds, d/dv) of the shell
+    parametrisation. Vertices created by pocket slices, bevels and grooves then agree with their
+    neighbours, which removes the kinks the studio strip light showed in the reflection.
+    Ported from kestrel_gtr/body.py (the Kestrel build solved the same wheel-arch streaks)."""
+    me = obj.data
+    nv, nl = len(me.vertices), len(me.loops)
+    co = np.empty(nv * 3, np.float32)
+    me.vertices.foreach_get("co", co)
+    co = co.reshape(nv, 3).astype(float)
+    cn = np.empty(nl * 3, np.float32)
+    me.corner_normals.foreach_get("vector", cn)
+    cn = cn.reshape(nl, 3).astype(float)
+    lv = np.empty(nl, np.int32)
+    me.loops.foreach_get("vertex_index", lv)
+    cache = {}
+    new = np.full((nv, 3), np.nan)
+    for i in range(nv):
+        x, y, z = co[i]
+        s = y + Y_OFFSET
+        if not (0.40 <= s <= LEN - 0.10) or z < 0.2:
+            continue
+        X, Z, tx, tz, dx, dz = _frame_at(s, cache)
+        ax = abs(x)
+        d2 = (X - ax) ** 2 + (Z - z) ** 2
+        k = int(np.argmin(d2))
+        # nearest point on the two segments around k (linear), tangent interpolated with it
+        best = None
+        for a_, b_ in ((k - 1, k), (k, k + 1)):
+            if a_ < 0 or b_ >= len(X):
+                continue
+            ex, ez = X[b_] - X[a_], Z[b_] - Z[a_]
+            L2 = ex * ex + ez * ez
+            if L2 < 1e-12:
+                continue
+            u = min(max(((ax - X[a_]) * ex + (z - Z[a_]) * ez) / L2, 0.0), 1.0)
+            dist = math.hypot(X[a_] + u * ex - ax, Z[a_] + u * ez - z)
+            if best is None or dist < best[0]:
+                best = (dist, a_, b_, u)
+        if best is None or best[0] > tol:
+            continue
+        _, a_, b_, u = best
+        tv = np.array([tx[a_] + u * (tx[b_] - tx[a_]), 0.0, tz[a_] + u * (tz[b_] - tz[a_])])
+        ts = np.array([dx[a_] + u * (dx[b_] - dx[a_]), 1.0, dz[a_] + u * (dz[b_] - dz[a_])])
+        nrm = np.cross(ts, tv)
+        ln = np.linalg.norm(nrm)
+        if ln < 1e-9:
+            continue
+        nrm /= ln
+        if x < 0:
+            nrm[0] = -nrm[0]
+        new[i] = nrm
+    ok = ~np.isnan(new[:, 0])
+    # only trust it where it agrees with the existing normal (guards against a wrong projection)
+    cur = np.zeros((nv, 3))
+    np.add.at(cur, lv, cn)
+    cur /= np.maximum(np.linalg.norm(cur, axis=1, keepdims=True), 1e-12)
+    dots = np.einsum("ij,ij->i", np.nan_to_num(new), cur)
+    ok &= dots > 0.80
+    out = np.where(ok[lv][:, None], new[lv], cn)
+    me.normals_split_custom_set(out.tolist())
+    print("ANALYTIC_NORMALS on %d of %d verts" % (int(ok.sum()), nv))
+
+
+def smooth_normals(obj, iters=14):
+    """Low-pass the vertex normals of the smooth (non-sharp) part of the paint shell. The shell is a
+    grid with arch cuts, pocket slices and 1 mm groove strips; the per-corner normals carry a little
+    noise there. Vertices on a sharp edge keep their normals, so grooves, pockets and the shoulder
+    crease stay crisp."""
+    me = obj.data
+    nv, nl = len(me.vertices), len(me.loops)
+    sharp = np.zeros(nv, bool)
+    adj = [[] for _ in range(nv)]
+    for e in me.edges:
+        a, b = e.vertices
+        if e.use_edge_sharp:
+            sharp[a] = sharp[b] = True
+        else:
+            adj[a].append(b)
+            adj[b].append(a)
+    cn = np.empty(nl * 3, np.float32)
+    me.corner_normals.foreach_get("vector", cn)
+    cn = cn.reshape(nl, 3).astype(float)
+    lv = np.empty(nl, np.int32)
+    me.loops.foreach_get("vertex_index", lv)
+    n = np.zeros((nv, 3))
+    np.add.at(n, lv, cn)
+    n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
+    free = ~sharp
+    for _ in range(iters):
+        m = n.copy()
+        for v in np.nonzero(free)[0]:
+            nb = [u for u in adj[v] if free[u]]  # sharp neighbours carry bent corner averages: skip them
+            if nb:
+                m[v] = n[v] * 2.0 + n[nb].sum(axis=0) / len(nb) * 2.0
+        m /= np.maximum(np.linalg.norm(m, axis=1, keepdims=True), 1e-12)
+        n = np.where(free[:, None], m, n)
+    out = np.where(free[lv][:, None], n[lv], cn)
+    me.normals_split_custom_set(out.tolist())
+    print("SMOOTH_NORMALS free verts %d of %d" % (int(free.sum()), nv))
 
 
 # ------------------------------------------------------------------ checks
@@ -858,8 +982,9 @@ def make_materials():
     b.inputs["Coat Roughness"].default_value = 0.04
     mats["M_Paint"] = m
     # tint lifted from #0A0F12 so the panes read against the dark studio (deviation, see notes)
-    m, b = _principled("M_Glass", _lin((0x4A, 0x62, 0x6C)), 0.0, 0.03)  # P1: lighter tint, interior reads
-    b.inputs["Alpha"].default_value = 0.35  # brief value; lets the seats show through the glass
+    # round 10: clear canopy (lighter tint, lower alpha) so the seats and dash read through the roof glass
+    m, b = _principled("M_Glass", _lin((0x8F, 0xA5, 0xAE)), 0.0, 0.03)
+    b.inputs["Alpha"].default_value = 0.25
     m.surface_render_method = "BLENDED"
     mats["M_Glass"] = m
     m, b = _principled("M_LightRear", _lin((0xFF, 0x1A, 0x1A)), 0.0, 0.2)

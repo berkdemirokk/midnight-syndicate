@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.996,
+  "luma_max": 0.799,
   "luma_min": 0.0,
   "name": "lod1",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 30,
-    "draw_calls_min": 30,
+    "draw_calls": 77,
+    "draw_calls_min": 77,
     "driver": "vulkan",
-    "fps": 1351.351,
-    "frame_ms_avg": 0.74,
-    "frame_ms_p95": 1.514,
-    "frame_ms_p99": 2.468,
+    "fps": 1900.96,
+    "frame_ms_avg": 0.526,
+    "frame_ms_p95": 0.661,
+    "frame_ms_p99": 0.711,
     "frames": 60,
-    "objects": 30,
+    "objects": 77,
     "os": "Windows",
-    "primitives": 49572,
+    "primitives": 38678,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 402.844,
+    "video_mem_mb": 474.563,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_35745c05-68f-6/evidence/screens/car_studio/lod1.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_74ca9b41-d2d-3/evidence/screens/car_studio/lod1.png",
   "preset": "high",
   "scenario": "car_studio"
 }

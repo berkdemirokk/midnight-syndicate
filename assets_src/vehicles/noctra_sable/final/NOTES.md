@@ -124,3 +124,11 @@ Render rig (EEVEE iterations): renders_iter/r17 (before rig tuning), r18, r19, r
 - Shipped with tools/ship_assets.py (SHIP OK). test_car_asset and test_garage pass (17 tests, 0 failed). Garage overview.png and rear34.png looked at.
 - Renders: renders/ Cycles OPTIX 96 samples; old contact sheet kept as renders/contact_sheet_before_round4.png.
 - Open: 12-15 deg tumblehome is only approximated (about 78 deg wall); the rear cabin step; the bonnet highlight.
+
+## Round 10: four defects from the lead (Haiku 5.5 asset agent)
+- White box on the bonnet at the windscreen base: the dash binnacle box in details.build_interior, seen through the glass. Removed. Gone in car_studio/front34.png and garage/overview.png.
+- Roof: was gloss-black pillar plus carbon panel. Roof is body colour now (paint slot). Only the A/C-pillar band beside the glass stays gloss black (_greenhouse_slot). Glass tint #8FA5AE, alpha 0.25. Canopy still reads smoky under the dark studio: partial.
+- Paint streaks near arches: ported kestrel_gtr smooth_normals and analytic_normals to body.py; body shell uses finish_shading(weighted=False). Analytic normals on 9973 of 15374 shell verts. No jagged streak seen in car_studio/side.png or garage/overview.png.
+- Headlamps: 22 mm recess (details.p_headlamp), dark walls, smoked lens 3 mm under the paint line, LED strip cells behind it. Front lower housing patch removed (it would float over the recess).
+- LOD0 89456 tris (budget 45k-90k), LOD1 27499, LOD2 6796, 15 materials, 17 draw objects.
+- Shipped with tools/ship_assets.py (SHIP OK). test_car_asset 12/12, test_car_seat 1/1, full suite 251 tests 0 failed.

@@ -415,8 +415,9 @@ def extra_materials():
     m, b = B._principled("M_Pillar", B._lin((0x08, 0x08, 0x0A)), 0.0, 0.12)
     b.inputs["Coat Weight"].default_value = 1.0
     out["M_Pillar"] = m
-    m, b = B._principled("M_Lens", B._lin((0xFF, 0xFF, 0xFF)), 0.0, 0.05)
-    b.inputs["Alpha"].default_value = 0.25
+    # round 10: smoked lens, so the LED strip reads as segments under it instead of a white bar
+    m, b = B._principled("M_Lens", B._lin((0x3A, 0x42, 0x4A)), 0.0, 0.05)
+    b.inputs["Alpha"].default_value = 0.35
     m.surface_render_method = "BLENDED"
     out["M_Lens"] = m
     m, b = B._principled("M_LightFront", B._lin((0xDD, 0xEB, 0xFF)), 0.0, 0.2)
@@ -427,19 +428,29 @@ def extra_materials():
 
 
 # ------------------------------------------------------------------ object builders
+HEAD_DEPTH = 0.022  # round 10: headlamp recess depth (pocket floor below the paint surface)
+
+
+def p_headlamp(x, s, z):
+    """Round 10: the nose corner where the light band sits becomes a recess (dark walls, lens and
+    LED strip inside), not a white shape stuck on the paint."""
+    return 0.03 <= s <= 0.095 and abs(x) >= 0.16 and z >= B.z_sh(s) - 0.085
+
+
 def build_lights_front(mats):
     bm = bmesh.new()
     for sg in (1, -1):
         # lens band wraps the nose corner: v runs from the side (z_sh - 0.10) to the notch edge
+        # lens sits 3 mm under the paint line, 19 mm above the recess floor (outer clear cover)
         P, N = v_grid([0.035, 0.060, 0.085], lambda s: np.linspace(*light_band(s), 12), sg)
-        add_thick(bm, P, N, 0.006, 0.002, 1)  # clear lens (slot 1)
+        add_thick(bm, P, N, -0.003, 0.002, 1)  # clear lens (slot 1)
         v0, v1 = light_band(0.060)
         edges = np.linspace(v0, v1, 10)
         for k in range(9):
             d = 0.12 * (edges[1] - edges[0])
             a, b_ = edges[k] + d, edges[k + 1] - d
             P, N = v_grid([0.042, 0.078], lambda s: [a, 0.5 * (a + b_), b_], sg)
-            add_thick(bm, P, N, 0.0035, 0.0015, 0)  # emitter cells (slot 0)
+            add_thick(bm, P, N, -0.008, 0.0015, 0)  # LED strip cells behind the lens (slot 0)
     return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"]])
 
 
@@ -517,10 +528,6 @@ def build_trim(mats, body):
                                     B.z_sh(2.40) - 0.07 + 0.0125], sg)
         add_thick(bm, P, N, 0.001, 0.003, 0)
     # P7: no roof antenna (it broke the 1.19 m height check)
-    # front lower housing behind the light lens
-    for sg in (1, -1):
-        P, N = grid_top([0.030, 0.090], np.linspace(0.15, XE + 0.01, 5), sg)
-        add_thick(bm, P, N, 0.0025, 0.0025, 0)
     # P8: dark mesh in the lower nose intake: four thin horizontal bars across the recess
     for z in (0.255, 0.275, 0.295, 0.315):
         add_box(bm, (0.0, 0.035 - Y0, z), (1.0, 0.010, 0.008), 0)
@@ -590,7 +597,6 @@ def build_interior(mats):
     add_box(bm, (0.0, -0.055, 0.38), (1.2, 1.65, 0.04), mi)  # cabin floor
     add_box(bm, (0.0, -0.76, 0.56), (1.5, 0.22, 0.12), mi)  # dash base
     add_ell(bm, (0.0, -0.76, 0.62), 0.78, 0.12, 0.20, True, mi)  # dash top, rounded
-    add_box(bm, (-0.32, -0.70, 0.91), (0.22, 0.10, 0.08), mi)  # binnacle
     add_box(bm, (0.0, 0.30, 0.46), (0.20, 1.40, 0.12), mi)  # centre tunnel
     for sx in (-1, 1):
         x = sx * 0.32

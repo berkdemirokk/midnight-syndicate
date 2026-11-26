@@ -8,26 +8,26 @@
   "name": "paint_tab",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 258,
-    "draw_calls_min": 258,
+    "draw_calls": 264,
+    "draw_calls_min": 264,
     "driver": "vulkan",
-    "fps": 539.69,
-    "frame_ms_avg": 1.853,
-    "frame_ms_p95": 2.258,
-    "frame_ms_p99": 2.798,
+    "fps": 475.176,
+    "frame_ms_avg": 2.104,
+    "frame_ms_p95": 3.465,
+    "frame_ms_p99": 5.061,
     "frames": 60,
-    "objects": 400,
+    "objects": 413,
     "os": "Windows",
-    "primitives": 232536,
+    "primitives": 235554,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 456.557,
+    "video_mem_mb": 456.537,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/garage/paint_tab.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_74ca9b41-d2d-3/evidence/screens/garage/paint_tab.png",
   "preset": "high",
   "scenario": "garage"
 }

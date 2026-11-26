@@ -155,12 +155,14 @@ def build_body_and_details(mats_extra):
     body.data.materials.append(mats["M_Carbon"])  # slot 3: roof panel
     D.pocket(body, D.p_nose_intake, 0.030, "nose intake")
     D.pocket(body, D.p_side_intake, 0.070, "side intake")
+    D.pocket(body, D.p_headlamp, D.HEAD_DEPTH, "headlamp recess")
     D.lip_bevel(body)
     D.body_edit(body, D.tail_slice)
     D.pocket(body, D.p_tail_low, 0.035, "diffuser recess")
     D.pocket(body, D.p_tail_band, 0.008, "lamp surround")
     D.body_edit(body, D.sill_and_caps)
-    for ob in (body, glass, underbody):
+    B.finish_shading(body, weighted=False)  # custom normals are set after triangulation (main)
+    for ob in (glass, underbody):
         B.finish_shading(ob)
     glass.data.materials.clear()
     glass.data.materials.append(mats["M_Glass"])
@@ -284,6 +286,8 @@ def main():
         bmesh.ops.triangulate(bm, faces=list(bm.faces))
         bm.to_mesh(ob.data)
         bm.free()
+    B.smooth_normals(objs["body"])
+    B.analytic_normals(objs["body"])  # wheel-arch and cut-edge streaks: Kestrel fix, ported
     tris0, total0 = build_lod0_check(objs)
     # the scene floor and rig materials are not part of the car: keep only car materials used
     for n in ("M_Clay",):
