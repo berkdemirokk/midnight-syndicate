@@ -6007,6 +6007,1113 @@
       "test_result": "pass",
       "added": "2026-11-25",
       "notes": "Midnight Syndicate branding render (assets_src/branding/render_brand.py, make_icons.py)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_bld_ahsap_row_a_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/bld_ahsap_row_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 490064,
+      "sha256": "e36c6272d6d029e434248dc8c7d3acaa79e60daa462eecb0c4b2ca831f219ba0",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_bld_ahsap_row_b_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/bld_ahsap_row_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 527192,
+      "sha256": "1d93dcaa42030a7af8b5c7955fa18c102b3d488509ce0970aa5eb4ae80d4f7ab",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_bld_ahsap_row_c_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/bld_ahsap_row_c.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 763312,
+      "sha256": "287d59fd1415dfb95ef4a2499bff378f1c79909721cfa62ab1b59864fe918164",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_bld_yali_a_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/bld_yali_a.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 517736,
+      "sha256": "79d8564837aab06fd2899adf86b8c3ee5b8a2ba74892c06366108e25aa042d60",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_bld_yali_b_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/bld_yali_b.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 443664,
+      "sha256": "3a7deaf9d4cf3d12a593647a74c83c069392d20944d2d2d78b5e3a3cac660f0e",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_bld_yali_c_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/bld_yali_c.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 487092,
+      "sha256": "d6f4a88827cc984d56a93aa18c1ba5fba9a5387ca4f0519de91b40859e17a311",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_catalog_json",
+      "kind": "generated",
+      "path": "game/assets/world/kits/istanbul/catalog.json",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 15340,
+      "sha256": "2c1ba4b8724e2b11a771f56ffa7e28f8c80d2e183a0f8703dc6727e18e283aed",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_materials_json",
+      "kind": "generated",
+      "path": "game/assets/world/kits/istanbul/materials.json",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 8531,
+      "sha256": "01768566323a26258dd5ba16cc299746d2cdb84030f06566655336a12f764086",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_cobble_strip_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_cobble_strip.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 182408,
+      "sha256": "fdb316972ff5340b864b64a2342d56d07c51691305821e3cf44e47425f1efead",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_cobble_strip_lod1_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_cobble_strip_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 75240,
+      "sha256": "d56b12419f05317145e2189b3fb91702c6bba9a8feabc24ca20255c379a3d780",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_ferry_pier_light_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_ferry_pier_light.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 49024,
+      "sha256": "8144da2a72784644af0c6b5759b8f3cd440b5b7c91eb6776dc354d59028adc83",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_fish_cart_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_fish_cart.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 113576,
+      "sha256": "9b7e16b75b21a4d1799a239efc5bff78a3fcb88bb11e31347dd5f08c92857a68",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_fish_cart_lod1_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_fish_cart_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 47504,
+      "sha256": "b0051819c3bd40fb10a151a217b47976bdc37c84e7f6653dcc52ed117c8e076f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_promenade_lamp_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_promenade_lamp.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 62396,
+      "sha256": "0e29c69e6b6f6e6257778be5d7ef2b05abbefa44d50392ed55346cc8b56838b5",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_promenade_lamp_lod1_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_promenade_lamp_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 28848,
+      "sha256": "1c8f337a211487e62a3ec9f45536b1d555138aff3a898d86d64bdd44cf8add0f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_seaside_railing_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_seaside_railing.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 126356,
+      "sha256": "49ae3cd9d4e4eda3d32abaf113ce95002fa69088307fb14d51e5f75d854025c8",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_seaside_railing_lod1_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_seaside_railing_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 48116,
+      "sha256": "2660f32a6c56f19b2d9bacd906efd1f6f42545ac02e8b165190023288f9a08ca",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_simit_cart_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_simit_cart.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 139164,
+      "sha256": "99682e553c5b6f3ff2b5d92feb6ec104e1cfd1fd672ac56b7d0bf41900114b55",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_simit_cart_lod1_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_simit_cart_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 60260,
+      "sha256": "c4c2e053970c44c3eff81a62df6f3d7100bbfc10f6c6d11090ccc04bfdfda0e1",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_skyline_asia_hills_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_skyline_asia_hills.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 63936,
+      "sha256": "88fc7ed8861e4c99304f2856522eca8470cfb494f961460dcc86d017e62c79df",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_skyline_bridge_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_skyline_bridge.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 48308,
+      "sha256": "e11a988da3dc02e1a2077466c071cec2a7d0078a7b8cd34c79eda1bf0d2e31da",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_skyline_domes_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_skyline_domes.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 79188,
+      "sha256": "497dfd33fe1a4f63303151f497a5540c3a6022a7fae8f5a8c97e63420f165a27",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_tram_rail_segment_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_tram_rail_segment.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 99180,
+      "sha256": "0a095ff060211a71154108f3e6d08bd2469d2cc8fb1f28ccd6477e9c2c7fc3a6",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_prop_tram_rail_segment_lod1_glb",
+      "kind": "model",
+      "path": "game/assets/world/kits/istanbul/prop_tram_rail_segment_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 45268,
+      "sha256": "79dfef6524f629a3d4e800b28deef327db3102578015f2539fdd031c3da8e626",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_report_json",
+      "kind": "generated",
+      "path": "game/assets/world/kits/istanbul/report.json",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 2867,
+      "sha256": "59e8a89f9b39b6a888008af4c0abbfe41f4f23f4537e07a56af634e5237a2829",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_cobble_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/cobble_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "cobble_basecolor.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 1419362,
+      "sha256": "0dcc2af25f77f62d5496248eb7f1e3d498a0df3013fcb945a8e2e0daa5d03065",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_cobble_normal_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/cobble_normal.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "cobble_normal.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 53375,
+      "sha256": "6408e4d2b534574b62dc10f1c191b7ee2fbbbf10587d4c0e0c9828ee99ce924a",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_cobble_roughness_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/cobble_roughness.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "cobble_roughness.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 1039356,
+      "sha256": "4f59abe32a0138d6234e11abb03b624cc8de91b20c6929989eb8149d6dd9578e",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_ahsap_row_a_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_ahsap_row_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8037,
+      "sha256": "cf7c208477d8b9fc4424940d8da3606c924fab6a385329ee4d5913bb8bd50827",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_ahsap_row_a_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_ahsap_row_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8037,
+      "sha256": "cf7c208477d8b9fc4424940d8da3606c924fab6a385329ee4d5913bb8bd50827",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_ahsap_row_a_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_ahsap_row_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3730,
+      "sha256": "b0341f1005620a9b0f10d263f58812855d3303bac6a2b5eda4b70d3e5924ed7b",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_ahsap_row_a_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_ahsap_row_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3730,
+      "sha256": "b0341f1005620a9b0f10d263f58812855d3303bac6a2b5eda4b70d3e5924ed7b",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_ahsap_row_b_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_ahsap_row_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6851,
+      "sha256": "0cb816a4ca02f313ccc815e5db9eed0899fd6b99d88c125d56f39658a8a517be",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_ahsap_row_b_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_ahsap_row_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6851,
+      "sha256": "0cb816a4ca02f313ccc815e5db9eed0899fd6b99d88c125d56f39658a8a517be",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_ahsap_row_b_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_ahsap_row_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3189,
+      "sha256": "368155932f80c4efddeac17c825e82aacffbb9289278c1f624761f8b4fa2fdf6",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_ahsap_row_b_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_ahsap_row_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3189,
+      "sha256": "368155932f80c4efddeac17c825e82aacffbb9289278c1f624761f8b4fa2fdf6",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_ahsap_row_c_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_ahsap_row_c_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_c_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8163,
+      "sha256": "c753372692d910294237a70de45889834eab7f406b114f80870bde4efd9041d0",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_ahsap_row_c_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_ahsap_row_c_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_c_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8163,
+      "sha256": "c753372692d910294237a70de45889834eab7f406b114f80870bde4efd9041d0",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_ahsap_row_c_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_ahsap_row_c_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_c_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3446,
+      "sha256": "6c59befda21219e7893899c272dc2ceda3a0798a43b88536a0e2462387fca51f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_ahsap_row_c_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_ahsap_row_c_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_ahsap_row_c_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3446,
+      "sha256": "6c59befda21219e7893899c272dc2ceda3a0798a43b88536a0e2462387fca51f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_yali_a_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_yali_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8067,
+      "sha256": "996b693a60f4035e0623f8b9544a8b73d53bcb1de9deb074b8e2c57a8763cf17",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_yali_a_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_yali_a_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_a_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 8067,
+      "sha256": "996b693a60f4035e0623f8b9544a8b73d53bcb1de9deb074b8e2c57a8763cf17",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_yali_a_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_yali_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3324,
+      "sha256": "d73a041e3033a0c2f2ea068cdb79d9cecd1ad3bf1af86d7b0ae7afd61fc10f4d",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_yali_a_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_yali_a_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_a_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3324,
+      "sha256": "d73a041e3033a0c2f2ea068cdb79d9cecd1ad3bf1af86d7b0ae7afd61fc10f4d",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_yali_b_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_yali_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6513,
+      "sha256": "083c14e001372db35be4492f7b351e3b8672cd958211a8df6c3736bdfdb120d3",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_yali_b_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_yali_b_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_b_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6513,
+      "sha256": "083c14e001372db35be4492f7b351e3b8672cd958211a8df6c3736bdfdb120d3",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_yali_b_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_yali_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2905,
+      "sha256": "80872db63b1df093e42387a1b9dcc4e255928d5d1452e620df706cf644a4303f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_yali_b_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_yali_b_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_b_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2905,
+      "sha256": "80872db63b1df093e42387a1b9dcc4e255928d5d1452e620df706cf644a4303f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_yali_c_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_yali_c_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_c_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6435,
+      "sha256": "1e78f83486e940c331171a17c1fba66de581d63e7f84f5608bc0f0014f222a59",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_yali_c_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_yali_c_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_c_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 6435,
+      "sha256": "1e78f83486e940c331171a17c1fba66de581d63e7f84f5608bc0f0014f222a59",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_impostor_bld_yali_c_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/impostor_bld_yali_c_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_c_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2758,
+      "sha256": "4fc81b5392acc1ecceca2a364e62d908228c2aac31eb6b96610ac369cd364e01",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_buildings_textures_impostor_bld_yali_c_emissive_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/buildings/textures/impostor_bld_yali_c_emissive.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "impostor_bld_yali_c_emissive.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 2758,
+      "sha256": "4fc81b5392acc1ecceca2a364e62d908228c2aac31eb6b96610ac369cd364e01",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_roof_tile_basecolor_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/roof_tile_basecolor.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "roof_tile_basecolor.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 447456,
+      "sha256": "f88e1f466424ec7209bd550c5039fa58e4322bb1ee38fc6252949e0d7ef3d0ce",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_skyline_asia_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/skyline_asia.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "skyline_asia.png": [
+          2048,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 15239,
+      "sha256": "1005289689346dc3fb99c3665407ffc74fee3216237bb9633c4a74a6f6356f8f",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_skyline_bridge_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/skyline_bridge.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "skyline_bridge.png": [
+          2048,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 27112,
+      "sha256": "497d60409ed9dfb77c66d9329a141bcf33d66be0bece147fcd9dc9ad0fa60fc6",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
+    },
+    {
+      "id": "istanbul_kit_kits_istanbul_textures_skyline_domes_png",
+      "kind": "texture",
+      "path": "game/assets/world/kits/istanbul/textures/skyline_domes.png",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "skyline_domes.png": [
+          2048,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 44091,
+      "sha256": "9fb100e8caa4851434125b472b5a29a59c9bdb2e9e01fb020569ca9503e2238d",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     }
   ]
 }
