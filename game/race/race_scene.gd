@@ -59,6 +59,7 @@ const RIM_LIGHT_NAME: String = "CarRimLight"
 const UNDERGLOW_RIVAL: Array[Color] = [Color(1.0, 0.2, 0.55), Color(0.2, 0.75, 1.0), Color(1.0, 0.55, 0.15), Color(0.35, 1.0, 0.5)]  ## rival underglow colours, by grid slot
 const ISTANBUL_NAMES: PackedStringArray = ["Mert", "Emir", "Kerem", "Deniz", "Aras", "Baran", "Selim"]  ## rival names on the Istanbul tracks
 const STREET_FRONTS_SCRIPT: String = "res://world/street_fronts/street_fronts.gd"  ## optional module: setup(track, time_of_day_id)
+const STREET_PANO_DAY: String = "res://assets/vehicles/shared/street_pano_day.jpg"
 const STREET_PANO: String = "res://assets/vehicles/shared/street_pano_night.jpg"  ## night street panorama mirrored in the car paint
 const PHOTO_FRONTS_SCRIPT: String = "res://world/street_fronts/photo_fronts.gd"  ## photo-textured row houses; used instead when present
 const BOGAZ_TRACK_KEY: String = "istanbul_bogaz"  ## track scenes with this in their path get the Bosphorus scenery
@@ -405,8 +406,9 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 		_add_shadow_proxy(lod)
 	if lod != null and tod.rain:
 		CarMaterials.set_wet(lod, true)  # rain beads on the clear coat
-	if lod != null and (tod.is_night() or config_used.time_of_day == "sunset") and Settings.get_preset_id() != "low" and ResourceLoader.exists(STREET_PANO):
-		CarMaterials.set_reflection(lod, load(STREET_PANO) as Texture2D, 0.55 if tod.is_night() else 0.3)  # the lit street in the paint
+	var pano_path: String = STREET_PANO if (tod.is_night() or config_used.time_of_day == "sunset") else STREET_PANO_DAY
+	if lod != null and Settings.get_preset_id() != "low" and ResourceLoader.exists(pano_path):
+		CarMaterials.set_reflection(lod, load(pano_path) as Texture2D, 0.55 if tod.is_night() else (0.3 if config_used.time_of_day == "sunset" else 0.16))  # the street in the paint
 	# Engine, tyres, nitro and impacts; rivals get the cheaper, quieter positional set.
 	var audio := CarAudio.new()
 	audio.name = "CarAudio"

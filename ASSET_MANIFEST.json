@@ -12066,6 +12066,28 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Night street panorama mirrored in the car paint (second pass). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/street_pano_night.png."
+    },
+    {
+      "id": "car_street_pano_day",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/street_pano_day.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "street_pano_day.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 760550,
+      "sha256": "f7d5b45c3365c816fcd211babbc47fa692004b5104d049fc056e6cab838285be",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Day street panorama mirrored in the car paint (second pass). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/street_pano_day.png."
     }
   ]
 }
