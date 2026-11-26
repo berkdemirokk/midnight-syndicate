@@ -13,6 +13,8 @@ const DEFAULT_CARS: Array[Dictionary] = [
 	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
 	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300},
 	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800},
+	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "arden_havoc", "class": "muscle", "price": 16000, "rep": 400},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 ]
 
 ## Tests swap this; the game never writes it.

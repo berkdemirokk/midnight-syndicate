@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.253,
+  "luma_min": 0.0,
+  "name": "lod2",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 33,
+    "draw_calls_min": 33,
+    "driver": "vulkan",
+    "fps": 2234.554,
+    "frame_ms_avg": 0.448,
+    "frame_ms_p95": 0.497,
+    "frame_ms_p99": 0.551,
+    "frames": 60,
+    "objects": 33,
+    "os": "Windows",
+    "primitives": 7258,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 473.865,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/cars2/evidence/screens/car_studio_vanta/lod2.png",
+  "preset": "high",
+  "scenario": "car_studio_vanta"
+}

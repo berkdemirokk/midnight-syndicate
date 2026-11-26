@@ -6,8 +6,8 @@ extends "res://devtools/capture_scenario.gd"
 ## Options: --tod=day|night (default both).
 
 const SCENE: String = "res://race/race_scene.tscn"
-const CAR_SCENE: String = "res://vehicles/noctra_sable/noctra_sable.tscn"
-const CAR_SPEC: String = "res://vehicles/specs/noctra_sable.tres"
+const CAR_SCENE: String = "res://vehicles/kestrel_vanta/kestrel_vanta.tscn"
+const CAR_SPEC: String = "res://vehicles/specs/kestrel_vanta.tres"
 const TRACK: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 const SETTLE_FRAMES: int = 40
 const GAMEPLAY_S: float = 3.0

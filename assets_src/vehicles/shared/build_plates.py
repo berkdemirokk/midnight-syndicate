@@ -28,6 +28,7 @@ G = {  # polylines on a 4 x 8 cell, y down; chamfered corners like a plate typef
     "K": [[(0, 0), (0, 8)], [(4, 0), (0, 5)], [(1.6, 3.4), (4, 8)]],
     "G": [[(4, 1), (3, 0), (1, 0), (0, 1), (0, 7), (1, 8), (3, 8), (4, 7), (4, 4.5), (2.2, 4.5)]],
     "T": [[(0, 0), (4, 0)], [(2, 0), (2, 8)]],
+    "H": [[(0, 0), (0, 8)], [(4, 0), (4, 8)], [(0, 4), (4, 4)]],
     "R": [[(0, 8), (0, 0), (3, 0), (4, 1), (4, 3), (3, 4), (0, 4)], [(2, 4), (4, 8)]],
 }
 
@@ -74,3 +75,12 @@ for car, number in PLATES.items():
         w, h = Image.open(p).size
         plate(number).resize((w, h), Image.LANCZOS).save(p)
         print(p, w, h)
+
+# Pipeline cars (assets_src/pipeline/prepare_vehicle.py): one plate image per car, 512 x 128, read by the config.
+PIPELINE_PLATES = {"kestrel_vanta": "34 KV 517", "arden_havoc": "34 AH 208"}
+for car, number in PIPELINE_PLATES.items():
+    d = os.path.join(ROOT, "game", "assets", "vehicles", car)
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "%s_plate_base.png" % car)
+    plate(number).save(p)
+    print(p, 512, 128)
