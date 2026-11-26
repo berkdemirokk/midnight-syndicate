@@ -52,6 +52,44 @@ func test_texture_paths_exist() -> void:
 			check(FileAccess.file_exists(res), "%s texture missing: %s" % [k, res])
 
 
+func test_lod0_vertex_colours_are_baked_ao() -> void:
+	## every building's LOD0 carries the baked ambient occlusion as vertex colours, and not all of it is white
+	var cat: Dictionary = _json(DIR + "catalog.json")
+	for b: Variant in cat.get("buildings", []):
+		var d: Dictionary = b
+		var scene: PackedScene = load(DIR + String(d["file"])) as PackedScene
+		check(scene != null, "GLB does not load " + String(d["file"]))
+		if scene == null:
+			continue
+		var root: Node = scene.instantiate()
+		var coloured: int = 0
+		var dark: int = 0
+		for mi: MeshInstance3D in _meshes(root):
+			if not mi.name.begins_with("LOD0") or mi.mesh == null:
+				continue
+			for i: int in mi.mesh.get_surface_count():
+				var cols: Variant = mi.mesh.surface_get_arrays(i)[Mesh.ARRAY_COLOR]
+				if cols == null:
+					continue
+				coloured += 1
+				for c: Color in cols:
+					if c.r < 0.99:
+						dark += 1
+						break
+		root.free()
+		check(coloured > 0, "%s LOD0 has no vertex colours (baked AO missing)" % d["id"])
+		check(dark > 0, "%s LOD0 vertex colours are all white" % d["id"])
+
+
+func _meshes(root: Node) -> Array[MeshInstance3D]:
+	var out: Array[MeshInstance3D] = []
+	if root is MeshInstance3D:
+		out.append(root)
+	for c: Node in root.get_children():
+		out.append_array(_meshes(c))
+	return out
+
+
 func test_skyline_materials_build() -> void:
 	for n: String in IstanbulMaterials.SKYLINES:
 		var m: Material = IstanbulMaterials.build(n)

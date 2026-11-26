@@ -3,6 +3,16 @@
   "lods": {
     "0": {
       "tris": 13542,
+      "tris_after_ao": 19818,
+      "ao": {
+        "landmark_mosque_lod0": {
+          "min": 0.35,
+          "mean": 0.664,
+          "max": 1.0,
+          "loops": 51350,
+          "tris": 19818
+        }
+      },
       "materials_used": [
         "M_Dome",
         "M_Glass",
@@ -23,6 +33,16 @@
     },
     "1": {
       "tris": 5404,
+      "tris_after_ao": 5404,
+      "ao": {
+        "landmark_mosque_lod1": {
+          "min": 0.35,
+          "mean": 0.738,
+          "max": 1.0,
+          "loops": 16212,
+          "tris": 5404
+        }
+      },
       "materials_used": [
         "M_Dome",
         "M_Glass",
@@ -43,6 +63,8 @@
     },
     "2": {
       "tris": 576,
+      "tris_after_ao": 576,
+      "ao": null,
       "materials_used": [
         "M_Dome",
         "M_Iron",

@@ -31,6 +31,7 @@ Every face is oriented by construction: each poly() call is given the outward di
 import json
 import math
 import os
+import sys
 
 import bmesh
 import bpy
@@ -39,6 +40,11 @@ from mathutils import Vector
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 OUT_DIR = os.path.join(REPO, "game", "assets", "world", "kits", "landmarks")
+sys.path.insert(0, os.path.join(REPO, "assets_src", "pipeline"))
+import bake_vertex_ao as ao  # noqa: E402
+
+# baked ambient occlusion (vertex colour) per LOD: grid cell size in m, None = no subdivision (LOD1 budget is tight)
+AO_CELL = {0: 5.5, 1: None}
 
 MATS = ["M_Stone", "M_Dome", "M_Glass", "M_Lamp", "M_Iron", "M_Paving"]
 STONE, DOME, GLASS, LAMP, IRON, PAVE = range(6)
@@ -446,8 +452,15 @@ def main():
         obj = bpy.data.objects.new("landmark_mosque_lod%d" % detail, mesh)
         bpy.context.scene.collection.objects.link(obj)
         path = os.path.join(OUT_DIR, "landmark_mosque_lod%d.glb" % detail)
-        export_glb(obj, path)
-        report["lods"][str(detail)] = {"tris": tris, "materials_used": sorted(per_mat.keys()), "tris_per_material": per_mat,
+        ao_stats = None
+        if detail < 2:
+            ao_stats = ao.bake_ao([obj], cell_m=AO_CELL[detail])
+            ao.export_glb_ao(path, [obj])
+        else:
+            export_glb(obj, path)
+        mesh.calc_loop_triangles()
+        report["lods"][str(detail)] = {"tris": tris, "tris_after_ao": len(mesh.loop_triangles), "ao": ao_stats,
+                                      "materials_used": sorted(per_mat.keys()), "tris_per_material": per_mat,
                                       "file": os.path.relpath(path, REPO).replace("\\", "/")}
         print("[landmark] lod%d tris=%d materials=%s" % (detail, tris, sorted(per_mat.keys())))
         bpy.data.objects.remove(obj)

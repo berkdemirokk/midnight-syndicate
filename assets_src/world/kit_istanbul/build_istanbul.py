@@ -19,10 +19,12 @@ KIT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, KIT)
 sys.path.insert(0, os.path.join(KIT, "..", "kit_buildings"))
 sys.path.insert(0, os.path.join(KIT, "..", "kit_props"))
+sys.path.insert(0, os.path.join(KIT, "..", "..", "..", "assets_src", "pipeline"))
 import bpy  # noqa: E402
 import numpy as np  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
+import bake_vertex_ao as ao  # noqa: E402
 import build_buildings as bb  # noqa: E402
 import build_props as bp  # noqa: E402
 import istanbul_props as ip  # noqa: E402
@@ -33,6 +35,8 @@ sys.argv = _argv
 OUT = os.path.join(KIT, "out")
 TEXD = os.path.join(OUT, "textures")
 SEED = 20261126
+# baked ambient occlusion: grid cell in m per LOD (None = not subdivided). LOD0 budget 12 000, LOD1 budget 1 200.
+AO_CELL = {0: 3.5, 1: None}
 Z = Vector((0.0, 0.0, 1.0))
 GEN = "game/assets/world/kits/istanbul/textures/"
 CC0 = "game/assets/textures/cc0/"
@@ -580,6 +584,10 @@ def export_building(name, spec_id, variant, kind, lods, anchors_b, spv, var, dis
         o = bb.mesh_object("LOD%d" % lod, lods[lod], root)
         objs.append(o)
         tri["LOD%d" % lod] = lods[lod].total_tris()
+        if lod in AO_CELL:  # baked ambient occlusion, LOD2 impostor card is left alone
+            ao.bake_ao([o], cell_m=AO_CELL[lod])
+            o.data.calc_loop_triangles()
+            tri["LOD%d" % lod] = len(o.data.loop_triangles)
     (x0, x1), (y0, y1), (z0, z1) = bb.bounds(lods[0])
     col = bb.mesh_object(name + "-colonly", bb._box_builder((x0, y0, z0), (x1, y1, z1)), root)
     objs.append(col)
@@ -591,7 +599,7 @@ def export_building(name, spec_id, variant, kind, lods, anchors_b, spv, var, dis
         bpy.context.scene.collection.objects.link(e)
         objs.append(e)
         anchors.append(dict(name=an, position=bb.to_godot(p), normal=bb.to_godot(n)))
-    bb.export_glb(os.path.join(OUT, name + ".glb"), root, objs)
+    ao.export_glb_ao(os.path.join(OUT, name + ".glb"), objs, root, apply=True, tangents=True)
     mats = sorted(set(sum([list(lods[k].parts.keys()) for k in (0, 1, 2)], [])))
     ratio = tri["LOD1"] / max(1, tri["LOD0"])
     cat["buildings"].append(dict(

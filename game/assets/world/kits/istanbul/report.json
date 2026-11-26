@@ -1,50 +1,50 @@
 {
  "buildings": {
   "bld_yali_a": {
-   "lod0": 7246,
+   "lod0": 8946,
    "lod1": 396,
    "lod2": 16,
-   "lod1_ratio": 0.055,
+   "lod1_ratio": 0.044,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_yali_b": {
-   "lod0": 6358,
+   "lod0": 7725,
    "lod1": 318,
    "lod2": 16,
-   "lod1_ratio": 0.05,
+   "lod1_ratio": 0.041,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_yali_c": {
-   "lod0": 6760,
+   "lod0": 8591,
    "lod1": 334,
    "lod2": 16,
-   "lod1_ratio": 0.049,
+   "lod1_ratio": 0.039,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_ahsap_row_a": {
-   "lod0": 5216,
+   "lod0": 5864,
    "lod1": 488,
    "lod2": 36,
-   "lod1_ratio": 0.094,
+   "lod1_ratio": 0.083,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_ahsap_row_b": {
-   "lod0": 6306,
+   "lod0": 7147,
    "lod1": 550,
    "lod2": 48,
-   "lod1_ratio": 0.087,
+   "lod1_ratio": 0.077,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_ahsap_row_c": {
-   "lod0": 9616,
+   "lod0": 10592,
    "lod1": 648,
    "lod2": 36,
-   "lod1_ratio": 0.067,
+   "lod1_ratio": 0.061,
    "lod1_ok": true,
    "lod0_in_budget": true
   }

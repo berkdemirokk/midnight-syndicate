@@ -69,6 +69,33 @@ func test_kit_budgets_and_surfaces() -> void:
 			check(SURFACES.has(String(k)), "LOD%d unknown surface material '%s'" % [lod, k])
 
 
+func test_lod_vertex_colours_are_baked_ao() -> void:
+	## LOD0 and LOD1 carry the baked ambient occlusion as vertex colours, and not all of it is white
+	for lod: int in 2:
+		var scene: PackedScene = load(DIR + LOD_FILES[lod]) as PackedScene
+		check(scene != null, "GLB does not load " + LOD_FILES[lod])
+		if scene == null:
+			continue
+		var root: Node = scene.instantiate()
+		var coloured: int = 0
+		var dark: int = 0
+		for mi: MeshInstance3D in _meshes(root):
+			if mi.mesh == null:
+				continue
+			for i: int in mi.mesh.get_surface_count():
+				var cols: Variant = mi.mesh.surface_get_arrays(i)[Mesh.ARRAY_COLOR]
+				if cols == null:
+					continue
+				coloured += 1
+				for c: Color in cols:
+					if c.r < 0.99:
+						dark += 1
+						break
+		root.free()
+		check(coloured > 0, "LOD%d has no vertex colours (baked AO missing)" % lod)
+		check(dark > 0, "LOD%d vertex colours are all white" % lod)
+
+
 func test_sea_side_and_clear_of_layout() -> void:
 	var pair: Array = await _populate()
 	var track: Track = pair[0]
