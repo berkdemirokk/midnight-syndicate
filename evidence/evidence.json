@@ -1,5 +1,5 @@
 {
-  "commit": "3ca478f",
+  "commit": "ad4ff37",
   "engine": "Godot 4.7.2 stable, Mobile renderer, GDScript",
   "run_command": "Godot_v4.7.2-stable_win64_console.exe --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]",
   "captures": {
@@ -9,10 +9,10 @@
     "gameplay": "evidence/gameplay.png"
   },
   "test_log": "evidence/test.log",
-  "visual_review": "Lead review of real engine captures (not the concept image). Since the last set: six licensed cars (player and rivals), photo-based sandstone on the mosque, baked ambient occlusion on the mosque and houses, timber houses with real plank texture, rubber and oil on the asphalt, day sun and sky fill retuned, greyed glass reflections. Still weak, not accepted as final: house fronts are still simple (flat roofs from the road, plain ground floors), trees are dark card clusters, sea-side wall and kerb are plain, the bridge is plain grey by day, no spectators, no rain beads on paint. Gate score by the lead about 76/100, target 90 not reached. The owner decides acceptance.",
+  "visual_review": "Lead review of real engine captures (not the concept image). Since the last set: house facade pass 2 (shop-front pilasters and risers, deeper glazing, hipped roofs and oriels on some row houses, a pediment and a belvedere, window grilles), built by a Haiku agent, reviewed by two independent Haiku reviewers (art, technical), then one fix pass; the reviewers did NOT approve the art: gain is modest. Day sky fill lifted so shaded fronts read. Still weak, not accepted as final: house fronts still read as simple planes from the road, ground floors of the near timber row are dark at night, far houses (LOD1) are still plain, trees are dark card clusters, sea-side wall and kerb plain, no spectators, no rain beads. Gate score by the lead about 77/100, target 90 not reached. The owner decides acceptance.",
   "device": "Desktop PC, Windows 11, NVIDIA GeForce RTX 5060 Ti 8 GB, 1920x1080, High preset. Not an iPhone measurement.",
-  "fps": 320.0,
-  "frame_time_ms": 3.125,
+  "fps": 310.4,
+  "frame_time_ms": 3.221,
   "ios_test": "not_run",
-  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 320 fps average, 3.13 ms avg, 4.07 ms p95, 395 draw calls, 416446 primitives. Day gameplay 420 fps / 2.38 ms, dusk 364 fps / 2.75 ms. Peak over all 15 benchmark shots: 395 draws, 430799 primitives (budget 500 / 450000; the primitive headroom is 4 %). Uncapped desktop numbers over 60 frames; they say nothing about iPhone."
+  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 310 fps average, 3.22 ms avg, 3.96 ms p95, 389 draw calls, 388028 primitives. Day gameplay 376 fps / 2.66 ms, dusk 373 fps / 2.68 ms. Peak over all 15 benchmark shots: 389 draws, 412836 primitives (budget 500 / 450000). Uncapped desktop numbers over 60 frames; they say nothing about iPhone. The gameplay.png evidence file is the dusk gameplay shot."
 }
