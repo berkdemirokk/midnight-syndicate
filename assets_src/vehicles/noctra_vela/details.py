@@ -344,14 +344,14 @@ def lamp_x(s):
 def build_lights_front(mats):
     """Slim wedge headlamp on the bonnet corner: clear lens over three LED bars, per side."""
     bm = bmesh.new()
-    rows = list(np.linspace(0.040, 0.190, 8))
+    rows = list(np.linspace(0.050, 0.136, 6))
     for sg in (1, -1):
         P, N = grid_top(rows, lamp_x, sg)
-        add_thick(bm, P, N, 0.0095, 0.0015, 1)  # clear lens (slot 1)
-        # thin day-running bar along the leading edge, and a block projector at the inner end
-        P, N = grid_top(list(np.linspace(0.056, 0.076, 3)), lambda s: np.linspace(0.46, B.xs_of(s) - 0.030, 8), sg)
+        # no milky lens slab: the shared M_Lens read as a beige plate in engine; the dark housing shows instead
+        # thin day-running bar along the leading edge, and a small projector at the inner end
+        P, N = grid_top(list(np.linspace(0.058, 0.066, 2)), lambda s: np.linspace(0.47, B.xs_of(s) - 0.034, 10), sg)
         add_thick(bm, P, N, 0.0065, 0.0012, 0)
-        P, N = grid_top(list(np.linspace(0.105, 0.165, 4)), lambda s: np.linspace(0.48, 0.62, 5), sg)
+        P, N = grid_top(list(np.linspace(0.098, 0.128, 3)), lambda s: np.linspace(0.50, 0.57, 4), sg)
         add_thick(bm, P, N, 0.0065, 0.0012, 0)
     return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"]])
 
@@ -359,10 +359,10 @@ def build_lights_front(mats):
 def spoiler_poly():
     """Roof spoiler section (s, z): rides the roof trailing edge and overhangs the hatch glass."""
     zt = B.z_top
-    return [(3.34, zt(3.34) + 0.004), (3.44, zt(3.44) + 0.030), (3.54, zt(3.54) + 0.062),
-            (3.64, zt(3.54) + 0.054), (3.675, zt(3.54) + 0.040), (3.660, zt(3.54) + 0.026),
-            (3.58, zt(3.54) + 0.020), (3.50, zt(3.50) - 0.010), (3.40, zt(3.40) - 0.025),
-            (3.34, zt(3.34) - 0.025)]
+    zr = zt(3.38)
+    return [(3.28, zt(3.28) + 0.004), (3.40, zr + 0.040), (3.52, zr + 0.060), (3.64, zr + 0.058),
+            (3.675, zr + 0.052), (3.690, zr + 0.080), (3.660, zr + 0.082), (3.655, zr + 0.040),
+            (3.58, zr + 0.016), (3.48, zr - 0.012), (3.40, zr - 0.026), (3.28, zt(3.28) - 0.026)]
 
 
 def build_trim(mats, body):
@@ -398,7 +398,7 @@ def build_trim(mats, body):
             add_box(bm, (x0, front_y(x0, z) + 0.001, z), (wseg, 0.008, 0.007), 1)
     # headlamp housing under the lens, same grid density as the lens so it follows the nose
     for sg in (1, -1):
-        P, N = grid_top(list(np.linspace(0.040, 0.190, 8)), lamp_x, sg)
+        P, N = grid_top(list(np.linspace(0.046, 0.150, 7)), lamp_x, sg)
         add_thick(bm, P, N, 0.0045, 0.0030, 0)
     # rear diffuser: three tapered carbon strakes
     for xk in (-0.12, 0.0, 0.12):
@@ -415,6 +415,21 @@ def build_trim(mats, body):
     for xo, inset in ((0.505, 0.80), (0.495, 0.96), (0.480, 1.0), (0.0, 1.0), (-0.480, 1.0), (-0.495, 0.96), (-0.505, 0.80)):
         rings.append(np.array([(xo, pc[0] - Y0 + (p[0] - pc[0]) * inset, pc[1] + (p[1] - pc[1]) * inset) for p in poly]))
     add_loft(bm, rings, 3)
+    zr = B.z_top(3.38)
+    plate = [(3.33, B.z_top(3.33) - 0.010), (3.42, zr + 0.052), (3.54, zr + 0.078), (3.68, zr + 0.092),
+             (3.70, zr + 0.060), (3.64, zr + 0.010), (3.54, zr - 0.040), (3.42, zr - 0.052), (3.33, B.z_top(3.33) - 0.030)]
+    for sx in (1, -1):  # end plates: a thin prism of the plate profile, outside the wing tips
+        x0, x1 = sx * 0.500, sx * 0.514
+        v0 = [bm.verts.new((x0, s - Y0, z)) for s, z in plate]
+        v1 = [bm.verts.new((x1, s - Y0, z)) for s, z in plate]
+        n = len(plate)
+        f0 = bm.faces.new(v0)
+        f1 = bm.faces.new(v1[::-1])
+        f0.material_index = f1.material_index = 3
+        for i in range(n):
+            j = (i + 1) % n
+            bm.faces.new([v0[i], v1[i], v1[j], v0[j]]).material_index = 3
+        bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces)[-(n + 2):])
     # mirrors: thin arm, teardrop housing (black base), paint cap on top
     for sx in (1, -1):
         sm = 1.40
@@ -440,9 +455,9 @@ def build_lights_rear_plate(mats):
     bl = bmesh.new()
     for sx in (1, -1):
         # vertical lamp unit on the tail corner, light bar running toward the centre
-        add_box(bl, (sx * 0.640, YB + 0.003, 0.815), (0.120, 0.008, 0.200), 0)
-        add_box(bl, (sx * 0.395, YB + 0.003, 0.905), (0.350, 0.008, 0.012), 0)
-    add_box(bl, (0.0, YB + 0.003, 0.905), (0.50, 0.008, 0.012), 0)
+        add_box(bl, (sx * 0.600, YB + 0.003, 0.790), (0.110, 0.008, 0.200), 0)
+        add_box(bl, (sx * 0.375, YB + 0.003, 0.880), (0.300, 0.008, 0.012), 0)
+    add_box(bl, (0.0, YB + 0.003, 0.880), (0.45, 0.008, 0.012), 0)
     lights = finish_obj("lights_rear", bl, [mats["M_LightRear"]])
     bp = bmesh.new()
     zc = 0.5 * (PLATE_Z[0] + PLATE_Z[1])
@@ -468,9 +483,9 @@ def liner(bm, mi):
     for sg in (1, -1):
         P, N = [], []
         # the liner must not cross the rear wheel: behind s 2.85 it starts above the arch (z 0.74)
-        for s in list(np.linspace(1.20, 2.85, 8)) + [2.95, 3.20, 3.50, 3.80]:
+        for s in list(np.linspace(1.40, 2.80, 8)) + [2.86, 2.88, 2.90, 3.20, 3.50, 3.70]:
             rp, rn = [], []
-            vlo = 0.12 if s < 2.9 else sv(s, 0.74)
+            vlo = 0.12 if s < 2.895 else sv(s, 0.74)
             for v in np.linspace(vlo, 0.98, 16):
                 p, n = B.surf(s, v) if sg > 0 else B.surf_mirror(s, v)
                 rp.append(p)

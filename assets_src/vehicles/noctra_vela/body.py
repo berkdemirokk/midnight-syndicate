@@ -26,7 +26,7 @@ except ImportError:  # pure-maths import outside Blender
 HERE = os.path.dirname(os.path.abspath(__file__))
 RENDER_DIR = os.path.join(HERE, "renders_stage1")
 Y_OFFSET = 2.03  # blender y = s - 2.03 (axles at s 0.755 and 3.305, so y -1.275 and +1.275)
-BODY_END = 4.00  # s of the last station before the tail cap
+BODY_END = 3.94  # s of the last station before the tail cap
 
 
 # ------------------------------------------------------------------ PCHIP curves
@@ -70,16 +70,16 @@ def _pchip(pts):
     return f
 
 
-_Z_TOP = _pchip([(0, .490), (0.06, .585), (0.18, .690), (0.45, .765), (0.755, .800), (1.00, .850),
-                 (1.12, .900), (1.35, 1.030), (1.60, 1.190), (1.85, 1.320), (2.10, 1.395),
-                 (2.50, 1.425), (2.90, 1.415), (3.25, 1.385), (3.52, 1.340), (3.66, 1.270),
-                 (3.80, 1.130), (3.92, 1.030), (4.00, 0.985)])
-_Z_BOT = _pchip([(0, .270), (0.12, .190), (0.40, .140), (0.80, .125), (3.30, .125), (3.70, .190),
-                 (4.00, .340)])
-_W_MAX = _pchip([(0, .620), (0.06, .770), (0.25, .870), (0.755, .915), (1.30, .875), (2.00, .865),
-                 (2.70, .875), (3.305, .915), (3.60, .905), (3.82, .875), (4.00, .830)])
-_Z_SH = _pchip([(0, .490), (0.08, .585), (0.20, .695), (0.45, .795), (0.755, .855), (1.20, .895),
-                (1.80, .925), (2.40, .945), (3.00, .965), (3.50, .985), (3.75, .980), (4.00, .955)])
+_Z_TOP = _pchip([(0, .470), (0.05, .560), (0.15, .665), (0.45, .765), (0.755, .805), (1.00, .850),
+                 (1.12, .900), (1.35, 1.035), (1.60, 1.195), (1.80, 1.320), (2.05, 1.395),
+                 (2.30, 1.427), (2.65, 1.425), (3.00, 1.395), (3.22, 1.370), (3.38, 1.340),
+                 (3.50, 1.270), (3.70, 1.050), (3.82, .985), (3.94, .950), (4.00, .940)])
+_Z_BOT = _pchip([(0, .270), (0.12, .190), (0.40, .140), (0.80, .125), (3.30, .125), (3.65, .180),
+                 (3.94, .360), (4.00, .380)])
+_W_MAX = _pchip([(0, .640), (0.06, .800), (0.25, .885), (0.755, .920), (1.30, .858), (2.00, .835),
+                 (2.60, .855), (3.305, .925), (3.60, .915), (3.76, .890), (3.88, .850), (3.94, .800), (4.00, .785)])
+_Z_SH = _pchip([(0, .470), (0.08, .560), (0.20, .665), (0.45, .745), (0.755, .800), (1.20, .850),
+                (1.80, .895), (2.40, .930), (3.00, .960), (3.50, .985), (3.75, .990), (3.94, .970), (4.00, .960)])
 _N_TOP = _pchip([(0, 2.0), (1.00, 2.2), (1.30, 2.8), (3.00, 2.8), (3.90, 2.2), (4.00, 2.0)])
 _SHELF = _pchip([(0, 0.0), (1.00, 0.0), (1.30, .050), (3.50, .050), (3.90, 0.0), (4.00, 0.0)])
 
@@ -125,9 +125,9 @@ def shelf_drop(s):
 # Greenhouse (lead, 2026-11-25). The cabin must be clearly narrower than the body: a shoulder
 # shelf, then side glass leaning in, then a narrow crowned roof. With the glass starting at the
 # widest shoulder the cabin read as a box sitting on the car.
-CAB_SHELF_W = 0.07  # flat-ish shoulder top between the body side and the glass base
+CAB_SHELF_W = 0.06  # flat-ish shoulder top between the body side and the glass base
 CAB_SHELF_DROP = 0.012  # the shelf falls this much toward the glass
-CAB_TUMBLE_DEG = 15.0  # side glass lean from vertical
+CAB_TUMBLE_DEG = 12.0  # side glass lean from vertical
 CAB_GLASS_EXP = 1.35  # >1: the glass is steepest at its base and rolls smoothly into the roof
 ROOF_CROWN = 0.028  # roof edge sits this far below the roof centre (no flat slab)
 
@@ -190,19 +190,19 @@ TOP_BP = ("sg_e1", "sg_c", "sg_e2", "sgo", "pwa", "bn_e1", "bn_c", "bn_e2",
           "en_e1", "en_c", "en_e2", "rs", "centre")
 TOP_INT = (0, 0, 0, 2, 2, 2, 0, 0, 2, 0, 0, 2, 3)  # interior points before each top breakpoint
 LAB_TOP0 = 10  # edge labels: side segments 0..6, top segments 10..21
-FORCED_S = (1.14, 1.85, 3.52, 3.86, 2.84, 2.93)  # glazing boundaries as grid rows
+FORCED_S = (1.12, 1.80, 3.38, 3.70, 2.80, 2.88)  # glazing boundaries as grid rows
 CROSS_OFF = (-0.0025, -0.00125, 0.0, 0.00125, 0.0025)  # 5 mm groove, 2.5 mm bevel steps
-CROSS_DEPTH = (0.0, 0.004, 0.005, 0.004, 0.0)  # 5 mm deep centre
+CROSS_DEPTH = (0.0, 0.0, 0.0, 0.0, 0.0)  # cross panel grooves off: they made zigzag seams in engine
 LONG_DEPTH = (0.0, 0.005, 0.0)  # edge, centre, edge of a longitudinal groove
 # constant-s grooves: (s0, from breakpoint, to breakpoint)
-CROSS_GROOVES = ((1.20, "A2", "A7"), (2.82, "A2", "A7"), (0.30, "A2", "A7"), (3.80, "A2", "A7"),
+CROSS_GROOVES = ((1.20, "A2", "A7"), (2.82, "A2", "A7"), (0.30, "A2", "A7"), (3.82, "A2", "A7"),
                  (0.30, "bn_e1", "M"), (1.08, "bn_e1", "M"))
 # constant-v grooves: (breakpoint names, s from, s to)
 LONG_GROOVES = ((("bn_e1", "bn_c", "bn_e2"), 0.30, 1.08),)
 NOSE_K = 5
 NOSE_FWD = 0.040
-TAIL_DS = 0.044  # last tail ring; the tail is rounded over three rings, then capped flat
-TAIL_RINGS = ((0.010, 0.992), (0.026, 0.975), (0.044, 0.945))  # (ds behind BODY_END, scale)
+TAIL_DS = 0.050  # last tail ring; the tail is rounded over three rings, then capped flat
+TAIL_RINGS = ((0.014, 0.984), (0.034, 0.950), (0.050, 0.905))  # (ds behind BODY_END, scale)
 
 
 def _smoothstep(t):
@@ -214,7 +214,7 @@ def _scallop(s):
     """R5: door scallop depth (m) at station s, fades in and out between s 1.25 and 2.70."""
     if s < 1.25 or s > 2.80:
         return 0.0
-    return 0.012 * _smoothstep((s - 1.25) / 0.20) * _smoothstep((2.80 - s) / 0.20)
+    return 0.010 * _smoothstep((s - 1.25) / 0.20) * _smoothstep((2.80 - s) / 0.20)
 
 
 def _side_anchors(s):
@@ -489,6 +489,10 @@ def cut_panel_lines(obj):
     gn = np.empty(n * 3, np.float32)
     me.attributes["gn"].data.foreach_get("vector", gn)
     gn = gn.reshape(n, 3)
+    # push along the dominant axis only: per-vertex section normals jitter at anchors and made zigzag seams
+    side = np.abs(gn[:, 0]) >= np.abs(gn[:, 2])
+    gn = np.where(side[:, None], np.stack([np.sign(gn[:, 0]), np.zeros(n), np.zeros(n)], axis=1),
+                  np.stack([np.zeros(n), np.zeros(n), np.sign(gn[:, 2])], axis=1)).astype(np.float32)
     co = co - gn * g[:, None]
     me.vertices.foreach_set("co", co.ravel())
     me.update()
@@ -642,15 +646,15 @@ def cut_arches(body):
 # |x| <= WS_EDGE_X. The side glass is the leaning surface between the glass base and the roof,
 # bounded by two raked planes (A-pillar, C-pillar) and the belt plane, so every window edge is a
 # straight line. A black B-pillar band (glass slot 1) splits the door glass from the quarter glass.
-WS_S = (1.14, 1.85)
-RS_S = (3.52, 3.86)
-B_PILLAR = (2.84, 2.93)
+WS_S = (1.12, 1.80)
+RS_S = (3.38, 3.70)
+B_PILLAR = (2.80, 2.88)
 DLO_REF_S = 2.40  # rake planes are written for the belt height at this s
 DLO_FRONT_S, DLO_FRONT_RAKE = 1.30, 1.45  # front edge s at the reference belt height, and ds/dz going up
-DLO_REAR_S, DLO_REAR_RAKE = 3.72, 0.70  # rear edge s at the reference belt height, and -ds/dz going up
+DLO_REAR_S, DLO_REAR_RAKE = 3.62, 0.70  # rear edge s at the reference belt height, and -ds/dz going up
 DLO_BELT_GAP = 0.030  # glass starts this far above the shoulder
 WS_EDGE_X = 0.50  # windscreen and hatch glass end at this half-width ...
-SIDE_TOP_X = 0.56  # ... side glass starts here: the black band between is the roof rail
+SIDE_TOP_X = 0.53  # ... side glass starts here: the black band between is the roof rail
 BELT_S0, BELT_S1 = 1.4, 3.4  # the belt line is the straight line through z_sh + gap at these two s
 
 
@@ -721,7 +725,7 @@ def _greenhouse_slot(co, pv):
     s, x, z = c[1] + Y_OFFSET, abs(c[0]), c[2]
     if not (1.25 <= s <= 3.95) or z <= belt_z(s) + 0.012:
         return 0
-    if x > WS_EDGE_X + 0.002 and (s < 2.95 or x < SIDE_TOP_X + 0.001):
+    if x > WS_EDGE_X + 0.002 and (s < 2.90 or x < SIDE_TOP_X + 0.001):
         return 2  # A/B pillar and roof rail; behind the B pillar the quarter panel is paint
     return 0
 
@@ -748,6 +752,12 @@ def split_glazing(body):
             sel[pi] = "rear"
         elif _in_side_dlo(s, x, z):
             sel[pi] = "side"
+    for pi in list(sel):  # drop stray side-glass quads that face inward or up (they showed as grey wedges)
+        pv = polys[pi]
+        c = co[list(pv)].mean(axis=0)
+        n = _centre_normal(co, pv)
+        if abs(c[0]) > WS_EDGE_X + 0.01 and n[0] * np.sign(c[0]) < 0.05 and n[2] < 0.5:
+            del sel[pi]
     gl = sorted(sel)
     print("GLASS faces", len(gl), {k: list(sel.values()).count(k) for k in set(sel.values())})
     gset = set(gl)

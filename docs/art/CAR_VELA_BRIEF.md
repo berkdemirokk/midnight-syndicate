@@ -39,10 +39,18 @@ door-glass B-pillar band, 3-door single door handle, mirrors, vertical tail lamp
 twin corner exhaust tips, three diffuser strakes, ten-spoke concave 18 in rims, yellow calipers.
 
 ## Budgets and files
-LOD0 67 029 (max 70 000), LOD1 21 499 (max 22 000), LOD2 5 892 (max 6 000). Shipped to
+LOD0 66 442 (max 70 000), LOD1 21 490 (max 22 000), LOD2 5 899 (max 6 000). Shipped to
 `game/assets/vehicles/noctra_vela/`; scene `game/vehicles/noctra_vela/noctra_vela.tscn` (script
 `vehicles/noctra_sable/car_lod.gd`), spec `game/vehicles/specs/noctra_vela.tres`.
 
 ## Known limits
 The nose is rounder than a production hatch; glass interior is a coarse placeholder cabin; mirrors sit outside
 the 1.80 m body width (box 1.94 with mirrors).
+
+## Revision 2 (review fixes)
+Shorter cabin (roof peak at s 2.3, hatch glass 3.38 to 3.70), body ends at s 3.94 (short tail overhang), belt line lowered
+and rising toward the rear, door scallop and narrower mid body for visible rear haunches (width 1.85 at the rear arch),
+tapered and rounded tail, roof wing with shaped end plates, slim dark headlamp housings with DRL bar and projector (no milky
+lens), near-black liner, cross panel grooves removed (they made zigzag seams in engine). Grey wedges seen in the studio
+shots are reflections of the studio softboxes on the glass, not geometry. Known limits: nose bumper corner is still soft;
+faint reflection jitter along the lower door.

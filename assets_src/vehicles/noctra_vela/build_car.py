@@ -145,7 +145,7 @@ def build_body_and_details(mats_extra):
     mats = B.make_materials()
     mats.update(D.extra_materials())
     mats["M_Interior"].node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = \
-        B._srgb_to_lin(B._lin((0x30, 0x33, 0x39)))
+        B._srgb_to_lin(B._lin((0x07, 0x08, 0x09)))  # near black: lit grey liner edges showed as wedges in engine
     # rim, brake and carbon materials
     m, b = B._principled("M_Rim", B._lin((0x50, 0x55, 0x5E)), 1.0, 0.28)
     mats["M_Rim"] = m
@@ -164,7 +164,7 @@ def build_body_and_details(mats_extra):
     for ob in (body, glass, underbody):
         B.finish_shading(ob)
     glass.data.materials.append(mats["M_Glass"])  # no clear(): it resets the face slots
-    glass.data.materials.append(mats["M_Trim"])
+    glass.data.materials.append(mats["M_Pillar"])  # slot 1: B-pillar band (black, not the grey trim)
     underbody.data.materials.append(mats["M_Trim"])      # floor
     underbody.data.materials.append(mats["M_Interior"])  # arch liners: dark grey plastic
     trim = D.build_trim(mats, body)

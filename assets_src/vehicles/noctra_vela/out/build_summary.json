@@ -1,18 +1,18 @@
 {
   "tris": {
-    "lod0": 67029,
-    "lod1": 21499,
-    "lod2": 5892
+    "lod0": 66442,
+    "lod1": 21490,
+    "lod2": 5899
   },
   "tris_by_object": {
     "0": {
-      "body": 22954,
-      "glass": 3500,
-      "underbody": 3193,
-      "trim": 2680,
-      "lights_front": 904,
+      "body": 23221,
+      "glass": 2986,
+      "underbody": 3243,
+      "trim": 2700,
+      "lights_front": 240,
       "lights_rear": 60,
-      "interior": 2798,
+      "interior": 3052,
       "exhaust": 448,
       "plate_rear": 60,
       "wheel_FL": 5792,
@@ -25,13 +25,13 @@
       "brake_RR": 1816
     },
     "1": {
-      "body": 22954,
-      "glass": 3500,
-      "underbody": 3193,
-      "trim": 2680,
-      "lights_front": 904,
+      "body": 23221,
+      "glass": 2986,
+      "underbody": 3243,
+      "trim": 2700,
+      "lights_front": 240,
       "lights_rear": 60,
-      "interior": 2798,
+      "interior": 3052,
       "exhaust": 448,
       "plate_rear": 60,
       "wheel_FL": 5792,
@@ -44,11 +44,11 @@
       "brake_RR": 1816
     },
     "2": {
-      "body": 22954,
-      "glass": 3500,
-      "underbody": 3193,
-      "trim": 2680,
-      "lights_front": 904,
+      "body": 23221,
+      "glass": 2986,
+      "underbody": 3243,
+      "trim": 2700,
+      "lights_front": 240,
       "lights_rear": 60,
       "exhaust": 448,
       "plate_rear": 60,
@@ -59,14 +59,14 @@
     }
   },
   "glb": {
-    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-2\\assets_src\\vehicles\\noctra_vela\\out\\noctra_vela_lod0.glb",
-    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-2\\assets_src\\vehicles\\noctra_vela\\out\\noctra_vela_lod1.glb",
-    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-2\\assets_src\\vehicles\\noctra_vela\\out\\noctra_vela_lod2.glb"
+    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-13\\assets_src\\vehicles\\noctra_vela\\out\\noctra_vela_lod0.glb",
+    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-13\\assets_src\\vehicles\\noctra_vela\\out\\noctra_vela_lod1.glb",
+    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-13\\assets_src\\vehicles\\noctra_vela\\out\\noctra_vela_lod2.glb"
   },
   "glb_bytes": {
-    "0": 6483824,
-    "1": 4527316,
-    "2": 3555080
+    "0": 6413452,
+    "1": 4491788,
+    "2": 3543008
   },
   "textures": {
     "paint_flake_normal": [
