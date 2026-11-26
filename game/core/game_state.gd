@@ -7,7 +7,7 @@ signal cash_changed(new_cash: int)
 signal profile_changed
 
 const CURRENT_VERSION: int = 1
-const STARTER_CAR: String = CarCatalog.STARTER
+const STARTER_CAR: String = "noctra_sable"
 const STARTER_CASH: int = 5000
 const MAX_CASH: int = 1000000000
 const MAX_UPGRADE_LEVEL: int = 5

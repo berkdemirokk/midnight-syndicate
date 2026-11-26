@@ -4,22 +4,17 @@ extends RefCounted
 ## missing are hidden (is_available), so cars that other work adds later light up with no code change.
 ## Stats for the UI come from the CarSpec through GarageStats, so there is one source of truth.
 
-const STARTER: String = "noctra_tayfun"
+const STARTER: String = "noctra_sable"
 const DEFAULT_CARS: Array[Dictionary] = [
-	# CC BY 4.0 models, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival grid.
-	{"id": "noctra_tayfun", "class": "street", "price": 0, "rep": 0, "rival": true},
-	{"id": "noctra_sable", "class": "street", "price": 2500, "rep": 0},
+	{"id": "noctra_sable", "class": "street", "price": 0, "rep": 0},
 	# Original 80s-90s Istanbul sedan, the cheap tuner (modified variant; stock and taxi run in traffic).
 	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0,
 		"scene": "res://vehicles/bosfor_atmaca/atmaca_modified.tscn", "spec": "res://vehicles/specs/atmaca_modified.tres"},
 	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
 	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300},
 	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800},
-	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200, "rival": true},
-	{"id": "arden_havoc", "class": "muscle", "price": 16000, "rep": 400, "rival": true},
-	{"id": "kestrel_marten", "class": "sport", "price": 22000, "rep": 500, "rival": true},
-	{"id": "noctra_meridian", "class": "gt", "price": 28000, "rep": 700, "rival": true},
-	{"id": "bosfor_yildirim", "class": "hyper", "price": 90000, "rep": 2500, "rival": true},
+	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "arden_havoc", "class": "muscle", "price": 16000, "rep": 400},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 ]
 
 ## Tests swap this; the game never writes it.
@@ -98,10 +93,9 @@ static func race_car_id() -> String:
 
 ## n rival models, deterministic for a seed: [{id, scene, spec}]. cls limits it to one class ("" = all available).
 ## The caller (race_scene._spawn_cars) builds rival i from entry i instead of config.car_scene / car_spec_path.
-## Rivals come from the entries flagged "rival" when at least two are available, else from every available car.
 static func rival_models(count: int, seed_value: int, cls: String = "") -> Array[Dictionary]:
 	var pool: Array[String] = []
-	for id: String in _rival_ids():
+	for id: String in available_ids():
 		if cls.is_empty() or class_id(id) == cls:
 			pool.append(id)
 	if pool.is_empty():
@@ -115,12 +109,3 @@ static func rival_models(count: int, seed_value: int, cls: String = "") -> Array
 		var id: String = pool[(start + i) % pool.size()]
 		out.append({"id": id, "scene": scene_path(id), "spec": spec_path(id)})
 	return out
-
-
-## Available ids flagged "rival", or every available id while fewer than two are flagged and available.
-static func _rival_ids() -> Array[String]:
-	var flagged: Array[String] = []
-	for id: String in available_ids():
-		if bool(info(id).get("rival", false)):
-			flagged.append(id)
-	return flagged if flagged.size() >= 2 else available_ids()

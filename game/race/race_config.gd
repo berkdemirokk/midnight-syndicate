@@ -4,8 +4,8 @@ extends Resource
 ## The player always takes the last grid slot (slot = opponent_count). Driver names are fictional.
 
 @export var track_scene: String = "res://world/city_01/city_01.tscn"  ## missing file = development circuit
-@export var car_scene: String = "res://vehicles/noctra_tayfun/noctra_tayfun.tscn"  ## missing file = dev mule
-@export var car_spec_path: String = "res://vehicles/specs/noctra_tayfun.tres"
+@export var car_scene: String = "res://vehicles/noctra_sable/noctra_sable.tscn"  ## missing file = dev mule
+@export var car_spec_path: String = "res://vehicles/specs/noctra_sable.tres"
 @export_range(1, 10) var laps: int = 3
 @export_range(0, 7) var opponent_count: int = 5  ## the grid has 8 slots, the player takes the last one
 @export var opponent_skills: PackedFloat32Array = PackedFloat32Array([0.93, 0.91, 0.89, 0.87, 0.85, 0.83, 0.81])

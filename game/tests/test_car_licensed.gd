@@ -1,7 +1,7 @@
 extends "res://tests/test_case.gd"
-## CC BY 4.0 cars from vinish.dev (Noctra Tayfun, Noctra Meridian, Kestrel Marten, Bosfor Yildirim, Kestrel Vanta, Arden Havoc): scene contract, source size within 5 %, wheel origins,
+## CC BY 4.0 cars from vinish.dev (Kestrel Vanta, Arden Havoc): scene contract, source size within 5 %, wheel origins,
 ## budgets, LOD switching, paint and brake lights, spec character, and that the model rests on the suspension.
-## Same checks as test_car_bruiser.gd, run for all six cars.
+## Same checks as test_car_bruiser.gd, run for both cars.
 
 const CARS: Array[Dictionary] = [
 	{
