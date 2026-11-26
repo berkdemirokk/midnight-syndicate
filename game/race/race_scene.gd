@@ -239,6 +239,11 @@ func _build_race() -> void:
 	race.total_laps = config_used.laps
 	_world.add_child(race)
 	race.setup(track, cars, player, _names)
+	if config_used.traffic_enabled and not dev_track_used:
+		var traffic := TrafficSystem.new()
+		traffic.name = "Traffic"
+		_world.add_child(traffic)
+		traffic.setup(track, player, cars)
 	recorder = ReplayRecorder.new()
 	recorder.name = "ReplayRecorder"
 	_world.add_child(recorder)
@@ -299,8 +304,18 @@ func _spawn_cars() -> void:
 	cars.clear()
 	_names = PackedStringArray()
 	var opponents: int = clampi(config_used.opponent_count, 0, MAX_OPPONENTS)
+	var rivals: Array[Dictionary] = []
+	if config_used.rival_mix:
+		rivals = CarCatalog.rival_models(opponents, hash(config_used.event_id))
 	for i: int in opponents:
-		var car: ArcadeCar = CarFactory.create(config_used.car_scene, spec, config_used.opponent_paint(i))
+		var r_scene: String = config_used.car_scene
+		var r_spec: CarSpec = spec
+		if i < rivals.size():
+			var loaded: CarSpec = load(str(rivals[i]["spec"])) as CarSpec
+			if loaded != null:
+				r_scene = str(rivals[i]["scene"])
+				r_spec = loaded
+		var car: ArcadeCar = CarFactory.create(r_scene, r_spec, config_used.opponent_paint(i))
 		_add_car(car, true)
 		_names.append(_opponent_name(i))
 	player = CarFactory.create(config_used.car_scene, spec, _player_paint())

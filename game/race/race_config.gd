@@ -34,6 +34,8 @@ extends Resource
 @export_range(0.0, 4.0, 0.01) var car_rim_energy: float = 0.9
 @export var car_rim_color: Color = Color(1.0, 0.86, 0.78)
 @export_range(0.0, 80.0, 1.0) var car_rim_elevation_deg: float = 28.0
+@export var traffic_enabled: bool = false  ## ambient civilian traffic (TrafficSystem); career events switch it on
+@export var rival_mix: bool = false  ## rivals drive a mix of the available car models (CarCatalog), else the player's model
 @export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
 
 

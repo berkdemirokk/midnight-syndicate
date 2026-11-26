@@ -13,8 +13,8 @@ const TRACK_MASLAK: String = "res://world/istanbul_maslak/istanbul_maslak.tscn"
 const TRACK_BOGAZ: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 
 const EVENTS: Array[Dictionary] = [
-	{"id": "wharf_sprint", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0},
-	{"id": "neon_strip_circuit", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3},
+	{"id": "wharf_sprint", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true},
+	{"id": "neon_strip_circuit", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true},
 	{"id": "midnight_time_trial", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
 	{"id": "overpass_duel", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
 	{"id": "harbour_run", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0},
@@ -113,4 +113,6 @@ static func config_for(id: String) -> RaceConfig:
 		skills.append(s)
 	c.opponent_skills = skills
 	c.opponent_count = skills.size()
+	c.rival_mix = true
+	c.traffic_enabled = bool(ev.get("traffic", false))
 	return c
