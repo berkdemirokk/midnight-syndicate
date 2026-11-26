@@ -341,19 +341,34 @@ def lamp_x(s):
     return np.linspace(0.44, B.xs_of(s) - 0.012, 9)
 
 
+PROJ_S = 0.100  # station of the two projector lamps in each unit
+PROJ_X = (0.545, 0.665)  # half-widths of the projector centres (inboard, outboard)
+
+
 def build_lights_front(mats):
-    """Slim wedge headlamp on the bonnet corner: clear lens over three LED bars, per side."""
+    """Headlamp unit per side: recessed dark housing (slot 2), clear lens plate (slot 1), two
+    projector bezels with emissive lenses and an LED day-running strip along the leading edge
+    (slot 0, M_LightFront). shortcut: flat patches on the nose surface, no real reflector."""
     bm = bmesh.new()
-    rows = list(np.linspace(0.050, 0.136, 6))
     for sg in (1, -1):
-        P, N = grid_top(rows, lamp_x, sg)
-        # no milky lens slab: the shared M_Lens read as a beige plate in engine; the dark housing shows instead
-        # thin day-running bar along the leading edge, and a small projector at the inner end
-        P, N = grid_top(list(np.linspace(0.058, 0.066, 2)), lambda s: np.linspace(0.47, B.xs_of(s) - 0.034, 10), sg)
+        # housing: a dark tray standing 4 mm off the nose, the lens sits 1 mm proud of its rim
+        P, N = grid_top(list(np.linspace(0.046, 0.150, 7)), lamp_x, sg)
+        add_thick(bm, P, N, 0.0040, 0.0030, 2)
+        P, N = grid_top(list(np.linspace(0.060, 0.136, 6)),
+                        lambda s: np.linspace(0.47, B.xs_of(s) - 0.030, 9), sg)
+        add_thick(bm, P, N, 0.0050, 0.0008, 1)
+        # day-running LED strip along the leading edge
+        P, N = grid_top(list(np.linspace(0.058, 0.066, 2)),
+                        lambda s: np.linspace(0.47, B.xs_of(s) - 0.034, 10), sg)
         add_thick(bm, P, N, 0.0065, 0.0012, 0)
-        P, N = grid_top(list(np.linspace(0.098, 0.128, 3)), lambda s: np.linspace(0.50, 0.57, 4), sg)
-        add_thick(bm, P, N, 0.0065, 0.0012, 0)
-    return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"]])
+        # two projectors: dark bezel disc, then an emissive dome lens standing inside it
+        for x in PROJ_X:
+            p, n = B.surf_xz(PROJ_S, x) if sg > 0 else B.surf_xz_mirror(PROJ_S, x)
+            c = np.asarray(p, float) + np.asarray(n, float) * 0.0040
+            add_ell(bm, tuple(c), 0.019, 0.019, 0.0016, True, 2)
+            c2 = np.asarray(p, float) + np.asarray(n, float) * 0.0045
+            add_ell(bm, tuple(c2), 0.0135, 0.0135, 0.0036, True, 0)
+    return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"], mats["M_Trim"]])
 
 
 def spoiler_poly():
@@ -396,10 +411,6 @@ def build_trim(mats, body):
         wseg = 2 * MOUTH[0] / 10 - 0.008
         for x0 in np.linspace(-MOUTH[0] + wseg / 2 + 0.01, MOUTH[0] - wseg / 2 - 0.01, 10):
             add_box(bm, (x0, front_y(x0, z) + 0.001, z), (wseg, 0.008, 0.007), 1)
-    # headlamp housing under the lens, same grid density as the lens so it follows the nose
-    for sg in (1, -1):
-        P, N = grid_top(list(np.linspace(0.046, 0.150, 7)), lamp_x, sg)
-        add_thick(bm, P, N, 0.0045, 0.0030, 0)
     # rear diffuser: three tapered carbon strakes
     for xk in (-0.12, 0.0, 0.12):
         y_a, y_b = YF - 0.050, YF + 0.012

@@ -161,7 +161,8 @@ def build_body_and_details(mats_extra):
     body.data.materials.append(mats["M_Carbon"])  # slot 3: roof panel
     D.body_edit(body, D.slice_fascias)
     D.body_edit(body, D.paint_black)
-    for ob in (body, glass, underbody):
+    B.finish_shading(body, weighted=False)  # custom normals are rebuilt in main() after triangulation
+    for ob in (glass, underbody):
         B.finish_shading(ob)
     glass.data.materials.append(mats["M_Glass"])  # no clear(): it resets the face slots
     glass.data.materials.append(mats["M_Pillar"])  # slot 1: B-pillar band (black, not the grey trim)
@@ -283,6 +284,8 @@ def main():
         bmesh.ops.triangulate(bm, faces=list(bm.faces))
         bm.to_mesh(ob.data)
         bm.free()
+    B.smooth_normals(objs["body"])
+    B.analytic_normals(objs["body"])
     tris0, total0 = build_lod0_check(objs)
     # the scene floor and rig materials are not part of the car: keep only car materials used
     for n in ("M_Clay",):

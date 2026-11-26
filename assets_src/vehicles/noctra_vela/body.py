@@ -70,10 +70,10 @@ def _pchip(pts):
     return f
 
 
-_Z_TOP = _pchip([(0, .470), (0.05, .560), (0.15, .665), (0.45, .765), (0.755, .805), (1.00, .850),
-                 (1.12, .900), (1.35, 1.035), (1.60, 1.195), (1.80, 1.320), (2.05, 1.395),
-                 (2.30, 1.427), (2.65, 1.425), (3.00, 1.395), (3.22, 1.370), (3.38, 1.340),
-                 (3.50, 1.270), (3.70, 1.050), (3.82, .985), (3.94, .950), (4.00, .940)])
+_Z_TOP = _pchip([(0, .470), (0.05, .560), (0.15, .665), (0.45, .765), (0.755, .805), (0.92, .845),
+                 (1.02, .900), (1.20, 1.030), (1.40, 1.170), (1.60, 1.270), (1.80, 1.345), (2.05, 1.395),
+                 (2.30, 1.427), (2.65, 1.425), (3.00, 1.400), (3.20, 1.380), (3.32, 1.362), (3.40, 1.330),
+                 (3.46, 1.240), (3.52, 1.100), (3.58, 1.010), (3.70, .975), (3.94, .950), (4.00, .940)])
 _Z_BOT = _pchip([(0, .270), (0.12, .190), (0.40, .140), (0.80, .125), (3.30, .125), (3.65, .180),
                  (3.94, .360), (4.00, .380)])
 _W_MAX = _pchip([(0, .640), (0.06, .800), (0.25, .885), (0.755, .920), (1.30, .858), (2.00, .835),
@@ -190,7 +190,7 @@ TOP_BP = ("sg_e1", "sg_c", "sg_e2", "sgo", "pwa", "bn_e1", "bn_c", "bn_e2",
           "en_e1", "en_c", "en_e2", "rs", "centre")
 TOP_INT = (0, 0, 0, 2, 2, 2, 0, 0, 2, 0, 0, 2, 3)  # interior points before each top breakpoint
 LAB_TOP0 = 10  # edge labels: side segments 0..6, top segments 10..21
-FORCED_S = (1.12, 1.80, 3.38, 3.70, 2.80, 2.88)  # glazing boundaries as grid rows
+FORCED_S = (1.00, 1.75, 3.32, 3.40, 2.80, 2.88, 3.36, 3.44)  # glazing boundaries as grid rows
 CROSS_OFF = (-0.0025, -0.00125, 0.0, 0.00125, 0.0025)  # 5 mm groove, 2.5 mm bevel steps
 CROSS_DEPTH = (0.0, 0.0, 0.0, 0.0, 0.0)  # cross panel grooves off: they made zigzag seams in engine
 LONG_DEPTH = (0.0, 0.005, 0.0)  # edge, centre, edge of a longitudinal groove
@@ -646,12 +646,13 @@ def cut_arches(body):
 # |x| <= WS_EDGE_X. The side glass is the leaning surface between the glass base and the roof,
 # bounded by two raked planes (A-pillar, C-pillar) and the belt plane, so every window edge is a
 # straight line. A black B-pillar band (glass slot 1) splits the door glass from the quarter glass.
-WS_S = (1.12, 1.80)
-RS_S = (3.38, 3.70)
+WS_S = (1.00, 1.75)  # short bonnet: the windscreen starts at the bonnet edge, rakes about 31 degrees
+RS_S = (3.40, 3.60)  # upright hatch glass on the steep rear face
 B_PILLAR = (2.80, 2.88)
+C_PILLAR = (3.36, 3.44)  # black C-pillar band at the rear of the side glass (glass slot 1)
 DLO_REF_S = 2.40  # rake planes are written for the belt height at this s
 DLO_FRONT_S, DLO_FRONT_RAKE = 1.30, 1.45  # front edge s at the reference belt height, and ds/dz going up
-DLO_REAR_S, DLO_REAR_RAKE = 3.62, 0.70  # rear edge s at the reference belt height, and -ds/dz going up
+DLO_REAR_S, DLO_REAR_RAKE = 3.44, 0.35  # rear edge s at the reference belt height (C-pillar), and -ds/dz going up
 DLO_BELT_GAP = 0.030  # glass starts this far above the shoulder
 WS_EDGE_X = 0.50  # windscreen and hatch glass end at this half-width ...
 SIDE_TOP_X = 0.53  # ... side glass starts here: the black band between is the roof rail
@@ -684,7 +685,7 @@ def _cabin_faces(bm):
     for f in bm.faces:
         c = f.calc_center_median()
         s = c.y + Y_OFFSET
-        if 1.25 <= s <= 3.95 and c.z > z_sh(min(max(s, 0.0), BODY_END)) - 0.02:
+        if 0.95 <= s <= 3.95 and c.z > z_sh(min(max(s, 0.0), BODY_END)) - 0.02:
             out.append(f)
     return out
 
@@ -741,7 +742,7 @@ def split_glazing(body):
         c = co[list(pv)].mean(axis=0)
         s = c[1] + Y_OFFSET
         x, z = abs(c[0]), c[2]
-        if s < 1.25 or s > 3.95:
+        if s < 0.95 or s > 3.95:
             continue
         xs, zs = xs_of(s), z_sh(s)
         if not (x < xs - 0.0015 and z > zs - 0.015):  # top surface only
@@ -771,7 +772,8 @@ def split_glazing(body):
     for pi in gl:
         c = co[list(polys[pi])].mean(axis=0)
         s = c[1] + Y_OFFSET
-        mats.append(1 if (sel[pi] == "side" and B_PILLAR[0] <= s <= B_PILLAR[1]) else 0)
+        pillar = B_PILLAR[0] <= s <= B_PILLAR[1] or C_PILLAR[0] <= s <= C_PILLAR[1]
+        mats.append(1 if (sel[pi] == "side" and pillar) else 0)
     vn = np.zeros_like(co)
     for pi in gl:
         pv = polys[pi]
@@ -796,13 +798,135 @@ def split_glazing(body):
 
 
 # ------------------------------------------------------------------ shading
-def finish_shading(obj):
+def finish_shading(obj, weighted=True):
     bpy.ops.object.select_all(action="DESELECT")
     obj.select_set(True)
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.shade_smooth_by_angle(angle=math.radians(35))
-    mod = obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL")
-    mod.keep_sharp = True
+    if weighted:
+        mod = obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL")
+        mod.keep_sharp = True
+
+
+def _frame_at(s, cache):
+    """Section arrays at station s (1 mm snap): points, section tangents and d/ds of the points."""
+    key = round(s, 3)
+    if key in cache:
+        return cache[key]
+    h = 0.012
+    A = _half(min(max(key, 0.02), BODY_END - 0.02))
+    A0, A1 = _half(min(max(key - h, 0.0), BODY_END)), _half(min(max(key + h, 0.0), BODY_END))
+    X, Z = A["X"], A["Z"]
+    tx, tz = np.gradient(X), np.gradient(Z)
+    # relax the tangent over 3 points: removes the polyline's piecewise-constant steps
+    k = np.array([0.25, 0.5, 0.25])
+    tx = np.convolve(np.pad(tx, 1, mode="edge"), k, "valid")
+    tz = np.convolve(np.pad(tz, 1, mode="edge"), k, "valid")
+    dx, dz = (A1["X"] - A0["X"]) / (2 * h), (A1["Z"] - A0["Z"]) / (2 * h)
+    cache[key] = (X, Z, tx, tz, dx, dz)
+    return cache[key]
+
+
+def analytic_normals(obj, tol=0.0012):
+    """Overwrite the custom normals of vertices that lie on the smooth paint surface (within tol of
+    the section curve) with the analytic normal of the surface: cross(d/ds, d/dv) of the shell
+    parametrisation. Vertices made by panel cuts, bevels and arch booleans then agree with their
+    neighbours, which removes the thin streaks the clearcoat showed along the door and wing cuts."""
+    me = obj.data
+    nv, nl = len(me.vertices), len(me.loops)
+    co = np.empty(nv * 3, np.float32)
+    me.vertices.foreach_get("co", co)
+    co = co.reshape(nv, 3).astype(float)
+    cn = np.empty(nl * 3, np.float32)
+    me.corner_normals.foreach_get("vector", cn)
+    cn = cn.reshape(nl, 3).astype(float)
+    lv = np.empty(nl, np.int32)
+    me.loops.foreach_get("vertex_index", lv)
+    cache = {}
+    new = np.full((nv, 3), np.nan)
+    for i in range(nv):
+        x, y, z = co[i]
+        s = y + Y_OFFSET
+        if not (0.40 <= s <= BODY_END - 0.10) or z < 0.2:
+            continue
+        X, Z, tx, tz, dx, dz = _frame_at(s, cache)
+        ax = abs(x)
+        d2 = (X - ax) ** 2 + (Z - z) ** 2
+        k = int(np.argmin(d2))
+        # nearest point on the two segments around k (linear), tangent interpolated with it
+        best = None
+        for a_, b_ in ((k - 1, k), (k, k + 1)):
+            if a_ < 0 or b_ >= len(X):
+                continue
+            ex, ez = X[b_] - X[a_], Z[b_] - Z[a_]
+            L2 = ex * ex + ez * ez
+            if L2 < 1e-12:
+                continue
+            u = min(max(((ax - X[a_]) * ex + (z - Z[a_]) * ez) / L2, 0.0), 1.0)
+            dist = math.hypot(X[a_] + u * ex - ax, Z[a_] + u * ez - z)
+            if best is None or dist < best[0]:
+                best = (dist, a_, b_, u)
+        if best is None or best[0] > tol:
+            continue
+        _, a_, b_, u = best
+        tv = np.array([tx[a_] + u * (tx[b_] - tx[a_]), 0.0, tz[a_] + u * (tz[b_] - tz[a_])])
+        ts = np.array([dx[a_] + u * (dx[b_] - dx[a_]), 1.0, dz[a_] + u * (dz[b_] - dz[a_])])
+        nrm = np.cross(ts, tv)
+        ln = np.linalg.norm(nrm)
+        if ln < 1e-9:
+            continue
+        nrm /= ln
+        if x < 0:
+            nrm[0] = -nrm[0]
+        new[i] = nrm
+    ok = ~np.isnan(new[:, 0])
+    # only trust it where it agrees with the existing normal (guards against a wrong projection)
+    cur = np.zeros((nv, 3))
+    np.add.at(cur, lv, cn)
+    cur /= np.maximum(np.linalg.norm(cur, axis=1, keepdims=True), 1e-12)
+    dots = np.einsum("ij,ij->i", np.nan_to_num(new), cur)
+    ok &= dots > 0.80
+    out = np.where(ok[lv][:, None], new[lv], cn)
+    me.normals_split_custom_set(out.tolist())
+    print("ANALYTIC_NORMALS on %d of %d verts" % (int(ok.sum()), nv))
+
+
+def smooth_normals(obj, iters=14):
+    """Low-pass the vertex normals of the smooth (non-sharp) part of the paint shell. Vertices on a
+    sharp edge keep their normals, so grooves, cuts and the shoulder crease stay crisp."""
+    me = obj.data
+    nv, nl = len(me.vertices), len(me.loops)
+    sharp = np.zeros(nv, bool)
+    adj = [[] for _ in range(nv)]
+    for e in me.edges:
+        a, b = e.vertices
+        if e.use_edge_sharp:
+            sharp[a] = sharp[b] = True
+        else:
+            adj[a].append(b)
+            adj[b].append(a)
+    cn = np.empty(nl * 3, np.float32)
+    me.corner_normals.foreach_get("vector", cn)
+    cn = cn.reshape(nl, 3).astype(float)
+    lv = np.empty(nl, np.int32)
+    me.loops.foreach_get("vertex_index", lv)
+    n = np.zeros((nv, 3))
+    np.add.at(n, lv, cn)
+    n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
+    free = ~sharp
+    for _ in range(iters):
+        m = n.copy()
+        for v in np.nonzero(free)[0]:
+            nb = [u for u in adj[v] if free[u]]  # sharp neighbours carry bent corner averages: skip them
+            if nb:
+                m[v] = n[v] * 2.0 + n[nb].sum(axis=0) / len(nb) * 2.0
+        m /= np.maximum(np.linalg.norm(m, axis=1, keepdims=True), 1e-12)
+        n = np.where(free[:, None], m, n)
+    out = np.where(free[lv][:, None], n[lv], cn)
+    me.normals_split_custom_set(out.tolist())
+    print("SMOOTH_NORMALS free verts %d of %d" % (int(free.sum()), nv))
+
+
 
 
 # ------------------------------------------------------------------ checks
