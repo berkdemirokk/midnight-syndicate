@@ -20,10 +20,12 @@ First milestone: ORTAKOY — BOSPHORUS RACE (track istanbul_bogaz; benchmark sce
 - [x] Licensed cars: six CC BY 4.0 models (starter Noctra Tayfun, licensed rival grid), credits in settings
 - [x] Road: photo-based asphalt, rubber on the racing groove, oil stains
 - [x] Day light: sun, neutral sky fill, baked AO, dry walls without sky mirror
-- [ ] House facades pass 2: shop fronts, eaves, roofs, real LOD1 (workflow running)
-- [ ] Trees (dark card clusters), sea-side wall and kerb, bridge day material
-- [ ] Spectators as real figures, rain beads on paint
-- [ ] Gate: lead score about 76/100, target 90 not reached; owner review pending (rescue gate G6)
+- [x] Land-side street: licensed shop houses with Turkish signs, lit at night (generic style, see open items)
+- [x] Trees: licensed plane, cypress, magnolia, street tree
+- [x] Spectators as 3D figures, licensed ferry, rain beads on paint, mosque pass 3
+- [ ] Istanbul-style upper floors and roofs for the shop row (now two-storey generic fronts, flat in day shade)
+- [ ] Sea-side wall and kerb, bridge day material, posed spectators, more plane trees
+- [ ] Gate: lead score about 81/100, target 90 not reached; owner review pending (rescue gate G6)
 
 ## P2 — more content (only after the Ortakoy scene passes its gate)
 - [ ] Karakoy/Galata, Besiktas/Dolmabahce, Kadikoy/Moda, Taksim, Eurasia-tunnel themed tracks

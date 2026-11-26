@@ -113,6 +113,31 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
   iPhone test, signed Windows exe. No push since c191d50 (rescue package rule); main untouched.
 - Commits: 305e457 .. f284ce7 on feature/vertical-slice (see git log).
 
+## Session 5 — night of 2026-11-26 (licensed environment, playable by morning)
+- Overnight workflow, four Haiku builders in isolated worktrees, each followed by an independent Haiku review and one fix
+  pass. None of the four reviews approved its part as final; the lead merged them, looked at the day, dusk and night
+  captures and fixed what was visibly broken.
+- Street fronts (`game/world/street_fronts/`): the land-side kit houses in the first 900 m are replaced by licensed
+  CC BY 4.0 shop houses and a few mansions (vinish.dev) with Turkish signs, lit glass and pavement light pools at night.
+  Lead fix: LOD1 and the mirror copy now drop loose parts by size (`cull_islands` in `assets_src/pipeline/prepare_static.py`)
+  instead of a collapse, which had left stretched triangles across the facades (an independent Haiku review of the lead's change
+  found the mansions still collapsing and the night spectators black: both fixed, spectators get a small warm fill); florist pots and brackets removed; full
+  models to 30 m. Triangle caps in `test_street_fronts.gd` set by the lead to the shipped meshes (shop 6000 / 1300 / 460,
+  mansion 19000 / 3300 / 1400); the frame budget decides.
+- Trees: licensed plane, cypress, magnolia (as the judas tree) and a street tree with matching impostors.
+- Spectators: eight licensed figures as MultiMesh behind the barriers (LOD0 to 45 m, LOD1 to 160 m); licensed ferry.
+- Mosque pass 3: traceried windows, cornice, buttressed drum, minaret balconies, portico, quay balustrade; original budgets kept.
+- Lead, same night: rain beads on wet paint, save version 2 (old saves move to the Noctra Tayfun), always-open
+  "Ortakoy Night" event first in the career list, `Oyunu_Baslat.bat` start script.
+- Evidence: 320 tests, 0 failed (evidence/test.log). Benchmark peak 422 draws / 421256 primitives (budget 500 / 450000),
+  night gameplay 368 fps on the dev PC (RTX 5060 Ti; not an iPhone number). Manifest 609 records, 0 failing; 30 third-party
+  sources recorded; credits file has 28 lines. Pack rebuilt (`build/windows/midnight_syndicate.pck`, 250 MB) and smoke-run.
+- Known deviations from the builders' briefs, accepted by the lead for now: shop LOD0 range 30 m (brief 55 m), mansion
+  chance 8 %, florist and corner-shop LOD1 without glass textures, crowd figures in an idle pose with no faces, plane trees rare.
+- Not done: gate 90 (lead score about 81), Istanbul-style upper floors, sea wall and kerb, posed spectators; iOS build
+  (secrets missing), iPhone test, signed Windows exe. No push since c191d50; main untouched.
+- Commits: e76c935, 4a77537, 64a14bb, 2159371, 60cab60, bdf3c11, 9630600, 4e20f33, 286467f, 8041f78 and the evidence commit after it.
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,

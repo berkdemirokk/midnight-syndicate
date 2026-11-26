@@ -512,3 +512,18 @@ rain beads on paint, puddle break-up on the road.
 | camera and effects | 10 | 7 | 8 | spray, lens drops, underglow; trees are still dark cards |
 | HUD | 10 | 8 | 8 | unchanged |
 | total | 100 | 63 | 76 | target 90 is not reached |
+
+### Gate score update, lead, morning build (night of 2026-11-26)
+| criterion | max | b4cbbf3 | now | why |
+|---|---:|---:|---:|---|
+| car geometry | 15 | 12 | 12 | unchanged |
+| car materials | 15 | 11 | 12 | rain beads on wet paint; amber lamps still do not glow |
+| Istanbul architecture | 20 | 13 | 15 | mosque pass 3; licensed shop row with Turkish signs, but generic two-storey fronts, not Ottoman |
+| lighting | 15 | 12 | 13 | lit shop glass and pavement pools at night; shop fronts in flat shade by day |
+| asphalt and reflections | 15 | 12 | 12 | unchanged |
+| camera and effects | 10 | 8 | 9 | 3D spectators, licensed trees; figures are faceless and idle |
+| HUD | 10 | 8 | 8 | unchanged |
+| total | 100 | 76 | 81 | target 90 is not reached |
+
+Benchmark peaks after the merge: 422 draw calls, 421256 primitives (budget 500 / 450000), desktop RTX 5060 Ti.
+The four independent Haiku reviews of the overnight parts did not approve them as final; their open findings are in PROGRESS.md.

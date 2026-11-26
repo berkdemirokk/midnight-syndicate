@@ -1,5 +1,5 @@
 {
-  "commit": "ad4ff37",
+  "commit": "8041f78",
   "engine": "Godot 4.7.2 stable, Mobile renderer, GDScript",
   "run_command": "Godot_v4.7.2-stable_win64_console.exe --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]",
   "captures": {
@@ -9,10 +9,10 @@
     "gameplay": "evidence/gameplay.png"
   },
   "test_log": "evidence/test.log",
-  "visual_review": "Lead review of real engine captures (not the concept image). Since the last set: house facade pass 2 (shop-front pilasters and risers, deeper glazing, hipped roofs and oriels on some row houses, a pediment and a belvedere, window grilles), built by a Haiku agent, reviewed by two independent Haiku reviewers (art, technical), then one fix pass; the reviewers did NOT approve the art: gain is modest. Day sky fill lifted so shaded fronts read. Still weak, not accepted as final: house fronts still read as simple planes from the road, ground floors of the near timber row are dark at night, far houses (LOD1) are still plain, trees are dark card clusters, sea-side wall and kerb plain, no spectators, no rain beads. Gate score by the lead about 77/100, target 90 not reached. The owner decides acceptance.",
+  "visual_review": "Lead review of real engine captures (not the concept image). Since the last set (overnight, four Haiku builds, each with an independent Haiku review and one fix pass, then merged and looked at by the lead): the land-side kit houses on the Ortakoy coast are replaced by licensed CC BY 4.0 shop houses with Turkish signs (Kahve, Kitapci, Berber, Cicekci, Eczane, Bakkal) and lit glass at night; licensed trees (plane, cypress, magnolia, street tree); 3D spectators behind the barriers and a licensed ferry; mosque pass 3 (traceried windows, cornice, portico, quay balustrade); rain beads on wet paint. The lead rebuilt the shop LOD1 (loose parts dropped instead of a collapse) because the first LOD1 showed stretched triangles at range. None of the four independent reviews approved its part as final. Still weak, not accepted as final: the shop houses are generic two-storey high-street fronts, lower than the old row and not Ottoman in style; their street side is in shade by day and reads flat; spectators are stylised faceless figures and stand in an idle pose (a small warm fill keeps them readable at night); plane trees are rare; sea-side wall and kerb plain; mansions appear on few plots. Gate score by the lead about 81/100, target 90 not reached. The owner decides acceptance.",
   "device": "Desktop PC, Windows 11, NVIDIA GeForce RTX 5060 Ti 8 GB, 1920x1080, High preset. Not an iPhone measurement.",
-  "fps": 310.4,
-  "frame_time_ms": 3.221,
+  "fps": 368.3,
+  "frame_time_ms": 2.716,
   "ios_test": "not_run",
-  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 310 fps average, 3.22 ms avg, 3.96 ms p95, 389 draw calls, 388028 primitives. Day gameplay 376 fps / 2.66 ms, dusk 373 fps / 2.68 ms. Peak over all 15 benchmark shots: 389 draws, 412836 primitives (budget 500 / 450000). Uncapped desktop numbers over 60 frames; they say nothing about iPhone. The gameplay.png evidence file is the dusk gameplay shot."
+  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 368 fps average, 2.72 ms avg, 3.29 ms p95, 422 draw calls, 409588 primitives. Day gameplay 456 fps / 2.19 ms, dusk 398 fps / 2.52 ms. Peak over all 15 benchmark shots: 422 draws, 421256 primitives (budget 500 / 450000). Uncapped desktop numbers over 60 frames; they say nothing about iPhone. The gameplay.png evidence file is the dusk gameplay shot."
 }
