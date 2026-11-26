@@ -20,7 +20,7 @@ const MIST_CENTER_Z: float = 3.4  ## car frame, behind the rear axle (forward is
 const MIST_HALF_Z_M: float = 1.4
 const SPRAY_Y_M: float = -0.3  ## car frame: tread height, about 0.17 m above the road (the car origin is 0.47 m up)
 const MIST_RGB: Color = Color(0.5, 0.54, 0.6, 1.0)
-const MIST_PEAK_ALPHA: float = 0.1
+const MIST_PEAK_ALPHA: float = 0.17
 const STREAK_RGBA: Color = Color(0.24, 0.27, 0.31, 0.5)  ## dark grey spray: a light-coloured plume reads as a flame, with the bloom
 ## Own render layer (bit 16, layer 17): the Underglow light skips it, so the spray is not tinted violet by the player's light.
 const SPRAY_LAYER: int = 1 << 16

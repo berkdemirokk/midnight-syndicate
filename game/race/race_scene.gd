@@ -56,6 +56,7 @@ const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
 const SHADOW_PROXY_NAME: String = "SunShadowProxy"
 const FILL_LIGHT_NAME: String = "CarFillLight"
 const RIM_LIGHT_NAME: String = "CarRimLight"
+const UNDERGLOW_RIVAL: Array[Color] = [Color(1.0, 0.2, 0.55), Color(0.2, 0.75, 1.0), Color(1.0, 0.55, 0.15), Color(0.35, 1.0, 0.5)]  ## rival underglow colours, by grid slot
 const ISTANBUL_NAMES: PackedStringArray = ["Mert", "Emir", "Kerem", "Deniz", "Aras", "Baran", "Selim"]  ## rival names on the Istanbul tracks
 const BOGAZ_TRACK_KEY: String = "istanbul_bogaz"  ## track scenes with this in their path get the Bosphorus scenery
 const REFLECTION_NAME: String = "PlanarReflection"
@@ -130,6 +131,8 @@ func _process(delta: float) -> void:
 		_speed_lines.call("set_speed", player.speed_kmh, player.nitro_active)
 	if _post_fx != null and player != null:
 		_post_fx.set_speed(player.speed_kmh, player.nitro_active)
+	if player != null and Engine.get_process_frames() % 20 == 0:
+		WheelSpray.update_nearest(cars, player)
 	if race.state == RaceManager.State.GRID:
 		_grid_t += delta
 		if _grid_t >= GRID_BEAT_S:
@@ -384,6 +387,18 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	audio.name = "CarAudio"
 	audio.is_player = not rival
 	ContactShadow.attach(car, true)  # soft grounding blob: the Mobile renderer has no ambient occlusion
+	if Settings.get_preset_id() != "low":
+		var spray := WheelSpray.new()  # tyre spray on the wet road; only the player and the two nearest rivals emit
+		spray.name = WheelSpray.NODE_NAME
+		car.add_child(spray)
+		spray.set_wetness(tod.audio_wetness)
+		var glow := Underglow.new()
+		glow.name = "Underglow"
+		glow.player_light = not rival
+		if rival:
+			glow.color = UNDERGLOW_RIVAL[cars.size() % UNDERGLOW_RIVAL.size()]
+		car.add_child(glow)
+		glow.apply_time_of_day(config_used.time_of_day)
 	audio.wetness = tod.audio_wetness  # night: the city road is always wet (rain or not, the asphalt shader is wet)
 	car.add_child(audio)
 	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
@@ -614,6 +629,11 @@ func _force_nitro_gate() -> void:
 func _attach_optional() -> void:
 	if tod.rain and ResourceLoader.exists(FX_RAIN_SCENE):
 		_world.add_child((load(FX_RAIN_SCENE) as PackedScene).instantiate())
+	if tod.rain and get_node_or_null("RainOnLens") == null:
+		var lens := RainOnLens.new()  # a few drops sliding on the lens, under the HUD; off on Low by itself
+		lens.name = "RainOnLens"
+		add_child(lens)
+		lens.set_strength(1.0)
 
 
 func _ensure_watermark() -> void:

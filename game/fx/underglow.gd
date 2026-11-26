@@ -6,7 +6,7 @@ extends Node3D
 
 const SHADER_PATH: String = "res://shaders/glow_pool.gdshader"
 const DEFAULT_COLOR: Color = Color(0.62, 0.18, 0.95)  ## violet-magenta
-const RADIUS_M: float = 2.1
+const RADIUS_M: float = 2.7
 const ROAD_Y_LOCAL: float = -0.44  ## the car origin is 0.47 m above the road (CAR_RESET_HEIGHT_M); the pool sits 3 cm above it
 const LIGHT_RANGE_M: float = 4.5
 const LIGHT_ENERGY: float = 1.2
@@ -16,7 +16,7 @@ const SHOW_TODS: PackedStringArray = ["night", "sunset"]
 	set(v):
 		color = v
 		_apply_color()
-@export_range(0.0, 2.0, 0.01) var strength: float = 0.8:
+@export_range(0.0, 2.0, 0.01) var strength: float = 1.3:
 	set(v):
 		strength = v
 		if _mat != null:
