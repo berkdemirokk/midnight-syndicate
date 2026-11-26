@@ -44,8 +44,11 @@ py -3.10 tools/asset_factory.py validate
 - Evidence over claims: performance numbers are measured and name the machine; desktop numbers are
   never reported as iPhone numbers; "App Store ready" is not said before a real Xcode build and a
   real iPhone test.
-- Zero extra cost: no paid APIs, assets, hosting or build services. Third-party assets are CC0
-  only, recorded in ASSET_MANIFEST.json and THIRD_PARTY_LICENSES.md when downloaded.
+- Zero extra cost: no paid APIs, assets, hosting or build services. Third-party assets are CC0, or
+  CC BY 4.0 with the credit line kept (owner decision 2026-11-26: licensed ready-made models are
+  preferred over crude procedural ones). No real car makes, no logos, no NC/ND/SA or unclear licences.
+  Every download is recorded in ASSET_MANIFEST.json and THIRD_PARTY_LICENSES.md, and CC BY credits
+  are shown in the game (game/ui/credits_third_party.txt).
 - Ask the owner before anything that spends money, accepts an agreement, publishes, sends a
   message, deletes, or downloads large files.
 - Secrets and signing files never enter the repository.

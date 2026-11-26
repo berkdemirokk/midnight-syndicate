@@ -475,3 +475,28 @@ car and is not reproduced. Layers, and what each needs in a real-time Mobile-ren
 | HUD | position + leaderboard with gaps, progress strip with skyline, round minimap, tachometer, nitro | HUD restyle (running) |
 | grade | cool night with warm practicals, deep blacks kept, controlled bloom | PostFx grade per hour (in), glow tuning (todo) |
 
+## Ortakoy benchmark (one car, first 100 m of the coast) — 2026-11-26
+
+Scenario `ortakoy_benchmark` (`game/devtools/scenarios/ortakoy_benchmark.gd`): start grid to the mosque on the Bogaz
+track, by day, sunset (blue hour) and night. Views: hero (low chase), car34, street, mosque (all without HUD) and
+gameplay (HUD on, 3 s after GO). Shots and perf JSON in `evidence/screens/ortakoy_benchmark/`. The day shots are the
+honest ones: nothing hides the geometry. Desktop numbers (RTX 5060 Ti), not iPhone numbers.
+
+Method change (owner, 2026-11-26): stop building hero assets from crude procedural meshes; use licence-checked
+ready-made models where they exist. First result: four CC BY 4.0 cars from vinish.dev (original designs, no makes),
+turnarounds in `assets_src/third_party/vinish_cars/renders/`, being integrated as Kestrel Vanta and Arden Havoc.
+
+### Gate score, lead, from the benchmark captures against the owner's Ortakoy reference (no fake points)
+| criterion | max | before (8d5b787) | now (c191d50) | why |
+|---|---:|---:|---:|---|
+| car geometry | 15 | 7 | 7 | still the procedural Sable in these shots; the licensed car is not merged yet |
+| car materials | 15 | 7 | 9 | crisp clearcoat highlights, Turkish-layout plate, tail lights bloom, underglow; no rain beads |
+| Istanbul architecture | 20 | 5 | 11 | mosque with relief, drum, turrets, fluted minarets; 3D bridge, far shore, ferry; houses are still flat in daylight |
+| lighting | 15 | 7 | 10 | warm lamps against a cool sky, moon and cloud, blue-hour preset, day contrast fixed; no AO or GI on Mobile |
+| asphalt and reflections | 15 | 9 | 11 | planar mirror shows mosque, lamps and cars; photo-based asphalt; no puddle break-up |
+| camera and effects | 10 | 5 | 7 | lower, closer chase camera, tyre spray, lens drops, speed blur kept off the skyline |
+| HUD | 10 | 5 | 8 | reference layout with live data (leaderboard gaps, lap strip, round minimap, tachometer, nitro) |
+| total | 100 | 45 | 63 | target 90 is not reached |
+
+Open, in order: licensed cars in the race, house facades with depth, crowd figures (flat cards were removed as toy-like),
+rain beads on paint, puddle break-up on the road.
