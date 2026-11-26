@@ -75,6 +75,25 @@ c0c065d (see `git log`).
   (shelter, road-height ripples, depth falloff, speed slant). Gate: lead 6.4, art 5.75, tech 5.6.
   149 tests pass. High race views at 501 draws (budget 500), Low 276 (250): budgets next.
 
+## Session 3 — 2026-11-25/26 (product pass)
+Parallel agents in isolated worktrees, each reviewed independently, merged by the lead.
+- Budgets: per-category draw breakdown, HUD/results batching, mirror diet, LOD tuning. All
+  race and preset views on City 01 within budget (High race 377-430 draws / <=435k primitives,
+  Medium 260, Low 249); replay orbit 469k primitives is the one view over (fix in progress).
+- Audio: 25 original procedurally synthesised sounds (engine layers, tyres, nitro, impacts, UI,
+  race and menu music) wired into cars, countdown, finish, menus and pause; volume buses.
+- Career: 10 events (6 Arden Bay + 4 World Tour Istanbul), stars, unlocks, next-event button.
+- Istanbul: generic track pipeline; Maslak-Levent (towers, viaduct, underpass) and Bosphorus
+  coast road (yali, cumba rows, cobbled tram street, piers, bridge/dome skyline cards); 5-AI
+  races finish on both; original Turkish sign names, no real brands.
+- Visuals: cars seated on their suspension (bodies floated 0.49 m above the wheels before),
+  showroom garage (glossy mirror floor, three-point light), drift smoke + skid marks, car glass
+  edges and arch liners, app icon and boot splash.
+- Build: Windows export (243 MB exe + pck). The exe is blocked by Smart App Control on the dev PC
+  (unsigned template, BLOCKERS B9); the exported pck runs (menu and race, no errors).
+- Captures and tests are silent and off-screen. 199+ tests pass.
+- Commits up to 6037fd2 (see git log).
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
