@@ -128,7 +128,7 @@ func test_material_scaling_and_restore() -> void:
 	var sunset: TimeOfDay = TimeOfDay.preset("sunset")
 	for m: Material in [win, sky, neon, strip, road, post, paint]:
 		sunset.tune_material(m)
-	check_range(float(win.get_shader_parameter("glow_energy")), 0.5, 2.5, "sunset window glow")
+	check_range(float(win.get_shader_parameter("glow_energy")), 0.5, 2.9, "sunset window glow")  # blue hour: windows almost at night strength (was capped at 2.5 for the pink sunset)
 	var night: TimeOfDay = TimeOfDay.preset("night")
 	for m: Material in [win, sky, neon, strip, road, post, paint]:
 		night.tune_material(m)

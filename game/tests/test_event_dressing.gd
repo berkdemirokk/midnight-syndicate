@@ -9,7 +9,7 @@ const PNGS: PackedStringArray = ["banner_atlas.png", "crowd_atlas.png", "flag_tr
 const GLBS: Dictionary = {"event_barrier_0.glb": 1, "event_barrier_1.glb": 1, "event_barrier_2.glb": 1,
 	"event_flag.glb": 2, "event_awning.glb": 1, "event_cafe_set.glb": 1}
 const MAX_TRIS: int = 400  ## per kit piece; the whole kit is a few hundred triangles each
-const MIN_PER_KIND: Dictionary = {"barrier": 150, "crowd": 40, "flag": 30, "cafe": 5}
+const MIN_PER_KIND: Dictionary = {"barrier": 150, "crowd": (40 if EventDressing.CROWD_ENABLED else 0), "flag": 30, "cafe": 5}
 
 
 func _tris(mesh: Mesh) -> int:

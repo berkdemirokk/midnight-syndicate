@@ -55,7 +55,7 @@ func test_ferry_loops_on_its_line() -> void:
 
 
 func test_bridge_towers_and_hill_contract() -> void:
-	check(FarScenery.HIDES_ASSET == "skyline_bridge", "HIDES_ASSET must name the flat skyline card")
+	check(FarScenery.HIDES_ASSET == "skyline", "HIDES_ASSET must name the flat skyline card")
 	check(FarScenery.hill_height(500.0, 0.0) == 0.0, "sea before the far shore must be flat zero")
 	check(FarScenery.hill_height(1100.0, 0.0) > 20.0, "far shore should rise")
 	check(FarScenery.cable_height(0.0) < FarScenery.cable_height(FarScenery.TOWER_X), "main cable must sag at midspan")

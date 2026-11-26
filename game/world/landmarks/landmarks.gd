@@ -18,7 +18,7 @@ const WARM: Color = Color(1.0, 0.64, 0.3)  ## sodium floodlight gold (0.74, 0.46
 
 ## Surface name (glTF material name from the kit) -> look. glow is emission at night in units of the shader.
 const MATERIALS: Dictionary = {
-	"M_Stone": {"base": Color(0.8, 0.74, 0.64), "rough": 0.55, "metal": 0.0, "glow": 0.0, "flood": 0.36, "course": 1.1, "glow_color": Color(1.0, 0.74, 0.46)},
+	"M_Stone": {"base": Color(0.74, 0.67, 0.56), "rough": 0.55, "metal": 0.0, "glow": 0.0, "flood": 0.36, "course": 1.1, "glow_color": Color(1.0, 0.74, 0.46)},
 	"M_Dome": {"base": Color(0.42, 0.5, 0.5), "rough": 0.35, "metal": 0.5, "glow": 0.0, "flood": 0.3, "glow_color": WARM},
 	"M_Glass": {"base": Color(0.12, 0.15, 0.2), "rough": 0.15, "metal": 0.0, "glow": 2.4, "flood": 0.0, "glow_color": Color(1.0, 0.7, 0.35)},
 	"M_Lamp": {"base": Color(1.0, 0.88, 0.6), "rough": 0.3, "metal": 0.0, "glow": 6.0, "flood": 0.0, "glow_color": Color(1.0, 0.85, 0.55)},

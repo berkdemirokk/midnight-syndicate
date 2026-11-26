@@ -260,6 +260,8 @@ static func _lod_mesh(species: String, lod: int) -> Mesh:
 	var leaf := ShaderMaterial.new()
 	leaf.shader = FOLIAGE_SHADER
 	leaf.set_shader_parameter("tint", Color(0.62, 0.70, 0.52))  # desaturated: the raw atlas green looked plastic next to the buildings
+	if species == "judas":
+		leaf.set_shader_parameter("tint", Color(0.50, 0.40, 0.46))  # muted blossom: the raw magenta glowed like a Christmas tree under the lamps
 	if lod == 2:
 		leaf.set_shader_parameter("albedo_tex", load(SPECIES_DIR + "impostor_%s.png" % species))
 		mesh.surface_set_material(0, leaf)

@@ -6,7 +6,7 @@ extends Node3D
 ## shore, and light reflections on the water under the bridge. Positions are world metres of the bogaz frame.
 ## Add this node under the Track (the Track sits at the origin) and call setup() after the Track has built its city.
 
-const HIDES_ASSET: String = "skyline_bridge"  ## the flat card that setup() hides on the track
+const HIDES_ASSET: String = "skyline"  ## the flat skyline cards (bridge, far city with lit windows) that setup() hides: the 3D far shore replaces them
 const CENTRE: Vector3 = Vector3(650.0, 0.0, 330.0)  ## bridge centre over the strait
 const DECK_Y: float = 75.0  ## deck top above the sea, m
 const TOWER_X: float = 300.0  ## tower distance from the centre, m (main span 600 m)

@@ -27,6 +27,7 @@ const BARRIER_STEP_M: float = 4.0  ## one barrier segment per 4 m, both sides of
 const BARRIER_LAT_M: float = 0.9  ## barrier centre beyond the road half width; its road face stands about 0.6 m out
 const CROWD_LAT_M: float = 2.4  ## spectator centre beyond the road half width, behind the barriers
 const CROWD_GAP_M: float = 0.85
+const CROWD_ENABLED: bool = false  ## the flat spectator cards read as toy figures up close: off until real figures exist
 const CROWD_GROUP_MIN: int = 5
 const CROWD_GROUP_MAX: int = 12
 const CROWD_STEP_EARLY_M: float = 45.0  ## groups every 45 m before EARLY_END_M (the start line), then every 120 m
@@ -111,6 +112,8 @@ func _place_barriers() -> void:
 
 
 func _place_crowds() -> void:
+	if not CROWD_ENABLED:
+		return
 	var s: float = _rng.randf_range(10.0, 30.0)
 	while s < _track.length:
 		var side: float = 1.0 if _rng.randf() < 0.5 else -1.0
