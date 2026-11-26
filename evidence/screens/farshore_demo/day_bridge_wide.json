@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.999,
+  "luma_min": 0.058,
+  "name": "day_bridge_wide",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 33,
+    "draw_calls_min": 31,
+    "driver": "vulkan",
+    "fps": 234.177,
+    "frame_ms_avg": 4.27,
+    "frame_ms_p95": 6.348,
+    "frame_ms_p99": 6.991,
+    "frames": 60,
+    "objects": 12492,
+    "os": "Windows",
+    "primitives": 28924,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 586.785,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-2/evidence/screens/farshore_demo/day_bridge_wide.png",
+  "preset": "high",
+  "scenario": "farshore_demo"
+}
