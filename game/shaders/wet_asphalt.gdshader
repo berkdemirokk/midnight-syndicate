@@ -113,7 +113,10 @@ void fragment() {
 	// Damp asphalt: darker, a little glossy. Groove: darker and smoother.
 	float damp = wetness * (1.0 - puddle * 0.5);
 	vec3 col = alb.rgb * tint.rgb * mix(1.0, 0.3, damp);
-	col *= tone * (1.0 - 0.07 * wear * dd);
+	// Rubber laid on the racing groove (was a 7 % tint: invisible) and oil stains in the lanes.
+	float rubber = wear * (0.17 + 0.11 * vnoise(wp * 2.5)) * dd;
+	float oil = smoothstep(0.64, 0.82, vnoise(wp / 3.1 + 40.0)) * dd;
+	col *= tone * (1.0 - rubber) * (1.0 - 0.13 * oil);
 	col *= mix(vec3(1.0), vec3(0.96, 0.97, 1.02), patch);
 	col *= mix(1.0, 0.72, wear * wetness);
 	col = mix(col, col * 0.15, puddle);
@@ -121,6 +124,7 @@ void fragment() {
 	float rough = mix(base_r, 0.2, damp);
 	rough = mix(rough, 0.08, puddle);
 	rough *= mix(1.0, 0.6, wear * wetness);
+	rough *= (1.0 - 0.18 * rubber * 4.0) * (1.0 - 0.3 * oil);  // polished rubber and oil are smoother than the stone
 
 	// World-space normal for a flat road: texture x -> world X, texture y -> world Z, up = Y.
 	// Puddles flatten it to up and carry ripples.
