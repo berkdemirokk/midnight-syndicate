@@ -48,21 +48,22 @@ func height() -> float:
 ## Paints all items: outlines first, then fills. Items must already be sorted by size_px.
 static func paint(ci: CanvasItem, items: Array[HudText]) -> void:
 	var rid: RID = ci.get_canvas_item()
+	ci.draw_set_transform_matrix(Transform2D.IDENTITY)  # one reset; a transform change per item would split the glyph batch
 	for item: HudText in items:
 		if item.visible and item.outlined and item.text != "":
 			item._draw_pass(ci, rid, true)
 	for item: HudText in items:
 		if item.visible and item.text != "":
 			item._draw_pass(ci, rid, false)
-	ci.draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
 func _draw_pass(ci: CanvasItem, rid: RID, outline: bool) -> void:
-	if scale != 1.0:
+	var scaled: bool = scale != 1.0
+	if scaled:
 		ci.draw_set_transform_matrix(Transform2D(0.0, Vector2(scale, scale), 0.0, pivot - pivot * scale))
-	else:
-		ci.draw_set_transform_matrix(Transform2D.IDENTITY)
 	if outline:
 		_line.draw_outline(rid, pos, MSTheme.HUD_OUTLINE_PX, MSTheme.OUTLINE * modulate)
 	else:
 		_line.draw(rid, pos, color * modulate)
+	if scaled:
+		ci.draw_set_transform_matrix(Transform2D.IDENTITY)

@@ -4,30 +4,30 @@
     1080
   ],
   "luma_max": 0.96,
-  "luma_min": 0.02,
+  "luma_min": 0.015,
   "name": "hud",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 22,
-    "draw_calls_min": 22,
+    "draw_calls": 21,
+    "draw_calls_min": 21,
     "driver": "vulkan",
-    "fps": 1164.709,
-    "frame_ms_avg": 0.859,
-    "frame_ms_p95": 1.347,
-    "frame_ms_p99": 1.635,
+    "fps": 1030.768,
+    "frame_ms_avg": 0.97,
+    "frame_ms_p95": 1.218,
+    "frame_ms_p99": 1.306,
     "frames": 60,
-    "objects": 6312,
+    "objects": 11801,
     "os": "Windows",
-    "primitives": 6594,
+    "primitives": 12340,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 67.868,
+    "video_mem_mb": 75.382,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/ui_draws/hud.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-5/evidence/screens/ui_draws/hud.png",
   "preset": "high",
   "scenario": "ui_draws"
 }

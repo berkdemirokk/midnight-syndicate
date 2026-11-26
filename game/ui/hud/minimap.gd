@@ -1,32 +1,59 @@
 class_name MiniMap
 extends RefCounted
-## Track outline with car dots. Points come from track.get_minimap_points() (fitted to size_px, aspect kept).
-## Dots sit on the outline at a 0..1 lap progress reported by RaceManager.get_lap_progress().
-## Paints into the HUD's own canvas in three passes so each one batches: paint_rects (panel), paint_lines (frame
-## edge and track outline), paint_dots (one shared disc texture).
+## Round minimap, heading up. The track outline is fitted inside the ring once (set_track), then rotated every frame
+## by the player's heading, so the arrow in the centre always points up the screen and the map turns around it.
+## Rivals sit on the outline at their lap progress. Painted into the HUD's own canvas in three passes so each batches:
+## paint_rects (disc), paint_lines (ring and outline), paint_dots (rival discs and the player arrow).
 
 const DISC_PX: int = 32
-const TRACK_COL: Color = Color(0.374, 0.395, 0.434)  ## TEXT at 35 percent over PANEL_BG, pre-blended
+const FIT: float = 0.78  ## outline radius as a share of the ring, so the track never touches the rim
+const TRACK_COL: Color = Color(0.374, 0.395, 0.434)  ## TEXT at 35 percent over PLATE_BG, pre-blended
+const RING_COL: Color = Color(0.06, 0.43, 0.49)  ## BORDER (cyan at 45 percent) pre-blended: translucent chords bead
+const ARROW_COL: Color = Color(0.706, 0.361, 1.0)  ## violet accent
+const RIVAL_COL: Color = Color(0.85, 0.87, 0.9)
 
 static var _disc: ImageTexture = null
 
-var pad_px: float = 16.0
-var line_px: float = 3.0
-var player_radius_px: float = 7.0
+var radius_px: float = 116.0
+var line_px: float = 4.0
 var rival_radius_px: float = 5.0
-var skew_px: float = 24.0
-var size_px: Vector2 = Vector2(240.0, 240.0)
+var arrow_px: float = 13.0
 
-var _screen: PackedVector2Array = PackedVector2Array()
-var _cum: PackedFloat32Array = PackedFloat32Array()  ## cumulative length of _screen, 0..1
+var _local: PackedVector2Array = PackedVector2Array()  ## outline centred on the origin, fitted to FIT * radius
+var _cum: PackedFloat32Array = PackedFloat32Array()  ## cumulative length of _local, 0..1
+var _rot: PackedVector2Array = PackedVector2Array()  ## _local turned by the current heading
+var _cs: float = 0.0
+var _sn: float = -1.0  ## heading 0: the map is turned so forward is up
 var _dot_t: PackedFloat32Array = PackedFloat32Array()
 var _dot_player: PackedByteArray = PackedByteArray()
-var _raw: PackedVector2Array = PackedVector2Array()
 
 
 func set_track(points: PackedVector2Array) -> void:
-	_raw = points
-	_refit()
+	_local = PackedVector2Array()
+	_cum = PackedFloat32Array()
+	if points.size() < 2:
+		return
+	var mid: Vector2 = Vector2.ZERO
+	for p: Vector2 in points:
+		mid += p
+	mid /= float(points.size())
+	var far: float = 0.0
+	for p: Vector2 in points:
+		far = maxf(far, p.distance_to(mid))
+	var s: float = radius_px * FIT / maxf(far, 0.0001)
+	for p: Vector2 in points:
+		_local.append((p - mid) * s)
+	_local.append(_local[0])
+	var total: float = 0.0
+	_cum.append(0.0)
+	for i: int in range(1, _local.size()):
+		total += _local[i].distance_to(_local[i - 1])
+		_cum.append(total)
+	if total > 0.0:
+		for i: int in _cum.size():
+			_cum[i] /= total
+	_rot.resize(_local.size())
+	set_forward(Vector2(0.0, -1.0))
 
 
 func set_dot_count(n: int) -> void:
@@ -41,31 +68,22 @@ func set_dot(index: int, progress: float, is_player: bool) -> void:
 	_dot_player[index] = 1 if is_player else 0
 
 
-func _refit() -> void:
-	_screen = PackedVector2Array()
-	_cum = PackedFloat32Array()
-	if _raw.size() < 2:
-		return
-	var lo: Vector2 = _raw[0]
-	var hi: Vector2 = _raw[0]
-	for p: Vector2 in _raw:
-		lo = lo.min(p)
-		hi = hi.max(p)
-	var span: Vector2 = (hi - lo).max(Vector2(0.0001, 0.0001))
-	var inner: Vector2 = size_px - Vector2(pad_px, pad_px) * 2.0
-	var s: float = minf(inner.x / span.x, inner.y / span.y)
-	var offset: Vector2 = Vector2(pad_px, pad_px) + (inner - span * s) * 0.5
-	for p: Vector2 in _raw:
-		_screen.append(offset + (p - lo) * s)
-	_screen.append(_screen[0])
-	var total: float = 0.0
-	_cum.append(0.0)
-	for i: int in range(1, _screen.size()):
-		total += _screen[i].distance_to(_screen[i - 1])
-		_cum.append(total)
-	if total > 0.0:
-		for i: int in _cum.size():
-			_cum[i] /= total
+## forward: the player's heading on the map plane (x, z). Turns the whole map so that heading points up.
+func set_forward(forward: Vector2) -> void:
+	var phi: float = -PI * 0.5 - atan2(forward.y, forward.x)
+	_cs = cos(phi)
+	_sn = sin(phi)
+	for i: int in _local.size():
+		_rot[i] = _turn(_local[i])
+
+
+## Direction of north on screen, unit length. The N marker sits on the rim in this direction.
+func north_dir() -> Vector2:
+	return _turn(Vector2(0.0, -1.0))
+
+
+func _turn(p: Vector2) -> Vector2:
+	return Vector2(p.x * _cs - p.y * _sn, p.x * _sn + p.y * _cs)
 
 
 func _point_at(t: float) -> Vector2:
@@ -74,52 +92,38 @@ func _point_at(t: float) -> Vector2:
 		if _cum[i] >= t:
 			var seg: float = _cum[i] - _cum[i - 1]
 			var k: float = 0.0 if seg <= 0.0 else (t - _cum[i - 1]) / seg
-			return _screen[i - 1].lerp(_screen[i], k)
-	return _screen[0]
+			return _local[i - 1].lerp(_local[i], k)
+	return _local[0]
 
 
-func _frame(origin: Vector2) -> PackedVector2Array:
-	return PackedVector2Array([
-		origin + Vector2(skew_px, 0.0), origin + Vector2(size_px.x, 0.0),
-		origin + Vector2(size_px.x - skew_px, size_px.y), origin + Vector2(0.0, size_px.y)])
+## Round panel fill. Drawn in the rect pass.
+func paint_rects(c: CanvasItem, centre: Vector2) -> void:
+	c.draw_circle(centre, radius_px, MSTheme.PLATE_BG)
 
 
-## Panel fill. A sheared rect, so it stays in the HUD's rect batch.
-func paint_rects(c: CanvasItem, origin: Vector2) -> void:
-	var shear: float = skew_px / size_px.y
-	c.draw_set_transform_matrix(Transform2D(Vector2(1.0, 0.0), Vector2(-shear, 1.0), origin + Vector2(skew_px, 0.0)))
-	c.draw_rect(Rect2(Vector2.ZERO, Vector2(size_px.x - skew_px, size_px.y)), MSTheme.PANEL_BG)
-	c.draw_set_transform_matrix(Transform2D.IDENTITY)
-
-
-func paint_lines(c: CanvasItem, origin: Vector2) -> void:
-	var f: PackedVector2Array = _frame(origin)
-	c.draw_multiline(PackedVector2Array([f[0], f[1], f[1], f[2], f[2], f[3], f[3], f[0]]), MSTheme.BORDER, 1.0, true)
-	if _screen.size() < 2:
+func paint_lines(c: CanvasItem, centre: Vector2) -> void:
+	c.draw_multiline(SpeedGauge.ring_segments(centre, radius_px, 0.0, TAU, 64), RING_COL, 2.0, true)
+	if _rot.size() < 2:
 		return
 	var pts := PackedVector2Array()
-	for i: int in range(1, _screen.size()):
-		var chord: Vector2 = (_screen[i] - _screen[i - 1]).normalized() * 0.75
-		pts.append(origin + _screen[i - 1] - chord)
-		pts.append(origin + _screen[i] + chord)
+	for i: int in range(1, _rot.size()):
+		var chord: Vector2 = (_rot[i] - _rot[i - 1]).normalized() * 0.75
+		pts.append(centre + _rot[i - 1] - chord)
+		pts.append(centre + _rot[i] + chord)
 	c.draw_multiline(pts, TRACK_COL, line_px, true)  # opaque: translucent segments bead where they meet
 
 
-func paint_dots(c: CanvasItem, origin: Vector2) -> void:
-	if _screen.size() < 2:
-		return
-	var tex: ImageTexture = _disc_texture()
-	for i: int in _dot_t.size():
-		var p: Vector2 = origin + _point_at(_dot_t[i])
-		if _dot_player[i] == 1:
-			_dot(c, tex, p, player_radius_px + 4.0, MSTheme.tint(MSTheme.CYAN, 0.25))
-			_dot(c, tex, p, player_radius_px, MSTheme.CYAN)
-		else:
-			_dot(c, tex, p, rival_radius_px, MSTheme.MAGENTA)
-
-
-func _dot(c: CanvasItem, tex: Texture2D, p: Vector2, r: float, col: Color) -> void:
-	c.draw_texture_rect(tex, Rect2(p - Vector2(r, r), Vector2(r, r) * 2.0), false, col)
+func paint_dots(c: CanvasItem, centre: Vector2) -> void:
+	if _rot.size() >= 2:
+		var tex: ImageTexture = _disc_texture()
+		for i: int in _dot_t.size():
+			if _dot_player[i] == 0:
+				var p: Vector2 = centre + _turn(_point_at(_dot_t[i]))
+				c.draw_texture_rect(tex, Rect2(p - Vector2.ONE * rival_radius_px, Vector2.ONE * rival_radius_px * 2.0), false, RIVAL_COL)
+	# Player arrow, pointing up the screen (the map turns, so forward is always up).
+	var a: float = arrow_px
+	c.draw_colored_polygon(PackedVector2Array([centre + Vector2(0.0, -a), centre + Vector2(a * 0.75, a * 0.7),
+		centre + Vector2(0.0, a * 0.3), centre + Vector2(-a * 0.75, a * 0.7)]), ARROW_COL)
 
 
 ## White disc with an anti-aliased rim, tinted per dot.

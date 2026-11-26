@@ -1,49 +1,73 @@
 class_name RaceHUD
 extends CanvasLayer
 ## Race HUD. Reads ArcadeCar and RaceManager state and reacts to race signals; it never drives race logic.
+## Layout (heading up, reference style): top left position and leaderboard of four rows around the player; top centre
+## lap progress strip with the track name and length; top right completion and race clock; bottom left round minimap;
+## bottom right round tachometer, speed, gear and a round nitro button.
 ## Every displayed string is cached in _shown, so a text is reshaped only when its value changes.
 ## get_readout() returns that cache for tests and captures.
 ## Draw cost: the whole HUD is painted from one canvas item (_paint) in four passes (rects, lines, dots, text) so
-## Godot batches each pass into one draw call. Text is HudText, not Label: see hud_text.gd. Budget: <= 25 draws.
+## Godot batches each pass into a few draw calls. Text is HudText, not Label: see hud_text.gd. Budget: <= 24 draws.
 
-const GAUGE_W: float = 340.0
-const GAUGE_H: float = 312.0
-const GAUGE_CENTRE_FRAC: float = 0.76  ## horizontal centre of the speedometer, fraction of the safe frame (clear of the car at 0.5 to 0.65)
-const GAUGE_CENTRE_Y: float = 142.0  ## arc centre, from the top of the gauge box
-const GAUGE_GEAR_Y: float = 246.0
-const GAUGE_GEAR_W: float = 56.0
-const GAUGE_GEAR_H: float = 34.0
-const SPEED_H: float = 130.0  ## about one line of the 112 px digits, centred on the arc centre
-const UNIT_Y: float = 204.0
-const NITRO_W: float = 320.0
-const NITRO_H: float = 20.0
-const NITRO_LEFT_FRAC: float = 0.3
-const MINIMAP_PX: float = 240.0
-const CENTRE_TOP_PX: float = 120.0
-const POS_PX: int = 80
-const POS_SUFFIX_PX: int = 28
-const POS_TOTAL_PX: int = 28
-const SPEED_PX: int = 96  ## fits inside the arc (inner diameter 228 px) with room to spare
-const UNIT_PX: int = 20
-const LAP_PX: int = 40
+const VIOLET: Color = Color(0.706, 0.361, 1.0)  ## #B45CFF, the accent; CYAN is the secondary colour
+const GEAR_RING_COL: Color = Color(0.06, 0.43, 0.49)  ## BORDER pre-blended (translucent chords bead)
+const TRACK_LEN_FALLBACK: float = 2200.0  ## metres, for captures and tests whose track has no length
+const GAP_MIN_MS: float = 8.0  ## gaps divide by at least this speed, so a stopped car does not blow them up
+
+## Three pixel sizes only: every size is one more draw call per pass, so the whole HUD uses 80, 40 and 20.
+const BIG_PX: int = 80  ## position, speed, countdown
+const MID_PX: int = 40  ## completion, clock, gear, popups, position total
+const SMALL_PX: int = 20  ## leaderboard, track line, scale numbers, labels
+const POS_PX: int = BIG_PX
+const POS_TOTAL_PX: int = MID_PX
+const PCT_PX: int = MID_PX
+const CLOCK_PX: int = MID_PX
+const ROW_PX: int = SMALL_PX
+const SPEED_PX: int = BIG_PX
+const GEAR_PX: int = MID_PX
+const DRIFT_PX: int = MID_PX
+const BANK_PX: int = MID_PX
+const WRONG_PX: int = MID_PX
+const FINISH_PX: int = MID_PX
+const COUNTDOWN_PX: int = BIG_PX
+const COUNTDOWN_BASE: float = 2.4  ## the countdown is drawn at 2.4x its pixel size
+const COUNTDOWN_PUNCH: float = 1.5
+const COUNTDOWN_PUNCH_S: float = 0.25
+const COUNTDOWN_HOLD_S: float = 0.8
+const COUNTDOWN_FADE_S: float = 0.25
+
+const LB_ROWS: int = 4
+const LB_ROW_H: float = 32.0
+const LB_W: float = 300.0
+const LB_PAD_X: float = 12.0
+const LB_NAME_X: float = 56.0
+const LB_NAME_CHARS: int = 12
+
+const STRIP_W: float = 520.0
+const STRIP_H: float = 6.0
+const STRIP_Y: float = 14.0
+const STRIP_MARK_PX: float = 7.0
+const CENTRE_TOP_PX: float = 84.0
+
+const MM_R: float = 116.0  ## minimap radius
+const MM_PAD: float = 16.0
+
+const TACH_R: float = 124.0  ## arc radius of the tachometer
+const TACH_ARC_W: float = 12.0
+const TACH_PLATE_R: float = 150.0
+const TACH_OFF_X: float = 300.0  ## centre of the tachometer, from the right and bottom edge
+const TACH_OFF_Y: float = 186.0
+const TACH_NUM_R: float = 88.0  ## radius of the 0..8 scale numbers
+const GEAR_R: float = 28.0
+const GEAR_DY: float = 74.0  ## gear ring below the tachometer centre, in the gap of the arc
+const NITRO_R: float = 50.0
+const NITRO_OFF_X: float = 84.0
+const NITRO_OFF_Y: float = 150.0
+
 const TOP_SCRIM_PX: float = 300.0  ## height of the dark gradient behind the top HUD clusters
 const TOP_SCRIM_ALPHA: float = 0.6
 const SCRIM_STEP_PX: int = 3  ## the gradient is stacked rects of this height, so it joins the rect batch
-const SCRIM_HOLD_AT: float = 0.75  ## the gradient holds 60 percent of its alpha here, under the lap/time rows
-const SMALL_PX: int = 18
-const TIME_PX: int = 24
-const NITRO_LABEL_PX: int = 18
-const COUNTDOWN_PX: int = 200
-const DRIFT_PX: int = 40
-const BANK_PX: int = 28
-const WRONG_PX: int = 48
-const FINISH_PX: int = 28
-const GEAR_PAD_X: float = 24.0
-const GEAR_PAD_Y: float = 12.0
-const COUNTDOWN_HOLD_S: float = 0.8
-const COUNTDOWN_FADE_S: float = 0.25
-const COUNTDOWN_PUNCH: float = 1.5
-const COUNTDOWN_PUNCH_S: float = 0.25
+const SCRIM_HOLD_AT: float = 0.75  ## the gradient holds 60 percent of its alpha here, under the lap rows
 const BANK_FLASH_S: float = 1.6
 const BANK_FLASH_BOOST: float = 1.6
 const WRONG_SAMPLE_S: float = 0.25
@@ -54,7 +78,7 @@ const WRONG_BLINK_HZ: float = 3.0
 const REVERSE_MS: float = 0.5
 const PANEL_SKEW: float = MSTheme.SKEW_RATIO * 0.5  ## same shear as MSTheme.box()
 const PLATE_PAD: float = 14.0  ## backing plates under every cluster: HUD text stays readable on bright signage
-const PHONE_HUD_SCALE: float = 1.4  ## 24 px timers are 8.6 pt on an iPhone at the 1080 px base: scale the whole frame
+const PHONE_HUD_SCALE: float = 1.4  ## 20 px labels are about 6 pt on an iPhone at the 1080 px base: scale the whole frame
 const POPUP_PAD_X: float = 24.0
 
 
@@ -70,6 +94,7 @@ class HudCanvas:
 var _car: ArcadeCar = null
 var _race: RaceManager = null
 var _track: Node3D = null
+var _cars: Array[ArcadeCar] = []  ## every car in the race, player included
 var _rivals: Array[ArcadeCar] = []
 var _connections: Array = []  ## [Signal, Callable] pairs made by bind()
 var _shown: Dictionary = {}
@@ -80,6 +105,8 @@ var _wrong_t: float = 0.0
 var _countdown_tw: Tween = null
 var _ints: Dictionary = {}  ## last integer behind each readout; strings are built only when it changes
 var _bank_tw: Tween = null
+var _strip_p: float = 0.0  ## player lap progress, 0..1, for the top strip
+var _me_row: int = -1  ## leaderboard row of the player this frame, -1 when not shown
 
 var _root: Control
 var _frame: HudCanvas
@@ -89,19 +116,19 @@ var _speedo: SpeedGauge
 var _nitro: NitroBar
 var _texts: Array[HudText] = []  ## sorted by pixel size, the order HudText.paint needs
 var _pos_num: HudText
-var _pos_suffix: HudText
 var _pos_total: HudText
-var _lap_head: HudText
+var _lb_place: Array[HudText] = []
+var _lb_name: Array[HudText] = []
+var _lb_gap: Array[HudText] = []
+var _pct: HudText
+var _clock: HudText
 var _lap_val: HudText
-var _cap_time: HudText
-var _cap_lap: HudText
-var _cap_best: HudText
-var _time_val: HudText
-var _lap_cur_val: HudText
-var _best_val: HudText
+var _track_label: HudText
 var _speed_label: HudText
 var _unit_label: HudText
 var _gear_label: HudText
+var _tach_nums: Array[HudText] = []
+var _north: HudText
 var _nitro_label: HudText
 var _countdown: HudText
 var _drift_label: HudText
@@ -141,9 +168,12 @@ func _build() -> void:
 	_root.add_child(_frame)
 
 	_speedo = SpeedGauge.new()
+	_speedo.radius_px = TACH_R
+	_speedo.arc_width_px = TACH_ARC_W
 	_nitro = NitroBar.new()
+	_nitro.radius_px = NITRO_R
 	_minimap = MiniMap.new()
-	_minimap.size_px = Vector2(MINIMAP_PX, MINIMAP_PX)
+	_minimap.radius_px = MM_R
 	_build_texts()
 
 
@@ -155,26 +185,29 @@ func _text(kind: String, px: int, col: Color, initial: String) -> HudText:
 
 
 func _build_texts() -> void:
-	_pos_num = _text("digits", POS_PX, MSTheme.TEXT, "1")
-	_pos_suffix = _text("digits", POS_SUFFIX_PX, MSTheme.CYAN, "ST")
+	_pos_num = _text("slant", POS_PX, MSTheme.TEXT, "1")
 	_pos_total = _text("digits", POS_TOTAL_PX, MSTheme.MUTED, "/ 1")
-	_lap_head = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.lap"))
-	_lap_val = _text("digits", LAP_PX, MSTheme.TEXT, "1 / 1")
-	_cap_time = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.time"))
-	_cap_lap = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.lap_time"))
-	_cap_best = _text("tracked", SMALL_PX, MSTheme.MUTED, I18n.t("hud.best"))
-	_time_val = _text("digits", TIME_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
-	_lap_cur_val = _text("digits", TIME_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
-	_best_val = _text("digits", TIME_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
+	for i: int in LB_ROWS:
+		_lb_place.append(_text("digits", ROW_PX, MSTheme.TEXT, ""))
+		_lb_name.append(_text("digits", ROW_PX, MSTheme.TEXT, ""))
+		_lb_gap.append(_text("digits", ROW_PX, MSTheme.MUTED, ""))
+	_pct = _text("digits", PCT_PX, MSTheme.TEXT, "% 0")
+	_clock = _text("digits", CLOCK_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
+	_lap_val = _text("digits", ROW_PX, MSTheme.MUTED, "1 / 1")
+	_track_label = _text("digits", ROW_PX, MSTheme.TEXT, "")
 	_speed_label = _text("digits", SPEED_PX, MSTheme.TEXT, "0")
-	_unit_label = _text("tracked", UNIT_PX, MSTheme.MUTED, I18n.t("hud.kmh"))
-	_gear_label = _text("digits", POS_SUFFIX_PX, MSTheme.CYAN, "N")
-	_nitro_label = _text("tracked", NITRO_LABEL_PX, MSTheme.CYAN, I18n.t("hud.nitro"))
+	_unit_label = _text("digits", ROW_PX, MSTheme.MUTED, I18n.t("hud.kmh"))
+	_gear_label = _text("digits", GEAR_PX, MSTheme.CYAN, "N")
+	for i: int in 9:
+		_tach_nums.append(_text("digits", SMALL_PX, MSTheme.MUTED, str(i)))
+	_north = _text("digits", SMALL_PX, MSTheme.MUTED, "N")
+	_nitro_label = _text("digits", ROW_PX, MSTheme.CYAN, I18n.t("hud.nitro"))
 	_drift_label = _text("digits", DRIFT_PX, MSTheme.CYAN, "")
 	_bank_label = _text("digits", BANK_PX, MSTheme.MAGENTA, "")
 	_wrong_label = _text("digits", WRONG_PX, MSTheme.DANGER, I18n.t("hud.wrong_way"))
 	_finish_label = _text("digits", FINISH_PX, MSTheme.TEXT, I18n.t("hud.finished"))
 	_countdown = _text("digits", COUNTDOWN_PX, MSTheme.TEXT, "")
+	_countdown.scale = COUNTDOWN_BASE
 	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label, _countdown]:
 		t.visible = false
 	_texts.sort_custom(func(a: HudText, b: HudText) -> bool: return a.size_px < b.size_px)
@@ -194,92 +227,93 @@ func _apply_insets() -> void:
 ## Lays every element out and paints it. Pass order is what makes the batches: rects, lines, dots, text.
 func _paint(c: Control) -> void:
 	var sz: Vector2 = c.size
-	var sep: float = float(MSTheme.GRID_PX * 2)
+	var pad: float = float(MSTheme.GRID_PX)
 
-	# Top-left: position, suffix and total on one row, minimap under it.
-	_pos_num.pos = Vector2.ZERO
-	var col_x: float = _pos_num.width() + float(MSTheme.GRID_PX)
-	_pos_suffix.pos = Vector2(col_x, 0.0)
-	_pos_total.pos = Vector2(col_x, _pos_suffix.height())
-	var row_h: float = maxf(_pos_num.height(), _pos_suffix.height() + _pos_total.height())
-	var map_origin: Vector2 = Vector2(0.0, row_h + sep)
+	# Top left: big position, then the leaderboard window around the player.
+	_pos_total.pos = Vector2(_pos_num.width() + pad * 0.5, _pos_num.height() - _pos_total.height() - pad)
+	var lb_top: float = _pos_num.height() + pad * 0.5
+	var tl_w: float = maxf(_pos_num.width() + pad * 0.5 + _pos_total.width(), LB_W)
+	for i: int in LB_ROWS:
+		var ty: float = lb_top + float(i) * LB_ROW_H + (LB_ROW_H - 4.0 - _lb_place[i].height()) * 0.5
+		_lb_place[i].pos = Vector2(LB_PAD_X, ty)
+		_lb_name[i].pos = Vector2(LB_NAME_X, ty)
+		_lb_gap[i].pos = Vector2(LB_W - LB_PAD_X - _lb_gap[i].width(), ty)
+	var tl_plate: Rect2 = Rect2(-PLATE_PAD, -PLATE_PAD * 0.5, tl_w + PLATE_PAD * 2.0,
+		lb_top + float(LB_ROWS) * LB_ROW_H + PLATE_PAD * 0.5)
 
-	# Top-right: LAP header, lap value, then a two column grid of timers.
-	var cap_w: float = maxf(_cap_time.width(), maxf(_cap_lap.width(), _cap_best.width()))
-	var val_w: float = maxf(_time_val.width(), maxf(_lap_cur_val.width(), _best_val.width()))
-	var grid_w: float = cap_w + float(MSTheme.GRID_PX * 3) + val_w
-	var box_x: float = sz.x - maxf(grid_w, maxf(_lap_head.width(), _lap_val.width()))
-	_lap_head.pos = Vector2(sz.x - _lap_head.width(), 0.0)
-	var lap_y: float = _lap_head.height() + sep
-	_lap_val.pos = Vector2(sz.x - _lap_val.width(), lap_y)
-	var grid_y: float = lap_y + _lap_val.height() + sep
-	var stat_h: float = maxf(_cap_time.height(), _time_val.height())
-	var stats: Array = [[_cap_time, _time_val], [_cap_lap, _lap_cur_val], [_cap_best, _best_val]]
-	for i: int in stats.size():
-		var cap: HudText = stats[i][0]
-		var val: HudText = stats[i][1]
-		var y: float = grid_y + float(i) * (stat_h + float(MSTheme.GRID_PX))
-		cap.pos = Vector2(box_x, y + (stat_h - cap.height()) * 0.5)  # labels centre vertically in their cell
-		val.pos = Vector2(box_x + cap_w + float(MSTheme.GRID_PX * 3) + (val_w - val.width()), y)
+	# Top centre: lap strip with the track name and length under it.
+	var strip_l: float = sz.x * 0.5 - STRIP_W * 0.5
+	_track_label.pos = Vector2(sz.x * 0.5 - _track_label.width() * 0.5, STRIP_Y + STRIP_H + pad)
+	var strip_plate: Rect2 = Rect2(strip_l - PLATE_PAD, STRIP_Y - PLATE_PAD * 0.5, STRIP_W + PLATE_PAD * 2.0,
+		_track_label.pos.y + _track_label.height() - STRIP_Y + PLATE_PAD)
 
-	# Bottom: speedometer (arc, speed, unit, gear box) and nitro bar.
-	var gauge_l: float = sz.x * GAUGE_CENTRE_FRAC - GAUGE_W * 0.5
-	var gauge_t: float = sz.y - GAUGE_H
-	var arc_centre: Vector2 = Vector2(gauge_l + GAUGE_W * 0.5, gauge_t + GAUGE_CENTRE_Y)
-	_speed_label.pos = Vector2(gauge_l + (GAUGE_W - _speed_label.width()) * 0.5,
-		gauge_t + GAUGE_CENTRE_Y - SPEED_H * 0.5 + maxf((SPEED_H - _speed_label.height()) * 0.5, 0.0))
-	_unit_label.pos = Vector2(gauge_l + (GAUGE_W - _unit_label.width()) * 0.5,
-		gauge_t + UNIT_Y + (float(UNIT_PX + MSTheme.GRID_PX) - _unit_label.height()) * 0.5)
-	var gear_size: Vector2 = Vector2(maxf(GAUGE_GEAR_W, _gear_label.width() + GEAR_PAD_X * 2.0),
-		maxf(GAUGE_GEAR_H, _gear_label.height() + GEAR_PAD_Y * 2.0))
-	var gear_rect: Rect2 = Rect2(Vector2(gauge_l + GAUGE_W * 0.5 - GAUGE_GEAR_W * 0.5, gauge_t + GAUGE_GEAR_Y), gear_size)
-	_gear_label.pos = gear_rect.position + Vector2(GEAR_PAD_X, GEAR_PAD_Y)
-	var nitro_rect: Rect2 = Rect2(sz.x * NITRO_LEFT_FRAC, sz.y - NITRO_H, NITRO_W, NITRO_H)
-	_nitro_label.pos = Vector2(nitro_rect.position.x, nitro_rect.position.y - sep - _nitro_label.height())
+	# Top right: completion, race clock, lap.
+	_pct.pos = Vector2(sz.x - _pct.width(), 0.0)
+	_clock.pos = Vector2(sz.x - _clock.width(), _pct.height() - pad * 0.5)
+	_lap_val.pos = Vector2(sz.x - _lap_val.width(), _clock.pos.y + _clock.height())
+	var tr_w: float = maxf(_pct.width(), maxf(_clock.width(), _lap_val.width()))
+	var tr_plate: Rect2 = Rect2(sz.x - tr_w - PLATE_PAD * 1.5, -PLATE_PAD * 0.5, tr_w + PLATE_PAD * 2.5,
+		_lap_val.pos.y + _lap_val.height() + PLATE_PAD * 0.5)
 
-	# Centre column: drift popup, bank flash, wrong-way and finish text stack under the top edge.
+	# Bottom left: round minimap, N marker on the rim.
+	var mm_c: Vector2 = Vector2(MM_PAD + MM_R, sz.y - MM_PAD - MM_R)
+	var nd: Vector2 = _minimap.north_dir()
+	_north.pos = mm_c + nd * (MM_R - 18.0) - Vector2(_north.width(), _north.height()) * 0.5
+
+	# Bottom right: tachometer, speed, gear ring, nitro button.
+	var tc: Vector2 = Vector2(sz.x - TACH_OFF_X, sz.y - TACH_OFF_Y)
+	_speed_label.pos = tc - Vector2(_speed_label.width(), _speed_label.height()) * 0.5 + Vector2(0.0, -22.0)
+	_unit_label.pos = Vector2(tc.x - _unit_label.width() * 0.5, tc.y + 24.0)
+	var gear_c: Vector2 = tc + Vector2(0.0, GEAR_DY)
+	_gear_label.pos = gear_c - Vector2(_gear_label.width(), _gear_label.height()) * 0.5
+	for i: int in _tach_nums.size():
+		var a: float = deg_to_rad(_speedo.start_deg + _speedo.sweep_deg * float(i) / float(_tach_nums.size() - 1))
+		var n: HudText = _tach_nums[i]
+		n.pos = tc + Vector2(cos(a), sin(a)) * TACH_NUM_R - Vector2(n.width(), n.height()) * 0.5
+	var nc: Vector2 = Vector2(sz.x - NITRO_OFF_X, sz.y - NITRO_OFF_Y)
+	_nitro_label.pos = Vector2(nc.x - _nitro_label.width() * 0.5, nc.y + NITRO_R + 16.0)
+
+	# Centre column: drift popup, bank flash, wrong-way and finish text stack under the top strip.
 	var cy: float = CENTRE_TOP_PX
 	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label]:
 		if t.visible:
 			t.pos = Vector2((sz.x - t.width()) * 0.5, cy)
-			cy += t.height() + sep
+			cy += t.height() + pad * 2.0
 	_countdown.pos = (sz - Vector2(_countdown.width(), _countdown.height())) * 0.5
 	_countdown.pivot = sz * 0.5
 
-	# Backing plates, measured from the layout above.
-	var pos_w: float = col_x + maxf(_pos_suffix.width(), _pos_total.width())
-	var pos_plate: Rect2 = Rect2(-PLATE_PAD, -PLATE_PAD * 0.5, pos_w + PLATE_PAD * 2.5, row_h + PLATE_PAD)
-	var stats_bottom: float = grid_y + float(stats.size()) * (stat_h + float(MSTheme.GRID_PX)) - float(MSTheme.GRID_PX)
-	var lap_plate: Rect2 = Rect2(box_x - PLATE_PAD * 1.5, -PLATE_PAD * 0.5, sz.x - box_x + PLATE_PAD * 2.5, stats_bottom + PLATE_PAD * 1.5)
-	var gauge_top: float = gauge_t + GAUGE_CENTRE_Y - speedo_radius()
-	var gauge_plate: Rect2 = Rect2(arc_centre.x - speedo_radius() - PLATE_PAD * 1.5, gauge_top - PLATE_PAD,
-		speedo_radius() * 2.0 + PLATE_PAD * 3.0, gear_rect.end.y - gauge_top + PLATE_PAD * 2.0)
-	var nitro_plate: Rect2 = Rect2(nitro_rect.position.x - PLATE_PAD * 1.5, _nitro_label.pos.y - PLATE_PAD * 0.5,
-		NITRO_W + PLATE_PAD * 3.0, nitro_rect.end.y - _nitro_label.pos.y + PLATE_PAD * 1.5)
-
 	# Pass 1: rects.
 	_paint_scrim(c)
-	for plate: Rect2 in [pos_plate, lap_plate, gauge_plate, nitro_plate]:
-		_paint_skew_fill(c, plate, MSTheme.PLATE_BG)
+	_paint_skew_fill(c, tl_plate, MSTheme.PLATE_BG)
+	_paint_skew_fill(c, strip_plate, MSTheme.PLATE_BG)
+	_paint_skew_fill(c, tr_plate, MSTheme.PLATE_BG)
+	if _me_row >= 0:
+		var y: float = lb_top + float(_me_row) * LB_ROW_H
+		_paint_skew_fill(c, Rect2(0.0, y, LB_W, LB_ROW_H - 4.0), MSTheme.tint(VIOLET, 0.9))
 	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label]:
 		if t.visible and t.text != "":
-			_paint_skew_fill(c, Rect2(t.pos.x - POPUP_PAD_X, t.pos.y, t.width() + POPUP_PAD_X * 2.0, t.height()), MSTheme.tint(MSTheme.PLATE_BG, MSTheme.PLATE_BG.a * t.modulate.a))
-	_minimap.paint_rects(c, map_origin)
-	_paint_skew_fill(c, gear_rect)
-	_nitro.paint_rects(c, nitro_rect)
+			_paint_skew_fill(c, Rect2(t.pos.x - POPUP_PAD_X, t.pos.y, t.width() + POPUP_PAD_X * 2.0, t.height()),
+				MSTheme.tint(MSTheme.PLATE_BG, MSTheme.PLATE_BG.a * t.modulate.a))
+	var strip: Rect2 = Rect2(strip_l, STRIP_Y, STRIP_W, STRIP_H)
+	c.draw_rect(strip, MSTheme.tint(MSTheme.TEXT, 0.2))
+	c.draw_rect(Rect2(strip_l, STRIP_Y, STRIP_W * _strip_p, STRIP_H), VIOLET)
+	for r: ArcadeCar in _rivals:
+		var rp: float = _race.get_lap_progress(r) if _race != null else 0.0
+		c.draw_rect(Rect2(strip_l + STRIP_W * fposmod(rp, 1.0) - 1.5, STRIP_Y - 3.0, 3.0, STRIP_H + 6.0),
+			MSTheme.tint(MSTheme.TEXT, 0.6))
+	c.draw_circle(tc, TACH_PLATE_R, MSTheme.PLATE_BG)
+	_minimap.paint_rects(c, mm_c)
+	_nitro.paint_rects(c, nc)
 	# Pass 2: lines.
-	_speedo.paint_lines(c, arc_centre)
-	_minimap.paint_lines(c, map_origin)
-	_paint_skew_border(c, gear_rect)
-	_nitro.paint_lines(c, nitro_rect)
-	# Pass 3: dots, one shared texture.
-	_minimap.paint_dots(c, map_origin)
+	_speedo.paint_lines(c, tc)
+	c.draw_multiline(SpeedGauge.ring_segments(gear_c, GEAR_R, 0.0, TAU, 32), GEAR_RING_COL, 2.0, true)
+	_minimap.paint_lines(c, mm_c)
+	_nitro.paint_lines(c, nc)
+	# Pass 3: dots.
+	_minimap.paint_dots(c, mm_c)
+	c.draw_texture_rect(MiniMap._disc_texture(), Rect2(Vector2(strip_l + STRIP_W * _strip_p, STRIP_Y + STRIP_H * 0.5) - Vector2.ONE * STRIP_MARK_PX, Vector2.ONE * STRIP_MARK_PX * 2.0), false, MSTheme.TEXT)
 	# Pass 4: text, outlines first.
 	HudText.paint(c, _texts)
-
-
-func speedo_radius() -> float:
-	return _speedo.radius_px
 
 
 ## Dark gradient under the top clusters, as stacked rects. The top edge is the screen edge, not the safe frame.
@@ -295,20 +329,11 @@ func _paint_scrim(c: Control) -> void:
 		c.draw_rect(Rect2(left, top + float(i * SCRIM_STEP_PX), _root.size.x / k, float(SCRIM_STEP_PX)), Color(0.0, 0.0, 0.0, a))
 
 
-## Panel fill sheared like MSTheme.box(): a skewed rect keeps the rect batch.
+## Panel fill sheared like MSTheme.box(): a skewed rect keeps the rect batch (a quad polygon measured 6 draws more).
 func _paint_skew_fill(c: CanvasItem, r: Rect2, col: Color = MSTheme.PANEL_BG) -> void:
 	c.draw_set_transform_matrix(Transform2D(Vector2(1.0, 0.0), Vector2(PANEL_SKEW, 1.0), Vector2(-PANEL_SKEW * (r.position.y + r.size.y * 0.5), 0.0)))
 	c.draw_rect(r, col)
 	c.draw_set_transform_matrix(Transform2D.IDENTITY)
-
-
-func _paint_skew_border(c: CanvasItem, r: Rect2) -> void:
-	var inner: Rect2 = r.grow(-0.5)
-	var mid: float = r.position.y + r.size.y * 0.5
-	var pts := PackedVector2Array()
-	for p: Vector2 in [inner.position, Vector2(inner.end.x, inner.position.y), inner.end, Vector2(inner.position.x, inner.end.y)]:
-		pts.append(Vector2(p.x + PANEL_SKEW * (p.y - mid), p.y))
-	c.draw_multiline(PackedVector2Array([pts[0], pts[1], pts[1], pts[2], pts[2], pts[3], pts[3], pts[0]]), MSTheme.BORDER, 1.0, true)
 
 
 ## Connects to one car and one race. Earlier bindings are dropped first.
@@ -329,12 +354,11 @@ func bind(car: ArcadeCar, race: RaceManager, track: Node3D = null) -> void:
 		_connect(race.race_started, _on_race_started)
 		_connect(race.position_changed, _on_position_changed)
 		_connect(race.race_finished, _on_race_finished)
-		_rivals.clear()
-		if race.has_method("get_cars"):
-			var all: Array = race.call("get_cars")
-			for c: Variant in all:
-				if c is ArcadeCar and c != car:
-					_rivals.append(c as ArcadeCar)
+	_cars = _all_cars()
+	_rivals.clear()
+	for c: ArcadeCar in _cars:
+		if c != car:
+			_rivals.append(c)
 	_setup_minimap()
 
 
@@ -357,10 +381,60 @@ func _unbind() -> void:
 	_connections.clear()
 
 
+## Every car of the race: from the race standings when the race is set up, else from get_cars(), plus the player.
+func _all_cars() -> Array[ArcadeCar]:
+	var out: Array[ArcadeCar] = []
+	if _race == null:
+		return out
+	if _race.has_method("get_standings"):
+		for row: Variant in _race.call("get_standings"):
+			if row is Dictionary and row["car"] is ArcadeCar:
+				out.append(row["car"])
+	if out.is_empty() and _race.has_method("get_cars"):
+		for c: Variant in _race.call("get_cars"):
+			if c is ArcadeCar:
+				out.append(c as ArcadeCar)
+	if _car != null and not out.has(_car):
+		out.append(_car)
+	return out
+
+
 func _setup_minimap() -> void:
 	if _track != null and _track.has_method("get_minimap_points"):
 		_minimap.set_track(_points_from(_track.call("get_minimap_points")))
 	_minimap.set_dot_count(1 + _rivals.size())
+	var track_title: String = I18n.t("hud.track_name")
+	var custom: Variant = _track.get("track_name") if _track != null else null
+	if custom is String and custom != "":
+		track_title = custom
+	_set_text("track", _track_label, I18n.t("hud.track_info") % [track_title, _track_length() / 1000.0])
+
+
+## Lap length in metres from the track, or the fallback when the track has none.
+func _track_length() -> float:
+	var v: Variant = _track.get("length") if _track != null else null
+	if v is float and float(v) > 0.0:
+		return float(v)
+	return TRACK_LEN_FALLBACK
+
+
+## Race standings in place order. Without a set-up race, the cars ordered by lap progress.
+func _standings() -> Array:
+	var rows: Array = []
+	if _race == null:
+		return rows
+	if _race.has_method("get_standings"):
+		rows = _race.call("get_standings")
+	if rows.is_empty():
+		var len: float = _track_length()
+		for i: int in _cars.size():
+			var c: ArcadeCar = _cars[i]
+			var label: String = I18n.t("hud.you") if c == _car else "%s %d" % [I18n.t("hud.rival"), i]
+			rows.append({"car": c, "name": label, "place": 0, "distance": _race.get_lap_progress(c) * len})
+		rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a["distance"] > b["distance"])
+		for i: int in rows.size():
+			rows[i]["place"] = i + 1
+	return rows
 
 
 func _points_from(v: Variant) -> PackedVector2Array:
@@ -405,7 +479,7 @@ func _int_changed(key: String, v: int) -> bool:
 	return true
 
 
-## Centiseconds, the resolution of every race timer. Floor, same as fmt_time.
+## Centiseconds, the resolution of the race clock. Floor, same as fmt_time.
 static func _centis(seconds: float) -> int:
 	return int(maxf(seconds, 0.0) * 100.0)
 
@@ -429,34 +503,74 @@ func _gear_text() -> String:
 
 
 func _refresh_race() -> void:
-	_refresh_position()
 	var lap: int = _race.get_lap(_car)
-	var laps_total: int = _race.total_laps
+	var laps_total: int = maxi(_race.total_laps, 1)
+	var lap_p: float = _race.get_lap_progress(_car)
+	_strip_p = fposmod(lap_p, 1.0)
 	var lap_changed: bool = _int_changed("lap", lap)
 	var laps_changed: bool = _int_changed("laps_total", laps_total)
 	if lap_changed or laps_changed:
 		_set_text("lap", _lap_val, I18n.t("hud.lap_of") % [lap, laps_total])
+	var pct: int = clampi(roundi((float(lap - 1) + lap_p) / float(laps_total) * 100.0), 0, 100)
+	if _int_changed("pct", pct):
+		_set_text("pct", _pct, I18n.t("hud.percent") % pct)
 	if _int_changed("time", _centis(_race.race_time)):
-		_set_text("time", _time_val, fmt_time(_race.race_time))
-	var lap_time: float = _race.get_current_lap_time(_car)
-	if _int_changed("lap_time", _centis(lap_time)):
-		_set_text("lap_time", _lap_cur_val, fmt_time(lap_time))
-	var best: float = _race.get_best_lap_time(_car)
-	if _int_changed("best", -1 if best <= 0.0 else _centis(best)):
-		_set_text("best", _best_val, I18n.t("hud.no_time") if best <= 0.0 else fmt_time(best))
+		_set_text("time", _clock, fmt_time(_race.race_time))
+	var total: int = _race.get_car_count()
+	if _int_changed("car_count", total):
+		_set_text("position_total", _pos_total, I18n.t("hud.of") % total)
+	_refresh_position()
+	_refresh_leaderboard()
 
 
 func _refresh_position() -> void:
 	var pos: int = _race.get_position(_car)
 	if _int_changed("position", pos):
 		_set_text("position", _pos_num, str(pos))
-		_set_text("position_suffix", _pos_suffix, I18n.ordinal(pos))
-	var total: int = _race.get_car_count()
-	if _int_changed("car_count", total):
-		_set_text("position_total", _pos_total, I18n.t("hud.of") % total)
 
 
+## Four rows around the player: the window starts one place above the player, or at the top of the order.
+func _refresh_leaderboard() -> void:
+	var rows: Array = _standings()
+	var n: int = rows.size()
+	_me_row = -1
+	if n == 0:
+		return
+	var me: int = 0
+	for i: int in n:
+		if rows[i]["car"] == _car:
+			me = i
+	var start: int = clampi(me - 1, 0, maxi(n - LB_ROWS, 0))
+	var my_d: float = float(rows[me]["distance"])
+	var v: float = maxf(_car.speed_kmh / 3.6, GAP_MIN_MS)
+	for i: int in LB_ROWS:
+		var show: bool = start + i < n
+		_lb_place[i].visible = show
+		_lb_name[i].visible = show
+		_lb_gap[i].visible = show
+		if not show:
+			continue
+		var row: Dictionary = rows[start + i]
+		var mine: bool = start + i == me
+		if mine:
+			_me_row = i
+		var shown_name: String = I18n.t("hud.you") if mine else str(row["name"])
+		_lb_place[i].set_text(str(int(row["place"])))
+		_lb_name[i].set_text(shown_name.left(LB_NAME_CHARS))
+		_lb_gap[i].set_text("0.00" if mine else _gap_text(float(row["distance"]) - my_d, v))
+		_lb_gap[i].color = MSTheme.TEXT if mine else MSTheme.MUTED
+
+
+## Gap in seconds from the player. A row ahead (more distance) reads "-", a row behind reads "+".
+static func _gap_text(ahead_m: float, speed_ms: float) -> String:
+	var t: float = minf(absf(ahead_m) / speed_ms, 99.99)
+	return ("-" if ahead_m > 0.0 else "+") + "%.2f" % t
+
+
+## Heading up minimap: the player's forward direction on the map plane, and every rival's lap progress.
 func _refresh_minimap() -> void:
+	var fwd: Vector3 = -(_car.global_transform.basis.z if _car.is_inside_tree() else _car.transform.basis.z)
+	_minimap.set_forward(Vector2(fwd.x, fwd.z))
 	_minimap.set_dot(0, _race.get_lap_progress(_car), true)
 	for i: int in _rivals.size():
 		_minimap.set_dot(i + 1, _race.get_lap_progress(_rivals[i]), false)
@@ -517,11 +631,11 @@ func _on_countdown_tick(seconds_left: int) -> void:
 	_countdown.visible = true
 	_shown["countdown_visible"] = true
 	_countdown.modulate.a = 1.0
-	_countdown.scale = COUNTDOWN_PUNCH
+	_countdown.scale = COUNTDOWN_BASE * COUNTDOWN_PUNCH
 	if _countdown_tw != null and _countdown_tw.is_valid():
 		_countdown_tw.kill()
 	_countdown_tw = create_tween()
-	_countdown_tw.tween_property(_countdown, "scale", 1.0, COUNTDOWN_PUNCH_S) \
+	_countdown_tw.tween_property(_countdown, "scale", COUNTDOWN_BASE, COUNTDOWN_PUNCH_S) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	if go:
 		_countdown_tw.tween_interval(COUNTDOWN_HOLD_S)
@@ -555,7 +669,7 @@ func _set_text(key: String, label: HudText, text: String) -> void:
 	label.set_text(text)
 
 
-## mm:ss.cc, the layout every race timer uses.
+## mm:ss.cc, the layout the race clock uses.
 static func fmt_time(seconds: float) -> String:
 	var t: float = maxf(seconds, 0.0)
 	var m: int = int(t / 60.0)

@@ -146,6 +146,14 @@ func get_car_count() -> int:
 	return _racers.size()
 
 
+## Place order for the HUD leaderboard: car, name, place (1-based) and unwrapped race distance in metres.
+func get_standings() -> Array:
+	var out: Array = []
+	for r: Racer in _order:
+		out.append({"car": r.car, "name": r.display_name, "place": r.place, "distance": r.distance})
+	return out
+
+
 ## 0..1 progress of a car around the current lap, for the minimap and gap display.
 func get_lap_progress(car: ArcadeCar) -> float:
 	var r: Racer = _racer_of(car)
