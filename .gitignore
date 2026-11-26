@@ -33,3 +33,6 @@ assets_src/**/*.blend1
 # Rejected car attempts (judge panel round 1) stay local
 assets_src/vehicles/noctra_sable/attempt_*/
 evidence/tmp/
+
+# Agent worktrees (local only)
+.claude/worktrees/

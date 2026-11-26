@@ -90,6 +90,7 @@ const DICT: Dictionary = {
 	"event.locked_hint": {"tr": "ÖNCEKİ ETKİNLİKTE 1 YILDIZ KAZAN", "en": "EARN 1 STAR ON THE PREVIOUS EVENT"},
 	"event.laps": {"tr": "TUR", "en": "LAPS"},
 	"event.rivals": {"tr": "RAKİP", "en": "RIVALS"},
+	"event.rival": {"tr": "RAKİP", "en": "RIVAL"},
 	"event.ai": {"tr": "RAKİP SEVİYESİ", "en": "RIVAL LEVEL"},
 	"event.win_reward": {"tr": "BİRİNCİLİK ÖDÜLÜ", "en": "WINNER PAYS"},
 	"event.best": {"tr": "EN İYİ SÜRE", "en": "BEST TIME"},

@@ -1,3 +1,4 @@
+import os
 """Midnight Syndicate icon + splash renderer.
 Run: blender -b -P render_brand.py -- <icon|splash> <out_png> [samples]
 Uses the game's own LOD0 hero car. Absolute paths on purpose (Blender 5.3).
@@ -5,7 +6,7 @@ Uses the game's own LOD0 hero car. Absolute paths on purpose (Blender 5.3).
 import bpy, sys, math
 from mathutils import Vector
 
-ROOT = "C:/Users/berk/car race/.claude/worktrees/wf_ae85d2d9-ad8-2"
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))  # repo root (Blender needs absolute paths)
 GLB = ROOT + "/game/assets/vehicles/noctra_sable/noctra_sable_lod0.glb"
 argv = sys.argv[sys.argv.index("--") + 1:]
 MODE, OUT = argv[0], argv[1]

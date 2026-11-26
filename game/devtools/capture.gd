@@ -36,6 +36,9 @@ func _ready() -> void:
 	if scenario_name.is_empty():
 		return
 	_hide_window()
+	# Captures run in the background: silent unless --with-audio (the owner hears the speakers otherwise).
+	if not OS.get_cmdline_user_args().has("--with-audio"):
+		AudioServer.set_bus_mute(0, true)
 	get_tree().create_timer(timeout_s).timeout.connect(_on_timeout)
 	_run.call_deferred()
 

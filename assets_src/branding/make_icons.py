@@ -3,7 +3,7 @@ Run: blender -b -P make_icons.py
 """
 import bpy, struct, os
 
-D = "C:/Users/berk/car race/.claude/worktrees/wf_ae85d2d9-ad8-2/game/assets/branding"
+D = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "game", "assets", "branding"))
 SRC = D + "/icon_1024.png"
 
 

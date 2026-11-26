@@ -2,7 +2,8 @@ class_name EventCatalog
 extends RefCounted
 ## Career ladder on City 01 "Neon Wharf Loop": six events, each an id, text keys, a RaceConfig recipe, a reward
 ## multiplier and the star rule. Position events: 1st = 3 stars, podium = 2, finish = 1 (GameState.REWARD_STARS).
-## Time events carry star_times = [3 stars, 2 stars, 1 star] in seconds; slower than the last earns 0 stars.
+## Time events carry star_times = [3 stars, 2 stars, 1 star] in seconds; any finish earns at least 1 star, so a slow
+## first try still opens the next event.
 ## Unknown ids (the dev circuit, tests) fall back to position stars and a 1.0 reward multiplier.
 ## Tuning note: the autopilot laps the loop in about 64 s (TEST_RESULTS), so the star times below are a first guess for
 ## a good human lap and want a play test.
@@ -73,7 +74,7 @@ static func stars_for(id: String, time_s: float, position: int) -> int:
 		for limit: float in ev["star_times"]:
 			if time_s <= limit:
 				stars += 1
-		return stars
+		return maxi(stars, 1) if time_s > 0.0 else 0
 	if position < 1:
 		return 0
 	if ev.is_empty():

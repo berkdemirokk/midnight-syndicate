@@ -79,14 +79,14 @@ func test_stars_and_rewards() -> void:
 	check(EventCatalog.stars_for("midnight_time_trial", 70.0, 1) == 3, "fast trial = 3 stars")
 	check(EventCatalog.stars_for("midnight_time_trial", 80.0, 1) == 2, "medium trial = 2 stars")
 	check(EventCatalog.stars_for("midnight_time_trial", 95.0, 1) == 1, "slow trial = 1 star")
-	check(EventCatalog.stars_for("midnight_time_trial", 130.0, 1) == 0, "too slow = 0 stars")
+	check(EventCatalog.stars_for("midnight_time_trial", 130.0, 1) == 1, "any trial finish = at least 1 star (opens the next event)")
 	var r: Dictionary = GameState.record_result("syndicate_final", 200.0, 1)
 	check(int(r["cash"]) == 3000 and int(r["rep"]) == 300 and int(r["stars"]) == 3, "final win pays x3")
 	var legacy: Dictionary = GameState.record_result("dev_circuit", 100.0, 1)
 	check(int(legacy["cash"]) == 1000 and int(legacy["stars"]) == 3, "unknown event keeps base rewards")
 	var t: Dictionary = GameState.record_result("midnight_time_trial", 130.0, 1)
-	check(int(t["stars"]) == 0, "trial too slow records 0 stars")
-	check(GameState.event_stars("midnight_time_trial") == 0, "0 stars stored")
+	check(int(t["stars"]) == 1, "slow trial still records 1 star")
+	check(GameState.event_stars("midnight_time_trial") == 1, "1 star stored")
 	_end()
 
 
@@ -99,8 +99,9 @@ func test_unlock_rules() -> void:
 	check(GameState.is_event_unlocked("neon_strip_circuit"), "1 star opens the next event")
 	check(not GameState.is_event_unlocked("midnight_time_trial"), "only one step opens")
 	GameState.record_result("neon_strip_circuit", 150.0, 4)
-	GameState.record_result("midnight_time_trial", 130.0, 1)  # 0 stars: the next event stays shut
-	check(not GameState.is_event_unlocked("overpass_duel"), "0 stars does not unlock")
+	check(not GameState.is_event_unlocked("overpass_duel"), "the duel stays shut until the trial is finished")
+	GameState.record_result("midnight_time_trial", 130.0, 1)  # a slow finish still earns 1 star
+	check(GameState.is_event_unlocked("overpass_duel"), "any trial finish opens the next event")
 	GameState.record_result("midnight_time_trial", 99.0, 1)
 	check(GameState.is_event_unlocked("overpass_duel"), "trial under 1-star time unlocks the duel")
 	check(GameState.total_stars() == 3, "total stars add up")

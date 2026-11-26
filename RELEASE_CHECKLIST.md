@@ -25,7 +25,7 @@ Bundle identifier placeholder: `com.example.midnightsyndicate` (**owner must cho
 
 | # | step | owner | needs macOS | cost | status | evidence required to tick |
 |---|---|---|---|---|---|---|
-| 1 | Decide repo visibility (public or private) | owner | no | free | not started | owner note in writing; sets Actions cost [E] |
+| 1 | Decide repo visibility (public or private) | owner | no | free | done | owner made the repo public 2026-11-24 (BLOCKERS B8) |
 | 2 | Choose bundle identifier (placeholder com.example.midnightsyndicate) | owner | no | free | not started | final ID typed into iOS preset and App Store Connect |
 | 3 | Choose app name; trademark and name check | owner | no | free | not started | search record (unverified check) |
 | 4 | Decide Mac path: GitHub macOS (private: about 10x minutes [E]), Codemagic 500 min/mo [S], or borrowed Mac | owner | yes | uses free quota or free | not started | written decision |
@@ -33,12 +33,12 @@ Bundle identifier placeholder: `com.example.midnightsyndicate` (**owner must cho
 | 6 | Create App Store Connect app record for the bundle ID | owner | no | free | not started | app record ID saved in owner notes |
 | 7 | ci.yml logic-tests job (Godot 4.7.2 Linux, SHA512 check, headless tests) | agent (drafted) | no | uses free quota | drafted | green Actions run link and test-results artifact |
 | 8 | Owner pushes branch so ci.yml runs; fix first-run failures | owner (push) | no | uses free quota | not started | passing run with test_results.json |
-| 9 | ci.yml asset-validation job: tools/asset_factory.py is missing | agent | no | free | not started | job log shows validate ran, not the skip notice |
-| 10 | Owner approves about 1.28 GB export template download | owner | no | free (download bandwidth unverified) | not started | written approval in owner notes |
-| 11 | Create game/export_presets.cfg with "Windows Desktop" preset in the Godot editor | owner or lead | no | free | not started | preset file exists in repo |
+| 9 | ci.yml asset-validation job: tools/asset_factory.py is missing | agent | no | free | done | tools/asset_factory.py exists; validate passes (310 records, 0 failing, 2026-11-26) |
+| 10 | Owner approves about 1.28 GB export template download | owner | no | free (download bandwidth unverified) | done | owner approved 2026-11-25; templates SHA512 verified |
+| 11 | Create game/export_presets.cfg with "Windows Desktop" preset in the Godot editor | owner or lead | no | free | done | game/export_presets.cfg "Windows Desktop" (embedded pck, tests excluded); local export exit 0, 243 MB exe + 134 MB pck; exe blocked by Smart App Control on the dev PC (BLOCKERS B9), pck runs |
 | 12 | build-windows.yml manual run (exits 0 with a notice if no preset) | owner (trigger) | no | uses free quota | drafted | windows-build artifact, or the notice log while preset is absent |
 | 13 | Create iOS preset (name "iOS") with bundle ID, Team ID, privacy block, icons, launch storyboard | lead or owner | no (creation on Windows unverified; export needs macOS [S]) | free | not started | game/export_presets.cfg has name="iOS" |
-| 14 | Icon set: 1024x1024 master, square, no transparency [E] | agent drafts art, owner approves | no | free | not started | icon files and Xcode AppIcon output |
+| 14 | Icon set: 1024x1024 master, square, no transparency [E] | agent drafts art, owner approves | no | free | done | game/assets/branding/icon_1024.png (+512/192, icon.ico), original Blender render; wired as config/icon |
 | 15 | Launch screen: custom background colour and @2x/@3x image | agent drafts, owner approves | no | free | not started | exported storyboard shows correctly on iPhone |
 | 16 | Confirm privacy manifest: does Godot write PrivacyInfo.xcprivacy? | agent | yes | uses free quota | not started | exported project file list and contents |
 | 17 | Set ITSAppUsesNonExemptEncryption = NO after confirming encryption use [E] | owner confirms, agent edits | yes (verify in exported plist) | free | not started | Info.plist key in exported project |
