@@ -379,10 +379,10 @@ def sill_and_chin(bm):
     for f in bm.faces:
         c = centroid(f)
         s = c.y + Y0
-        if 0.5 <= s <= 4.3 and abs(c.x) >= 0.5 * B.w_max(s) and c.z < B.z_bot(s) + 0.085:
+        if 0.5 <= s <= 4.3 and abs(c.x) >= 0.5 * B.w_max(s) and c.z < B.z_bot(s) + 0.032:
             f.material_index = 1
             n += 1
-        elif s <= 0.30 and c.z < 0.32:
+        elif s <= 0.30 and c.z < 0.30 and abs(c.x) < 0.70:
             f.material_index = 1
             n += 1
     print("SILL/CHIN faces", n)
@@ -460,10 +460,21 @@ def extra_materials():
 def build_lights_front(mats, recs):
     bm = bmesh.new()
     for r in recs:
-        add_surface_copy(bm, r, -0.020, 0)   # emitter (slot 0)
+        add_surface_copy(bm, r, -0.030, 0)   # emitter (slot 0), deep in the pocket
     for r in recs:
-        add_surface_copy(bm, r, -0.010, 1)   # clear lens over it (slot 1)
-    return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"]], recalc=False)
+        add_surface_copy(bm, r, -0.005, 1)   # clear lens over it (slot 1)
+    # projector look: a dark bezel ring with a bright disc inside it, two per pod, so the lamp has depth
+    faces = [(np.mean(np.array(co), axis=0), np.mean(np.array(nr), axis=0)) for r in recs for co, nr in r]
+    for sg in (1, -1):
+        for zc in (0.535, 0.632):
+            for xc in (0.685, 0.835):
+                tgt = np.array([sg * xc, 0.0, zc])
+                c, n = min(faces, key=lambda f: (sg * f[0][0] - xc) ** 2 + (f[0][2] - zc) ** 2)
+                n = n / np.linalg.norm(n)
+                base = c + n * -0.030
+                add_cyl(bm, tuple(base + n * 0.004), tuple(base + n * 0.016), 0.037, 2, 12)   # dark bezel
+                add_cyl(bm, tuple(base + n * 0.016), tuple(base + n * 0.020), 0.027, 0, 12)   # bright disc
+    return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"], mats["M_Trim"]], recalc=False)
 
 
 def build_trim(mats, body):

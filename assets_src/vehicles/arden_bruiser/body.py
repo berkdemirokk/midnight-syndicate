@@ -70,14 +70,14 @@ def _pchip(pts):
 
 L_TOTAL = 4.80  # station s runs 0 at the nose to L_TOTAL at the tail (overall 4.85 with nose cap and tail ring); curves are defined to 4.85
 _Z_TOP = _pchip([(0, .700), (0.10, .775), (0.40, .815), (0.95, .865), (1.40, .895), (1.80, .925),
-                 (2.00, 1.040), (2.25, 1.225), (2.50, 1.330), (2.75, 1.358), (3.05, 1.335),
-                 (3.40, 1.200), (3.70, 1.060), (3.95, .985), (4.15, .965), (4.45, .975),
-                 (4.62, .995), (4.75, .965), (4.85, .930)])
-_Z_BOT = _pchip([(0, .270), (0.15, .190), (0.50, .135), (4.00, .135), (4.40, .215), (4.85, .400)])
-_W_MAX = _pchip([(0, .740), (0.06, .830), (0.25, .905), (0.95, .940), (1.50, .918), (2.40, .890),
-                 (3.10, .935), (3.80, .960), (4.30, .948), (4.65, .905), (4.85, .850)])
-_Z_SH = _pchip([(0, .640), (0.12, .700), (0.50, .760), (0.95, .815), (1.50, .848), (2.00, .868),
-                (2.70, .895), (3.20, .930), (3.80, .965), (4.30, .950), (4.85, .905)])
+                 (2.00, 1.060), (2.25, 1.235), (2.50, 1.335), (2.80, 1.358), (3.10, 1.340),
+                 (3.45, 1.215), (3.75, 1.075), (4.00, .985), (4.20, .935), (4.45, .940),
+                 (4.62, .975), (4.74, .958), (4.85, .880)])
+_Z_BOT = _pchip([(0, .270), (0.15, .190), (0.50, .135), (4.00, .135), (4.25, .205), (4.85, .500)])
+_W_MAX = _pchip([(0, .735), (0.06, .830), (0.25, .915), (0.95, .958), (1.45, .915), (2.40, .868),
+                 (3.10, .930), (3.80, .960), (4.25, .940), (4.60, .880), (4.85, .800)])
+_Z_SH = _pchip([(0, .640), (0.12, .700), (0.50, .760), (0.95, .815), (1.50, .855), (2.00, .895),
+                (2.70, .925), (3.20, .950), (3.80, .965), (4.30, .945), (4.85, .900)])
 _N_TOP = _pchip([(0, 2.0), (1.10, 2.2), (1.70, 2.8), (2.30, 3.0), (3.00, 2.9), (3.70, 2.6), (4.85, 2.0)])
 _SHELF = _pchip([(0, 0.0), (1.50, 0.0), (1.90, .045), (3.60, .050), (4.20, 0.0), (4.85, 0.0)])
 BULGE_H = 0.034  # power bulge height on the bonnet centre line
@@ -178,8 +178,8 @@ def top_z(s, x):
     b = cab_blend(s)
     if b > 0.0:
         z0, z1 = _top_z_dome(s, x), _top_z_tumble(s, x)
-        return z0 + b * (z1 - z0) + bulge(s, x)
-    return _top_z_dome(s, x) + bulge(s, x)
+        return z0 + b * (z1 - z0) + bulge(s, x) + fender_ridge(s, x)
+    return _top_z_dome(s, x) + bulge(s, x) + fender_ridge(s, x)
 
 
 def _top_z_dome(s, x):
@@ -194,7 +194,7 @@ def _top_z_dome(s, x):
 
 
 # ------------------------------------------------------------------ section layout
-SIDE_INT = (1, 1, 2, 2, 2, 2, 2)  # interior points on side segments A0..A7
+SIDE_INT = (1, 1, 4, 4, 3, 2, 2)  # interior points on side segments A0..A7
 TOP_BP = ("sg_e1", "sg_c", "sg_e2", "sgo", "pwa", "bn_e1", "bn_c", "bn_e2",
           "en_e1", "en_c", "en_e2", "rs", "centre")
 TOP_INT = (0, 0, 0, 2, 2, 2, 0, 0, 2, 0, 0, 2, 7)  # interior points before each top breakpoint
@@ -212,7 +212,7 @@ LONG_GROOVES = ((("bn_e1", "bn_c", "bn_e2"), 0.30, 1.78),
 NOSE_K = 5
 NOSE_FWD = 0.045
 TAIL_DS = 0.018
-TAIL_SCALE = 0.965
+TAIL_SCALE = 0.935
 
 
 def _smoothstep(t):
@@ -222,16 +222,26 @@ def _smoothstep(t):
 
 def _scallop(s):
     """R5: door scallop depth (m) at station s, fades in and out between s 1.25 and 2.70."""
-    if s < 1.95 or s > 3.30:
+    if s < 0.80 or s > 4.30:
         return 0.0
-    return 0.014 * _smoothstep((s - 1.95) / 0.25) * _smoothstep((3.30 - s) / 0.25)
+    return 0.009 * _smoothstep((s - 1.20) / 0.90) * _smoothstep((3.90 - s) / 0.90)
+
+
+def fender_ridge(s, x):
+    """Raised crown over the front fender and rear haunch, beside a lower bonnet / deck centre."""
+    if x < 0.5:
+        return 0.0
+    g = math.exp(-((x - 0.77) / 0.075) ** 2)
+    f = 0.024 * _smoothstep((s - 0.25) / 0.35) * _smoothstep((1.85 - s) / 0.40)
+    r = 0.022 * _smoothstep((s - 3.95) / 0.30) * _smoothstep((4.75 - s) / 0.25)
+    return g * (f + r)
 
 
 def _side_anchors(s):
     zb, zs, w = z_bot(s), z_sh(s), w_max(s)
     xs, H = xs_of(s), z_sh(s) - z_bot(s)
     return [(0.0, zb), (w - 0.130, zb), (w - 0.065, zb + 0.045), (w - 0.022, zb + 0.30 * H),
-            (w, zb + 0.62 * H), (w - 0.018, zs - 0.060), (w - 0.060, zs - 0.012), (xs, zs)]
+            (w, zb + 0.60 * H), (w - 0.040, zs - 0.075), (w - 0.085, zs - 0.015), (xs, zs)]
 
 
 def _half(s):
@@ -274,10 +284,10 @@ def _half(s):
     sc = _scallop(s)
     if sc > 0.0:
         H = z_sh(s) - z_bot(s)
-        zc = z_bot(s) + 0.45 * H
+        zc = z_bot(s) + 0.40 * H
         for k in range(1, tags["A7"] + 1):
             x_, z_ = pts[k]
-            pts[k] = (x_ - sc * math.exp(-((z_ - zc) / (0.22 * H)) ** 2), z_)
+            pts[k] = (x_ - sc * math.exp(-((z_ - zc) / (0.30 * H)) ** 2), z_)
     # top breakpoints, non-increasing in x (accumulate-min keeps the order at the nose)
     xs = A[-1][0]
     # sgo: side-glass outer edge; pwa: windscreen edge, so the A-pillar is 70 mm wide in x.
@@ -363,8 +373,8 @@ def surf_xz_mirror(s, x_on_top):
 
 # ------------------------------------------------------------------ mesh shell
 def _station_plan():
-    base = np.concatenate([np.linspace(0.0, 0.30, 16), np.linspace(0.30, 1.20, 22)[1:],
-                           np.linspace(1.20, 2.10, 30)[1:], np.linspace(2.10, 4.20, 44)[1:],
+    base = np.concatenate([np.linspace(0.0, 0.30, 16), np.linspace(0.30, 1.20, 18)[1:],
+                           np.linspace(1.20, 2.10, 24)[1:], np.linspace(2.10, 4.20, 36)[1:],
                            np.linspace(4.20, L_TOTAL, 14)[1:]])
     extra = list(FORCED_S)
     for s0, _, _ in CROSS_GROOVES:

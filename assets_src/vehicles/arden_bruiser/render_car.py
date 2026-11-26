@@ -34,6 +34,8 @@ VIEWS = {  # name: (camera, target, lens)
     "arch_rear_34": ((2.6, 3.5, 0.9), (0.8, 1.425, 0.4), 70),
     "rear_wheel_side": ((3.2, 1.425, 0.45), (0.79, 1.425, 0.36), 70),
     "wheel_closeup": ((2.7, -3.4, 0.85), (0.795, -1.425, 0.36), 85),
+    "wheel_closeup_L": ((-2.7, -3.4, 0.85), (-0.795, -1.425, 0.36), 85),
+    "rear_wheel_L": ((-3.2, 1.425, 0.45), (-0.79, 1.425, 0.36), 70),
 }
 SHEET = ["front34", "rear34", "side", "top", "wheel_closeup", "front_low"]
 

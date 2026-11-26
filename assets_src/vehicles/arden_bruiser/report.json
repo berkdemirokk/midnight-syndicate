@@ -1,210 +1,204 @@
 {
-  "attempt": "final (stage 2B, after stage 2A body)",
-  "blender_version": "5.3.0",
-  "engine_used": "CYCLES (OPTIX GPU, RTX 5060 Ti) for renders/, BLENDER_EEVEE for renders_iter/ rounds",
-  "dims": {
-    "length": 4.9107,
-    "width": 1.92,
-    "height": 1.3579,
-    "wheelbase": 2.85
+ "attempt": "final (stage 2B, after stage 2A body)",
+ "blender_version": "5.3.0",
+ "engine_used": "CYCLES (OPTIX GPU, RTX 5060 Ti) for renders/, BLENDER_EEVEE for renders_iter/ rounds",
+ "dims": {
+  "length": 4.8794,
+  "width": 1.92,
+  "height": 1.3579,
+  "wheelbase": 2.85
+ },
+ "tris": {
+  "lod0": 83436,
+  "lod1": 25732,
+  "lod2": 6779
+ },
+ "tris_note": "tris counts the visible objects only. col_body is excluded (it is collision-only, extras collision_only=1). tris_incl_col_body adds it, matching the GLB accessor totals.",
+ "tris_incl_col_body": {
+  "0": 83494,
+  "1": 25790,
+  "2": 6837
+ },
+ "objects_present": [
+  "body",
+  "brake_FL",
+  "brake_FR",
+  "brake_RL",
+  "brake_RR",
+  "col_body",
+  "exhaust",
+  "glass",
+  "interior",
+  "lights_front",
+  "lights_rear",
+  "plate_rear",
+  "trim",
+  "underbody",
+  "wheel_FL",
+  "wheel_FR",
+  "wheel_RL",
+  "wheel_RR"
+ ],
+ "objects_missing": [],
+ "materials": [
+  "M_BrakeDisc",
+  "M_Caliper",
+  "M_Carbon",
+  "M_Chrome",
+  "M_Glass",
+  "M_Interior",
+  "M_Lens",
+  "M_LightFront",
+  "M_LightRear",
+  "M_Paint",
+  "M_Pillar",
+  "M_Plate",
+  "M_Rim",
+  "M_Tire",
+  "M_Trim"
+ ],
+ "textures": [
+  {
+   "name": "brake_normal",
+   "size": 512
   },
-  "tris": {
-    "lod0": 82978,
-    "lod1": 25800,
-    "lod2": 6775
+  {
+   "name": "brake_roughness",
+   "size": 512
   },
-  "tris_note": "tris counts the visible objects only. col_body is excluded (it is collision-only, extras collision_only=1). tris_incl_col_body adds it, matching the GLB accessor totals.",
-  "tris_incl_col_body": {
-    "0": 83040,
-    "1": 25862,
-    "2": 6837
+  {
+   "name": "carbon_base",
+   "size": 512
   },
-  "objects_present": [
-    "body",
-    "brake_FL",
-    "brake_FR",
-    "brake_RL",
-    "brake_RR",
-    "col_body",
-    "exhaust",
-    "glass",
-    "interior",
-    "lights_front",
-    "lights_rear",
-    "plate_rear",
-    "trim",
-    "underbody",
-    "wheel_FL",
-    "wheel_FR",
-    "wheel_RL",
-    "wheel_RR"
-  ],
-  "objects_missing": [],
-  "materials": [
-    "M_BrakeDisc",
-    "M_Caliper",
-    "M_Carbon",
-    "M_Chrome",
-    "M_Glass",
-    "M_Interior",
-    "M_Lens",
-    "M_LightFront",
-    "M_LightRear",
-    "M_Paint",
-    "M_Pillar",
-    "M_Plate",
-    "M_Rim",
-    "M_Tire",
-    "M_Trim"
-  ],
-  "textures": [
-    {
-      "name": "brake_normal",
-      "size": 512
-    },
-    {
-      "name": "brake_roughness",
-      "size": 512
-    },
-    {
-      "name": "carbon_base",
-      "size": 512
-    },
-    {
-      "name": "carbon_normal",
-      "size": 512
-    },
-    {
-      "name": "lens_normal",
-      "size": 256
-    },
-    {
-      "name": "paint_flake_normal",
-      "size": 512
-    },
-    {
-      "name": "plate_base",
-      "size": 512
-    },
-    {
-      "name": "tyre_base",
-      "size": 1024
-    },
-    {
-      "name": "tyre_normal",
-      "size": 1024
-    }
-  ],
-  "non_manifold_edges_body": 12008,
-  "glb_sizes_bytes": {
-    "lod0": 7219404,
-    "lod1": 4784464,
-    "lod2": 3648760
+  {
+   "name": "carbon_normal",
+   "size": 512
   },
-  "glb_reimport_ok": true,
-  "checks": [
-    {
-      "name": "length",
-      "pass": true,
-      "detail": "value 4.9107 target 4.8500 err 1.25%"
-    },
-    {
-      "name": "width",
-      "pass": true,
-      "detail": "value 1.9200 target 1.9200 err 0.00%"
-    },
-    {
-      "name": "height",
-      "pass": true,
-      "detail": "value 1.3579 target 1.3600 err 0.16%"
-    },
-    {
-      "name": "wheelbase",
-      "pass": true,
-      "detail": "value 2.8500 target 2.8500 err 0.00%"
-    },
-    {
-      "name": "front_track",
-      "pass": true,
-      "detail": "value 1.5900 target 1.6000 err 0.62%"
-    },
-    {
-      "name": "rear_track",
-      "pass": true,
-      "detail": "value 1.5800 target 1.5800 err 0.00%"
-    },
-    {
-      "name": "tyre_dia_front",
-      "pass": true,
-      "detail": "value 0.6900 target 0.6900 err 0.00%"
-    },
-    {
-      "name": "tyre_dia_rear",
-      "pass": true,
-      "detail": "value 0.7160 target 0.7160 err 0.00%"
-    },
-    {
-      "name": "tyre_width_front",
-      "pass": true,
-      "detail": "value 0.2712 target 0.2750 err 1.40%"
-    },
-    {
-      "name": "tyre_width_rear",
-      "pass": true,
-      "detail": "value 0.3102 target 0.3150 err 1.53%"
-    },
-    {
-      "name": "lod0_budget_40k_85k",
-      "pass": true,
-      "detail": "82978"
-    },
-    {
-      "name": "lod1_budget_26k",
-      "pass": true,
-      "detail": "25800"
-    },
-    {
-      "name": "lod2_budget_7k",
-      "pass": true,
-      "detail": "6775"
-    },
-    {
-      "name": "materials_le_15",
-      "pass": true,
-      "detail": "15 M_BrakeDisc, M_Caliper, M_Carbon, M_Chrome, M_Glass, M_Interior, M_Lens, M_LightFront, M_LightRear, M_Paint, M_Pillar, M_Plate, M_Rim, M_Tire, M_Trim"
-    },
-    {
-      "name": "draw_objects_le_20",
-      "pass": true,
-      "detail": "17"
-    },
-    {
-      "name": "col_body_le_48_verts",
-      "pass": true,
-      "detail": "33 vertices from details.build_col (hull)"
-    },
-    {
-      "name": "objects_present",
-      "pass": true,
-      "detail": "missing: []"
-    }
-  ],
-  "self_score": {
-    "geometry": 6,
-    "materials": 6,
-    "wheels": 7,
-    "details": 6
+  {
+   "name": "lens_normal",
+   "size": 256
   },
-  "known_defects": [
-    "Body is the hero's surface engine with new curves: side is a fairly plain slab, no strong shoulder crease or Coke-bottle waist",
-    "Headlight pods are union-of-faces patches on the nose corner: edges follow the mesh grid, not a designed outline; no cut corner",
-    "Grille bars are thin boxes; the polished centre bar is only 46 mm tall and reads weakly from a distance",
-    "Quad exhaust tips are small (68 mm) and sit in a dark recess: they read as dots at render scale",
-    "Cabin is the hero's tumblehome section with a fixed 585 mm roof edge: slightly bubble-like in side view",
-    "Interior is furniture placeholders shifted rearward; seen through dark glass only",
-    "Wheel spokes are single flat blades with a 2 mm chamfer, no lightening holes; tyre lettering N reads like H at low res",
-    "Tyre and rim segments reduced to 48 (hero 64) to meet the 85k LOD0 budget",
-    "col_body is a 48-vertex hull exported with extras collision_only=1; the engine hides it by name",
-    "LOD1/LOD2 are uniform-ratio decimation with no per-part protection"
-  ]
+  {
+   "name": "paint_flake_normal",
+   "size": 512
+  },
+  {
+   "name": "plate_base",
+   "size": 512
+  },
+  {
+   "name": "tyre_base",
+   "size": 1024
+  },
+  {
+   "name": "tyre_normal",
+   "size": 1024
+  }
+ ],
+ "non_manifold_edges_body": 11385,
+ "glb_sizes_bytes": {
+  "lod0": 7287956,
+  "lod1": 4759492,
+  "lod2": 3621856
+ },
+ "glb_reimport_ok": true,
+ "checks": [
+  {
+   "name": "length",
+   "pass": true,
+   "detail": "value 4.8794 target 4.8500 err 0.61%"
+  },
+  {
+   "name": "width",
+   "pass": true,
+   "detail": "value 1.9200 target 1.9200 err 0.00%"
+  },
+  {
+   "name": "height",
+   "pass": true,
+   "detail": "value 1.3579 target 1.3600 err 0.15%"
+  },
+  {
+   "name": "wheelbase",
+   "pass": true,
+   "detail": "value 2.8500 target 2.8500 err 0.00%"
+  },
+  {
+   "name": "front_track",
+   "pass": true,
+   "detail": "value 1.5900 target 1.6000 err 0.62%"
+  },
+  {
+   "name": "rear_track",
+   "pass": true,
+   "detail": "value 1.5800 target 1.5800 err 0.00%"
+  },
+  {
+   "name": "tyre_dia_front",
+   "pass": true,
+   "detail": "value 0.6900 target 0.6900 err 0.00%"
+  },
+  {
+   "name": "tyre_dia_rear",
+   "pass": true,
+   "detail": "value 0.7160 target 0.7160 err 0.00%"
+  },
+  {
+   "name": "tyre_width_front",
+   "pass": true,
+   "detail": "value 0.2712 target 0.2750 err 1.40%"
+  },
+  {
+   "name": "tyre_width_rear",
+   "pass": true,
+   "detail": "value 0.3102 target 0.3150 err 1.53%"
+  },
+  {
+   "name": "lod0_budget_40k_85k",
+   "pass": true,
+   "detail": "83436"
+  },
+  {
+   "name": "lod1_budget_26k",
+   "pass": true,
+   "detail": "25732"
+  },
+  {
+   "name": "lod2_budget_7k",
+   "pass": true,
+   "detail": "6779"
+  },
+  {
+   "name": "materials_le_15",
+   "pass": true,
+   "detail": "15 M_BrakeDisc, M_Caliper, M_Carbon, M_Chrome, M_Glass, M_Interior, M_Lens, M_LightFront, M_LightRear, M_Paint, M_Pillar, M_Plate, M_Rim, M_Tire, M_Trim"
+  },
+  {
+   "name": "draw_objects_le_20",
+   "pass": true,
+   "detail": "17"
+  },
+  {
+   "name": "col_body_le_48_verts",
+   "pass": true,
+   "detail": "33 vertices from details.build_col (hull)"
+  },
+  {
+   "name": "objects_present",
+   "pass": true,
+   "detail": "missing: []"
+  }
+ ],
+ "self_score": {
+  "geometry": 6,
+  "materials": 6,
+  "wheels": 7,
+  "details": 6
+ },
+ "known_defects": [
+  "Residual thin jagged reflections of the studio neon strips on the front fender and rear quarter in engine (surface is smooth in Blender)",
+  "Rim is a forked 12-prong design, no true lightening holes",
+  "Headlight lens still a bright slab with two projector rings",
+  "Race-view budgets not measured: car not wired into a race"
+ ]
 }

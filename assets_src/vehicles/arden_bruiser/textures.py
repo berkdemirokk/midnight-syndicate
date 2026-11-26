@@ -21,7 +21,7 @@ import numpy as np
 
 # 5x7 bitmap font. N O C T R A from details.py; S P E and the hyphen added for R-SPEC.
 FONT = {
-    "N": ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+    "N": ["10001", "11001", "11001", "10101", "10011", "10011", "10001"],
     "O": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
     "C": ["01110", "10001", "10000", "10000", "10000", "10001", "01110"],
     "T": ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
@@ -136,7 +136,7 @@ def tyre(rng, H=1024, Wd=1024):
     h += 0.05 * norm(periodic_filter(rng.standard_normal((H, Wd)), 3.0))
     # raised lettering ARDEN BRUISER, 4x scale, both sidewalls
     text = "ARDEN BRUISER"
-    scale, gap = 4, 1
+    scale, gap = 5, 1
     cols = []
     for ch in text:
         g = FONT[ch]

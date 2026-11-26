@@ -79,6 +79,29 @@ def box_uv(ob, tile):
     bm.free()
 
 
+def smooth_uv(ob, tile):
+    """Seamless flake UV for the body: u along the car, v around the cross-section (angle about the
+    long axis), so the tangent frame is continuous. The per-face box projection flipped its axis along
+    curved panels and showed thin streaks through the flake normal map. End caps use a planar x/z map."""
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    uv = bm.loops.layers.uv.verify()
+    zc, rad = 0.72, 0.62
+    for f in bm.faces:
+        n = f.normal
+        if abs(n.y) > 0.75:
+            for lp in f.loops:
+                lp[uv].uv = (lp.vert.co.x / tile, lp.vert.co.z / tile)
+            continue
+        angs = [math.atan2(lp.vert.co.z - zc, lp.vert.co.x) for lp in f.loops]
+        if max(angs) - min(angs) > math.pi:
+            angs = [a + 2 * math.pi if a < 0 else a for a in angs]
+        for lp, a in zip(f.loops, angs):
+            lp[uv].uv = (lp.vert.co.y / tile, a * rad / tile)
+    bm.to_mesh(ob.data)
+    bm.free()
+
+
 def plate_uv(ob):
     """Plate face: U runs toward -X so ARDEN reads correctly from behind the car, V up = +Z."""
     bm = bmesh.new()
@@ -195,11 +218,12 @@ def textures_and_uvs(objs, mats):
     os.makedirs(TEX, exist_ok=True)
     made = T.make_all(TEX)
     p = {k: v[0] for k, v in made.items()}
-    box_uv(objs["body"], 0.20)  # flake tile 0.20 m (see textures.paint_flake)
+    smooth_uv(objs["body"], 0.20)  # flake tile 0.20 m (see textures.paint_flake)
     box_uv(objs["trim"], 0.024)
     box_uv(objs["lights_front"], 0.05)
     plate_uv(objs["plate_rear"])
-    _principled_tex(mats["M_Paint"], p["paint_flake_normal"], None, True, normal_strength=0.12)
+    if not os.environ.get("NO_FLAKE"):
+        _principled_tex(mats["M_Paint"], p["paint_flake_normal"], None, True, normal_strength=0.12)
     _principled_tex(mats["M_Carbon"], p["carbon_base"], "Base Color", False)
     _principled_tex(mats["M_Carbon"], p["carbon_normal"], None, True, normal_strength=0.6,
                     loc=(-600, -100))

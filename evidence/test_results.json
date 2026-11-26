@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-26T14:09:20"
+    "time": "2026-11-26T14:37:54"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -287,9 +287,9 @@
         "lod0_draw_objects": 17,
         "lod0_materials": 15,
         "tris": {
-          "lod0": 82978,
-          "lod1": 25800,
-          "lod2": 6795
+          "lod0": 83436,
+          "lod1": 25796,
+          "lod2": 6799
         }
       },
       "pass": true
@@ -305,7 +305,7 @@
         "bbox_size_m": [
           1.92,
           1.358,
-          4.911
+          4.879
         ]
       },
       "pass": true
@@ -415,7 +415,7 @@
         "light_budget_log": 5,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 2454.2,
+        "load_time_ms": 1348.6,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -481,7 +481,7 @@
         "8car_orderA_nitro100_race_time_s": 85.12,
         "8car_orderA_nitro100_stuck_events": 4,
         "8car_orderA_nitro100_stuck_worst_car": 2,
-        "8car_orderA_nitro100_wall_s": 9.6
+        "8car_orderA_nitro100_wall_s": 7.8
       },
       "pass": true
     },
@@ -493,7 +493,7 @@
         "8car_orderA_nitro140_race_time_s": 77.55,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 6.3
+        "8car_orderA_nitro140_wall_s": 6.5
       },
       "pass": true
     },
@@ -505,7 +505,7 @@
         "8car_orderA_nitro0_race_time_s": 82.23,
         "8car_orderA_nitro0_stuck_events": 1,
         "8car_orderA_nitro0_stuck_worst_car": 1,
-        "8car_orderA_nitro0_wall_s": 11.6
+        "8car_orderA_nitro0_wall_s": 15.0
       },
       "pass": true
     },
@@ -517,7 +517,7 @@
         "8car_orderB_nitro100_race_time_s": 82.23,
         "8car_orderB_nitro100_stuck_events": 5,
         "8car_orderB_nitro100_stuck_worst_car": 1,
-        "8car_orderB_nitro100_wall_s": 5.9
+        "8car_orderB_nitro100_wall_s": 6.1
       },
       "pass": true
     },
@@ -529,7 +529,7 @@
         "8car_orderB_nitro140_race_time_s": 79.35,
         "8car_orderB_nitro140_stuck_events": 2,
         "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 6.5
+        "8car_orderB_nitro140_wall_s": 7.0
       },
       "pass": true
     },
@@ -541,7 +541,7 @@
         "8car_orderB_nitro0_race_time_s": 80.3,
         "8car_orderB_nitro0_stuck_events": 4,
         "8car_orderB_nitro0_stuck_worst_car": 2,
-        "8car_orderB_nitro0_wall_s": 7.1
+        "8car_orderB_nitro0_wall_s": 6.0
       },
       "pass": true
     },
@@ -564,7 +564,7 @@
         "6car_nitro100_race_time_s": 74.93,
         "6car_nitro100_stuck_events": 1,
         "6car_nitro100_stuck_worst_car": 1,
-        "6car_nitro100_wall_s": 4.4
+        "6car_nitro100_wall_s": 12.6
       },
       "pass": true
     },
@@ -576,7 +576,7 @@
         "6car_nitro140_race_time_s": 73.77,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.5
+        "6car_nitro140_wall_s": 18.7
       },
       "pass": true
     },
@@ -588,7 +588,7 @@
         "6car_nitro0_race_time_s": 73.97,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 4.0
+        "6car_nitro0_wall_s": 17.9
       },
       "pass": true
     }
@@ -1066,7 +1066,7 @@
         "race_time_s": 54.78,
         "stuck_total": 4,
         "stuck_worst_car": 1,
-        "wall_s": 2.4
+        "wall_s": 2.7
       },
       "pass": true
     },
@@ -1086,7 +1086,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 798.0,
+        "load_ms": 843.0,
         "prop_instances": 486,
         "second_row": 134,
         "track_length_m": 2205.4
@@ -1133,7 +1133,7 @@
         "race_time_s": 65.3,
         "stuck_total": 2,
         "stuck_worst_car": 1,
-        "wall_s": 2.6
+        "wall_s": 3.5
       },
       "pass": true
     },
@@ -1153,7 +1153,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 936.0,
+        "load_ms": 975.0,
         "prop_instances": 664,
         "second_row": 109,
         "track_length_m": 2243.6

@@ -145,7 +145,7 @@ def merge_bm(dst, src, mi=None):
         nf.material_index = mi if mi is not None else f.material_index
 
 
-def _blade(th, x0, x1, r1):
+def _blade(th, x0, x1, r1, spread=0.0):
     """Tapered concave spoke: 5 stations, closed prism, 2 mm chamfer on every edge."""
     cs, sn = math.cos(th), math.sin(th)
     tmp = bmesh.new()
@@ -156,9 +156,10 @@ def _blade(th, x0, x1, r1):
         t = i / (NS - 1)
         r = r0 + (r1 - r0) * t
         x = x0 + (x1 - x0) * t ** 1.6          # concave: hub face inboard, flares to the barrel
-        w = 0.056 + (0.034 - 0.056) * t        # 56 mm at the hub, 34 mm at the barrel
-        py, pz = r * cs, r * sn
+        w = 0.044 + (0.030 - 0.044) * t        # prong width, 38 mm at the hub, 24 mm at the barrel
         ty, tz = -sn, cs
+        sh = spread * t ** 1.4                  # the two prongs of a spoke diverge toward the barrel
+        py, pz = r * cs + sh * ty, r * sn + sh * tz
         ring = []
         for sa, sb in ((1, 1), (1, -1), (-1, -1), (-1, 1)):
             ring.append(tmp.verts.new((x + sb * 0.006, py + sa * 0.5 * w * ty, pz + sa * 0.5 * w * tz)))
@@ -232,7 +233,8 @@ def build_wheel(name, mats):
     x1 = hr - 0.012
     x0 = hr - 0.060 * (1.10 if rear else 1.0)
     for p in range(SPOKES):
-        merge_bm(bm, _blade(math.pi / 2 + 2 * math.pi * p / SPOKES, x0, x1, rl - 0.016), 1)
+        for sp in (0.026, -0.026):  # forked spoke: two prongs diverging, open slot between them
+            merge_bm(bm, _blade(math.pi / 2 + 2 * math.pi * p / SPOKES, x0, x1, rl - 0.016, sp), 1)
 
     if name.endswith(("FR", "RR")):
         _mirror(bm)
@@ -266,11 +268,11 @@ def build_brake(name, mats):
         rect(-0.015, 0.060, rin, 0.075),       # hat, bolts into the hub boss
     ]
     for prof in parts:
-        lathe(bm, prof, 48, 0, vf_of(prof), uv)
+        lathe(bm, prof, 32, 0, vf_of(prof), uv)
     # 36 radial vanes in the vent gap
     rr0, rr1 = 0.080, Rd - 0.013
-    for k in range(30):
-        a = 2 * math.pi * k / 30
+    for k in range(20):
+        a = 2 * math.pi * k / 20
         cy, sy = math.cos(a), math.sin(a)
         L = rr1 - rr0
         rm = 0.5 * (rr0 + rr1)
