@@ -545,6 +545,31 @@ func _tag_mirror_skipped() -> void:
 				root = root.get_parent()
 		if skip:
 			gi.layers = (gi.layers & ~1) | MIRROR_SKIP_BIT  # a mirror camera skipping this bit must find no other it includes
+			continue
+		# Buildings: the mirror never needs the detailed LOD0 (it doubled 8 000 triangles per near house). LOD0 leaves the
+		# mirror and a mirror-only copy of LOD1 covers the near range instead.
+		var lod_name: String = _lod_ancestor(gi)
+		if lod_name == "LOD0":
+			gi.layers = (gi.layers & ~1) | MIRROR_SKIP_BIT
+		elif lod_name == "LOD1" and gi is MeshInstance3D and gi.visibility_range_begin > 0.0:
+			var copy: MeshInstance3D = gi.duplicate() as MeshInstance3D
+			copy.name = String(gi.name) + "_mirror"
+			copy.layers = CarLod.MIRROR_LAYER_BIT
+			copy.visibility_range_end = gi.visibility_range_begin
+			copy.visibility_range_begin = 0.0
+			copy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			gi.get_parent().add_child(copy)
+
+
+## "LOD0" / "LOD1" / "LOD2" when the node is a building LOD mesh or sits under one, else "".
+func _lod_ancestor(n: Node) -> String:
+	var p: Node = n  # the builder names the mesh itself LOD0/LOD1; split pieces sit under it
+	while p != null and p != track:
+		var nm: String = p.name
+		if nm.length() == 4 and nm.begins_with("LOD"):
+			return nm
+		p = p.get_parent()
+	return ""
 
 
 ## Wet road meshes (M_Asphalt on wet_asphalt.gdshader) go on the road layer, which the mirror skips.
