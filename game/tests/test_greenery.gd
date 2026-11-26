@@ -102,6 +102,7 @@ func test_species_mix_follows_track() -> void:
 		check(["judas", "cypress", "plane"].has(p.species), "bogaz tree %s not in its mix" % p.species)
 	var bc: Dictionary = (bogaz[1] as Greenery).species_counts()
 	metric("bogaz_species", bc)
+	metric("bogaz_rejected", (bogaz[1] as Greenery).rejected)
 	# The weights are picked per spot; crown rejections thin planes, so judas (the heaviest weight) must still lead.
 	check(int(bc.get("judas", 0)) >= int(bc.get("cypress", 0)) and int(bc.get("judas", 0)) >= int(bc.get("plane", 0)), "bogaz: judas must lead the mix, got %s" % str(bc))
 	var nodes_b: Array[Node] = [bogaz[0]]
@@ -112,7 +113,61 @@ func test_species_mix_follows_track() -> void:
 		check(["street", "plane"].has(p.species), "maslak tree %s not in its mix" % p.species)
 	var mc: Dictionary = (maslak[1] as Greenery).species_counts()
 	metric("maslak_species", mc)
+	metric("maslak_rejected", (maslak[1] as Greenery).rejected)
 	check(int(mc.get("street", 0)) > int(mc.get("plane", 0)), "maslak: street must lead the mix, got %s" % str(mc))
 	var nodes_m: Array[Node] = [maslak[0]]
 	cleanup(nodes_m)
+	await frames(2)
+
+
+func test_photo_cards_contract() -> void:
+	var src: String = FileAccess.get_file_as_string("res://shaders/tree_photo.gdshader")
+	check("render_mode cull_disabled" in src, "photo cards must be two-sided")
+	check("discard" in src and "alpha_cut" in src, "photo cards must alpha-test (scissor), not blend")
+	check("TIME" in src and "MODEL_MATRIX" in src, "photo sway must use TIME and world position")
+	check("night_tex" in src and "shade_fill" in src, "night glow must follow the time-of-day value")
+	check("blend_mix" not in src and "ALPHA =" not in src, "photo cards must not use alpha blending")
+	# Heights from the brief: plane 10 to 13 m, cypress 9 to 12 m, judas 5 to 6 m (judas at 0.9 to 1.1 scale is 4.95 to 6.05).
+	var bands: Dictionary = {"plane": [10.0, 13.0], "cypress": [9.0, 12.0], "judas": [4.9, 6.1]}
+	for sp: String in Greenery.PHOTO:
+		var cfg: Dictionary = Greenery.PHOTO[sp]
+		check(ResourceLoader.exists(Greenery.PHOTO_DIR + cfg.tex), "photo texture missing for " + sp)
+		if cfg.night != "":
+			check(ResourceLoader.exists(Greenery.PHOTO_DIR + cfg.night), "night texture missing for " + sp)
+		var mesh: Mesh = Greenery._photo_mesh(sp)
+		check(mesh != null, "no photo mesh for " + sp)
+		if mesh == null:
+			continue
+		var verts: PackedVector3Array = mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX]  # cards are not indexed
+		var tris: int = verts.size() / 3
+		metric("photo_tris_%s" % sp, tris)
+		check(tris == 6, "%s: three crossed cards should be 6 triangles, got %d" % [sp, tris])
+		check(mesh.surface_get_material(0) is ShaderMaterial, "%s photo surface is not the photo shader" % sp)
+		var lo: float = float(cfg.h_m) * Greenery.SPECIES[sp].scale.x
+		var hi: float = float(cfg.h_m) * Greenery.SPECIES[sp].scale.y
+		check(lo >= float(bands[sp][0]) and hi <= float(bands[sp][1]), "%s height %.2f-%.2f m outside %s" % [sp, lo, hi, str(bands[sp])])
+
+
+func test_photo_trees_in_bogaz() -> void:
+	var pair: Array = await _populate("bogaz")
+	var track: Track = pair[0]
+	var g: Greenery = pair[1]
+	var photo_nodes: int = 0
+	for n: Node in g.get_children():
+		if n is MultiMeshInstance3D and String(n.name).ends_with("_photo"):
+			photo_nodes += 1
+			var mmi: MultiMeshInstance3D = n
+			check(mmi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_ON, "%s must cast shadows" % mmi.name)
+			check(mmi.multimesh.use_custom_data, "%s has no atlas custom data" % mmi.name)
+	metric("bogaz_photo_nodes", photo_nodes)
+	var planes: int = 0
+	for p: Dictionary in g.placements:
+		check(int(p.variant) == 0 or int(p.variant) == 1, "bad atlas variant for a tree")
+		if p.species == "plane":
+			planes += 1
+			# The crown (photo reach 5 m) may overhang the pavement, never the corridor.
+			check(absf(float(p.lateral)) - float(Greenery.CROWN_CORRIDOR_M["plane"]) > track.width * 0.5, "plane crown reaches the race corridor at %s" % str(p.pos))
+	metric("bogaz_planes", planes)
+	var nodes: Array[Node] = [track]
+	cleanup(nodes)
 	await frames(2)

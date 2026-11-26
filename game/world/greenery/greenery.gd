@@ -6,8 +6,23 @@ extends Node3D
 ## dark patch under each tree. Trees cast no real-time shadow.
 
 const SPECIES_DIR: String = "res://assets/world/kits/trees/"
+const PHOTO_DIR: String = "res://assets/world/kits/trees_photo/"
 const FOLIAGE_SHADER: Shader = preload("res://shaders/foliage.gdshader")
+const PHOTO_SHADER: Shader = preload("res://shaders/tree_photo.gdshader")
 const BLOB_SHADER: Shader = preload("res://world/greenery/tree_blob.gdshader")
+## Photo species: crossed cards with a photo of the tree (game/assets/world/kits/trees_photo, built by
+## assets_src/ai_generated/chatgpt/prepare_photo_trees.py). h_m: card height = tree height at scale 1. w_ratio: card
+## width / height. halves: trees per texture (planes: two in one atlas, picked per tree by INSTANCE_CUSTOM).
+const PHOTO: Dictionary = {
+	"plane": {"tex": "plane_atlas.png", "night": "plane_atlas_night.jpg", "h_m": 11.5, "w_ratio": 1.0, "halves": 2.0, "night_dim": 0.3},
+	"cypress": {"tex": "cypress.png", "night": "", "h_m": 10.3, "w_ratio": 0.25, "halves": 1.0, "night_dim": 0.5},
+	"judas": {"tex": "judas.png", "night": "", "h_m": 5.5, "w_ratio": 1.0, "halves": 1.0, "night_dim": 0.5},
+}
+const CORRIDOR_CLEAR_M: float = 1.0  ## a crown may overhang the pavement, but its inner edge stays this far outside the road edge
+const CROWN_SHADOW: bool = true
+static var _photo_meshes: Dictionary = {}  ## species -> card Mesh
+static var _photo_materials: Dictionary = {}  ## species -> ShaderMaterial
+static var _black: ImageTexture = null  ## night picture of species without one: black, so no glow
 
 const CHUNK_M: float = 240.0
 const SPACING_MIN_M: float = 9.0  ## was 18-30: about 70 trees per track read as bare streets
@@ -19,7 +34,8 @@ const SIDEWALK_MAX_M: float = 6.5
 const TRIES_PER_STEP: int = 3
 const WORLD_MASK: int = 1  ## physics layer 1: buildings and static geometry, as rain.gd
 const PROBE_RADIUS_M: float = 1.0
-const CROWN_R_M: Dictionary = {"plane": 3.7, "judas": 2.4, "cypress": 0.9, "street": 1.1}  ## crown reach per species: 90th percentile of the leaf radius (assets_src/world/kit_trees/prepare_licensed_trees.py)
+const CROWN_R_M: Dictionary = {"plane": 3.7, "judas": 2.4, "cypress": 0.9, "street": 1.1}  ## crown reach per species for the block probe: 90th percentile of the leaf radius (assets_src/world/kit_trees/prepare_licensed_trees.py)
+const CROWN_CORRIDOR_M: Dictionary = {"plane": 5.0}  ## photo plane crown reach (about 0.4 to 0.5 of the 11.5 m height): the corridor clearance uses it
 const ROOF_CHECK_M: float = 9.0  ## overpass or tunnel roof above the tree disqualifies the spot
 const GRADE_TOL_M: float = 1.0  ## the tree must stand on the same grade as the racing line
 const BLOB_LIFT_M: float = 0.04
@@ -29,7 +45,7 @@ const LOD_RANGES: Array = [[0.0, 60.0], [60.0, 150.0], [150.0, 320.0]]
 
 ## Blob diameter in metres and per-tree scale range. Species geometry is built in assets_src/world/kit_trees.
 const SPECIES: Dictionary = {
-	"plane": {"blob_m": 8.0, "scale": Vector2(0.9, 1.1)},
+	"plane": {"blob_m": 10.0, "scale": Vector2(0.9, 1.1)},
 	"judas": {"blob_m": 5.0, "scale": Vector2(0.9, 1.1)},
 	"cypress": {"blob_m": 2.2, "scale": Vector2(0.9, 1.15)},
 	"street": {"blob_m": 2.8, "scale": Vector2(0.9, 1.1)},
@@ -115,18 +131,19 @@ func _place() -> void:
 		# otherwise costs the whole step.
 		var pos: Vector3 = centre
 		var reason: String = "inside"
+		var species: String = _pick(mix)
+		var gap: float = _trunk_gap(species)
 		for attempt: int in TRIES_PER_STEP:
-			# Later tries move in toward the road but never closer than the kerb clearance.
-			var offset: float = _track.width * 0.5 + maxf(SIDEWALK_MIN_M, _rng.randf_range(SIDEWALK_MIN_M, SIDEWALK_MAX_M) - attempt * 1.0)
+			# Later tries move in toward the road but never closer than the kerb clearance (wider for a crown).
+			var offset: float = _track.width * 0.5 + maxf(gap, _rng.randf_range(gap, SIDEWALK_MAX_M) - attempt * 1.0)
 			pos = centre + right * side * offset
 			reason = _rejection(pos, centre)
 			# The centreline bends: measure the real lateral distance at the nearest point, not at this sample.
-			if reason == "" and absf(_track.get_lateral_offset(pos, s)) < _track.width * 0.5 + SIDEWALK_MIN_M - 0.5:
+			if reason == "" and absf(_track.get_lateral_offset(pos, s)) < _track.width * 0.5 + gap - 0.5:
 				reason = "corridor"
 			if reason == "":
 				break
 		if reason == "":
-			var species: String = _pick(mix)
 			# Open side (a quay, the sea): keep the view. Most spots stay empty and the rest take a narrow species.
 			if keep_open_view and _open_view(pos, right * side):
 				if _rng.randf() < OPEN_SKIP or not (mix.has("cypress") or mix.has("street")):
@@ -141,10 +158,16 @@ func _place() -> void:
 				continue
 			placements.append({"species": species, "pos": pos, "chunk": int(s / CHUNK_M),
 				"lateral": _track.get_lateral_offset(pos, s), "yaw": _rng.randf() * TAU,
-				"scale": _rng.randf_range(SPECIES[species].scale.x, SPECIES[species].scale.y)})
+				"scale": _rng.randf_range(SPECIES[species].scale.x, SPECIES[species].scale.y), "variant": _rng.randi() % 2})
 		else:
 			rejected[reason] = int(rejected.get(reason, 0)) + 1
 		s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
+
+
+## Trunk distance from the road's half width: the kerb clearance, or for a wide crown the crown reach plus CORRIDOR_CLEAR_M,
+## so the crown may overhang the pavement but never the race corridor.
+func _trunk_gap(species: String) -> float:
+	return maxf(SIDEWALK_MIN_M, float(CROWN_CORRIDOR_M.get(species, CROWN_R_M.get(species, 1.5))) + CORRIDOR_CLEAR_M)
 
 
 ## "" when the spot is free, else why it is not: another grade, an overpass or tunnel roof above it, or static
@@ -187,7 +210,8 @@ func _crown_blocked(pos: Vector3, radius: float) -> bool:
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var crown := SphereShape3D.new()
 	crown.radius = radius
-	for h: float in [4.0, 6.5]:
+	# Probe heights keep the sphere underside a metre above the pavement: a wide crown probe touched the kerb at every spot.
+	for h: float in [maxf(4.0, radius + 1.0), maxf(6.5, radius + 3.0)]:
 		var q := PhysicsShapeQueryParameters3D.new()
 		q.shape = crown
 		q.transform = Transform3D(Basis(), pos + Vector3.UP * h)
@@ -219,14 +243,13 @@ func _pick(mix: Dictionary) -> String:
 
 
 func _build_nodes() -> void:
-	var trees: Dictionary = {}  # "chunk|species" -> Array[Transform3D]
+	var trees: Dictionary = {}  # "chunk|species" -> Array[Dictionary] (placements)
 	var blobs: Dictionary = {}  # chunk -> Array[Transform3D]
 	for p: Dictionary in placements:
-		var xf := Transform3D(Basis(Vector3.UP, p.yaw).scaled(Vector3.ONE * p.scale), p.pos)
 		var key: String = "%d|%s" % [p.chunk, p.species]
 		if not trees.has(key):
 			trees[key] = []
-		trees[key].append(xf)
+		trees[key].append(p)
 		if not blobs.has(p.chunk):
 			blobs[p.chunk] = []
 		var d: float = SPECIES[p.species].blob_m * p.scale
@@ -234,8 +257,14 @@ func _build_nodes() -> void:
 		blobs[p.chunk].append(blob)
 	for key: String in trees:
 		var parts: PackedStringArray = key.split("|")
+		if PHOTO.has(parts[1]):
+			_add_photo_multimesh(trees[key], parts[1], "%s_c%s_photo" % [parts[1], parts[0]])
+			continue
+		var xforms: Array = []
+		for p: Dictionary in trees[key]:
+			xforms.append(_xform(p))
 		for lod: int in 3:
-			_add_multimesh(trees[key], _lod_mesh(parts[1], lod), LOD_RANGES[lod], "%s_c%s_l%d" % [parts[1], parts[0], lod])
+			_add_multimesh(xforms, _lod_mesh(parts[1], lod), LOD_RANGES[lod], "%s_c%s_l%d" % [parts[1], parts[0], lod])
 	for chunk: int in blobs:
 		_add_multimesh(blobs[chunk], _blob(), [0.0, BLOB_RANGE_M], "blob_c%d" % chunk)
 
@@ -254,6 +283,79 @@ func _add_multimesh(xforms: Array, mesh: Mesh, vis: Array, node_name: String) ->
 	mmi.visibility_range_end = vis[1]
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mmi)
+
+
+func _xform(p: Dictionary) -> Transform3D:
+	return Transform3D(Basis(Vector3.UP, p.yaw).scaled(Vector3.ONE * p.scale), p.pos)
+
+
+## One MultiMesh per chunk for a photo species: all LODs in one node (the cards are 6 triangles), shadows on.
+## Custom data x: the atlas half for a two-tree texture (planes), 0 otherwise.
+func _add_photo_multimesh(group: Array, species: String, node_name: String) -> void:
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.use_custom_data = true
+	mm.mesh = _photo_mesh(species)
+	mm.instance_count = group.size()
+	var halves: float = float(PHOTO[species].halves)
+	for i: int in group.size():
+		var p: Dictionary = group[i]
+		mm.set_instance_transform(i, _xform(p))
+		mm.set_instance_custom_data(i, Color(0.5 * float(p.variant) if halves > 1.0 else 0.0, 0.0, 0.0, 0.0))
+	var mmi := MultiMeshInstance3D.new()
+	mmi.name = node_name
+	mmi.multimesh = mm
+	mmi.visibility_range_begin = LOD_RANGES[0][0]
+	mmi.visibility_range_end = LOD_RANGES[2][1]
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if CROWN_SHADOW else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mmi)
+
+
+## Three crossed cards through the trunk axis (60 degree steps), double-sided, the tree photo on each.
+static func _photo_mesh(species: String) -> Mesh:
+	if _photo_meshes.has(species):
+		return _photo_meshes[species]
+	var cfg: Dictionary = PHOTO[species]
+	var h: float = cfg.h_m
+	var w: float = h * cfg.w_ratio
+	var corners: Array[Vector3] = [Vector3(-w / 2.0, 0.0, 0.0), Vector3(w / 2.0, 0.0, 0.0), Vector3(w / 2.0, h, 0.0), Vector3(-w / 2.0, h, 0.0)]
+	var uvs: Array[Vector2] = [Vector2(0.0, 1.0), Vector2(1.0, 1.0), Vector2(1.0, 0.0), Vector2(0.0, 0.0)]
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for k: int in 3:
+		var b := Basis(Vector3.UP, float(k) * PI / 3.0)
+		var n: Vector3 = (b * Vector3(0.0, 0.3, 1.0)).normalized()  # tilted up: crowns read lit from above
+		for i: int in [0, 1, 2, 0, 2, 3]:
+			st.set_normal(n)
+			st.set_uv(uvs[i])
+			st.add_vertex(b * corners[i])
+	var mesh := ArrayMesh.new()
+	st.commit(mesh)
+	mesh.surface_set_material(0, _photo_material(species))
+	_photo_meshes[species] = mesh
+	return mesh
+
+
+static func _photo_material(species: String) -> ShaderMaterial:
+	if _photo_materials.has(species):
+		return _photo_materials[species]
+	var cfg: Dictionary = PHOTO[species]
+	var m := ShaderMaterial.new()
+	m.shader = PHOTO_SHADER
+	m.set_shader_parameter("albedo_tex", load(PHOTO_DIR + cfg.tex))
+	m.set_shader_parameter("night_tex", load(PHOTO_DIR + cfg.night) if cfg.night != "" else _black_texture())
+	m.set_shader_parameter("atlas_halves", cfg.halves)
+	m.set_shader_parameter("night_dim", cfg.night_dim)
+	m.set_shader_parameter("shade_fill", _shade_fill)
+	_leaf_materials.append(m)
+	_photo_materials[species] = m
+	return m
+
+
+static func _black_texture() -> ImageTexture:
+	if _black == null:
+		_black = ImageTexture.create_from_image(Image.create(4, 4, false, Image.FORMAT_RGB8))
+	return _black
 
 
 static func _lod_mesh(species: String, lod: int) -> Mesh:

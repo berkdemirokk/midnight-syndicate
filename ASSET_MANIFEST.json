@@ -11912,6 +11912,94 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Night picture of the same mosque wall (floodlit stone, glowing windows), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/mosque_wall_01_night.png."
+    },
+    {
+      "id": "photo_tree_plane_atlas",
+      "kind": "texture",
+      "path": "game/assets/world/kits/trees_photo/plane_atlas.png",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "plane_atlas.png": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 3312607,
+      "sha256": "6de825fd311db19f1a6c9b0b616ec618a4772c07e49830e854062e0eb228da05",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Two large plane trees side by side (1024 px each), photo albedo with alpha for the street plane cards. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/plane_a_day.png and assets_src/ai_generated/chatgpt/plane_b_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (left half plane_a_day, right half plane_b_day, alpha cleaned)."
+    },
+    {
+      "id": "photo_tree_plane_atlas_night",
+      "kind": "texture",
+      "path": "game/assets/world/kits/trees_photo/plane_atlas_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "plane_atlas_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 425175,
+      "sha256": "c09ff48b9ad21465e28f7dcf3d7548cbbec981f3ef61b98899ba2ee365cddddd",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night pictures of the same two plane trees, pixel-aligned with plane_atlas.png: lit crowns on black, used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/plane_a_night.png and assets_src/ai_generated/chatgpt/plane_b_night.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (same layout as plane_atlas.png)."
+    },
+    {
+      "id": "photo_tree_cypress",
+      "kind": "texture",
+      "path": "game/assets/world/kits/trees_photo/cypress.png",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "cypress.png": [
+          256,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 353339,
+      "sha256": "e07613218590ace8c35f7de6afa708c3403bd8f8907691c503c98f421b3f51b8",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Tall slim Italian cypress, photo albedo with alpha, 256 x 1024 px. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/cypress_c_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (cropped to the tree, alpha cleaned)."
+    },
+    {
+      "id": "photo_tree_judas",
+      "kind": "texture",
+      "path": "game/assets/world/kits/trees_photo/judas.png",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "judas.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 1672889,
+      "sha256": "a892818e3f518178ea20cec043fcc10afd4a12a7854ff98c0c753109322383d4",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Blossoming judas tree (pink-purple), photo albedo with alpha. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/judas_d_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (cropped to the tree, alpha cleaned)."
     }
   ]
 }
