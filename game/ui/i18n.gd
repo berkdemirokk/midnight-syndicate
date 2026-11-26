@@ -84,6 +84,7 @@ const DICT: Dictionary = {
 	"settings.haptics": {"tr": "TİTREŞİM", "en": "HAPTICS"},
 	"settings.camera_shake": {"tr": "KAMERA SARSINTISI", "en": "CAMERA SHAKE"},
 	"settings.language": {"tr": "DİL", "en": "LANGUAGE"},
+	"settings.credits": {"tr": "EMEĞİ GEÇENLER", "en": "CREDITS"},
 	"settings.lang_tr": {"tr": "TÜRKÇE", "en": "TÜRKÇE"},
 	"settings.lang_en": {"tr": "ENGLISH", "en": "ENGLISH"},
 	"settings.on": {"tr": "AÇIK", "en": "ON"},

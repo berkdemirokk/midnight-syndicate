@@ -48,6 +48,10 @@ const STEER_KEYS: Array[String] = ["settings.steer_buttons", "settings.steer_til
 const LANG_KEYS: Array[String] = ["settings.lang_tr", "settings.lang_en"]
 
 
+const CREDITS_PATH: String = "res://ui/credits_third_party.txt"  ## one credit line per CC BY asset
+const CREDITS_PX: int = 13
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	theme = MSTheme.build()
@@ -136,6 +140,12 @@ func _build() -> void:
 	_row(right, "shake", "settings.camera_shake", _slider_box(_shake, _shake_val))
 	_lang_opt = _option()
 	_row(right, "lang", "settings.language", _lang_opt)
+	# Third-party models under CC BY 4.0 need their credit shown in the game.
+	if FileAccess.file_exists(CREDITS_PATH):
+		_section(right, "credits", "settings.credits")
+		var credits: Label = MSTheme.make_label(FileAccess.get_file_as_string(CREDITS_PATH).strip_edges(), "bold", MSTheme.px(CREDITS_PX), MSTheme.TEXT)
+		credits.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		right.add_child(credits)
 
 	_preset_opt.item_selected.connect(_on_preset)
 	_dynres.toggled.connect(_on_dynres)
