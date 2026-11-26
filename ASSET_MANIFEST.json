@@ -12044,6 +12044,28 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Blossoming judas tree (pink-purple), photo albedo with alpha. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/judas_d_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (cropped to the tree, alpha cleaned)."
+    },
+    {
+      "id": "car_street_pano_night",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/street_pano_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "street_pano_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 573416,
+      "sha256": "f822852290f3b58ca695aeb3a0ce6cd0645a3c708e5b93eb9bdcd6b43c64c3d8",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night street panorama mirrored in the car paint (second pass). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/street_pano_night.png."
     }
   ]
 }

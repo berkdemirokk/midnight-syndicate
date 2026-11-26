@@ -102,6 +102,19 @@ static func set_wet(car: Node, wet: bool) -> void:
 		m.roughness = RAIN_PAINT_ROUGHNESS)
 
 
+## Mirrors a street panorama in the paint (second pass, res://shaders/car_reflection.gdshader); null removes it.
+static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5) -> void:
+	_each_material(car, "M_Paint", func(m: StandardMaterial3D) -> void:
+		if pano == null:
+			m.next_pass = null
+			return
+		var mirror := ShaderMaterial.new()
+		mirror.shader = load("res://shaders/car_reflection.gdshader")
+		mirror.set_shader_parameter("pano", pano)
+		mirror.set_shader_parameter("strength", strength)
+		m.next_pass = mirror)
+
+
 static func set_brake_lights(car: Node, on: bool) -> void:
 	var level: float = REAR_BRAKE if on else REAR_REST
 	_each_material(car, "M_LightRear", func(m: StandardMaterial3D) -> void: m.emission_energy_multiplier = level)
