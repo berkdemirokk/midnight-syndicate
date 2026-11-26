@@ -67,6 +67,7 @@ var impostor_scale: float = 1.0  ## brightness of the impostor tint
 var container_albedo: float = 1.0  ## shipping containers and red newspaper boxes (saturated flat red blows out under a strong sun)
 var pane_std_albedo: float = 1.0  ## Istanbul tracks: M_WindowAtlas is a StandardMaterial3D; this lightens its dark glass
 var parked_albedo: float = 1.0  ## parked car paint: albedo multiplier (night paints are muted and dark)
+var std_specular: float = 1.0  ## multiplies the specular of non-metal standard materials (dry day walls must not mirror the sky: they read navy blue)
 var parked_metal: float = 1.0  ## parked car paint: metallic multiplier (a metallic dark paint mirrors the sky as flat grey)
 # --- street lights ---
 var lamps_on: bool = true
@@ -117,13 +118,13 @@ func sun_vector(heading_deg: float = 0.0) -> Vector3:
 func _make_day() -> void:
 	id = DAY
 	label = "Day"
-	sun_elevation_deg = 58.0
-	sun_azimuth_deg = 165.0
+	sun_elevation_deg = 44.0
+	sun_azimuth_deg = 140.0  # behind the start grid on the land side: the mosque and the faces the driver looks at are lit
 	sun_color = Color(1.0, 0.95, 0.84)
 	sun_energy = 3.0
-	ambient_energy = 0.6  # 1.3 of near-white ambient filled every shadow: facades read as flat pastel cards
+	ambient_energy = 0.85  # sky fill: 1.3 flattened every shadow, 0.6 with baked AO left the shaded side navy blue
 	ambient_sky_mix = 0.3
-	ambient_color = Color(0.66, 0.77, 0.96)  # sky fill: blue in the shade
+	ambient_color = Color(0.78, 0.83, 0.95)  # sky fill: a little cool, not blue paint
 	road_brightness = 0.85
 	reflection_energy = 1.0
 	sky_params = {
@@ -151,6 +152,7 @@ func _make_day() -> void:
 	impostor_desat = 0.5
 	impostor_scale = 0.8
 	container_albedo = 0.6
+	std_specular = 0.3
 	parked_albedo = 1.25  # 2.2 clipped white and silver cars to flat white
 	parked_metal = 0.45
 	lamps_on = false
@@ -205,6 +207,7 @@ func _make_sunset() -> void:
 	impostor_scale = 0.75
 	container_albedo = 0.28
 	pane_std_albedo = 2.6
+	std_specular = 0.6
 	parked_albedo = 1.15
 	parked_metal = 0.55
 	lamps_on = true
@@ -441,6 +444,10 @@ func tune_material(m: Material) -> void:
 				st.set_meta(&"tod_albedo", st.albedo_color)
 			var cc: Color = st.get_meta(&"tod_albedo")
 			st.albedo_color = Color(clampf(cc.r * k, 0.0, 1.0), clampf(cc.g * k, 0.0, 1.0), clampf(cc.b * k, 0.0, 1.0), cc.a)
+		if st.metallic < 0.1 and st.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED:
+			if not st.has_meta(&"tod_specular"):
+				st.set_meta(&"tod_specular", st.metallic_specular)
+			st.metallic_specular = float(st.get_meta(&"tod_specular")) * std_specular
 		if st.emission_enabled and not _keeps_emission(st.resource_name):
 			if not st.has_meta(BASE_META):
 				st.set_meta(BASE_META, st.emission_energy_multiplier)

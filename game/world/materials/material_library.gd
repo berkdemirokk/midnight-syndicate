@@ -46,6 +46,7 @@ static var _debug: StandardMaterial3D
 
 
 ## True when the name has a recipe in one of the materials.json files.
+const WOOD_LIFT: float = 2.6  ## dark timber photo set times a dark tint rendered the wooden houses black
 ## Materials of the road GLB: its vertex colours carry asphalt shader data (wear, lanes), so they must not be read as AO.
 const ROAD_VERTEX_DATA: PackedStringArray = ["M_Asphalt", "M_Cobble", "M_Concrete_Wall", "M_Curb", "M_Grate", "M_Ground", "M_Manhole", "M_Paving", "M_Rail", "M_RoadPaint", "M_Water"]
 
@@ -263,6 +264,8 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
 	if mat_name.begins_with("M_Brick") or mat_name.begins_with("M_Concrete") or mat_name == "M_Facade_Tile":
 		m.albedo_color = _scale_rgb(m.albedo_color, tuning.wall_albedo_scale)  # facade walls: the building kit uses these
+	if mat_name.begins_with("M_Wood"):
+		m.albedo_color = _scale_rgb(m.albedo_color, WOOD_LIFT)
 	if not tex.is_empty() and not kit_tex:
 		# Walls and ground have no UVs in metres, so project them in world space.
 		m.uv1_triplanar = true
@@ -330,7 +333,7 @@ static func _facade(mat_name: String, r: Dictionary, tex: Dictionary) -> ShaderM
 	var wet: float = tuning.wetness
 	var c: Color = r["colour"]
 	var scaled: bool = mat_name.begins_with("M_Brick") or mat_name.begins_with("M_Concrete") or mat_name == "M_Facade_Tile"
-	var tint: Vector3 = Vector3(c.r, c.g, c.b) * (1.0 - 0.3 * wet) * (tuning.wall_albedo_scale if scaled else 1.0)
+	var tint: Vector3 = Vector3(c.r, c.g, c.b) * (1.0 - 0.3 * wet) * (tuning.wall_albedo_scale if scaled else (WOOD_LIFT if mat_name.begins_with("M_Wood") else 1.0))
 	sm.set_shader_parameter("albedo_tex", _tex(tex["basecolor"]))
 	sm.set_shader_parameter("normal_tex", _tex(tex["normal"]))
 	sm.set_shader_parameter("roughness_tex", _tex(tex["roughness"]))

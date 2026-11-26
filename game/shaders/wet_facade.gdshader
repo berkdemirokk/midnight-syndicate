@@ -48,7 +48,7 @@ uniform float grime : hint_range(0.0, 1.0) = 0.2;
 uniform float macro_variation : hint_range(0.0, 1.0) = 0.35;
 uniform float contact_dark : hint_range(0.0, 1.0) = 0.45;
 uniform float contact_height_m : hint_range(0.05, 3.0) = 0.9;
-uniform float ao_strength : hint_range(0.0, 1.0) = 0.85;
+uniform float ao_strength : hint_range(0.0, 1.0) = 0.7;
 
 varying vec3 w_pos;
 varying vec3 w_nrm;
@@ -134,5 +134,7 @@ void fragment() {
 	rough *= (1.0 - wall_gloss) * (1.0 - wet_gloss * wet);
 	rough -= streak_gloss * streak;
 	ROUGHNESS = clamp(rough, 0.05, 1.0);
+	// Dry plaster and timber barely mirror the sky: at the default 0.5 a shaded wall seen along the street turned navy blue.
+	SPECULAR = mix(0.12, 0.5, clamp(wall_gloss * 2.0 + wet, 0.0, 1.0));
 	NORMAL = normalize(mat3(VIEW_MATRIX) * wn);
 }
