@@ -29,6 +29,12 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.23, "front_r": 0.335, "rear_r": 0.35, "wheelbase": 2.46,
 	},
 	{
+		"id": "bosfor_yildirim", "scene": "res://vehicles/bosfor_yildirim/bosfor_yildirim.tscn",
+		"spec": "res://vehicles/specs/bosfor_yildirim.tres", "name": "Bosfor Yildirim",
+		"len": 4.456, "width": 2.145, "height": 1.112,  # source GLB bounding box (metres), hypercar.glb
+		"axle": 1.32, "front_r": 0.33, "rear_r": 0.355, "wheelbase": 2.64,
+	},
+	{
 		"id": "arden_havoc", "scene": "res://vehicles/arden_havoc/arden_havoc.tscn",
 		"spec": "res://vehicles/specs/arden_havoc.tres", "name": "Arden Havoc",
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb
