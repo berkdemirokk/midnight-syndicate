@@ -11,7 +11,7 @@ func run() -> void:
 	GameState.open_profile(TEMP_SAVE)
 	GameState.reset_profile()
 	CarCatalog.cars = [
-		{"id": "noctra_sable", "class": "street", "price": 0, "rep": 0},
+		{"id": CarCatalog.STARTER, "class": "street", "price": 0, "rep": 0},
 		{"id": "demo_hatch", "class": "hatch", "price": 8000, "rep": 0, "scene": CarCatalog.scene_path("noctra_sable"), "spec": CarCatalog.spec_path("noctra_sable")},
 		{"id": "demo_gt", "class": "gt", "price": 30000, "rep": 800, "scene": CarCatalog.scene_path("noctra_sable"), "spec": CarCatalog.spec_path("noctra_sable")},
 	]
