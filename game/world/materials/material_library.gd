@@ -195,6 +195,9 @@ static func _build(mat_name: String) -> Material:
 		w.set_shader_parameter("metallic_value", tuning.pane_metallic)
 		w.set_shader_parameter("cell_size_m", tuning.pane_cell_size_m)
 		w.set_shader_parameter("lit_fraction", tuning.pane_lit_fraction)
+		# Rooms behind the glass and a faint night-sky reflection; TimeOfDay raises the reflection by day.
+		w.set_shader_parameter("interior_strength", tuning.pane_interior_strength)
+		w.set_shader_parameter("glass_reflect", tuning.pane_night_reflect)
 		return w
 	if mat_name == "M_ShopInterior":
 		return _emissive_atlas(mat_name, BUILDING_TEX + "shop_interior_basecolor.png", BUILDING_TEX + "shop_interior_emissive.png", tuning.shop_energy_scale)

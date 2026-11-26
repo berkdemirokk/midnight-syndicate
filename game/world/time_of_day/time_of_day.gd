@@ -58,6 +58,8 @@ var skyline_scale: float = 1.0
 var skyline_brighten: float = 1.0  ## multiplies the far skyline card tint (day: pale hazy towers instead of black cut-outs)
 var pane_albedo_scale: float = 1.0  ## multiplies the window pane albedo (day: lighter, sky-blue glass)
 var pane_reflect: float = 0.0  ## day: extra metallic on panes so they mirror the sky
+var glass_sky_reflect: float = -1.0  ## window_atlas glass_reflect for this hour; below 0 keeps the authored (night) value
+var sun_world: Vector3 = Vector3.UP  ## world sun vector for the glass sun glint; the track sets it before apply_materials
 var crown_scale: float = 1.0  ## LED crown strips on tall towers (LedCrowns): 0 hides them
 var impostor_desat: float = 0.0  ## far-building impostors: share of the tint pulled to grey (sunlit flat boxes read as solid colour blocks)
 var impostor_scale: float = 1.0  ## brightness of the impostor tint
@@ -143,6 +145,7 @@ func _make_day() -> void:
 	skyline_brighten = 2.6
 	pane_albedo_scale = 4.0
 	pane_reflect = -0.2
+	glass_sky_reflect = 0.95
 	crown_scale = 0.0
 	impostor_desat = 0.5
 	impostor_scale = 0.8
@@ -195,6 +198,7 @@ func _make_sunset() -> void:
 	skyline_brighten = 1.2
 	pane_albedo_scale = 5.0
 	pane_reflect = 0.3
+	glass_sky_reflect = 0.8
 	crown_scale = 0.0
 	impostor_desat = 0.45
 	impostor_scale = 0.75
@@ -225,6 +229,7 @@ func apply_environment(env: Environment, sun: DirectionalLight3D, heading_deg: f
 	var sky_mat := ShaderMaterial.new()
 	sky_mat.shader = DAY_SKY
 	sky_mat.set_shader_parameter("sun_dir", sun_vector(heading_deg))
+	sun_world = sun_vector(heading_deg)
 	for k: String in sky_params:
 		sky_mat.set_shader_parameter(k, sky_params[k])
 	var sky := Sky.new()
@@ -452,6 +457,19 @@ func _tune_window(sm: ShaderMaterial) -> void:
 			sm.set_shader_parameter("tint", (tint as Vector3) * skyline_brighten)
 	elif sm.resource_name == "M_WindowAtlas":
 		_scale_param(sm, "albedo_scale", pane_albedo_scale)
+		# The glass mirrors this hour's sky (analytic, in the shader); night keeps the authored dim reflection.
+		var base_reflect: Variant = _base_param(sm, "glass_reflect")
+		if glass_sky_reflect >= 0.0 and sky_params.has("zenith_colour"):
+			sm.set_shader_parameter("glass_reflect", glass_sky_reflect)
+			sm.set_shader_parameter("sky_zenith", sky_params["zenith_colour"])
+			sm.set_shader_parameter("sky_horizon", sky_params["horizon_colour"])
+			sm.set_shader_parameter("sun_dir", sun_world)
+			sm.set_shader_parameter("sun_colour", sun_color)
+		elif base_reflect != null:
+			sm.set_shader_parameter("glass_reflect", float(base_reflect))
+			sm.set_shader_parameter("sky_zenith", Color(0.02, 0.035, 0.085))
+			sm.set_shader_parameter("sky_horizon", Color(0.10, 0.08, 0.20))
+			sm.set_shader_parameter("sun_colour", Color(0.0, 0.0, 0.0))
 		var mv: Variant = _base_param(sm, "metallic_value")
 		if mv != null:
 			sm.set_shader_parameter("metallic_value", clampf(float(mv) + pane_reflect, 0.0, 1.0))

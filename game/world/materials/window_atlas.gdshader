@@ -40,6 +40,23 @@ uniform float skyline_min_h : hint_range(0.0, 1.0) = 0.35;
 // true when UV.y = 0 is the top of the card
 uniform bool skyline_v_down = true;
 
+// Rooms behind the glass (interior mapping): 0 = flat atlas look (impostors, skyline cards), 1 = every window
+// cell shows a small room with a back wall, ceiling, floor and side walls that shift with the view angle.
+uniform float interior_strength : hint_range(0.0, 1.0) = 0.0;
+uniform float room_depth_m : hint_range(0.5, 12.0) = 3.5;
+// Room size when cell_size_m is 0 (small panes).
+uniform vec2 room_size_m = vec2(2.4, 3.1);
+// How bright an unlit room is in daylight (it is much darker than the street).
+uniform float interior_day_light : hint_range(0.0, 1.0) = 0.22;
+// Sky mirrored in the glass: analytic sky colours set per time of day (no reflection probe needed).
+uniform float glass_reflect : hint_range(0.0, 2.0) = 0.0;
+uniform vec3 sky_zenith : source_color = vec3(0.02, 0.035, 0.085);
+uniform vec3 sky_horizon : source_color = vec3(0.10, 0.08, 0.20);
+uniform vec3 sun_dir = vec3(0.0, 1.0, 0.0);
+uniform vec3 sun_colour : source_color = vec3(0.0, 0.0, 0.0);
+// Window frame colour in the mullion gaps.
+uniform vec3 frame_colour : source_color = vec3(0.10, 0.11, 0.12);
+
 varying vec3 world_pos;
 
 float hash13(vec3 p3) {
@@ -87,5 +104,60 @@ void fragment() {
 		on *= pick * gap;
 		lum *= mix(0.7, 1.15, hash13(vec3(cell.yx, 7.0)));
 	}
-	EMISSION = mix(white * lum, e, glow_saturation) * on * glow_energy;
+	vec3 glow = mix(white * lum, e, glow_saturation) * on * glow_energy;
+	if (interior_strength > 0.0 || glass_reflect > 0.0) {
+		vec3 nw = normalize((INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
+		vec3 view = normalize(world_pos - CAMERA_POSITION_WORLD);
+		bool along_z = abs(nw.x) > abs(nw.z);
+		vec3 tw = along_z ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+		float hh = along_z ? world_pos.z : world_pos.x;
+		float fres = 0.04 + 0.96 * pow(1.0 - clamp(dot(-view, nw), 0.0, 1.0), 5.0);
+		if (interior_strength > 0.0 && abs(nw.y) < 0.5) {
+			vec2 cs = cell_size_m.x > 0.0 ? cell_size_m : room_size_m;
+			vec2 c = vec2(hh, world_pos.y) / cs;
+			vec2 cell = floor(c);
+			vec2 p = fract(c) * cs;
+			// Ray into the room, in facade space: x along the wall, y up, z into the building.
+			vec3 d = vec3(dot(view, tw), view.y, max(-dot(view, nw), 0.05));
+			float tx = d.x > 0.0 ? (cs.x - p.x) / d.x : (d.x < 0.0 ? -p.x / d.x : 1e5);
+			float ty = d.y > 0.0 ? (cs.y - p.y) / d.y : (d.y < 0.0 ? -p.y / d.y : 1e5);
+			float tz = room_depth_m / d.z;
+			float th = min(tz, min(tx, ty));
+			float depth01 = clamp(d.z * th / room_depth_m, 0.0, 1.0);
+			float rh = hash13(vec3(cell, 5.0));
+			vec3 room = mix(vec3(0.58, 0.52, 0.43), vec3(0.44, 0.48, 0.55), rh);
+			float shade = 0.8;  // back wall
+			if (th == ty) {
+				shade = d.y > 0.0 ? 1.0 : 0.42;  // ceiling, floor
+			} else if (th == tx) {
+				shade = 0.62;  // side walls
+			} else {
+				// furniture band and a door on the back wall
+				vec2 hit = p + d.xy * th;
+				shade *= 1.0 - 0.35 * step(hit.y, cs.y * 0.34) * step(0.35, hash13(vec3(cell, floor(hit.x * 1.3))));
+			}
+			vec3 interior = room * shade * mix(1.0, 0.4, depth01);
+			// Blinds or a curtain close part of some windows (flat, on the glass plane).
+			float blind = hash13(vec3(cell.yx, 11.0));
+			float cover = step(0.62, blind) * step(1.0 - (blind - 0.62) * 2.2, fract(c).y);
+			interior = mix(interior, vec3(0.62, 0.60, 0.55) * (0.7 + 0.3 * rh), cover);
+			ALBEDO = mix(ALBEDO, interior * interior_day_light, interior_strength);
+			// A lit room glows with its own depth instead of the flat atlas cell.
+			glow = mix(glow, interior * white * on * glow_energy * 1.7, interior_strength);
+			if (cell_size_m.x > 0.0) {
+				float gapm = step(cell_mullion_m, p.x) * step(cell_mullion_m, p.y);
+				ALBEDO = mix(frame_colour, ALBEDO, gapm);
+			}
+		}
+		if (glass_reflect > 0.0) {
+			vec3 r = reflect(view, nw);
+			vec3 sky = mix(sky_horizon, sky_zenith, smoothstep(0.0, 0.65, r.y));
+			sky = mix(sky_horizon * 0.35, sky, smoothstep(-0.25, 0.02, r.y));  // below the horizon: the dim street
+			sky += sun_colour * pow(max(dot(r, normalize(sun_dir)), 0.0), 180.0) * 6.0;
+			float amount = mix(0.3, 1.0, fres) * glass_reflect;
+			ALBEDO *= 1.0 - 0.6 * clamp(amount, 0.0, 1.0);
+			glow = glow * (1.0 - 0.35 * clamp(amount, 0.0, 1.0)) + sky * amount;
+		}
+	}
+	EMISSION = glow;
 }

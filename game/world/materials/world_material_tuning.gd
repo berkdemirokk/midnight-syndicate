@@ -107,3 +107,7 @@ extends Resource
 @export_range(0.0, 1.0) var facade_grime: float = 0.2
 ## Far skyline card cut into this many tower silhouettes (0 = flat card).
 @export var skyline_towers: float = 46.0
+## Window panes: 1 = rooms behind the glass (interior mapping), 0 = the flat atlas look.
+@export_range(0.0, 1.0) var pane_interior_strength: float = 1.0
+## Sky reflection in the glass at night (TimeOfDay sets day and sunset).
+@export_range(0.0, 2.0) var pane_night_reflect: float = 0.18

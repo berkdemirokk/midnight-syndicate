@@ -43,6 +43,12 @@ uniform float sill_boost : hint_range(0.0, 2.0) = 0.6;
 // Darkening at the bottom of each storey band.
 uniform float grime : hint_range(0.0, 1.0) = 0.2;
 
+// Breaks the visible texture repeat: slow tone and warmth drift over 6-25 m, plus soot under the roofline and
+// a dark contact band where the wall meets the pavement (the Mobile renderer has no ambient occlusion).
+uniform float macro_variation : hint_range(0.0, 1.0) = 0.35;
+uniform float contact_dark : hint_range(0.0, 1.0) = 0.45;
+uniform float contact_height_m : hint_range(0.05, 3.0) = 0.9;
+
 varying vec3 w_pos;
 varying vec3 w_nrm;
 
@@ -51,6 +57,13 @@ float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
 	p3 += dot(p3, p3.yzx + 33.33);
 	return fract((p3.x + p3.y) * p3.z);
+}
+
+float vnoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash12(i), hash12(i + vec2(1.0, 0.0)), f.x), mix(hash12(i + vec2(0.0, 1.0)), hash12(i + vec2(1.0, 1.0)), f.x), f.y);
 }
 
 void vertex() {
@@ -104,7 +117,16 @@ void fragment() {
 	float grime_term = pow(1.0 - sy, 3.0) * grime;
 
 	float dark = clamp(1.0 - wall_darken - wet_darken * wet - streak_darken * streak - grime_term, 0.2, 1.0);
-	ALBEDO = albedo_tint * alb.rgb * dark;
+	vec3 col = albedo_tint * alb.rgb * dark;
+	// macro variation in metres along the wall and up it
+	vec2 mp = vec2(uv.x * tile_m, w_pos.y);
+	float m1 = vnoise(mp / 13.0) * 0.6 + vnoise(mp / 4.3 + 17.0) * 0.4;
+	col *= mix(1.0, 0.72 + 0.56 * m1, macro_variation);
+	col = mix(col, col * vec3(1.06, 1.0, 0.92), macro_variation * (vnoise(mp / 21.0 + 5.0) - 0.5));
+	// contact band at the pavement and grime creeping up from it
+	float contact = 1.0 - smoothstep(0.0, contact_height_m, w_pos.y + 0.6 * vnoise(vec2(uv.x * tile_m * 0.7, 3.0)));
+	col *= 1.0 - contact_dark * contact * contact;
+	ALBEDO = col;
 
 	rough *= (1.0 - wall_gloss) * (1.0 - wet_gloss * wet);
 	rough -= streak_gloss * streak;

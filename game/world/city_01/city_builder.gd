@@ -1659,6 +1659,8 @@ func _build_environment() -> void:
 ## Lamps and sign fills on or off, window, neon and road materials set for the hour (also restores night).
 func _apply_time_of_day() -> void:
 	var tod: TimeOfDay = TimeOfDay.preset(time_of_day)
+	var start_dir: Vector3 = get_tangent_at(0.0)
+	tod.sun_world = tod.sun_vector(rad_to_deg(atan2(start_dir.x, start_dir.z)))
 	tod.apply_lights(_lighting)
 	tod.apply_materials(self)
 	tod.apply_shadow_casters(_geo)
