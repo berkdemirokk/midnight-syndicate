@@ -8,26 +8,26 @@
   "name": "closeup_wheel",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 203,
-    "draw_calls_min": 203,
+    "draw_calls": 205,
+    "draw_calls_min": 205,
     "driver": "vulkan",
-    "fps": 517.612,
-    "frame_ms_avg": 1.932,
-    "frame_ms_p95": 2.292,
-    "frame_ms_p99": 2.345,
+    "fps": 499.95,
+    "frame_ms_avg": 2.0,
+    "frame_ms_p95": 2.024,
+    "frame_ms_p99": 2.067,
     "frames": 60,
-    "objects": 352,
+    "objects": 354,
     "os": "Windows",
-    "primitives": 263064,
+    "primitives": 380223,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 456.877,
+    "video_mem_mb": 454.025,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_74ca9b41-d2d-3/evidence/screens/garage/closeup_wheel.png",
+  "png": "C:/Users/berk/car race/evidence/screens/garage/closeup_wheel.png",
   "preset": "high",
   "scenario": "garage"
 }

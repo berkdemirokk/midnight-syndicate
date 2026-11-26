@@ -13,6 +13,8 @@ const TRACK_MASLAK: String = "res://world/istanbul_maslak/istanbul_maslak.tscn"
 const TRACK_BOGAZ: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 
 const EVENTS: Array[Dictionary] = [
+	# Showcase: the Ortakoy coast at night, open from the first start ("open": true) and easy enough for the starter car.
+	{"id": "ortakoy_night", "tod": "night", "laps": 2, "skills": [0.80, 0.78, 0.76], "level": 1, "mult": 1.5, "track": TRACK_BOGAZ, "place": "ortakoy", "open": true},
 	{"id": "wharf_sprint", "tod": "sunset", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true},
 	{"id": "neon_strip_circuit", "tod": "night", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true},
 	{"id": "midnight_time_trial", "tod": "night", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
@@ -25,6 +27,11 @@ const EVENTS: Array[Dictionary] = [
 	{"id": "maslak_night", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak"},
 	{"id": "bogaz_final", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz"},
 ]
+
+
+## True for showcase events that never lock and never gate the ladder.
+static func is_open(id: String) -> bool:
+	return bool(find(id).get("open", false))
 
 
 static func count() -> int:

@@ -36,7 +36,7 @@ func _wipe() -> void:
 
 
 func test_catalog_shape() -> void:
-	check(EventCatalog.count() == 10, "six Arden Bay events and four Istanbul events")
+	check(EventCatalog.count() == 11, "the Ortakoy showcase, six Arden Bay events and four Istanbul events")
 	for id: String in ["maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]:
 		var c: RaceConfig = EventCatalog.config_for(id)
 		check(c != null and ResourceLoader.exists(c.track_scene) and c.track_scene.contains("istanbul"), "%s races on an Istanbul track" % id)
@@ -55,7 +55,7 @@ func test_catalog_shape() -> void:
 			check(I18n.has_key(k), "missing text key " + k)
 		check(EventCatalog.reward_multiplier(id) >= 1.0, "multiplier for " + id)
 	check(EventCatalog.reward_multiplier("syndicate_final") > EventCatalog.reward_multiplier("wharf_sprint"), "rewards grow along the ladder")
-	check(EventCatalog.previous_id("wharf_sprint") == "", "first event has no previous")
+	check(EventCatalog.previous_id("ortakoy_night") == "" and EventCatalog.is_open("ortakoy_night"), "the showcase comes first and is always open")
 	check(EventCatalog.next_id("syndicate_final") == "maslak_sprint", "the Arden Bay final opens the Istanbul tour")
 	check(EventCatalog.next_id("bogaz_final") == "", "last event has no next")
 	check(EventCatalog.next_id("wharf_sprint") == "neon_strip_circuit", "ladder order")
@@ -122,12 +122,12 @@ func test_event_select_screen() -> void:
 	add(screen)
 	await frames(3)
 	check(screen.get_row_count() == EventCatalog.count(), "one row per event")
-	check(screen.get_selected_id() == "neon_strip_circuit", "opens on the first unfinished unlocked event")
+	check(screen.get_selected_id() == "ortakoy_night", "opens on the first unfinished unlocked event (the showcase)")
 	check(screen.is_start_enabled(), "start enabled on an unlocked event")
 	var params: Dictionary = screen.build_start_params()
 	var cfg: RaceConfig = params.get(RaceScene.CONFIG_PARAM) as RaceConfig
-	check(cfg != null and cfg.event_id == "neon_strip_circuit", "start params carry the RaceConfig")
-	screen.select(4)
+	check(cfg != null and cfg.event_id == "ortakoy_night" and cfg.track_scene.contains("istanbul_bogaz") and cfg.time_of_day == "night", "start params carry the RaceConfig")
+	screen.select(EventCatalog.index_of("harbour_run"))
 	check(screen.get_selected_id() == "harbour_run" and not screen.is_start_enabled(), "locked event disables start")
 	check(screen.build_start_params().is_empty(), "locked event gives no params")
 	# Turkish text renders without unknown keys.

@@ -11,23 +11,23 @@
     "draw_calls": 265,
     "draw_calls_min": 265,
     "driver": "vulkan",
-    "fps": 576.258,
-    "frame_ms_avg": 1.735,
-    "frame_ms_p95": 1.896,
-    "frame_ms_p99": 1.985,
+    "fps": 574.834,
+    "frame_ms_avg": 1.74,
+    "frame_ms_p95": 1.78,
+    "frame_ms_p99": 1.79,
     "frames": 60,
     "objects": 439,
     "os": "Windows",
-    "primitives": 235762,
+    "primitives": 342504,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 456.877,
+    "video_mem_mb": 454.025,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_74ca9b41-d2d-3/evidence/screens/garage/rims_tab.png",
+  "png": "C:/Users/berk/car race/evidence/screens/garage/rims_tab.png",
   "preset": "high",
   "scenario": "garage"
 }

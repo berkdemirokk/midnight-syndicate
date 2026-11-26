@@ -221,8 +221,10 @@ func best_time(event_id: String) -> float:
 ## The first event is always open; each later one opens with 1 star or more on the one before.
 ## Ids outside the ladder (the dev circuit) are always open.
 func is_event_unlocked(event_id: String) -> bool:
+	if EventCatalog.is_open(event_id):
+		return true
 	var prev: String = EventCatalog.previous_id(event_id)
-	return prev.is_empty() or event_stars(prev) >= 1
+	return prev.is_empty() or EventCatalog.is_open(prev) or event_stars(prev) >= 1  # a showcase event does not gate the ladder
 
 
 func total_stars() -> int:
