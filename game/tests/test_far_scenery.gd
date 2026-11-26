@@ -3,6 +3,8 @@ extends "res://tests/test_case.gd"
 ## and carries the moon uniforms.
 
 const MAX_DRAWS: int = 16
+## Cap kept at 22000. Measured night 15068 prims in 10 draws (ferry 2 surfaces), day 11640 in 6 draws.
+## cost() now counts one draw per ferry surface, so the draw count is not comparable with the old box ferry.
 const MAX_PRIMS: int = 22000
 
 

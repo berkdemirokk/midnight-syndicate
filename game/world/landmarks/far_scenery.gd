@@ -22,6 +22,7 @@ const FERRY_X: float = 470.0  ## ferry line, m, between the coast road and the f
 const FERRY_RUN: float = 1040.0  ## m of the out-and-back route, parallel to the shore
 const FERRY_SPEED: float = 5.5  ## m/s
 const SEED: int = 4417
+const FERRY_KIT: String = "res://assets/world/kits/bosphorus/ferry_lod0.glb"
 
 ## Light level: 1 at night, 0.6 at sunset, 0 by day. Lights, emission and reflections follow it.
 var _k: float = 0.0
@@ -65,8 +66,8 @@ func cost() -> Dictionary:
 	var draws: int = 0
 	var prims: int = 0
 	for n: Node in find_children("*", "", true, false):
-		if n is MeshInstance3D and (n as Node3D).is_visible_in_tree():
-			draws += 1
+		if n is MeshInstance3D and (n as Node3D).is_visible_in_tree() and (n as MeshInstance3D).mesh != null:
+			draws += (n as MeshInstance3D).mesh.get_surface_count()  # one draw call per surface
 			prims += _tris((n as MeshInstance3D).mesh)
 		elif n is MultiMeshInstance3D and (n as Node3D).is_visible_in_tree():
 			var mm: MultiMesh = (n as MultiMeshInstance3D).multimesh
@@ -254,26 +255,16 @@ func _build_ferry() -> void:
 	_ferry = Node3D.new()
 	_ferry.name = "Ferry"
 	add_child(_ferry)
-	var hull := SurfaceTool.new()
-	hull.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var white := SurfaceTool.new()
-	white.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var glass := SurfaceTool.new()
-	glass.begin(Mesh.PRIMITIVE_TRIANGLES)
-	_box(hull, Vector3(0.0, 2.5, 0.0), Vector3(7.5, 2.5, 29.0))
-	_box(white, Vector3(0.0, 6.5, -2.0), Vector3(7.0, 1.5, 26.0))
-	_box(white, Vector3(0.0, 10.0, -4.0), Vector3(6.0, 1.5, 18.0))
-	_box(white, Vector3(0.0, 13.5, -7.0), Vector3(4.0, 1.2, 6.0))
-	for deck_y: float in [6.6, 10.0]:
-		var side_x: float = 7.05 if deck_y < 8.0 else 6.05
-		for s: float in [-1.0, 1.0]:
-			var z: float = -24.0
-			while z < 16.0:
-				_box(glass, Vector3(s * side_x, deck_y, z), Vector3(0.1, 0.7, 1.1))
-				z += 3.2
-	_box(glass, Vector3(0.0, 13.5, -13.1), Vector3(3.0, 0.7, 0.1))
-	for z: int in range(-20, 11, 6):
-		_box(glass, Vector3(0.0, 11.6, float(z)), Vector3(0.3, 0.1, 0.3))
+	# The licensed Bosphorus ferry (assets_src/pipeline/prepare_ferry.py): surface 0 hull and superstructure with baked
+	# colour, surface 1 the windows, which glow warm at night and are dark glass by day.
+	var inst: Node = (load(FERRY_KIT) as PackedScene).instantiate()
+	var src: MeshInstance3D = inst.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	var mi := MeshInstance3D.new()
+	mi.name = "FerryHull"
+	mi.mesh = src.mesh
+	inst.free()
+	var hull_mat: StandardMaterial3D = _mat(Color.WHITE, 0.0, 0.6)
+	hull_mat.vertex_color_use_as_albedo = true
 	var win: StandardMaterial3D
 	if _lit:
 		win = _mat(Color(1.0, 0.75, 0.4), 0.0, 0.4)
@@ -282,11 +273,10 @@ func _build_ferry() -> void:
 		win.emission_energy_multiplier = 2.6 * _k
 	else:
 		win = _mat(Color(0.05, 0.08, 0.11), 0.4, 0.15)
-	_ferry.add_child(_mesh_node("FerryHull", hull.commit(), _mat(Color(0.07, 0.12, 0.2), 0.0, 0.7)))
-	_ferry.add_child(_mesh_node("FerryDecks", white.commit(), _mat(Color(0.88, 0.88, 0.86), 0.0, 0.6)))
-	_ferry.add_child(_mesh_node("FerryWindows", glass.commit(), win))
+	mi.set_surface_override_material(0, hull_mat)
+	mi.set_surface_override_material(1, win)
+	_ferry.add_child(mi)
 	_process(0.0)
-
 
 # --- reflections -----------------------------------------------------------------------------------
 

@@ -8,10 +8,8 @@ extends Node3D
 ## or light pools.
 
 const KIT: String = "res://assets/world/kits/event/"
-const CROWD_SHADER: Shader = preload("res://shaders/crowd_card.gdshader")
 const FLAG_SHADER: Shader = preload("res://shaders/flag_wave.gdshader")
 const BANNER_TEX: String = KIT + "banner_atlas.png"
-const CROWD_TEX: String = KIT + "crowd_atlas.png"
 const FLAG_TEX: String = KIT + "flag_tr.png"
 const ATLAS_TEX: String = KIT + "awning_atlas.png"
 const GLOW_TEX: String = KIT + "awning_glow.png"
@@ -22,19 +20,24 @@ const WORLD_MASK: int = 1  ## physics layer 1: buildings, road and sidewalk coll
 const GRADE_TOL_M: float = 1.0  ## ground under a piece must be this close to the racing line's height
 const ROOF_CHECK_M: float = 9.0  ## an overpass or tunnel roof above the piece disqualifies the spot
 const BODY_RADIUS_M: float = 0.3  ## clearance around a barrier, flag or terrace spot
-const CROWD_BODY_M: float = 0.6  ## a spectator card is 0.9 m wide; a facade inside this radius of the card is a spot to skip
+const CROWD_BODY_M: float = 0.6  ## a spectator is about 0.5 m wide; a facade inside this radius of the figure is a spot to skip
 const BARRIER_STEP_M: float = 4.0  ## one barrier segment per 4 m, both sides of the road
 const BARRIER_LAT_M: float = 0.9  ## barrier centre beyond the road half width; its road face stands about 0.6 m out
 const CROWD_LAT_M: float = 2.4  ## spectator centre beyond the road half width, behind the barriers
-const CROWD_GAP_M: float = 0.85
-const CROWD_ENABLED: bool = false  ## the flat spectator cards read as toy figures up close: off until real figures exist
+const CROWD_GAP_M: float = 0.85  ## along the road, +- 0.25 m random per spectator so a group does not line up
+const CROWD_ENABLED: bool = true  ## licensed 3D figures (assets/world/kits/crowd), see _build_figures
 const CROWD_GROUP_MIN: int = 5
 const CROWD_GROUP_MAX: int = 12
 const CROWD_STEP_EARLY_M: float = 45.0  ## groups every 45 m before EARLY_END_M (the start line), then every 120 m
 const CROWD_STEP_M: float = 120.0
 const EARLY_END_M: float = 350.0
-const CROWD_H_M: float = 1.8  ## card height; the card stands on the ground by its bottom edge
-const CROWD_W_M: float = 0.9
+## Figures: the crowd kit has FIGURE_IDS.size() people; a chunk uses PALETTE_SIZE of them (draw calls: 2 LODs each).
+const FIGURE_IDS: PackedStringArray = ["hoodie", "summer_dress", "shorts_cap", "denim_jacket", "flannel", "puffer", "backpack", "tracksuit"]
+const PALETTE_SIZE: int = 3
+const CROWD_DIR: String = "res://assets/world/kits/crowd/"
+const CROWD_YAW_RAD: float = 0.6109  ## 35 degrees either side of facing the road
+const CROWD_SCALE_MIN: float = 0.94
+const CROWD_SCALE_MAX: float = 1.06
 const FLAG_STEP_M: float = 36.0
 const FLAG_LAT_M: float = 4.2
 const CAFE_STEP_M: float = 170.0
@@ -48,7 +51,8 @@ const CABLE_Y_M: float = 2.2  ## cable height at the awning ends, above the grou
 const CABLE_X_M: float = 1.95  ## cable ends, along the awning
 const CABLE_Z_M: float = 1.2  ## cable run in front of the awning lip, towards the road
 const RANGE_BARRIER_M: float = 260.0
-const RANGE_CROWD_M: float = 200.0
+const CROWD_LOD0_M: float = 45.0  ## full figures within 45 m, the 300-triangle LOD1 from 45 to 160 m, nothing beyond
+const CROWD_LOD1_M: float = 160.0
 const RANGE_FLAG_M: float = 300.0
 const RANGE_CAFE_M: float = 220.0
 
@@ -119,9 +123,10 @@ func _place_crowds() -> void:
 		var side: float = 1.0 if _rng.randf() < 0.5 else -1.0
 		var n: int = _rng.randi_range(CROWD_GROUP_MIN, CROWD_GROUP_MAX)
 		for i: int in n:
-			var along: float = s + (float(i) - float(n) * 0.5) * CROWD_GAP_M + _rng.randf_range(-0.15, 0.15)
-			var extra: Dictionary = {"cell": _rng.randi_range(0, 15), "hue": _rng.randf_range(-0.06, 0.06),
-				"phase": _rng.randf()}
+			var along: float = s + (float(i) - float(n) * 0.5) * CROWD_GAP_M + _rng.randf_range(-0.25, 0.25)
+			var chunk: int = int(fposmod(along, _track.length) / CHUNK_M)
+			var extra: Dictionary = {"fig": (chunk * PALETTE_SIZE + _rng.randi_range(0, PALETTE_SIZE - 1)) % FIGURE_IDS.size(),
+				"yaw": _rng.randf_range(-CROWD_YAW_RAD, CROWD_YAW_RAD), "scale": _rng.randf_range(CROWD_SCALE_MIN, CROWD_SCALE_MAX)}
 			_put_any("crowd", along, side, [CROWD_LAT_M, CROWD_LAT_M + 0.5, CROWD_LAT_M + 1.0, CROWD_LAT_M - 0.4, CROWD_LAT_M + 1.6], extra)
 		var step: float = CROWD_STEP_EARLY_M if s < EARLY_END_M else CROWD_STEP_M
 		s += step * _rng.randf_range(0.8, 1.2)
@@ -248,11 +253,7 @@ func _build_group(kind: String, chunk: int, items: Array, inv: Transform3D) -> v
 			xf.append(Transform3D(_facing(p.face), p.pos))
 		_add(tag, _kit_mesh("event_%s.glb" % kind, [_banner_material()]), xf, RANGE_BARRIER_M)
 	elif kind == "crowd":
-		var custom: Array[Color] = []
-		for p: Dictionary in items:
-			xf.append(Transform3D(_facing(p.face), p.pos + Vector3.UP * (CROWD_H_M * 0.5)))
-			custom.append(Color(float(p.cell), float(p.hue), float(p.phase), 0.0))
-		_add(tag, _quad_mesh(CROWD_W_M, CROWD_H_M, _crowd_material()), xf, RANGE_CROWD_M, custom)
+		_build_figures(chunk, items)
 	elif kind == "flag":
 		for p: Dictionary in items:
 			xf.append(Transform3D(_facing(p.face), p.pos))
@@ -306,7 +307,8 @@ func _cable_run(frame: Transform3D) -> Array[Vector3]:
 
 ## One MultiMeshInstance3D per kind and chunk. Each entry in xf is a piece's transform in world space; the node is
 ## a child of this node, so the transform goes through inv first.
-func _add(node_name: String, mesh: Mesh, xf: Array, range_m: float, custom: Array[Color] = []) -> void:
+func _add(node_name: String, mesh: Mesh, xf: Array, range_m: float, custom: Array[Color] = [], begin_m: float = 0.0,
+		skip_mirror: bool = false) -> void:
 	if xf.is_empty():
 		return
 	var inv: Transform3D = global_transform.affine_inverse()
@@ -322,9 +324,11 @@ func _add(node_name: String, mesh: Mesh, xf: Array, range_m: float, custom: Arra
 	var mmi := MultiMeshInstance3D.new()
 	mmi.name = node_name
 	mmi.multimesh = mm
-	mmi.visibility_range_begin = 0.0
+	mmi.visibility_range_begin = begin_m
 	mmi.visibility_range_end = range_m
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if skip_mirror:
+		mmi.layers = (mmi.layers & ~1) | (1 << 4)  # not drawn by the wet-road mirror (layer 1 is the mirror's pass)
 	add_child(mmi)
 
 
@@ -346,7 +350,12 @@ func _add_lines(node_name: String, verts: PackedVector3Array) -> void:
 
 ## Mesh of a kit GLB (its first MeshInstance3D), with the given materials set per surface.
 static func _kit_mesh(file: String, materials: Array) -> Mesh:
-	var inst: Node = (load(KIT + file) as PackedScene).instantiate()
+	return _glb_mesh(KIT + file, materials)
+
+
+## Mesh of a GLB at path (its first MeshInstance3D), with the given materials set per surface.
+static func _glb_mesh(path: String, materials: Array) -> Mesh:
+	var inst: Node = (load(path) as PackedScene).instantiate()
 	var mi: MeshInstance3D = inst.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
 	var mesh: ArrayMesh = (mi.mesh as ArrayMesh).duplicate() as ArrayMesh
 	inst.free()
@@ -399,11 +408,33 @@ func _banner_material() -> StandardMaterial3D:
 	return m
 
 
-func _crowd_material() -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = CROWD_SHADER
-	m.set_shader_parameter("crowd_atlas", load(CROWD_TEX))
-	m.set_shader_parameter("tone", TOD[_tod].tone)
+## One MultiMeshInstance3D per figure, chunk and LOD. A figure stands on its feet (origin at Y = 0), its front (-Z)
+## turned to the road, with a random yaw and scale. The LODs hard-switch at CROWD_LOD0_M and CROWD_LOD1_M.
+func _build_figures(chunk: int, items: Array) -> void:
+	var by_fig: Dictionary = {}  # figure index -> Array of placements
+	for p: Dictionary in items:
+		var f: int = int(p.fig)
+		if not by_fig.has(f):
+			by_fig[f] = []
+		by_fig[f].append(p)
+	var no_custom: Array[Color] = []
+	for f: int in by_fig:
+		var xf: Array[Transform3D] = []
+		for p: Dictionary in by_fig[f]:
+			var b: Basis = Basis.looking_at(p.face, Vector3.UP).rotated(Vector3.UP, float(p.yaw))
+			xf.append(Transform3D(b.scaled(Vector3.ONE * float(p.scale)), p.pos))
+		var stem: String = "%scrowd_%s" % [CROWD_DIR, FIGURE_IDS[f]]
+		var tag: String = "crowd_c%d_%s" % [chunk, FIGURE_IDS[f]]
+		_add(tag + "_lod0", _glb_mesh("%s_lod0.glb" % stem, [_figure_material()]), xf, CROWD_LOD0_M, no_custom, 0.0, true)
+		_add(tag + "_lod1", _glb_mesh("%s_lod1.glb" % stem, [_figure_material()]), xf, CROWD_LOD1_M, no_custom, CROWD_LOD0_M, true)
+
+
+func _figure_material() -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.vertex_color_use_as_albedo = true  # the baked albedo x AO of the figure
+	var tone: Vector3 = TOD[_tod].tone
+	m.albedo_color = Color(tone.x, tone.y, tone.z)
+	m.roughness = 0.9
 	return m
 
 

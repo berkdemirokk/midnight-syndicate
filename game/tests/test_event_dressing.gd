@@ -1,6 +1,7 @@
 extends "res://tests/test_case.gd"
 ## Event dressing: kit files and surface counts, shader contract, placement off the race corridor on the Bosphorus
-## track, day versus night pieces, and the per-chunk node layout the draw budget depends on.
+## track, day versus night pieces, the per-chunk node layout the draw budget depends on, and the crowd switch and
+## per-chunk figure draw calls (at most 2 LODs per figure in a chunk, PALETTE_SIZE figures per chunk).
 
 const TRACK: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 const KIT: String = "res://assets/world/kits/event/"
@@ -42,10 +43,8 @@ func test_shader_contract() -> void:
 	check("UV.x" in flag, "flag must be pinned at the pole through UV.x")
 	check("VERTEX.z" in flag and "TIME" in flag, "flag wave must be a vertex sine in TIME")
 	check("blend_" not in flag and "ALPHA" not in flag, "flag must be opaque, not blended")
-	var crowd: String = FileAccess.get_file_as_string("res://shaders/crowd_card.gdshader")
-	check("INSTANCE_CUSTOM" in crowd, "crowd cards need per-instance custom data")
-	check("discard" in crowd, "crowd cards must alpha-test")
-	check("blend_" not in crowd and "ALPHA" not in crowd, "crowd cards must not blend")
+	check(EventDressing.CROWD_ENABLED, "crowd must be on: the licensed figures replace the flat cards")
+	check(EventDressing.CROWD_LOD0_M < EventDressing.CROWD_LOD1_M, "crowd LOD0 must end before LOD1")
 
 
 func test_placement_off_corridor_on_bogaz() -> void:
@@ -110,4 +109,25 @@ func test_night_per_chunk_nodes_have_ranges() -> void:
 			check(gi.visibility_range_end > 0.0, "%s has no visibility range" % n.name)
 			check(gi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF, "%s casts shadows" % n.name)
 	metric("event_nodes_night", nodes)
+	await cleanup([track])
+
+
+func test_crowd_nodes_per_chunk_are_bounded() -> void:
+	var track: Track = (load(TRACK) as PackedScene).instantiate() as Track
+	add(track)
+	await frames(2)
+	var d := EventDressing.new()
+	track.add_child(d)
+	d.setup(track, "night")
+	await frames(3)
+	var per_chunk: Dictionary = {}
+	for n: Node in d.get_children():
+		if String(n.name).begins_with("crowd_"):
+			var key: String = String(n.name).get_slice("_", 1)  # crowd_c<chunk>_<figure>_lod<n>
+			per_chunk[key] = int(per_chunk.get(key, 0)) + 1
+	var worst: int = 0
+	for key: String in per_chunk:
+		worst = maxi(worst, int(per_chunk[key]))
+	metric("crowd_nodes_per_chunk_max", worst)
+	check(worst <= 2 * EventDressing.PALETTE_SIZE, "crowd nodes in one chunk %d > %d" % [worst, 2 * EventDressing.PALETTE_SIZE])
 	await cleanup([track])
