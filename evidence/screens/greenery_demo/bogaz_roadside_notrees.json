@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.035,
+  "name": "bogaz_roadside_notrees",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 135,
+    "draw_calls_min": 135,
+    "driver": "vulkan",
+    "fps": 407.864,
+    "frame_ms_avg": 2.452,
+    "frame_ms_p95": 3.776,
+    "frame_ms_p99": 3.959,
+    "frames": 60,
+    "objects": 12594,
+    "os": "Windows",
+    "primitives": 119578,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 594.123,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-1/evidence/screens/greenery_demo/bogaz_roadside_notrees.png",
+  "preset": "high",
+  "scenario": "greenery_demo"
+}

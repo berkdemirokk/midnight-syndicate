@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.034,
+  "name": "bogaz_roadside_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 115,
+    "draw_calls_min": 115,
+    "driver": "vulkan",
+    "fps": 214.592,
+    "frame_ms_avg": 4.66,
+    "frame_ms_p95": 6.636,
+    "frame_ms_p99": 7.795,
+    "frames": 60,
+    "objects": 12574,
+    "os": "Windows",
+    "primitives": 113911,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 526.99,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-1/evidence/screens/greenery_demo/bogaz_roadside_low.png",
+  "preset": "low",
+  "scenario": "greenery_demo"
+}

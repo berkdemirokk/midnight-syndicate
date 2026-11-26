@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.022,
+  "name": "city_roadside",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 140,
+    "draw_calls_min": 140,
+    "driver": "vulkan",
+    "fps": 253.389,
+    "frame_ms_avg": 3.947,
+    "frame_ms_p95": 6.466,
+    "frame_ms_p99": 7.733,
+    "frames": 60,
+    "objects": 12509,
+    "os": "Windows",
+    "primitives": 139821,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 572.497,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-1/evidence/screens/greenery_demo/city_roadside.png",
+  "preset": "high",
+  "scenario": "greenery_demo"
+}

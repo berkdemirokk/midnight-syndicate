@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.035,
+  "name": "city_wide_notrees_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 89,
+    "draw_calls_min": 87,
+    "driver": "vulkan",
+    "fps": 220.86,
+    "frame_ms_avg": 4.528,
+    "frame_ms_p95": 6.278,
+    "frame_ms_p99": 8.127,
+    "frames": 60,
+    "objects": 12458,
+    "os": "Windows",
+    "primitives": 69998,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 492.667,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-1/evidence/screens/greenery_demo/city_wide_notrees_low.png",
+  "preset": "low",
+  "scenario": "greenery_demo"
+}
