@@ -27,6 +27,12 @@ on:
         description: "Upload to App Store Connect / TestFlight"
         type: boolean
         default: false
+  # The default branch (main) has no workflows yet, so manual runs cannot start; a pushed tag runs the job from
+  # the tagged commit: ios-check-N builds only, ios-release-N also uploads to TestFlight.
+  push:
+    tags:
+      - "ios-check-*"
+      - "ios-release-*"
 
 permissions:
   contents: read
@@ -163,7 +169,7 @@ jobs:
           TEAM: ${{ secrets.APPLE_TEAM_ID }}
           KID: ${{ secrets.ASC_KEY_ID }}
           ISS: ${{ secrets.ASC_ISSUER_ID }}
-          UPLOAD: ${{ inputs.upload }}
+          UPLOAD: ${{ inputs.upload || startsWith(github.ref_name, 'ios-release-') }}
         run: |
           set -euo pipefail
           DEST=export
@@ -190,7 +196,7 @@ jobs:
           ls -la build/ios/export || true
 
       - name: Upload IPA artifact (check runs)
-        if: ${{ !inputs.upload }}
+        if: ${{ !(inputs.upload || startsWith(github.ref_name, 'ios-release-')) }}
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
