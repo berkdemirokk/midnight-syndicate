@@ -11626,6 +11626,50 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Night picture of the same four market-street buildings (lit stalls and windows), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/market_row_01_night.png."
+    },
+    {
+      "id": "photo_front_tower_row_01",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/tower_row_01.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "tower_row_01.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 733115,
+      "sha256": "d8638c26a636a21ede075fcb6b0fdafb1984c32d4a3e37ef1260d3d77c57484a",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Straight-on picture of four eighteen-storey modern towers with street-level lobbies, albedo of the photo-textured towers on the city tracks. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/tower_row_01.png."
+    },
+    {
+      "id": "photo_front_tower_row_01_night",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/tower_row_01_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "tower_row_01_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 559804,
+      "sha256": "c52de1a51b4aac643a16380221be1879bb1089a65d706f76f70ef7a6e6bedc35",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night picture of the same four towers (irregularly lit offices and lobbies), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/tower_row_01_night.png."
     }
   ]
 }
