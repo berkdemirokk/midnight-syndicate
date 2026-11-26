@@ -1,5 +1,5 @@
 {
-  "commit": "8041f78",
+  "commit": "c81a93b",
   "engine": "Godot 4.7.2 stable, Mobile renderer, GDScript",
   "run_command": "Godot_v4.7.2-stable_win64_console.exe --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]",
   "captures": {
@@ -9,10 +9,10 @@
     "gameplay": "evidence/gameplay.png"
   },
   "test_log": "evidence/test.log",
-  "visual_review": "Lead review of real engine captures (not the concept image). Since the last set (overnight, four Haiku builds, each with an independent Haiku review and one fix pass, then merged and looked at by the lead): the land-side kit houses on the Ortakoy coast are replaced by licensed CC BY 4.0 shop houses with Turkish signs (Kahve, Kitapci, Berber, Cicekci, Eczane, Bakkal) and lit glass at night; licensed trees (plane, cypress, magnolia, street tree); 3D spectators behind the barriers and a licensed ferry; mosque pass 3 (traceried windows, cornice, portico, quay balustrade); rain beads on wet paint. The lead rebuilt the shop LOD1 (loose parts dropped instead of a collapse) because the first LOD1 showed stretched triangles at range. None of the four independent reviews approved its part as final. Still weak, not accepted as final: the shop houses are generic two-storey high-street fronts, lower than the old row and not Ottoman in style; their street side is in shade by day and reads flat; spectators are stylised faceless figures and stand in an idle pose (a small warm fill keeps them readable at night); plane trees are rare; sea-side wall and kerb plain; mansions appear on few plots. Gate score by the lead about 81/100, target 90 not reached. The owner decides acceptance.",
+  "visual_review": "Lead review of real engine captures (not the concept image). Method change this night: straight-on pictures generated with ChatGPT image generation (text prompts, owner's account, no reference image, no text or logos) are mapped on simple geometry with the night picture as glow map. In the game now: Istanbul row houses with photo fronts on the whole Bosphorus lap, photo rows and towers on Maslak and Neon Wharf, mosque hall walls, far shore, street trees, sponsor boards, spectators and the garage. The street, the mosque at night and the city tracks at night read far closer to the owner's target than before. Still weak: the cars are licensed stylised models (real makes are not allowed), fronts are flat pictures with no relief up close, day light has no global illumination, side walls of rows are plain, sea wall and kerb plain. Gate score by the lead about 87/100, target 90 not reached. The owner decides acceptance.",
   "device": "Desktop PC, Windows 11, NVIDIA GeForce RTX 5060 Ti 8 GB, 1920x1080, High preset. Not an iPhone measurement.",
-  "fps": 368.3,
-  "frame_time_ms": 2.716,
+  "fps": 266.0,
+  "frame_time_ms": 3.759,
   "ios_test": "not_run",
-  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 368 fps average, 2.72 ms avg, 3.29 ms p95, 422 draw calls, 409588 primitives. Day gameplay 456 fps / 2.19 ms, dusk 398 fps / 2.52 ms. Peak over all 15 benchmark shots: 422 draws, 421256 primitives (budget 500 / 450000). Uncapped desktop numbers over 60 frames; they say nothing about iPhone. The gameplay.png evidence file is the dusk gameplay shot."
+  "perf_note": "Night gameplay shot (bench_night_gameplay.json): 266 fps, 3.76 ms avg, 4.81 ms p95, 399 draw calls, 348974 primitives. Bosphorus peak over 15 shots: 399 draws, 372046 primitives. Maslak night 410 / 273002, Neon Wharf night 495 / 334305 (budget 500 / 450000). Uncapped desktop numbers, RTX 5060 Ti; they say nothing about iPhone."
 }

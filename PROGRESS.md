@@ -138,6 +138,23 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
   (secrets missing), iPhone test, signed Windows exe. No push since c191d50; main untouched.
 - Commits: e76c935, 4a77537, 64a14bb, 2159371, 60cab60, bdf3c11, 9630600, 4e20f33, 286467f, 8041f78 and the evidence commit after it.
 
+## Session 6 — night of 2026-11-26 to 27 (photo-texture pipeline)
+- Method change that finally moved the look: straight-on pictures made with ChatGPT image generation (owner's Plus
+  account, text prompts only, no reference image, no text or logos) are mapped on very simple geometry, and the night
+  picture of the same thing is the glow map. Notes for sessions: `docs/art/PHOTO_TEXTURE_PIPELINE.md`. Records:
+  `ASSET_MANIFEST.json` source `generated:ai`, sources kept in `assets_src/ai_generated/chatgpt/`.
+- Lead: `game/world/street_fronts/photo_fronts.gd` + `photo_facade.gdshader`. Photo rows replace the first-row kit
+  buildings on all three tracks: Bosphorus (two Istanbul row-house sets, 157 rows / 557 houses, both sides, whole lap),
+  Maslak and Neon Wharf (modern, neon-street, market and tower sets). One merged mesh a row, about 20 triangles a house.
+  Mosque hall walls as photo quads with a floodlit night glow map (`landmarks.gd`).
+- Four parallel Haiku sessions in their own worktrees, merged by the lead: garage as a photo-textured workshop, far shore
+  as a photo band, street trees as photo cards with lit night crowns, printed sponsor boards and photo spectator cards.
+- Disk: 28 old worktrees removed with the owner's yes (45 GB), pip and stale temp caches purged.
+- Evidence and numbers: see `evidence/evidence.json` and `evidence/PROGRESS.md` (final check of this session).
+- Not done: cars are still the licensed stylised models (no real makes allowed), day lighting has no GI, no iPhone test,
+  no iOS build (secrets missing), no push since c191d50, main untouched. The owner's target pictures are AI concepts with
+  real-brand cars; the game is closer to them but is not that image.
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,

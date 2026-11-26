@@ -23,8 +23,10 @@ First milestone: ORTAKOY — BOSPHORUS RACE (track istanbul_bogaz; benchmark sce
 - [x] Land-side street: licensed shop houses with Turkish signs, lit at night (generic style, see open items)
 - [x] Trees: licensed plane, cypress, magnolia, street tree
 - [x] Spectators as 3D figures, licensed ferry, rain beads on paint, mosque pass 3
-- [ ] Istanbul-style upper floors and roofs for the shop row (now two-storey generic fronts, flat in day shade)
-- [ ] Sea-side wall and kerb, bridge day material, posed spectators, more plane trees
+- [x] Photo-texture pipeline (generated straight-on pictures on simple geometry, night picture as glow map)
+- [x] Istanbul row houses with photo fronts on the whole Bosphorus lap; photo rows and towers on Maslak and Neon Wharf
+- [x] Mosque photo walls, far shore photo band, photo trees, printed sponsor boards, photo spectators, photo garage
+- [ ] Sea-side wall and kerb, bridge day material, car reflections of the new street, day GI
 - [ ] Gate: lead score about 81/100, target 90 not reached; owner review pending (rescue gate G6)
 
 ## P2 — more content (only after the Ortakoy scene passes its gate)
