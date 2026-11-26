@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.0,
+  "name": "bogaz_day_crowd",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 86,
+    "draw_calls_min": 86,
+    "driver": "vulkan",
+    "fps": 361.283,
+    "frame_ms_avg": 2.768,
+    "frame_ms_p95": 4.146,
+    "frame_ms_p99": 4.581,
+    "frames": 60,
+    "objects": 17084,
+    "os": "Windows",
+    "primitives": 58750,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 685.322,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/focused-napier-84a1e0/evidence/screens/dressing_demo/bogaz_day_crowd.png",
+  "preset": "high",
+  "scenario": "dressing_demo"
+}

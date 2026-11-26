@@ -1,15 +1,23 @@
 class_name EventDressing
 extends Node3D
-## Race-event dressing outside the race corridor on the coast road: concrete race barriers with banners on both
-## sides, spectators behind them, flags on poles, and land-side cafe terraces (striped awning, warm bulbs on a
-## sagging cable, a light pool). setup(track, time_of_day_id) queues the placement; it runs on the next physics tick,
+## Race-event dressing outside the race corridor on the coast road: concrete race barriers with printed sponsor boards on
+## their land-side faces, spectators behind them, flags on poles, and land-side cafe terraces (striped awning, warm bulbs
+## on a sagging cable, a light pool). setup(track, time_of_day_id) queues the placement; it runs on the next physics tick,
 ## because the ray and shape checks need the physics space. Per 240 m chunk every kind is one MultiMeshInstance3D
 ## with a visibility range (hard pops, as greenery.gd); each cable is one MeshInstance3D. Day builds no bulbs, cables
-## or light pools.
+## or light pools. Spectators are photo cards (crowd_card.gdshader), one MultiMesh per chunk.
 
 const KIT: String = "res://assets/world/kits/event/"
+const PHOTO_KIT: String = "res://assets/world/kits/event_photo/"
 const FLAG_SHADER: Shader = preload("res://shaders/flag_wave.gdshader")
-const BANNER_TEX: String = KIT + "banner_atlas.png"
+const BOARD_SHADER: Shader = preload("res://shaders/board_sponsor.gdshader")
+const CARD_SHADER: Shader = preload("res://shaders/crowd_card.gdshader")
+const BOARD_ATLAS: String = PHOTO_KIT + "sponsor_boards_atlas.jpg"
+const CARDS_ATLAS: String = PHOTO_KIT + "crowd_cards_atlas.png"
+const BOARD_COUNT: int = 4  ## sponsor boards in the atlas, four per 4 m barrier segment
+const CARD_CELLS: int = 11  ## spectators in the atlas front row; the back row is CARD_CELLS more cells (see the shader)
+const CARD_H_M: float = 1.75  ## a card is one cell: 256 x 512 px, 1.75 m tall, feet on the ground
+const CARD_W_M: float = 0.875
 const FLAG_TEX: String = KIT + "flag_tr.png"
 const ATLAS_TEX: String = KIT + "awning_atlas.png"
 const GLOW_TEX: String = KIT + "awning_glow.png"
@@ -31,11 +39,11 @@ const CROWD_GROUP_MAX: int = 12
 const CROWD_STEP_EARLY_M: float = 45.0  ## groups every 45 m before EARLY_END_M (the start line), then every 120 m
 const CROWD_STEP_M: float = 120.0
 const EARLY_END_M: float = 350.0
-## Figures: the crowd kit has FIGURE_IDS.size() people; a chunk uses PALETTE_SIZE of them (draw calls: 2 LODs each).
+## The retired 3D figures (assets/world/kits/crowd, 8 low-poly GLBs, 2 LODs each). No longer placed: the photo cards
+## replaced them. Kept because test_crowd.gd still checks their budget; remove with those tests.
 const FIGURE_IDS: PackedStringArray = ["hoodie", "summer_dress", "shorts_cap", "denim_jacket", "flannel", "puffer", "backpack", "tracksuit"]
 const PALETTE_SIZE: int = 3
 const CROWD_DIR: String = "res://assets/world/kits/crowd/"
-const FIGURE_SHADER: Shader = preload("res://shaders/crowd_figure.gdshader")
 const CROWD_YAW_RAD: float = 0.6109  ## 35 degrees either side of facing the road
 const CROWD_SCALE_MIN: float = 0.94
 const CROWD_SCALE_MAX: float = 1.06
@@ -52,8 +60,8 @@ const CABLE_Y_M: float = 2.2  ## cable height at the awning ends, above the grou
 const CABLE_X_M: float = 1.95  ## cable ends, along the awning
 const CABLE_Z_M: float = 1.2  ## cable run in front of the awning lip, towards the road
 const RANGE_BARRIER_M: float = 260.0
-const CROWD_LOD0_M: float = 45.0  ## full figures within 45 m, the 300-triangle LOD1 from 45 to 160 m, nothing beyond
-const CROWD_LOD1_M: float = 160.0
+const CROWD_LOD0_M: float = 45.0  ## retired with the 3D figures (their LOD0 range); test_crowd keeps the ordering
+const CROWD_LOD1_M: float = 160.0  ## photo cards are drawn out to here, then nothing
 const RANGE_FLAG_M: float = 300.0
 const RANGE_CAFE_M: float = 220.0
 
@@ -112,7 +120,7 @@ func _place_barriers() -> void:
 	var s: float = 0.0
 	while s < _track.length:
 		for side: float in [-1.0, 1.0]:
-			_put_any("barrier_%d" % _rng.randi_range(0, 2), s, side, [BARRIER_LAT_M], {})
+			_put_any("barrier_%d" % _rng.randi_range(0, 2), s, side, [BARRIER_LAT_M], {"board": _rng.randi_range(0, BOARD_COUNT - 1)})
 		s += BARRIER_STEP_M
 
 
@@ -125,8 +133,7 @@ func _place_crowds() -> void:
 		var n: int = _rng.randi_range(CROWD_GROUP_MIN, CROWD_GROUP_MAX)
 		for i: int in n:
 			var along: float = s + (float(i) - float(n) * 0.5) * CROWD_GAP_M + _rng.randf_range(-0.25, 0.25)
-			var chunk: int = int(fposmod(along, _track.length) / CHUNK_M)
-			var extra: Dictionary = {"fig": (chunk * PALETTE_SIZE + _rng.randi_range(0, PALETTE_SIZE - 1)) % FIGURE_IDS.size(),
+			var extra: Dictionary = {"fig": _rng.randi_range(0, CARD_CELLS - 1),
 				"yaw": _rng.randf_range(-CROWD_YAW_RAD, CROWD_YAW_RAD), "scale": _rng.randf_range(CROWD_SCALE_MIN, CROWD_SCALE_MAX)}
 			_put_any("crowd", along, side, [CROWD_LAT_M, CROWD_LAT_M + 0.5, CROWD_LAT_M + 1.0, CROWD_LAT_M - 0.4, CROWD_LAT_M + 1.6], extra)
 		var step: float = CROWD_STEP_EARLY_M if s < EARLY_END_M else CROWD_STEP_M
@@ -250,11 +257,13 @@ func _build_group(kind: String, chunk: int, items: Array, inv: Transform3D) -> v
 	var xf: Array[Transform3D] = []
 	var tag: String = "%s_c%d" % [kind, chunk]
 	if kind.begins_with("barrier"):
+		var boards: Array[Color] = []
 		for p: Dictionary in items:
 			xf.append(Transform3D(_facing(p.face), p.pos))
-		_add(tag, _kit_mesh("event_%s.glb" % kind, [_banner_material()]), xf, RANGE_BARRIER_M)
+			boards.append(Color(float(p.board) / float(BOARD_COUNT), 0.0, 0.0, 1.0))
+		_add(tag, _kit_mesh("event_%s.glb" % kind, [_board_material()]), xf, RANGE_BARRIER_M, boards)
 	elif kind == "crowd":
-		_build_figures(chunk, items)
+		_build_cards(chunk, items)
 	elif kind == "flag":
 		for p: Dictionary in items:
 			xf.append(Transform3D(_facing(p.face), p.pos))
@@ -400,42 +409,35 @@ func _bulb_sphere() -> Mesh:
 	return s
 
 
-func _banner_material() -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_texture = load(BANNER_TEX) as Texture2D
-	m.roughness = 0.4
-	m.cull_mode = BaseMaterial3D.CULL_DISABLED  # kit winding is not reliable: two-sided, lit from the front
-	m.metallic_specular = 0.6
+## Four printed sponsor boards per barrier segment (board_sponsor.gdshader). Two-sided: kit winding is not reliable.
+func _board_material() -> ShaderMaterial:
+	var m := ShaderMaterial.new()
+	m.shader = BOARD_SHADER
+	m.set_shader_parameter("boards", load(BOARD_ATLAS))
 	return m
 
 
-## One MultiMeshInstance3D per figure, chunk and LOD. A figure stands on its feet (origin at Y = 0), its front (-Z)
-## turned to the road, with a random yaw and scale. The LODs hard-switch at CROWD_LOD0_M and CROWD_LOD1_M.
-func _build_figures(chunk: int, items: Array) -> void:
-	var by_fig: Dictionary = {}  # figure index -> Array of placements
-	for p: Dictionary in items:
-		var f: int = int(p.fig)
-		if not by_fig.has(f):
-			by_fig[f] = []
-		by_fig[f].append(p)
-	var no_custom: Array[Color] = []
-	for f: int in by_fig:
-		var xf: Array[Transform3D] = []
-		for p: Dictionary in by_fig[f]:
-			var b: Basis = Basis.looking_at(p.face, Vector3.UP).rotated(Vector3.UP, float(p.yaw))
-			xf.append(Transform3D(b.scaled(Vector3.ONE * float(p.scale)), p.pos))
-		var stem: String = "%scrowd_%s" % [CROWD_DIR, FIGURE_IDS[f]]
-		var tag: String = "crowd_c%d_%s" % [chunk, FIGURE_IDS[f]]
-		_add(tag + "_lod0", _glb_mesh("%s_lod0.glb" % stem, [_figure_material()]), xf, CROWD_LOD0_M, no_custom, 0.0, true)
-		_add(tag + "_lod1", _glb_mesh("%s_lod1.glb" % stem, [_figure_material()]), xf, CROWD_LOD1_M, no_custom, CROWD_LOD0_M, true)
-
-
-func _figure_material() -> ShaderMaterial:
+func _card_material() -> ShaderMaterial:
 	var m := ShaderMaterial.new()
-	m.shader = FIGURE_SHADER  # baked albedo x AO of the figure times the tone, plus a small fill after dark
+	m.shader = CARD_SHADER  # lit by the scene, plus the small warm fill that keeps clothes readable after dark
+	m.set_shader_parameter("cards", load(CARDS_ATLAS))
 	m.set_shader_parameter("tone", TOD[_tod].tone)
 	m.set_shader_parameter("fill", float(TOD[_tod].fill))
+	m.set_shader_parameter("card_w", CARD_W_M)
+	m.set_shader_parameter("card_h", CARD_H_M)
 	return m
+
+
+## One MultiMeshInstance3D per chunk: a photo card per spectator (crowd_card.gdshader). The card stands on its feet
+## (origin at Y = 0) and its front points to the road, with a random yaw and scale. It is drawn up to CROWD_LOD1_M.
+func _build_cards(chunk: int, items: Array) -> void:
+	var xf: Array[Transform3D] = []
+	var cards: Array[Color] = []  # r: atlas cell / 32, g: scale
+	for p: Dictionary in items:
+		var b: Basis = Basis.looking_at(p.face, Vector3.UP).rotated(Vector3.UP, float(p.yaw))
+		xf.append(Transform3D(b, p.pos))
+		cards.append(Color(float(p.fig) / 32.0, float(p.scale), 0.0, 1.0))
+	_add("crowd_c%d_cards" % chunk, _quad_mesh(1.0, 1.0, _card_material()), xf, CROWD_LOD1_M, cards, 0.0, true)
 
 
 func _pole_material() -> StandardMaterial3D:

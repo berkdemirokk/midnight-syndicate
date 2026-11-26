@@ -62,6 +62,23 @@ func test_placement_clear_of_road_and_barriers() -> void:
 	await cleanup([track])
 
 
+func test_cards_pick_a_front_cell() -> void:
+	var track: Track = (load(TRACK) as PackedScene).instantiate() as Track
+	add(track)
+	await frames(2)
+	var d := EventDressing.new()
+	track.add_child(d)
+	d.setup(track, "night")
+	await frames(3)
+	var seen: int = 0
+	for p: Dictionary in d.placements:
+		if p.kind == "crowd":
+			seen += 1
+			check(int(p.fig) >= 0 and int(p.fig) < EventDressing.CARD_CELLS, "card cell %d outside the front row" % int(p.fig))
+	check(seen > 0, "no crowd cards placed")
+	await cleanup([track])
+
+
 func test_placement_is_deterministic() -> void:
 	var track: Track = (load(TRACK) as PackedScene).instantiate() as Track
 	add(track)

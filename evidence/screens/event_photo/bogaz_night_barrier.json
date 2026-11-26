@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.996,
+  "luma_min": 0.0,
+  "name": "bogaz_night_barrier",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 142,
+    "draw_calls_min": 94,
+    "driver": "vulkan",
+    "fps": 241.324,
+    "frame_ms_avg": 4.144,
+    "frame_ms_p95": 6.228,
+    "frame_ms_p99": 8.026,
+    "frames": 60,
+    "objects": 17140,
+    "os": "Windows",
+    "primitives": 116936,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 678.697,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/focused-napier-84a1e0/evidence/screens/dressing_demo/bogaz_night_barrier.png",
+  "preset": "high",
+  "scenario": "dressing_demo"
+}

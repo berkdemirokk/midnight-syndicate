@@ -77,6 +77,16 @@ func test_placement_off_corridor_on_bogaz() -> void:
 	await cleanup([track])
 
 
+func test_photo_kit_present() -> void:
+	# sponsor boards: 4 cells of 512 x 256; spectator cards: 8 x 4 cells of 256 x 512 (front 0..10, back 16..26)
+	var boards: Image = (load(EventDressing.BOARD_ATLAS) as Texture2D).get_image()
+	check(boards != null and boards.get_size() == Vector2i(2048, 256), "sponsor board atlas must be 2048 x 256")
+	var cards: Image = (load(EventDressing.CARDS_ATLAS) as Texture2D).get_image()
+	check(cards != null and cards.get_size() == Vector2i(2048, 2048), "crowd card atlas must be 2048 x 2048")
+	check(EventDressing.CARD_CELLS <= 16 and EventDressing.BOARD_COUNT == 4, "card cells and boards must fit the atlas cells")
+	check(absf(EventDressing.CARD_W_M / EventDressing.CARD_H_M - 0.5) < 0.001, "card cell is 256 x 512: width is half the height")
+
+
 func test_day_builds_no_lights() -> void:
 	var track: Track = (load(TRACK) as PackedScene).instantiate() as Track
 	add(track)
