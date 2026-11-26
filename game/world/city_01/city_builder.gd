@@ -49,6 +49,7 @@ const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 1
 @export var road_glb: String = "res://assets/world/city_01/city_01_road.glb"
 @export var catalog_path: String = "res://assets/world/kits/buildings/catalog.json"
 @export var centre_path: String = "res://assets/world/city_01/city_01_centerline.json"
+@export var time_of_day: String = "night"  ## "day", "sunset" or "night" (world/time_of_day); RaceScene sets it before the track enters the tree
 @export_group("Glass look (alpha 0 = kit default)")
 @export var pane_glow_tint: Color = Color(0.0, 0.0, 0.0, 0.0)  ## lit window colour of M_WindowAtlas and M_ImpostorAtlas: cool white for a glass district
 @export var pane_albedo_tint: Color = Color(0.0, 0.0, 0.0, 0.0)  ## multiplies the pane albedo: blue-green glass
@@ -201,6 +202,7 @@ func _ready() -> void:
 	_build_lights(d["lights"], inst)
 	_build_probes(d["reflection_probes"])
 	_build_environment()
+	_apply_time_of_day()
 	load_time_ms = float(Time.get_ticks_usec() - t0) / 1000.0
 	stats["load_time_ms"] = load_time_ms
 
@@ -1553,11 +1555,22 @@ func _build_environment() -> void:
 	moon.light_energy = moon_energy
 	moon.shadow_enabled = false
 	moon.rotation_degrees = Vector3(-35.0, 140.0, 0.0)
+	var start_dir: Vector3 = get_tangent_at(0.0)
+	var heading_deg: float = rad_to_deg(atan2(start_dir.x, start_dir.z))
+	TimeOfDay.preset(time_of_day).apply_environment(env, moon, heading_deg)  # night: no change; day and sunset turn the moon into the sun
 	_lighting.add_child(moon)
 	var we := WorldEnvironment.new()
 	we.name = "WorldEnvironment"
 	we.environment = env
 	_lighting.add_child(we)
+
+
+## Lamps and sign fills on or off, window, neon and road materials set for the hour (also restores night).
+func _apply_time_of_day() -> void:
+	var tod: TimeOfDay = TimeOfDay.preset(time_of_day)
+	tod.apply_lights(_lighting)
+	tod.apply_materials(self)
+	tod.apply_shadow_casters(_geo)
 
 
 # --- helpers --------------------------------------------------------------------------------

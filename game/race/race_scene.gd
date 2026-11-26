@@ -52,6 +52,7 @@ const MIRROR_SKIP_PROPS: PackedStringArray = ["bench", "litter_bin", "planter", 
 const MIRROR_SKIP_ROOTS: PackedStringArray = ["Dressing", "ParkedCars"]
 const ASPHALT_MATERIAL_NAME: String = "M_Asphalt"
 const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
+const SHADOW_PROXY_NAME: String = "SunShadowProxy"
 const FILL_LIGHT_NAME: String = "CarFillLight"
 const RIM_LIGHT_NAME: String = "CarRimLight"
 const REFLECTION_NAME: String = "PlanarReflection"
@@ -63,6 +64,7 @@ const PLANE_FOLLOW_RATE: float = 12.0  ## 1/s: the mirror plane eases to the roa
 @export var config: RaceConfig  ## null = Router params, else the default RaceConfig
 
 var config_used: RaceConfig
+var tod: TimeOfDay = TimeOfDay.preset("night")  ## the hour of this race, from config_used.time_of_day
 var track: Track
 var race: RaceManager
 var player: ArcadeCar
@@ -225,6 +227,7 @@ func _build_race() -> void:
 	hud.visible = true
 	_reflection = null
 	_road_mats.clear()
+	tod = TimeOfDay.preset(config_used.time_of_day)
 	_world = Node3D.new()
 	_world.name = "World"
 	add_child(_world)
@@ -272,6 +275,8 @@ func _load_track() -> Track:
 			var inst: Node = packed.instantiate()
 			var t: Track = inst as Track
 			if t != null:
+				if "time_of_day" in t:
+					t.set("time_of_day", tod.id)  # before _ready builds the environment
 				dev_track_used = false
 				return t
 			inst.free()
@@ -285,6 +290,7 @@ func _ensure_environment() -> void:
 	var existing: WorldEnvironment = track.find_child("WorldEnvironment", true, false) as WorldEnvironment
 	if existing != null and existing.environment != null:
 		Settings.apply_to_environment(existing.environment)
+		tod.apply_after_settings(existing.environment)
 		return
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
@@ -336,11 +342,18 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 				lod.lod2_start_m = config_used.rival_lod2_start_low_m
 			lod.set_forced(lod.force_lod)  # rewrites the visibility ranges with the new switch distance
 		lod.build_mirror_lod()
+		# The mirror-only copies are never drawn by the race camera: they must not cast a second sun shadow beside the real LOD.
+		for n: Node in lod.find_children("*", "MeshInstance3D", true, false):
+			var cm: MeshInstance3D = n as MeshInstance3D
+			if cm.layers == CarLod.MIRROR_LAYER_BIT:
+				cm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if lod != null and not tod.is_night() and tod.sun_shadows and Settings.get_preset_id() != "low":
+		_add_shadow_proxy(lod)
 	# Engine, tyres, nitro and impacts; rivals get the cheaper, quieter positional set.
 	var audio := CarAudio.new()
 	audio.name = "CarAudio"
 	audio.is_player = not rival
-	audio.wetness = 1.0  # the city road is always wet (rain or not, the asphalt shader is wet)
+	audio.wetness = tod.audio_wetness  # night: the city road is always wet (rain or not, the asphalt shader is wet)
 	car.add_child(audio)
 	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
@@ -348,7 +361,38 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 		if mi.layers & CarLod.MIRROR_LAYER_BIT == 0:
 			mi.layers = mi.layers | (1 << CAR_FILL_LAYER)
 	if ResourceLoader.exists(FX_CAR_SCENE):
-		car.add_child((load(FX_CAR_SCENE) as PackedScene).instantiate())
+		var fx: Node = (load(FX_CAR_SCENE) as PackedScene).instantiate()
+		if fx is CarFx:
+			(fx as CarFx).headlights_on = tod.headlights_on  # only at sunset and night
+		car.add_child(fx)
+		# Smoke, sparks and flames are particles: they must not be drawn again in the sun's shadow pass.
+		for g: Node in fx.find_children("*", "GeometryInstance3D", true, false):
+			(g as GeometryInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+## Sun shadow of a car from its 7k-triangle LOD2 only: LOD0 and LOD1 stop casting (every car LOD0 cast cost about
+## 25k primitives per car in the shadow pass), and a copy of LOD2 on the mirror-only layer, shadows only, casts instead.
+## The race cameras skip that layer and the copy has no visibility range, so it is a plain shadow caster at any distance.
+func _add_shadow_proxy(lod: CarLod) -> void:
+	var src: Node3D = lod.get_node_or_null("LOD2") as Node3D
+	if src == null:
+		return
+	for n: Node in lod.find_children("*", "MeshInstance3D", true, false):
+		(n as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var proxy: Node3D = src.duplicate() as Node3D
+	proxy.name = SHADOW_PROXY_NAME
+	proxy.visible = true
+	lod.add_child(proxy)
+	for n: Node in proxy.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if not CarMaterials.SHADOW_CASTERS.has(String(mi.name)):
+			mi.queue_free()  # glass, lamps and the like: not worth a draw in the shadow pass
+			continue
+		mi.layers = CarLod.MIRROR_LAYER_BIT
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_SHADOWS_ONLY
+		mi.visibility_range_begin = 0.0
+		mi.visibility_range_end = 0.0
+		mi.visible = not String(mi.name).begins_with(CarLod.COL_NAME)
 
 
 func _car_lod(car: ArcadeCar) -> CarLod:
@@ -409,8 +453,8 @@ func _make_camera() -> void:
 	# Cars are dark silhouettes at night without this. Cool, low, no shadow; it sees only the car layer.
 	var fill := OmniLight3D.new()
 	fill.name = FILL_LIGHT_NAME
-	fill.light_color = config_used.car_fill_color
-	fill.light_energy = config_used.car_fill_energy
+	fill.light_color = tod.car_fill_color if tod.car_fill_color.a > 0.0 else config_used.car_fill_color
+	fill.light_energy = config_used.car_fill_energy * tod.car_fill_scale
 	fill.omni_range = config_used.car_fill_range_m
 	fill.light_cull_mask = CAR_LIGHT_MASK
 	fill.shadow_enabled = false
@@ -418,8 +462,8 @@ func _make_camera() -> void:
 	# Directional, camera-relative: shines from beyond the car toward the lens and down, on the car layer only.
 	var rim := DirectionalLight3D.new()
 	rim.name = RIM_LIGHT_NAME
-	rim.light_color = config_used.car_rim_color
-	rim.light_energy = config_used.car_rim_energy
+	rim.light_color = tod.car_rim_color if tod.car_rim_color.a > 0.0 else config_used.car_rim_color
+	rim.light_energy = config_used.car_rim_energy * tod.car_rim_scale
 	rim.light_cull_mask = CAR_LIGHT_MASK
 	rim.shadow_enabled = false
 	var el: float = deg_to_rad(config_used.car_rim_elevation_deg)
@@ -475,7 +519,7 @@ func _is_asphalt(mat: Material) -> bool:
 ## The mirror on High re-renders every second frame (the road reflection is stable between frames).
 func _apply_reflection() -> void:
 	var preset_id: String = Settings.get_preset_id()
-	if preset_id != "high" or _road_mats.is_empty():
+	if preset_id != "high" or _road_mats.is_empty() or not tod.road_mirror:
 		_release_reflection()
 		return
 	if _reflection == null:
@@ -532,7 +576,7 @@ func _force_nitro_gate() -> void:
 
 
 func _attach_optional() -> void:
-	if ResourceLoader.exists(FX_RAIN_SCENE):
+	if tod.rain and ResourceLoader.exists(FX_RAIN_SCENE):
 		_world.add_child((load(FX_RAIN_SCENE) as PackedScene).instantiate())
 
 

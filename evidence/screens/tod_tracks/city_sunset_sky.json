@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.002,
+  "name": "city_sunset_sky",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 205,
+    "draw_calls_min": 163,
+    "driver": "vulkan",
+    "fps": 38.677,
+    "frame_ms_avg": 25.855,
+    "frame_ms_p95": 58.171,
+    "frame_ms_p99": 69.575,
+    "frames": 60,
+    "objects": 205,
+    "os": "Windows",
+    "primitives": 220492,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 572.309,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/city_sunset_sky.png",
+  "preset": "high",
+  "scenario": "tod_tracks"
+}

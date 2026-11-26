@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "bogaz_night_sky",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 313,
+    "draw_calls_min": 185,
+    "driver": "vulkan",
+    "fps": 103.703,
+    "frame_ms_avg": 9.643,
+    "frame_ms_p95": 19.544,
+    "frame_ms_p99": 23.407,
+    "frames": 60,
+    "objects": 313,
+    "os": "Windows",
+    "primitives": 197421,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 606.436,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/bogaz_night_sky.png",
+  "preset": "high",
+  "scenario": "tod_tracks"
+}

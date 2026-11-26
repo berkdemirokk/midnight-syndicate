@@ -18,6 +18,7 @@ extends Resource
 @export var use_garage_paint: bool = true
 @export var autopilot: bool = false  ## the player car is driven by an AIDriver (tests and captures)
 @export_range(0.8, 1.0) var autopilot_skill: float = 0.97
+@export var time_of_day: String = "night"  ## "day", "sunset" or "night" (TimeOfDay presets); unknown values race at night
 @export var event_id: String = "dev_circuit"  ## key for GameState.record_result
 @export_range(0.1, 1.0, 0.01) var reflection_fraction_high: float = 0.4  ## wet road mirror size, High preset
 @export_range(20.0, 400.0, 1.0) var reflection_max_distance_m: float = 80.0 ## mirror far clip, High preset (100 m put the replay orbit at 470k primitives)
