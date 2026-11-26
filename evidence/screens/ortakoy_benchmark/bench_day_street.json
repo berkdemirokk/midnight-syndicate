@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.99,
+  "luma_max": 0.996,
   "luma_min": 0.001,
   "name": "bench_day_street",
   "perf": {
@@ -11,10 +11,10 @@
     "draw_calls": 263,
     "draw_calls_min": 263,
     "driver": "vulkan",
-    "fps": 536.021,
-    "frame_ms_avg": 1.866,
-    "frame_ms_p95": 3.119,
-    "frame_ms_p99": 4.979,
+    "fps": 656.52,
+    "frame_ms_avg": 1.523,
+    "frame_ms_p95": 2.604,
+    "frame_ms_p99": 2.738,
     "frames": 60,
     "objects": 263,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-4/evidence/screens/ortakoy_benchmark/bench_day_street.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_day_street.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

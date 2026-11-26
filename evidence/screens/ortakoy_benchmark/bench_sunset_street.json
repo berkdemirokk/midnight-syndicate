@@ -11,10 +11,10 @@
     "draw_calls": 273,
     "draw_calls_min": 273,
     "driver": "vulkan",
-    "fps": 444.405,
-    "frame_ms_avg": 2.25,
-    "frame_ms_p95": 2.788,
-    "frame_ms_p99": 4.194,
+    "fps": 374.77,
+    "frame_ms_avg": 2.668,
+    "frame_ms_p95": 4.483,
+    "frame_ms_p99": 5.376,
     "frames": 60,
     "objects": 273,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-4/evidence/screens/ortakoy_benchmark/bench_sunset_street.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_sunset_street.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

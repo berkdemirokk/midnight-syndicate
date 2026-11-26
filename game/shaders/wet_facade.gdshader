@@ -48,7 +48,7 @@ uniform float grime : hint_range(0.0, 1.0) = 0.2;
 uniform float macro_variation : hint_range(0.0, 1.0) = 0.35;
 uniform float contact_dark : hint_range(0.0, 1.0) = 0.45;
 uniform float contact_height_m : hint_range(0.05, 3.0) = 0.9;
-uniform float ao_strength : hint_range(0.0, 1.0) = 0.7;
+uniform float ao_strength : hint_range(0.0, 1.0) = 0.6;
 
 varying vec3 w_pos;
 varying vec3 w_nrm;

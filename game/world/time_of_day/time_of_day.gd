@@ -122,7 +122,7 @@ func _make_day() -> void:
 	sun_azimuth_deg = 140.0  # behind the start grid on the land side: the mosque and the faces the driver looks at are lit
 	sun_color = Color(1.0, 0.95, 0.84)
 	sun_energy = 3.0
-	ambient_energy = 0.85  # sky fill: 1.3 flattened every shadow, 0.6 with baked AO left the shaded side navy blue
+	ambient_energy = 1.15  # sky fill: with baked AO the shaded street fronts need it, or they read near black
 	ambient_sky_mix = 0.3
 	ambient_color = Color(0.78, 0.83, 0.95)  # sky fill: a little cool, not blue paint
 	road_brightness = 0.85

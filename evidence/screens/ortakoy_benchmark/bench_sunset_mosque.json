@@ -11,10 +11,10 @@
     "draw_calls": 227,
     "draw_calls_min": 227,
     "driver": "vulkan",
-    "fps": 576.735,
-    "frame_ms_avg": 1.734,
-    "frame_ms_p95": 2.049,
-    "frame_ms_p99": 2.908,
+    "fps": 578.046,
+    "frame_ms_avg": 1.73,
+    "frame_ms_p95": 2.2,
+    "frame_ms_p99": 2.817,
     "frames": 60,
     "objects": 227,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-4/evidence/screens/ortakoy_benchmark/bench_sunset_mosque.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_sunset_mosque.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

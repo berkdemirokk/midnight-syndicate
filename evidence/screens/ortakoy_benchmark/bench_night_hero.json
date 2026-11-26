@@ -11,10 +11,10 @@
     "draw_calls": 372,
     "draw_calls_min": 295,
     "driver": "vulkan",
-    "fps": 449.324,
-    "frame_ms_avg": 2.226,
-    "frame_ms_p95": 3.44,
-    "frame_ms_p99": 5.098,
+    "fps": 420.654,
+    "frame_ms_avg": 2.377,
+    "frame_ms_p95": 4.092,
+    "frame_ms_p99": 5.264,
     "frames": 60,
     "objects": 372,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-4/evidence/screens/ortakoy_benchmark/bench_night_hero.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_night_hero.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

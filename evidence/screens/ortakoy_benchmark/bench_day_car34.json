@@ -4,17 +4,17 @@
     1061
   ],
   "luma_max": 1.0,
-  "luma_min": 0.001,
+  "luma_min": 0.002,
   "name": "bench_day_car34",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
     "draw_calls": 82,
     "draw_calls_min": 82,
     "driver": "vulkan",
-    "fps": 591.051,
-    "frame_ms_avg": 1.692,
-    "frame_ms_p95": 3.033,
-    "frame_ms_p99": 4.475,
+    "fps": 623.357,
+    "frame_ms_avg": 1.604,
+    "frame_ms_p95": 2.909,
+    "frame_ms_p99": 3.086,
     "frames": 60,
     "objects": 82,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-4/evidence/screens/ortakoy_benchmark/bench_day_car34.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_day_car34.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }
