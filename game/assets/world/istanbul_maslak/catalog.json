@@ -1,0 +1,540 @@
+{
+  "coords": "godot_y_up",
+  "source": "assets_src/world/tracks/istanbul_maslak/build_props_ist.py",
+  "items": [
+    {
+      "id": "sign_box_gece_kahvesi_8m",
+      "category": "sign",
+      "file": "prop_sign_box_gece_kahvesi_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1460,
+      "lod1_tris": 181,
+      "lod1_file": "prop_sign_box_gece_kahvesi_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.761,
+            0.239
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_bogaz_balik_8m",
+      "category": "sign",
+      "file": "prop_sign_box_bogaz_balik_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1492,
+      "lod1_tris": 199,
+      "lod1_file": "prop_sign_box_bogaz_balik_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_lale_pasaji_8m",
+      "category": "sign",
+      "file": "prop_sign_box_lale_pasaji_8m.glb",
+      "size": [
+        8.0,
+        1.168,
+        0.254
+      ],
+      "tris": 1124,
+      "lod1_tris": 147,
+      "lod1_file": "prop_sign_box_lale_pasaji_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_yildiz_sinema_4m",
+      "category": "sign",
+      "file": "prop_sign_box_yildiz_sinema_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1172,
+      "lod1_tris": 145,
+      "lod1_file": "prop_sign_box_yildiz_sinema_4m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.761,
+            0.239
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_box_kule_kitap_4m",
+      "category": "sign",
+      "file": "prop_sign_box_kule_kitap_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 964,
+      "lod1_tris": 125,
+      "lod1_file": "prop_sign_box_kule_kitap_4m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_box_ay_isigi_4m",
+      "category": "sign",
+      "file": "prop_sign_box_ay_isigi_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 860,
+      "lod1_tris": 114,
+      "lod1_file": "prop_sign_box_ay_isigi_4m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_blade_cinar_cay_evi",
+      "category": "sign",
+      "file": "prop_sign_blade_cinar_cay_evi.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1352,
+      "lod1_tris": 175,
+      "lod1_file": "prop_sign_blade_cinar_cay_evi_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_simit_firini",
+      "category": "sign",
+      "file": "prop_sign_blade_simit_firini.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1152,
+      "lod1_tris": 146,
+      "lod1_file": "prop_sign_blade_simit_firini_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber",
+        "M_Neon_Red",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            1.0,
+            0.761,
+            0.239
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_zumrut_otel",
+      "category": "sign",
+      "file": "prop_sign_blade_zumrut_otel.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1424,
+      "lod1_tris": 184,
+      "lod1_file": "prop_sign_blade_zumrut_otel_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_marti_kafe",
+      "category": "sign",
+      "file": "prop_sign_blade_marti_kafe.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1048,
+      "lod1_tris": 141,
+      "lod1_file": "prop_sign_blade_marti_kafe_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Neon_Amber",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_billboard_maslak_kule_12x5",
+      "category": "sign",
+      "file": "prop_sign_billboard_maslak_kule_12x5.glb",
+      "size": [
+        12.4,
+        9.1,
+        2.176
+      ],
+      "tris": 2264,
+      "lod1_tris": 467,
+      "lod1_file": "prop_sign_billboard_maslak_kule_12x5_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Metal_Grey"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            9.4,
+            1.4
+          ],
+          "color": [
+            0.1,
+            0.9,
+            1.0
+          ],
+          "energy": 1.0,
+          "range": 14.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "roof",
+      "notes": "12 x 5 m rooftop billboard, lattice, catwalk"
+    },
+    {
+      "id": "sign_billboard_lale_plaza_12x5",
+      "category": "sign",
+      "file": "prop_sign_billboard_lale_plaza_12x5.glb",
+      "size": [
+        12.4,
+        9.1,
+        2.176
+      ],
+      "tris": 1880,
+      "lod1_tris": 425,
+      "lod1_file": "prop_sign_billboard_lale_plaza_12x5_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta",
+        "M_Metal_Grey"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            9.4,
+            1.4
+          ],
+          "color": [
+            0.1,
+            0.9,
+            1.0
+          ],
+          "energy": 1.0,
+          "range": 14.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "roof",
+      "notes": "12 x 5 m rooftop billboard, lattice, catwalk"
+    },
+    {
+      "id": "fountain_plaza",
+      "category": "circuit",
+      "file": "prop_fountain_plaza.glb",
+      "size": [
+        14.0,
+        7.179,
+        14.0
+      ],
+      "tris": 2208,
+      "lod1_tris": 657,
+      "lod1_file": "prop_fountain_plaza_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Concrete",
+        "M_Glass",
+        "M_Metal_Grey",
+        "M_Neon_Cyan",
+        "M_Neon_White"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            2.0,
+            0
+          ],
+          "color": [
+            0.1,
+            0.9,
+            1.0
+          ],
+          "energy": 4.0,
+          "range": 20.0,
+          "type": "omni",
+          "direction_godot": null
+        },
+        {
+          "pos_godot": [
+            0,
+            6.6,
+            0
+          ],
+          "color": [
+            1.0,
+            0.95,
+            0.9
+          ],
+          "energy": 2.0,
+          "range": 14.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Plaza fountain with steel ribbon sculpture and cyan LED rings, original design"
+    }
+  ]
+}

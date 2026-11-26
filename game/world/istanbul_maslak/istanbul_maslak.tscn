@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://world/city_01/city_builder.gd" id="1_builder"]
+
+[node name="IstanbulMaslak" type="Node3D"]
+script = ExtResource("1_builder")
+width = 18.0
+layout_path = "res://assets/world/istanbul_maslak/istanbul_maslak_layout.json"
+road_glb = "res://assets/world/istanbul_maslak/istanbul_maslak_road.glb"
+centre_path = "res://assets/world/istanbul_maslak/istanbul_maslak_centerline.json"
+pane_glow_tint = Color(0.74, 0.96, 1, 1)
+pane_albedo_tint = Color(0.5, 0.88, 0.95, 1)
+crown_color = Color(0.1, 0.95, 0.88, 1)
+crown_min_height_m = 100.0
+crown_energy = 3.5
+lamp_district_scale = {
+"esentepe": 4.0,
+"maslak": 4.0,
+"plaza": 4.0,
+"underpass": 1.0,
+"viaduct": 4.0
+}
+ambient_color = Color(0.1, 0.17, 0.26, 1)
+tunnel_light_energy_scale = 10.0
+ambient_energy = 1.9
+moon_energy = 0.4
+lod0_end_m = 45.0
+lod1_end_m = 140.0
+prop_far_end_m = 200.0
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="RacingLine" type="Path3D" parent="."]
+
+[node name="StartGrid" type="Node3D" parent="."]
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="Lighting" type="Node3D" parent="."]

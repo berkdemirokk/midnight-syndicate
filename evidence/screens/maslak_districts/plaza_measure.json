@@ -1,0 +1,26 @@
+{
+  "name": "plaza_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 250,
+    "draw_calls_min": 250,
+    "driver": "vulkan",
+    "fps": 453.782,
+    "frame_ms_avg": 2.204,
+    "frame_ms_p95": 3.385,
+    "frame_ms_p99": 3.777,
+    "frames": 300,
+    "objects": 250,
+    "os": "Windows",
+    "primitives": 165032,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 494.958,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "maslak_districts"
+}

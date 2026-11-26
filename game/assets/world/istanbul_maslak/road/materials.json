@@ -1,0 +1,148 @@
+{
+ "coords": "godot_y_up",
+ "materials": [
+  {
+   "name": "M_Asphalt",
+   "base_colour_srgb": "#1E232B",
+   "roughness": 0.3,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "U across road (m), V along (m)",
+   "notes": "wet asphalt; R = puddle mask, G = racing-groove wear, B = district/4",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Curb",
+   "base_colour_srgb": "#8E8B84",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "U across (m), V along (m)",
+   "notes": "kerb 0.15 m, bevelled road edge",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Paving",
+   "base_colour_srgb": "#5D6168",
+   "roughness": 0.7,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "U across (m), V along (m)",
+   "notes": "paving slab sidewalk",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Water",
+   "base_colour_srgb": "#0A1828",
+   "roughness": 0.05,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "none",
+   "notes": "bay water plane at z=-1.2",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_RoadPaint",
+   "base_colour_srgb": "#E4E2D6",
+   "roughness": 0.6,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "U = metres from right edge, V = metres along; tile worn paint",
+   "notes": "5 mm above asphalt",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Concrete_Wall",
+   "base_colour_srgb": "#4A4E57",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "U and V in metres",
+   "notes": "retaining walls, parapets, tunnel walls, quay face",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_TunnelLight",
+   "base_colour_srgb": "#BFD8FF",
+   "roughness": 0.3,
+   "metallic": 0.0,
+   "emissive_srgb": "#BFD8FF",
+   "emissive_strength": 12.0,
+   "uv": "metres",
+   "notes": "recessed ceiling light strips, emissive",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_TunnelStripe",
+   "base_colour_srgb": "#FFC23D",
+   "roughness": 0.6,
+   "metallic": 0.0,
+   "emissive_srgb": "#FFC23D",
+   "emissive_strength": 0.4,
+   "uv": "metres",
+   "notes": "painted wall stripe in underpass",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Ground",
+   "base_colour_srgb": "#2B2F36",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "world metres (x, y)",
+   "notes": "low-poly street level ground",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Manhole",
+   "base_colour_srgb": "#3A3F47",
+   "roughness": 0.6,
+   "metallic": 0.3,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "decal",
+   "notes": "manhole cover decal, 3 mm above road",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Grate",
+   "base_colour_srgb": "#2A2D33",
+   "roughness": 0.5,
+   "metallic": 0.6,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "decal",
+   "notes": "drain grate decal, 3 mm above road",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_ExpansionJoint",
+   "base_colour_srgb": "#15171B",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "metres",
+   "notes": "deck expansion joints",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  },
+  {
+   "name": "M_Rail",
+   "base_colour_srgb": "#7C8290",
+   "roughness": 0.4,
+   "metallic": 0.8,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "metres",
+   "notes": "steel top rail on parapets",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
+  }
+ ]
+}

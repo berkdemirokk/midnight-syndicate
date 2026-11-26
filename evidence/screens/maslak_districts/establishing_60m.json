@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "establishing_60m",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 145,
+    "draw_calls_min": 145,
+    "driver": "vulkan",
+    "fps": 853.121,
+    "frame_ms_avg": 1.172,
+    "frame_ms_p95": 1.545,
+    "frame_ms_p99": 3.343,
+    "frames": 60,
+    "objects": 145,
+    "os": "Windows",
+    "primitives": 117146,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 494.958,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-1/evidence/screens/maslak_districts/establishing_60m.png",
+  "preset": "high",
+  "scenario": "maslak_districts"
+}
