@@ -8,26 +8,26 @@
   "name": "city_night",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 390,
-    "draw_calls_min": 213,
+    "draw_calls": 404,
+    "draw_calls_min": 256,
     "driver": "vulkan",
-    "fps": 68.496,
-    "frame_ms_avg": 14.599,
-    "frame_ms_p95": 35.883,
-    "frame_ms_p99": 90.42,
+    "fps": 157.784,
+    "frame_ms_avg": 6.338,
+    "frame_ms_p95": 7.922,
+    "frame_ms_p99": 9.001,
     "frames": 60,
-    "objects": 14393,
+    "objects": 13768,
     "os": "Windows",
-    "primitives": 394798,
+    "primitives": 400876,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 564.055,
+    "video_mem_mb": 564.056,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/city_night.png",
+  "png": "evidence/screens/tod_tracks/city_night.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }

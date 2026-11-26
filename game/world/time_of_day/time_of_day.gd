@@ -58,6 +58,13 @@ var skyline_scale: float = 1.0
 var skyline_brighten: float = 1.0  ## multiplies the far skyline card tint (day: pale hazy towers instead of black cut-outs)
 var pane_albedo_scale: float = 1.0  ## multiplies the window pane albedo (day: lighter, sky-blue glass)
 var pane_reflect: float = 0.0  ## day: extra metallic on panes so they mirror the sky
+var crown_scale: float = 1.0  ## LED crown strips on tall towers (LedCrowns): 0 hides them
+var impostor_desat: float = 0.0  ## far-building impostors: share of the tint pulled to grey (sunlit flat boxes read as solid colour blocks)
+var impostor_scale: float = 1.0  ## brightness of the impostor tint
+var container_albedo: float = 1.0  ## shipping containers and red newspaper boxes (saturated flat red blows out under a strong sun)
+var pane_std_albedo: float = 1.0  ## Istanbul tracks: M_WindowAtlas is a StandardMaterial3D; this lightens its dark glass
+var parked_albedo: float = 1.0  ## parked car paint: albedo multiplier (night paints are muted and dark)
+var parked_metal: float = 1.0  ## parked car paint: metallic multiplier (a metallic dark paint mirrors the sky as flat grey)
 # --- street lights ---
 var lamps_on: bool = true
 var sign_light_scale: float = 1.0  ## energy of the omni fills that sit under neon signs
@@ -107,27 +114,27 @@ func sun_vector(heading_deg: float = 0.0) -> Vector3:
 func _make_day() -> void:
 	id = DAY
 	label = "Day"
-	sun_elevation_deg = 66.0
-	sun_azimuth_deg = 200.0
-	sun_color = Color(1.0, 0.95, 0.86)
-	sun_energy = 2.0
-	ambient_energy = 1.5
-	ambient_sky_mix = 0.55
-	ambient_color = Color(0.92, 0.9, 0.86)
+	sun_elevation_deg = 58.0
+	sun_azimuth_deg = 165.0
+	sun_color = Color(1.0, 0.95, 0.84)
+	sun_energy = 3.0
+	ambient_energy = 1.3
+	ambient_sky_mix = 0.3
+	ambient_color = Color(0.95, 0.95, 1.0)
 	road_brightness = 0.85
 	reflection_energy = 1.0
 	sky_params = {
-		"zenith_colour": Color(0.14, 0.42, 0.92), "horizon_colour": Color(0.74, 0.87, 1.0),
+		"zenith_colour": Color(0.14, 0.44, 1.0), "horizon_colour": Color(0.62, 0.80, 1.0),
 		"ground_colour": Color(0.52, 0.60, 0.70), "sun_colour": Color(1.0, 0.96, 0.88),
 		"sun_disk_energy": 9.0, "halo_energy": 0.5, "halo_power": 30.0,
-		"band_energy": 0.0, "cloud_cover": 0.5,
+		"band_energy": 0.0, "cloud_cover": 0.32,
 		"cloud_lit": Color(1.0, 0.995, 0.98), "cloud_shade": Color(0.72, 0.80, 0.92),
 	}
-	fog_color = Color(0.64, 0.76, 0.90)
-	fog_begin_m = 200.0
-	fog_end_m = 1300.0
+	fog_color = Color(0.62, 0.76, 0.95)
+	fog_begin_m = 260.0
+	fog_end_m = 1500.0
 	fog_sky_affect = 0.15
-	exposure = 0.95
+	exposure = 1.0
 	glow_scale = 0.35
 	glow_threshold = 2.2
 	window_scale = 0.0
@@ -136,6 +143,12 @@ func _make_day() -> void:
 	skyline_brighten = 2.6
 	pane_albedo_scale = 4.0
 	pane_reflect = -0.2
+	crown_scale = 0.0
+	impostor_desat = 0.5
+	impostor_scale = 0.8
+	container_albedo = 0.6
+	parked_albedo = 2.2
+	parked_metal = 0.45
 	lamps_on = false
 	sign_light_scale = 0.0
 	road_wetness = 0.12
@@ -154,13 +167,13 @@ func _make_day() -> void:
 func _make_sunset() -> void:
 	id = SUNSET
 	label = "Sunset"
-	sun_elevation_deg = 9.0
+	sun_elevation_deg = 11.0
 	sun_azimuth_deg = 28.0
-	sun_color = Color(1.0, 0.58, 0.3)
-	sun_energy = 1.7
-	ambient_energy = 0.95
-	ambient_sky_mix = 0.55
-	ambient_color = Color(0.60, 0.54, 0.70)
+	sun_color = Color(1.0, 0.70, 0.46)
+	sun_energy = 2.4
+	ambient_energy = 1.1
+	ambient_sky_mix = 0.3
+	ambient_color = Color(0.42, 0.52, 0.82)
 	reflection_energy = 1.0
 	sky_params = {
 		"zenith_colour": Color(0.10, 0.14, 0.38), "horizon_colour": Color(0.95, 0.52, 0.42),
@@ -169,24 +182,31 @@ func _make_sunset() -> void:
 		"band_colour": Color(1.0, 0.42, 0.22), "band_energy": 1.5, "band_height": 0.2, "band_spread": 1.6,
 		"cloud_cover": 0.55, "cloud_lit": Color(1.0, 0.72, 0.62), "cloud_shade": Color(0.36, 0.30, 0.50),
 	}
-	fog_color = Color(0.72, 0.50, 0.54)
-	fog_begin_m = 200.0
+	fog_color = Color(0.58, 0.50, 0.66)
+	fog_begin_m = 240.0
 	fog_end_m = 1250.0
 	fog_sky_affect = 0.5
-	exposure = 0.95
+	exposure = 1.0
 	glow_scale = 0.75
 	glow_threshold = 1.5
 	window_scale = 0.55
 	neon_scale = 0.8
 	skyline_scale = 0.6
 	skyline_brighten = 1.2
-	pane_albedo_scale = 1.2
-	pane_reflect = 0.1
+	pane_albedo_scale = 5.0
+	pane_reflect = 0.3
+	crown_scale = 0.0
+	impostor_desat = 0.45
+	impostor_scale = 0.75
+	container_albedo = 0.28
+	pane_std_albedo = 2.6
+	parked_albedo = 1.7
+	parked_metal = 0.55
 	lamps_on = true
 	sign_light_scale = 0.8
 	road_wetness = 0.85
 	road_puddles = 0.7
-	wall_wet = 0.5
+	wall_wet = 0.35
 	road_mirror = false
 	rain = false
 	headlights_on = true
@@ -317,6 +337,11 @@ static func _is_non_caster(gi: GeometryInstance3D, root: Node) -> bool:
 func apply_materials(root: Node) -> void:
 	var seen: Dictionary = {}
 	for n: Node in root.find_children("*", "GeometryInstance3D", true, false):
+		if n.name == "LedCrowns":
+			_tune_crowns(n as MultiMeshInstance3D, seen)
+			continue
+		if n is MultiMeshInstance3D and String(n.name).begins_with("Parked_paint_"):
+			_tune_parked_paint((n as MultiMeshInstance3D).material_override)
 		var mats: Array[Material] = []
 		if n is MeshInstance3D:
 			var mi: MeshInstance3D = n
@@ -342,6 +367,35 @@ func apply_materials(root: Node) -> void:
 				tune_material(m)
 
 
+## LED crowns: one emissive box material. Hidden when crown_scale is 0, else scaled from the authored energy; the generic
+## neon scaling must not touch it, so it goes into seen.
+func _tune_crowns(mmi: MultiMeshInstance3D, seen: Dictionary) -> void:
+	mmi.visible = crown_scale > 0.001
+	if mmi.multimesh == null or mmi.multimesh.mesh == null:
+		return
+	var st: StandardMaterial3D = mmi.multimesh.mesh.surface_get_material(0) as StandardMaterial3D
+	if st == null:
+		return
+	seen[st] = true
+	if not st.has_meta(BASE_META):
+		st.set_meta(BASE_META, st.emission_energy_multiplier)
+	st.emission_energy_multiplier = float(st.get_meta(BASE_META)) * crown_scale
+
+
+## Parked car paint (material_override of the Parked_paint_* MultiMeshes): lighter and less mirror-like in daylight.
+func _tune_parked_paint(m: Material) -> void:
+	var st: StandardMaterial3D = m as StandardMaterial3D
+	if st == null:
+		return
+	if not st.has_meta(BASE_META):
+		st.set_meta(BASE_META, {"c": st.albedo_color, "m": st.metallic})
+	var b: Dictionary = st.get_meta(BASE_META)
+	var c: Color = b["c"]
+	var k: float = parked_albedo
+	st.albedo_color = c if k == 1.0 else Color(clampf(c.r * k, 0.0, 1.0), clampf(c.g * k, 0.0, 1.0), clampf(c.b * k, 0.0, 1.0), c.a)
+	st.metallic = float(b["m"]) * parked_metal
+
+
 ## One material, set for this hour from its authored values.
 func tune_material(m: Material) -> void:
 	if m is ShaderMaterial:
@@ -364,6 +418,16 @@ func tune_material(m: Material) -> void:
 					_scale_param(sm, k, wall_wet)
 	elif m is StandardMaterial3D:
 		var st: StandardMaterial3D = m
+		var k: float = -1.0
+		if st.resource_name.begins_with("M_Container_") or st.resource_name == "M_Metal_Red":
+			k = container_albedo
+		elif st.resource_name == "M_WindowAtlas":
+			k = pane_std_albedo
+		if k >= 0.0:
+			if not st.has_meta(&"tod_albedo"):
+				st.set_meta(&"tod_albedo", st.albedo_color)
+			var cc: Color = st.get_meta(&"tod_albedo")
+			st.albedo_color = Color(clampf(cc.r * k, 0.0, 1.0), clampf(cc.g * k, 0.0, 1.0), clampf(cc.b * k, 0.0, 1.0), cc.a)
 		if st.emission_enabled and not _keeps_emission(st.resource_name):
 			if not st.has_meta(BASE_META):
 				st.set_meta(BASE_META, st.emission_energy_multiplier)
@@ -373,6 +437,12 @@ func tune_material(m: Material) -> void:
 func _tune_window(sm: ShaderMaterial) -> void:
 	var skyline: bool = sm.resource_name.begins_with(SKYLINE_PREFIX)
 	_scale_param(sm, "glow_energy", skyline_scale if skyline else window_scale)
+	if sm.resource_name == "M_ImpostorAtlas":
+		var it: Variant = _base_param(sm, "tint")
+		var ic: Color = it if it is Color else Color.WHITE
+		var g: float = ic.get_luminance()
+		var v3: Vector3 = Vector3(ic.r, ic.g, ic.b).lerp(Vector3(g, g, g), impostor_desat) * impostor_scale
+		sm.set_shader_parameter("tint", Color(v3.x, v3.y, v3.z, ic.a))
 	if skyline:
 		var tint: Variant = _base_param(sm, "tint")
 		if tint is Color:

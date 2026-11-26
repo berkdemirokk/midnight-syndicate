@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.996,
+  "luma_min": 0.023,
+  "name": "maslak_day_medium",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 227,
+    "draw_calls_min": 215,
+    "driver": "vulkan",
+    "fps": 119.817,
+    "frame_ms_avg": 8.346,
+    "frame_ms_p95": 11.901,
+    "frame_ms_p99": 88.757,
+    "frames": 60,
+    "objects": 14600,
+    "os": "Windows",
+    "primitives": 312800,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.85,
+    "video_mem_mb": 505.91,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/maslak_day_medium.png",
+  "preset": "medium",
+  "scenario": "tod_tracks"
+}

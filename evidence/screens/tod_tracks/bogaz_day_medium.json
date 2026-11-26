@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.023,
+  "name": "bogaz_day_medium",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 260,
+    "draw_calls_min": 252,
+    "driver": "vulkan",
+    "fps": 150.241,
+    "frame_ms_avg": 6.656,
+    "frame_ms_p95": 9.246,
+    "frame_ms_p99": 11.32,
+    "frames": 60,
+    "objects": 13353,
+    "os": "Windows",
+    "primitives": 257275,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.85,
+    "video_mem_mb": 535.045,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/bogaz_day_medium.png",
+  "preset": "medium",
+  "scenario": "tod_tracks"
+}

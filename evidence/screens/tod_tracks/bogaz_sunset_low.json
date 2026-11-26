@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.013,
+  "name": "bogaz_sunset_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 263,
+    "draw_calls_min": 221,
+    "driver": "vulkan",
+    "fps": 71.917,
+    "frame_ms_avg": 13.905,
+    "frame_ms_p95": 19.011,
+    "frame_ms_p99": 20.519,
+    "frames": 60,
+    "objects": 14276,
+    "os": "Windows",
+    "primitives": 239236,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 516.209,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/bogaz_sunset_low.png",
+  "preset": "low",
+  "scenario": "tod_tracks"
+}

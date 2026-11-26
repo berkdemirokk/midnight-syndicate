@@ -3,22 +3,22 @@
     1920,
     1061
   ],
-  "luma_max": 0.998,
-  "luma_min": 0.027,
+  "luma_max": 1.0,
+  "luma_min": 0.035,
   "name": "city_day_sky",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 239,
-    "draw_calls_min": 230,
+    "draw_calls": 230,
+    "draw_calls_min": 219,
     "driver": "vulkan",
-    "fps": 433.93,
-    "frame_ms_avg": 2.305,
-    "frame_ms_p95": 3.321,
-    "frame_ms_p99": 3.755,
+    "fps": 211.859,
+    "frame_ms_avg": 4.72,
+    "frame_ms_p95": 6.232,
+    "frame_ms_p99": 9.038,
     "frames": 60,
-    "objects": 239,
+    "objects": 230,
     "os": "Windows",
-    "primitives": 216174,
+    "primitives": 219975,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 572.334,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/city_day_sky.png",
+  "png": "evidence/screens/tod_tracks/city_day_sky.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }

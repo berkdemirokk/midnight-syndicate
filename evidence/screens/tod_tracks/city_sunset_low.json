@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.003,
+  "name": "city_sunset_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 244,
+    "draw_calls_min": 228,
+    "driver": "vulkan",
+    "fps": 125.493,
+    "frame_ms_avg": 7.969,
+    "frame_ms_p95": 9.855,
+    "frame_ms_p99": 28.56,
+    "frames": 60,
+    "objects": 13762,
+    "os": "Windows",
+    "primitives": 235561,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 491.59,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/city_sunset_low.png",
+  "preset": "low",
+  "scenario": "tod_tracks"
+}

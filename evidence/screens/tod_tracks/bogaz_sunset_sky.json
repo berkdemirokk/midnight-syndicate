@@ -4,30 +4,30 @@
     1061
   ],
   "luma_max": 1.0,
-  "luma_min": 0.002,
+  "luma_min": 0.008,
   "name": "bogaz_sunset_sky",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 233,
-    "draw_calls_min": 217,
+    "draw_calls": 222,
+    "draw_calls_min": 214,
     "driver": "vulkan",
-    "fps": 192.84,
-    "frame_ms_avg": 5.186,
-    "frame_ms_p95": 6.358,
-    "frame_ms_p99": 8.822,
+    "fps": 301.923,
+    "frame_ms_avg": 3.312,
+    "frame_ms_p95": 4.838,
+    "frame_ms_p99": 5.671,
     "frames": 60,
-    "objects": 233,
+    "objects": 222,
     "os": "Windows",
-    "primitives": 180513,
+    "primitives": 169991,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 600.463,
+    "video_mem_mb": 591.574,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/bogaz_sunset_sky.png",
+  "png": "evidence/screens/tod_tracks/bogaz_sunset_sky.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }

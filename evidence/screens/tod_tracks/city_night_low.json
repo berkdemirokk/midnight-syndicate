@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "city_night_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 245,
+    "draw_calls_min": 233,
+    "driver": "vulkan",
+    "fps": 141.543,
+    "frame_ms_avg": 7.065,
+    "frame_ms_p95": 9.752,
+    "frame_ms_p99": 11.874,
+    "frames": 60,
+    "objects": 13695,
+    "os": "Windows",
+    "primitives": 232769,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 487.579,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/city_night_low.png",
+  "preset": "low",
+  "scenario": "tod_tracks"
+}

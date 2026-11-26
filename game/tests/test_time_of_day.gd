@@ -227,3 +227,58 @@ func test_city_race_at_day() -> void:
 	check(float(win.get_shader_parameter("glow_energy")) > 0.5, "window glow is back at night")
 	night_scene.queue_free()
 	await frames(2)
+
+
+func test_props_crowns_and_restore() -> void:
+	var crown_mat := StandardMaterial3D.new()
+	crown_mat.emission_enabled = true
+	crown_mat.emission_energy_multiplier = 3.0
+	var box := BoxMesh.new()
+	box.material = crown_mat
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = box
+	mm.instance_count = 1
+	var crowns := MultiMeshInstance3D.new()
+	crowns.name = "LedCrowns"
+	crowns.multimesh = mm
+	var paint := StandardMaterial3D.new()
+	paint.albedo_color = Color(0.2, 0.1, 0.1)
+	paint.metallic = 0.7
+	var parked := MultiMeshInstance3D.new()
+	parked.name = "Parked_paint_red_lod0"
+	parked.multimesh = mm
+	parked.material_override = paint
+	var cont := StandardMaterial3D.new()
+	cont.resource_name = "M_Container_Red"
+	cont.albedo_color = Color(0.45, 0.07, 0.05)
+	var pane := StandardMaterial3D.new()
+	pane.resource_name = "M_WindowAtlas"
+	pane.albedo_color = Color(0.12, 0.15, 0.22)
+	var imp: ShaderMaterial = _shader_mat(WINDOW_SHADER, "M_ImpostorAtlas")
+	imp.set_shader_parameter("tint", Color(1.0, 0.2, 0.1))
+	var root := Node3D.new()
+	root.add_child(crowns)
+	root.add_child(parked)
+	var day: TimeOfDay = TimeOfDay.preset("day")
+	day.apply_materials(root)
+	for m: Material in [cont, pane, imp]:
+		day.tune_material(m)
+	check(not crowns.visible, "day: LED crowns hidden")
+	check(paint.albedo_color.r > 0.2 and paint.metallic < 0.7, "day: parked paint lighter and less metallic")
+	check(cont.albedo_color.r < 0.45, "day: container paint darker")
+	var tint: Color = imp.get_shader_parameter("tint")
+	check(tint.r - tint.g < 0.8, "day: impostor tint desaturated")
+	var night: TimeOfDay = TimeOfDay.preset("night")
+	night.apply_materials(root)
+	for m: Material in [cont, pane, imp]:
+		night.tune_material(m)
+	check(crowns.visible and is_equal_approx(crown_mat.emission_energy_multiplier, 3.0), "night: LED crowns back at full strength")
+	check(paint.albedo_color.is_equal_approx(Color(0.2, 0.1, 0.1)) and is_equal_approx(paint.metallic, 0.7), "night restores parked paint")
+	check(cont.albedo_color.is_equal_approx(Color(0.45, 0.07, 0.05)), "night restores container paint")
+	check(pane.albedo_color.is_equal_approx(Color(0.12, 0.15, 0.22)), "night restores Istanbul pane albedo")
+	check((imp.get_shader_parameter("tint") as Color).is_equal_approx(Color(1.0, 0.2, 0.1)), "night restores impostor tint")
+	var sunset: TimeOfDay = TimeOfDay.preset("sunset")
+	sunset.apply_materials(root)
+	check(not crowns.visible and (sunset.pane_std_albedo > 1.0), "sunset: crowns hidden, Istanbul panes lighter")
+	root.free()

@@ -10,9 +10,9 @@ the class scaled, so a night race after a day race in the same process is unchan
 
 | Field | DAY | SUNSET | NIGHT |
 |---|---|---|---|
-| Sun | 66 deg, 200 deg behind the start heading, warm white, 2.0, shadow | 9 deg, 28 deg ahead, orange, 1.7, shadow | moon, no shadow (as before) |
+| Sun | 58 deg, 165 deg behind the start heading (sun mostly behind the camera, shadows fall ahead and across the road), warm white, 3.0, shadow | 11 deg, 28 deg ahead, orange, 2.4, shadow | moon, no shadow (as before) |
 | Sky | `day_sky.gdshader`: blue gradient, sun disk, soft clouds | same shader: pink-orange band, low sun | `night_sky.gdshader` (untouched) |
-| Ambient | sky radiance 55 percent + neutral warm | sky radiance + violet | track values |
+| Ambient | 30 percent sky radiance + near-neutral white, energy 1.3 (street shade stays grey, not blue) | 30 percent sky radiance + cool blue-violet fill, so shade is cool and sunlit faces stay orange | track values |
 | Windows / neon / skyline glow | 0 / 0.18 / 0 (glass reads dark, signs dim) | 0.55 / 0.8 / 0.6 | 1 |
 | Street lamps, floodlights, string lights | off | on | on |
 | Road wetness / puddles / wall film | 0.12 / 0 / 0.1 | 0.85 / 0.7 / 0.5 | 1 |
@@ -22,6 +22,17 @@ the class scaled, so a night race after a day race in the same process is unchan
 | Car fill and rim | x0.35 and x0.3, white | x0.7 and x0.8, warm | RaceConfig values |
 
 Tunnel strips, traffic signals and road paint keep their light at every hour.
+
+Daylight clean-ups (each a preset field, all restored at night from values stored in meta):
+
+- `crown_scale`: the LED crown strips (`LedCrowns`) on tall towers are hidden at day and sunset (they read as floating
+  wireframe lines against a lit sky).
+- `container_albedo`: shipping containers and red newspaper boxes (`M_Container_*`, `M_Metal_Red`) are darkened, a flat
+  saturated red under a strong sun blew out to a pure red block.
+- `impostor_desat` / `impostor_scale`: far-building impostor boxes (`M_ImpostorAtlas`) are pulled toward grey.
+- `parked_albedo` / `parked_metal`: parked car paint is lighter and less metallic (dark metallic paint mirrored the sky as flat grey).
+- `pane_albedo_scale` (City 01 shader panes) and `pane_std_albedo` (Istanbul tracks, where `M_WindowAtlas` is a
+  StandardMaterial3D) lighten the dark glass at sunset so floor slabs no longer read as bright outlines on black.
 
 ## Cost rules (measured, see report in the task commit)
 
@@ -37,4 +48,6 @@ Tunnel strips, traffic signals and road paint keep their light at every hour.
 
 `--capture=tod_tracks` shoots City 01, Maslak and Bogaz at day, sunset and night, 10 s into a race, as
 `<track>_<tod>[_<preset>].png`. Options: `--only=maslak:day`, `--tracks=`, `--tods=`, `--sky` (extra wide sky shot),
-`--casters` (prints the shadow casters per group).
+`--casters` (prints the shadow casters per group), `--flow` (a one-lap race, then grid intro, results and replay shots
+as `<track>_<tod>_grid|results|replay`), `--preset=low|medium|high` (the capture harness flag; the shot gets a suffix),
+`--red [--px=x,y]` (diagnostic: lists every mesh whose projected bounds cover a screen pixel).

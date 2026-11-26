@@ -431,3 +431,23 @@ Peak numbers after the cuts (RTX 5060 Ti desktop, 1920x1080, fixed probe; not ph
 Same round, other tracks merged: procedural audio (25 original sounds, engine/tyres/nitro/UI/music),
 career ladder (6 events, stars, unlocks), showroom lighting for the garage, drift smoke + skid marks,
 car mesh (straight window edges, arch liners), app icon and boot splash, Windows export.
+
+## Time of day (day, sunset, night), tod_tracks scenario
+
+Machine: RTX 5060 Ti desktop, Vulkan Mobile renderer, 1920x1061, 10 s after GO, 5 rivals. draw_calls and primitives are peaks.
+Raw JSON per shot: evidence/screens/tod_tracks/<track>_<tod>[_preset].json.
+
+| Track | Hour | High draws / prims | Medium | Low |
+|---|---|---|---|---|
+| City 01 | day | 311 / 375k | 311 / 376k | 248 / 236k |
+| City 01 | sunset | 319 / 352k | 319 / 351k | 244 / 236k |
+| City 01 | night | 404 / 401k | | 245 / 233k |
+| Maslak | day | 227 / 313k | 227 / 313k | 201 / 241k |
+| Maslak | sunset | 226 / 305k | 223 / 299k | 209 / 264k |
+| Maslak | night | 356 / 403k | | 203 / 268k |
+| Bogaz | day | 260 / 262k | 260 / 257k | 237 / 220k |
+| Bogaz | sunset | 267 / 265k | 264 / 253k | 263 / 239k |
+| Bogaz | night | 390 / 328k | | 266 / 244k |
+
+All inside High 500 / 450k and Medium 350. Low budget is 250 draws: Bogaz is over at sunset (263) but Bogaz night Low was
+already 266 with the same lamps, so this is not new; City 01 Low day is at 248.

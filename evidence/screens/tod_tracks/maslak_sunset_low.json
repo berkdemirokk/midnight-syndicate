@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.003,
+  "name": "maslak_sunset_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 209,
+    "draw_calls_min": 196,
+    "driver": "vulkan",
+    "fps": 148.988,
+    "frame_ms_avg": 6.712,
+    "frame_ms_p95": 8.89,
+    "frame_ms_p99": 11.037,
+    "frames": 60,
+    "objects": 14575,
+    "os": "Windows",
+    "primitives": 264344,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 487.074,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/maslak_sunset_low.png",
+  "preset": "low",
+  "scenario": "tod_tracks"
+}

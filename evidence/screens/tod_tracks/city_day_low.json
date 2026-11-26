@@ -4,21 +4,21 @@
     1061
   ],
   "luma_max": 1.0,
-  "luma_min": 0.026,
+  "luma_min": 0.03,
   "name": "city_day_low",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 247,
+    "draw_calls": 248,
     "draw_calls_min": 237,
     "driver": "vulkan",
-    "fps": 293.963,
-    "frame_ms_avg": 3.402,
-    "frame_ms_p95": 5.32,
-    "frame_ms_p99": 6.313,
+    "fps": 222.059,
+    "frame_ms_avg": 4.503,
+    "frame_ms_p95": 6.133,
+    "frame_ms_p99": 8.078,
     "frames": 60,
-    "objects": 13484,
+    "objects": 13519,
     "os": "Windows",
-    "primitives": 235481,
+    "primitives": 235653,
     "renderer": "mobile",
     "scaling_3d_scale": 0.67,
     "video_mem_mb": 491.59,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/city_day_low.png",
+  "png": "evidence/screens/tod_tracks/city_day_low.png",
   "preset": "low",
   "scenario": "tod_tracks"
 }

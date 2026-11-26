@@ -4,30 +4,30 @@
     1061
   ],
   "luma_max": 1.0,
-  "luma_min": 0.028,
+  "luma_min": 0.023,
   "name": "bogaz_day_low",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 235,
-    "draw_calls_min": 233,
+    "draw_calls": 237,
+    "draw_calls_min": 230,
     "driver": "vulkan",
-    "fps": 344.76,
-    "frame_ms_avg": 2.901,
-    "frame_ms_p95": 3.928,
-    "frame_ms_p99": 5.026,
+    "fps": 157.274,
+    "frame_ms_avg": 6.358,
+    "frame_ms_p95": 8.434,
+    "frame_ms_p99": 11.264,
     "frames": 60,
-    "objects": 13403,
+    "objects": 13365,
     "os": "Windows",
-    "primitives": 218244,
+    "primitives": 220375,
     "renderer": "mobile",
     "scaling_3d_scale": 0.67,
-    "video_mem_mb": 495.742,
+    "video_mem_mb": 516.208,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/bogaz_day_low.png",
+  "png": "evidence/screens/tod_tracks/bogaz_day_low.png",
   "preset": "low",
   "scenario": "tod_tracks"
 }

@@ -4,30 +4,30 @@
     1061
   ],
   "luma_max": 1.0,
-  "luma_min": 0.004,
+  "luma_min": 0.002,
   "name": "maslak_sunset",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 227,
-    "draw_calls_min": 209,
+    "draw_calls": 226,
+    "draw_calls_min": 208,
     "driver": "vulkan",
-    "fps": 122.412,
-    "frame_ms_avg": 8.169,
-    "frame_ms_p95": 13.702,
-    "frame_ms_p99": 25.394,
+    "fps": 104.196,
+    "frame_ms_avg": 9.597,
+    "frame_ms_p95": 16.145,
+    "frame_ms_p99": 19.181,
     "frames": 60,
-    "objects": 14599,
+    "objects": 14598,
     "os": "Windows",
-    "primitives": 306826,
+    "primitives": 304630,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 571.328,
+    "video_mem_mb": 567.818,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-1/evidence/screens/tod_tracks/maslak_sunset.png",
+  "png": "evidence/screens/tod_tracks/maslak_sunset.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }

@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "maslak_night_low",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 203,
+    "draw_calls_min": 193,
+    "driver": "vulkan",
+    "fps": 144.238,
+    "frame_ms_avg": 6.933,
+    "frame_ms_p95": 12.491,
+    "frame_ms_p99": 15.357,
+    "frames": 60,
+    "objects": 14574,
+    "os": "Windows",
+    "primitives": 267612,
+    "renderer": "mobile",
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 483.063,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "evidence/screens/tod_tracks/maslak_night_low.png",
+  "preset": "low",
+  "scenario": "tod_tracks"
+}
