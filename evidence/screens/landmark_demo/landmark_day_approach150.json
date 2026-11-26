@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.046,
+  "name": "landmark_day_approach150",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 311,
+    "draw_calls_min": 311,
+    "driver": "vulkan",
+    "fps": 159.53,
+    "frame_ms_avg": 6.268,
+    "frame_ms_p95": 8.438,
+    "frame_ms_p99": 9.991,
+    "frames": 60,
+    "objects": 12770,
+    "os": "Windows",
+    "primitives": 214588,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 579.369,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-1/evidence/screens/landmark_demo/landmark_day_approach150.png",
+  "preset": "high",
+  "scenario": "landmark_demo"
+}
