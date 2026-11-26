@@ -8185,6 +8185,57 @@
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "Kestrel GT-R LOD2, shipped by tools/ship_assets.py"
+    },
+    {
+      "id": "arden_bruiser_lod0",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_bruiser/arden_bruiser_lod0.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 82978,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 7219404,
+      "sha256": "e07259cee08b6083150c0c84e11a3ac1c35403bf38ca75951d1c125da7c27041",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "Arden Bruiser LOD LOD0, shipped by tools/ship_bruiser.py"
+    },
+    {
+      "id": "arden_bruiser_lod1",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_bruiser/arden_bruiser_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 25800,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 4784464,
+      "sha256": "289610caa94ebb210f1331c26eabf7f779021cf9b7d56d9ff9da31d7219555e4",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "Arden Bruiser LOD LOD1, shipped by tools/ship_bruiser.py"
+    },
+    {
+      "id": "arden_bruiser_lod2",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_bruiser/arden_bruiser_lod2.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 6795,
+      "texture_sizes": {},
+      "material_count": 12,
+      "bytes": 3648760,
+      "sha256": "2e9914abde10047c3f65bb2260148d4a94cd341739f394ef5f0c829b8247cec5",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "Arden Bruiser LOD LOD2, shipped by tools/ship_bruiser.py"
     }
   ]
 }
