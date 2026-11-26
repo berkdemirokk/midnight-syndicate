@@ -143,3 +143,48 @@ def ridge_strip(b, p0, p1, mat, w=0.14, h=0.07):
         a, c = sec[k], sec[(k + 1) % 4]
         nrm = (a + c).normalized()
         b.poly([p0 + a, p0 + c, p1 + c, p1 + a], nrm, mat)
+
+
+def shop_front(b, f, w, trim, awn):
+    """Shop row front (u 0..w): pilasters with base and capital, a panelled stall riser under the glass,
+    a moulding over the fascia, and a scalloped valance hanging from the awning edge."""
+    for ua, ub in ((1.18, 1.36), (w - 0.3, w - 0.12)):
+        bb.fbox(b, f, ua, ub, 0.5, 2.95, -0.14, 0.0, trim)                  # pilaster shaft
+        bb.fbox(b, f, ua - 0.03, ub + 0.03, 0.3, 0.5, -0.19, 0.0, trim)     # base
+        bb.fbox(b, f, ua - 0.03, ub + 0.03, 2.85, 2.95, -0.19, 0.0, trim)   # capital
+    bb.fbox(b, f, 1.36, w - 0.3, 0.05, 0.55, -0.12, 0.0, trim)              # stall riser
+    bb.fbox(b, f, 1.5, w - 0.45, 0.14, 0.44, -0.17, -0.12, trim)            # raised panel on the riser
+    bb.fbox(b, f, 1.2, w - 0.15, 3.4, 3.46, -0.14, -0.04, trim)             # moulding over the fascia
+    edges = [1.25 + k * (w - 1.5) / 5.0 for k in range(6)]
+    for ua, ub in zip(edges[:-1], edges[1:]):                               # valance scallops
+        bb.fbox(b, f, ua + 0.06, ub - 0.06, 2.3, 2.45, -1.22, -1.14, awn)
+
+
+def pediment(b, f, uc, w, v0, apex, mat_wall, mat_trim, mat_glass):
+    """Street-facing gable on the front wall above the eave: a trimmed triangle with a square attic window."""
+    t = -0.1                                                        # stands 10 cm proud of the wall, clear of the eave
+    b.poly([f.P(uc - w / 2, v0, t), f.P(uc + w / 2, v0, t), f.P(uc, apex, t)], f.N, mat_wall)
+    bb.fbox(b, f, uc - w / 2 - 0.1, uc + w / 2 + 0.1, v0 - 0.02, v0 + 0.1, -0.16, -0.1, mat_trim)   # base band
+    s = 0.28
+    bb.fbox(b, f, uc - s - 0.08, uc + s + 0.08, apex - 0.52, apex - 0.1, -0.16, -0.1, mat_trim)    # attic frame
+    bb.fbox(b, f, uc - s, uc + s, apex - 0.46, apex - 0.16, -0.19, -0.16, mat_glass)               # attic glass
+
+
+def belvedere(b, xc, yc, zr, mat_wall, mat_roof):
+    """Small lantern on the hip apex: a four-sided body with a pyramid cap (silhouette only)."""
+    r, h = 0.9, 1.1
+    b.box((xc - r, yc - r, zr - 0.1), (xc + r, yc + r, zr + h), mat_wall)
+    top = zr + h + 0.7
+    c = [(xc - r - 0.1, yc - r - 0.1, zr + h), (xc + r + 0.1, yc - r - 0.1, zr + h),
+         (xc + r + 0.1, yc + r + 0.1, zr + h), (xc - r - 0.1, yc + r + 0.1, zr + h)]
+    for k in range(4):
+        a, d = c[k], c[(k + 1) % 4]
+        b.poly([a, d, (xc, yc, top)], (a[0] + d[0] - 2 * xc, a[1] + d[1] - 2 * yc, 1.2), mat_roof)
+
+
+def grilles(b, f, o, mat):
+    """Iron grille on a ground-floor window: three vertical bars and a transom, set just inside the reveal."""
+    u0, u1, v0, v1, r = o["u0"], o["u1"], o["v0"], o["v1"], o["r"]
+    for uc in (u0 + 0.25 * (u1 - u0), 0.5 * (u0 + u1), u0 + 0.75 * (u1 - u0)):
+        bb.fbox(b, f, uc - 0.012, uc + 0.012, v0 + 0.01, v1 - 0.01, -0.03, r - 0.06, mat)
+    bb.fbox(b, f, u0 + 0.01, u1 - 0.01, v0 + 0.6 * (v1 - v0), v0 + 0.6 * (v1 - v0) + 0.024, -0.03, r - 0.06, mat)

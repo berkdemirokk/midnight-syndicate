@@ -313,6 +313,8 @@ def build_yali(sp, lod, rng):
             for o in ops:
                 if o["kind"] == "door":
                     idt.door_panels(b, f, o, trim)
+                if o["kind"] == "win" and abs(o["v0"] - (GH + 0.6)) < 1e-6:
+                    idt.grilles(b, f, o, "M_Metal_Painted")
             for z in zs[1:]:
                 band_trim(b, f, f.W, z - 0.12, trim)
             bb.fbox(b, f, 0.0, f.W, GH - 0.1, GH + 0.05, -0.08, 0.0, "M_Concrete_Smooth")
@@ -349,6 +351,8 @@ def build_yali(sp, lod, rng):
             if lod == 0:
                 b.anchor("anchor_sign_01", f.P(cu, GH + 3.1, -0.15), f.N)
     zr = hip_roof(b, -W / 2, W / 2, 0.0, D, ze, sp["pitch"], sp["ov"], sp["ov"], sp["ov"] * 0.6, "M_Roof_Tile", trim, detail)
+    if sp["variant"] == "c":                             # roof lantern on the hip apex: the silhouette cue
+        idt.belvedere(b, 0.0, 0.5 * (D - 0.4 * sp["ov"]), zr, trim, "M_Roof_Tile")
     if detail:
         ov, pit, yf, yb = sp["ov"], math.radians(sp["pitch"]), -sp["ov"], D + sp["ov"] * 0.6
         xl, xr = -W / 2 - sp["ov"], W / 2 + sp["ov"]
@@ -381,7 +385,7 @@ def H_(fl):
 ROWS = [
     dict(id="bld_ahsap_row", variant="a", name="pastel street row, 3 houses", D=10.4, gh=0.5, siding=False, houses=[
         dict(w=5.6, F=3, wall="M_Plaster_Butter", trim="M_Plaster_Cream", cumba=[1, 2], shop="M_Awning_Red", pitch=0.34, chim=True),
-        dict(w=6.2, F=4, wall="M_Plaster_Rose", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.30, chim=False),
+        dict(w=6.2, F=4, wall="M_Plaster_Rose", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.30, chim=False, pediment=True),
         dict(w=5.2, F=3, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.34, chim=True)]),
     dict(id="bld_ahsap_row", variant="b", name="wooden row, 4 narrow houses", D=9.6, gh=0.5, siding=False, houses=[
         dict(w=4.6, F=3, wall="M_Wood_Yali_Dark", trim="M_Plaster_Cream", cumba=[1, 2], shop=None, pitch=0.36, chim=True, shut=True),
@@ -489,8 +493,11 @@ def build_row(sp, lod, rng):
                                f.N * 0.5 + Z, h["shop"] if k % 2 == 0 else "M_Plaster_Cream")
                     if detail:
                         idt.awning_arms(b, f, [1.4, w - 0.5], 2.45, 1.2, "M_Metal_Painted")
+                        idt.shop_front(b, f, w, trim, h["shop"])
                     if lod == 0:
                         b.anchor("anchor_sign_%02d" % shopi, f.P(w / 2 + 0.6, 3.2, -0.13), f.N)
+                if detail and h.get("pediment"):
+                    idt.pediment(b, f, w / 2, w, ze - 0.2, ze + 1.3, wall, trim, "M_WindowAtlas")
                 if detail:
                     excl = [(o["u0"], o["u1"], o["v0"], o["v1"]) for o in ops]
                     if h["shop"]:

@@ -8,26 +8,26 @@
   "name": "bench_day_mosque",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 223,
-    "draw_calls_min": 223,
+    "draw_calls": 228,
+    "draw_calls_min": 228,
     "driver": "vulkan",
-    "fps": 814.542,
-    "frame_ms_avg": 1.228,
-    "frame_ms_p95": 1.539,
-    "frame_ms_p99": 2.49,
+    "fps": 544.628,
+    "frame_ms_avg": 1.836,
+    "frame_ms_p95": 2.085,
+    "frame_ms_p99": 4.366,
     "frames": 60,
-    "objects": 223,
+    "objects": 228,
     "os": "Windows",
-    "primitives": 220099,
+    "primitives": 244265,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 628.487,
+    "video_mem_mb": 628.869,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_day_mosque.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-1/evidence/screens/ortakoy_benchmark/bench_day_mosque.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

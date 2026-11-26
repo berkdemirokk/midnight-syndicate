@@ -11,23 +11,23 @@
     "draw_calls": 311,
     "draw_calls_min": 256,
     "driver": "vulkan",
-    "fps": 448.243,
-    "frame_ms_avg": 2.231,
-    "frame_ms_p95": 3.164,
-    "frame_ms_p99": 3.556,
+    "fps": 451.702,
+    "frame_ms_avg": 2.214,
+    "frame_ms_p95": 2.951,
+    "frame_ms_p99": 3.217,
     "frames": 60,
     "objects": 311,
     "os": "Windows",
-    "primitives": 290437,
+    "primitives": 291595,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 620.588,
+    "video_mem_mb": 620.97,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_night_street.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-1/evidence/screens/ortakoy_benchmark/bench_night_street.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }
