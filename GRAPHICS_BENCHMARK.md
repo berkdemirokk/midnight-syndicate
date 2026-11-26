@@ -403,3 +403,31 @@ the lighting agent measured). Budgets are the next round.
 Verdict: **not passed** (lead 6.4, art 5.75, tech 5.6). Haiku reviewer scores move by up to 1.5 on
 criteria that did not change (environment, UI), so single-round deltas are noise; both now name the
 rain and puddle rings as convincing in the waterfront and finish-orbit shots.
+
+### Round 11 — 2026-11-26 (budgets, plus audio, career, showroom, drift FX, car mesh)
+
+Breakdown first (`devtools/scenarios/draw_breakdown.gd`, `docs/perf/DRAW_BREAKDOWN.md`): the High
+mirror pass cost ~194 draws, the HUD 52, rivals 70 (main pass), signs 60, FirstRow LOD2 buildings
+20-32 draws for <1k primitives; lights cost no draws. Cuts: HUD and results batched into one canvas
+item each (52 -> 17, 32 -> 7); FirstRow far LODs as MultiMeshes; the mirror draws cars one LOD lower
+(LOD1 stand-in), skips small props/dressing/parked cars, far clip 80 m; results screen turns the
+mirror and HUD off; rival LOD0 to 10 m (player keeps LOD0); Low: rivals LOD1 at 8 m, LOD2 at 25 m.
+
+Peak numbers after the cuts (RTX 5060 Ti desktop, 1920x1080, fixed probe; not phone numbers):
+
+| view | preset | draws (before) | draws now | primitives now | budget |
+|---|---|---|---|---|---|
+| race_city grid | high | 487 | 377 | 373 426 | pass (was 483k, FAIL) |
+| race_city pack | high | 501 | 405 | 421 626 | pass |
+| race_city racing_10s | high | 501 | 428 | 434 658 | pass |
+| race_city results | high | 646 | 280 | 290 270 | pass |
+| race_city drift / underpass / nitro | high | 361 / 323 / 483 | 275 / 204 / 353 | 322k / 191k / 332k | pass |
+| race_city racing_10s | medium | 305 | 260 | 258 862 | pass (350) |
+| race_city racing_10s | low | 303 | 249 | 235 537 | pass (250, 1 spare) |
+| city_presets pack (120 frames) | low / medium / high | 276 / 283 / 493 | 225 / 239 / 422 | — | pass |
+| race_replay grid_intro_mid | high | 517 | 422 | 421 776 | pass |
+| race_replay finish_orbit | high | 437 | 392 | 468 572 | FAIL primitives (450k) |
+
+Same round, other tracks merged: procedural audio (25 original sounds, engine/tyres/nitro/UI/music),
+career ladder (6 events, stars, unlocks), showroom lighting for the garage, drift smoke + skid marks,
+car mesh (straight window edges, arch liners), app icon and boot splash, Windows export.

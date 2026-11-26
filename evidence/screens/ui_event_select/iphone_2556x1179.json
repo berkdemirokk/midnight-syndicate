@@ -11,23 +11,23 @@
     "draw_calls": 26,
     "draw_calls_min": 26,
     "driver": "vulkan",
-    "fps": 2378.027,
+    "fps": 2376.897,
     "frame_ms_avg": 0.421,
-    "frame_ms_p95": 0.447,
-    "frame_ms_p99": 1.069,
+    "frame_ms_p95": 0.509,
+    "frame_ms_p99": 1.076,
     "frames": 60,
-    "objects": 1119,
+    "objects": 1118,
     "os": "Windows",
-    "primitives": 1590,
+    "primitives": 1588,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 48.321,
+    "video_mem_mb": 54.321,
     "viewport_size": [
       2556,
       1179
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ae85d2d9-ad8-1/evidence/screens/ui_event_select/iphone_2556x1179.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ui_event_select/iphone_2556x1179.png",
   "preset": "high",
   "scenario": "ui_event_select"
 }
