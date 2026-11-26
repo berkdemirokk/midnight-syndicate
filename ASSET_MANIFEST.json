@@ -11494,6 +11494,138 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Night picture of the same four houses (lit windows and shops), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/facade_row_02_night.png."
+    },
+    {
+      "id": "photo_front_modern_row_01",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/modern_row_01.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "modern_row_01.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 726960,
+      "sha256": "82643bfe9b92d1bf3e12d44bb3eac2b4c6b56729c11d3206543ea8e209624693",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Straight-on picture of four modern six-storey business-district buildings with ground-floor lobbies and shops, albedo of the photo-textured street fronts on the city tracks. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/modern_row_01.png."
+    },
+    {
+      "id": "photo_front_modern_row_01_night",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/modern_row_01_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "modern_row_01_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 626340,
+      "sha256": "f4212412cc045373d4325a5c2d54a07e9cb0ec93ba8263e1169b3325a6430aa7",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night picture of the same four modern buildings (lit offices and ground floors), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/modern_row_01_night.png."
+    },
+    {
+      "id": "photo_front_neon_row_01",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/neon_row_01.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "neon_row_01.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 826268,
+      "sha256": "36d34e00c8c51f35d06a9dddc1829fe29c5599d57b3f14b338d4bf8add03aeca",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Straight-on picture of four five-storey downtown entertainment-street buildings with blank sign boards, albedo of the photo-textured street fronts on the city tracks. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/neon_row_01.png."
+    },
+    {
+      "id": "photo_front_neon_row_01_night",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/neon_row_01_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "neon_row_01_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 684521,
+      "sha256": "6d6f88e5be41db62adf3d97371af8a7777349b5b09be5002710bd735d385dcff",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night picture of the same four entertainment-street buildings (glowing blank neon panels and lit ground floors), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/neon_row_01_night.png."
+    },
+    {
+      "id": "photo_front_market_row_01",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/market_row_01.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "market_row_01.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 937477,
+      "sha256": "244cbfac165681488f0195a64df0f197ce28cf3b65250837e7b3ade4cf8bad7e",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Straight-on picture of four five-storey old market-street buildings with stall fronts and blank sign boards, albedo of the photo-textured street fronts on the city track. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/market_row_01.png."
+    },
+    {
+      "id": "photo_front_market_row_01_night",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/market_row_01_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "market_row_01_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 734040,
+      "sha256": "9dff685216b87e11bf597f93b22830090c025f9786631fbc2c4fc25afb947534",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night picture of the same four market-street buildings (lit stalls and windows), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/market_row_01_night.png."
     }
   ]
 }

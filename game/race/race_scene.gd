@@ -288,6 +288,11 @@ func _build_race() -> void:
 			dressing.name = "EventDressing"
 			_world.add_child(dressing)
 			dressing.setup(track, config_used.time_of_day)
+	elif not dev_track_used and PhotoFronts.has_set(config_used.track_scene):
+		var rows := PhotoFronts.new()  # photo-textured rows replace the low kit buildings of the city tracks
+		rows.name = "StreetFronts"
+		_world.add_child(rows)
+		rows.setup(track, config_used.time_of_day)
 	ContactShadow.set_time_of_day(config_used.time_of_day)
 	if _post_fx == null:
 		_post_fx = PostFx.new()

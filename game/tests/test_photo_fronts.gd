@@ -55,3 +55,19 @@ func test_glow_at_night_only() -> void:
 		check(float(m.get_shader_parameter("night")) > 0.5, "facade does not glow at night")
 		check(m.get_shader_parameter("night_tex") is Texture2D, "night picture missing")
 	await cleanup([night[0]])
+
+
+func test_city_tracks_get_rows() -> void:
+	for scene_path: String in ["res://world/istanbul_maslak/istanbul_maslak.tscn", "res://world/city_01/city_01.tscn"]:
+		if not PhotoFronts.has_set(scene_path):
+			continue
+		var track: Track = (load(scene_path) as PackedScene).instantiate() as Track
+		add(track)
+		await frames(2)
+		var pf := PhotoFronts.new()
+		track.add_child(pf)
+		pf.setup(track, "night")
+		await frames(2)
+		check(pf._buildings.size() >= 20, "%s: only %d rows" % [scene_path, pf._buildings.size()])
+		metric(scene_path.get_file() + "_rows", pf._buildings.size())
+		await cleanup([track])
