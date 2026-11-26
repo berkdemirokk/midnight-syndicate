@@ -17,6 +17,8 @@ OUT = os.path.join(KIT, "out")
 REN = os.path.join(KIT, "renders")
 ROOT = os.path.abspath(os.path.join(KIT, "..", "..", ".."))
 GROUP = sys.argv[sys.argv.index("--") + 1] if "--" in sys.argv else "yali"
+# ISTANBUL_QA_DAY=1 renders a daylight sky and sun (files get a _day suffix); default is the night QA.
+DAY = os.environ.get("ISTANBUL_QA_DAY") == "1"
 os.makedirs(REN, exist_ok=True)
 
 
@@ -136,8 +138,7 @@ def qa(name):
 
 def import_glb(fn, loc=(0, 0, 0), rot=0.0, lods=(0,)):
     before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=os.path.join(ROOT, "game/assets/world/kits/istanbul", fn)
-                              if os.path.exists(os.path.join(ROOT, "game/assets/world/kits/istanbul", fn)) else os.path.join(OUT, fn))
+    bpy.ops.import_scene.gltf(filepath=os.path.join(OUT, fn))   # always the fresh build, never the shipped copy
     new = [o for o in bpy.data.objects if o not in before]
     roots = [o for o in new if o.parent is None]
     for o in new:
@@ -168,6 +169,8 @@ def setup(w=1600, h=900, samples=48, sky=(0.012, 0.02, 0.05)):
     wd = bpy.data.worlds.new("Night")
     wd.use_nodes = True
     bg = wd.node_tree.nodes["Background"]
+    if DAY:
+        sky = (0.42, 0.62, 0.92)
     bg.inputs["Color"].default_value = (sky[0], sky[1], sky[2], 1)
     bg.inputs["Strength"].default_value = 1.0
     sc.world = wd
@@ -176,14 +179,16 @@ def setup(w=1600, h=900, samples=48, sky=(0.012, 0.02, 0.05)):
 
 def sun(sc, e=0.5):
     s = bpy.data.lights.new("moon", "SUN")
-    s.energy = e
-    s.color = (0.7, 0.8, 1.0)
+    s.energy = 3.2 if DAY else e
+    s.color = (1.0, 0.96, 0.88) if DAY else (0.7, 0.8, 1.0)
     ob = bpy.data.objects.new("moon", s)
-    ob.rotation_euler = (math.radians(55), 0, math.radians(-25))
+    ob.rotation_euler = (math.radians(50), 0, math.radians(35 if DAY else -25))
     sc.collection.objects.link(ob)
 
 
 def lamp(sc, loc, e=1500.0, col=(1.0, 0.7, 0.42), size=0.3):
+    if DAY:
+        return
     L = bpy.data.lights.new("l", "POINT")
     L.energy = e
     L.color = col
@@ -222,6 +227,8 @@ def ground(sc, x0, x1, y0, y1, name="M_Asphalt_QA", color=(0.035, 0.036, 0.04), 
 
 
 def render(path):
+    if DAY:
+        path = path.replace(".png", "_day.png")
     bpy.context.scene.render.filepath = path
     bpy.ops.render.render(write_still=True)
 
@@ -247,6 +254,31 @@ def main():
     if GROUP == "yali":
         sc = street_scene(["bld_yali_a.glb", "bld_yali_b.glb", "bld_yali_c.glb"], 26.0, back=34.0, lens=26.0, look_z=5.0)
         render(os.path.join(REN, "yali_row_front.png"))
+    elif GROUP == "yali_road":                       # road-level eye, 1.2 m, about 24 m from the front
+        for v in "abc":
+            sc = setup(1600, 900)
+            sun(sc, 0.35)
+            import_glb("bld_yali_%s.glb" % v)
+            ground(sc, -80, 80, -50, 0.0)
+            ground(sc, -80, 80, 0.0, 9.0, "M_Walk_QA", (0.09, 0.09, 0.10), 0.7)
+            cam(sc, (-3.0, -24.0, 1.2), (0, 0, 5.0), 28.0)
+            render(os.path.join(REN, "yali_%s_road.png" % v))
+    elif GROUP == "rows_road":
+        for v in "abc":
+            sc = setup(1600, 900)
+            sun(sc, 0.35)
+            import_glb("bld_ahsap_row_%s.glb" % v)
+            ground(sc, -80, 80, -50, 0.0)
+            ground(sc, -80, 80, 0.0, 9.0, "M_Walk_QA", (0.09, 0.09, 0.10), 0.7)
+            cam(sc, (-4.0, -26.0, 1.2), (0, 0, 4.5), 28.0)
+            render(os.path.join(REN, "rows_%s_road.png" % v))
+    elif GROUP == "yali_close":                      # detail check: front of yali a, 12 m away, 1.6 m eye
+        sc = setup(1600, 900)
+        sun(sc, 0.35)
+        import_glb("bld_yali_a.glb")
+        ground(sc, -80, 80, -50, 0.0)
+        cam(sc, (-4.0, -13.0, 1.6), (1.0, 0.0, 4.5), 35.0)
+        render(os.path.join(REN, "yali_a_close.png"))
     elif GROUP == "yali3q":
         for v in "abc":
             sc = setup(1600, 900)

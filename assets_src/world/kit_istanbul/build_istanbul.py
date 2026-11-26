@@ -27,6 +27,7 @@ import build_buildings as bb  # noqa: E402
 import build_props as bp  # noqa: E402
 import istanbul_props as ip  # noqa: E402
 import istanbul_tex as tx  # noqa: E402
+import istanbul_detail as idt  # noqa: E402
 sys.argv = _argv
 
 OUT = os.path.join(KIT, "out")
@@ -39,16 +40,16 @@ CC0 = "game/assets/textures/cc0/"
 # ----------------------------------------------------------------------------- materials (new names only)
 # (base hex, roughness, metallic, tint for impostor, cc0 set or None, uv tile m, generated textures)
 NEW = {
-    "M_Plaster_Butter": ("#E9CF8E", 0.85, 0.0, "#CDB57A", "beige_wall_001", 2.0, None),
-    "M_Plaster_Rose": ("#D6948E", 0.85, 0.0, "#B87F7A", "beige_wall_001", 2.0, None),
-    "M_Plaster_Sky": ("#93B3C9", 0.85, 0.0, "#7C98AB", "beige_wall_001", 2.0, None),
-    "M_Plaster_Sage": ("#A9BE98", 0.85, 0.0, "#8CA07C", "beige_wall_001", 2.0, None),
-    "M_Plaster_Ochre": ("#C99A52", 0.85, 0.0, "#A98245", "clay_plaster", 2.0, None),
-    "M_Plaster_Cream": ("#E8DDC2", 0.75, 0.0, "#C9BEA4", "beige_wall_001", 2.0, None),
-    "M_Wood_Yali_Dark": ("#D9B48E", 0.7, 0.0, "#6A4A34", "dark_wooden_planks", 1.5, None),
-    "M_Wood_Oxblood": ("#C46A52", 0.7, 0.0, "#7A3A2C", "dark_wooden_planks", 1.5, None),
+    "M_Plaster_Butter": ("#D2B98A", 0.85, 0.0, "#A38B5E", "beige_wall_001", 2.0, None),
+    "M_Plaster_Rose": ("#B88277", 0.85, 0.0, "#8D6259", "beige_wall_001", 2.0, None),
+    "M_Plaster_Sky": ("#8E9E8A", 0.85, 0.0, "#6F7E6B", "beige_wall_001", 2.0, None),
+    "M_Plaster_Sage": ("#7F9079", 0.85, 0.0, "#64745D", "beige_wall_001", 2.0, None),
+    "M_Plaster_Ochre": ("#B9914F", 0.85, 0.0, "#8E6C3A", "clay_plaster", 2.0, None),
+    "M_Plaster_Cream": ("#E3D7BB", 0.75, 0.0, "#B9AD92", "beige_wall_001", 2.0, None),
+    "M_Wood_Yali_Dark": ("#8A6A4E", 0.7, 0.0, "#5A4534", "dark_wooden_planks", 1.5, None),
+    "M_Wood_Oxblood": ("#8C4A3D", 0.7, 0.0, "#6B3A2F", "dark_wooden_planks", 1.5, None),
     "M_Paint_Shutter_Green": ("#2F5B4A", 0.6, 0.0, "#2F5B4A", None, 1.0, None),
-    "M_Paint_Door_Blue": ("#2E4A6B", 0.6, 0.0, "#2E4A6B", None, 1.0, None),
+    "M_Paint_Door_Blue": ("#34495A", 0.6, 0.0, "#34495A", None, 1.0, None),
     "M_Roof_Tile": ("#FFFFFF", 0.8, 0.0, "#7A3A22", None, 1.2, ("roof_tile_basecolor.png",)),
     "M_Cobble": ("#FFFFFF", 0.8, 0.0, "#585553", None, 1.0,
                  ("cobble_basecolor.png", "cobble_normal.png", "cobble_roughness.png")),
@@ -104,22 +105,28 @@ def win_op(ops, rng, u0, u1, v0, v1, wall, p, detail, shut=False, balc=False):
                     uv=bb.tile_uv(t), tile=t, wall=wall, bars=False, sill=False, balc=balc, shut=shut))
 
 
-def win_frames(b, f, ops, trim, shutter="M_Paint_Shutter_Green"):
+def win_frames(b, f, ops, trim, shutter="M_Paint_Shutter_Green", surround=True):
+    j = 0
     for o in ops:
         if o["kind"] != "win":
             continue
         u0, u1, v0, v1, r = o["u0"], o["u1"], o["v0"], o["v1"], o["r"]
-        bb.fbox(b, f, u0, u0 + 0.07, v0, v1, r - 0.07, r, trim)
+        if surround:
+            idt.casing(b, f, o, trim)                               # proud surround, sill, cornice lip
+        bb.fbox(b, f, u0, u0 + 0.07, v0, v1, r - 0.07, r, trim)     # sash frame inside the reveal
         bb.fbox(b, f, u1 - 0.07, u1, v0, v1, r - 0.07, r, trim)
         bb.fbox(b, f, u0, u1, v1 - 0.07, v1, r - 0.07, r, trim)
-        bb.fbox(b, f, u0 - 0.06, u1 + 0.06, v0 - 0.07, v0 + 0.02, -0.12, r, trim)
+        bb.fbox(b, f, u0, u1, v0, v0 + 0.07, r - 0.07, r, trim)
         um = 0.5 * (u0 + u1)
         bb.fbox(b, f, um - 0.025, um + 0.025, v0, v1, r - 0.06, r, trim)
         bb.fbox(b, f, u0, u1, v0 + 0.62 * (v1 - v0) - 0.025, v0 + 0.62 * (v1 - v0) + 0.025, r - 0.06, r, trim)
         if o.get("shut"):
-            w = 0.5 * (u1 - u0)
-            bb.fbox(b, f, u0 - w - 0.02, u0 - 0.02, v0, v1, -0.05, 0.0, shutter)
-            bb.fbox(b, f, u1 + 0.02, u1 + w + 0.02, v0, v1, -0.05, 0.0, shutter)
+            mode = j % 3
+            j += 1
+            if mode == 0:
+                idt.open_shutter(b, f, o, shutter)
+            elif mode == 1:
+                idt.closed_shutters(b, f, o, shutter)
 
 
 def cumba(b, f, uc, w, proj, vb, h, wall, trim, rng, detail, p_lit, roof=True, tile_mat="M_Roof_Tile"):
@@ -150,6 +157,12 @@ def cumba(b, f, uc, w, proj, vb, h, wall, trim, rng, detail, p_lit, roof=True, t
                 gl = [P(qa, v0), P(qc, v0), P(qc, v1), P(qa, v1)]
                 t = bb.pick_tile(rng, p_lit)
                 b.poly([q + nrm[k] * 0.026 for q in gl], nrm[k], "M_WindowAtlas", bb.tile_uv(t))
+            if detail:                                           # panelled apron: trim border, wall panel
+                ap = [P(pa, vb + 0.1), P(pc, vb + 0.1), P(pc, v0 - 0.12), P(pa, v0 - 0.12)]
+                b.poly([q + nrm[k] * 0.02 for q in ap], nrm[k], trim)
+                ins = [(pa[0] + (pc[0] - pa[0]) * t, pa[1] + (pc[1] - pa[1]) * t) for t in (0.1, 0.9)]
+                b.poly([P(ins[0], vb + 0.16) + nrm[k] * 0.03, P(ins[1], vb + 0.16) + nrm[k] * 0.03,
+                        P(ins[1], v0 - 0.16) + nrm[k] * 0.03, P(ins[0], v0 - 0.16) + nrm[k] * 0.03], nrm[k], wall)
             if detail and k == 1:
                 mid = (pa[0] + (pc[0] - pa[0]) * 0.5, pa[1])
                 b.poly([P((mid[0] - 0.03, mid[1]), v0) + nrm[k] * 0.03, P((mid[0] + 0.03, mid[1]), v0) + nrm[k] * 0.03,
@@ -228,6 +241,11 @@ def gable_roof_x(b, x0, x1, y0, y1, ze, rise, ovf, ovb, ovs, mat, wall, trim, de
     if detail:
         b.box((xl, yf - 0.03, zf - 0.02), (xr, yf + 0.05, zf + 0.18), trim)
         b.box((xl, ym - 0.07, zr), (xr, ym + 0.07, zr + 0.12), trim)
+        x = xl + 0.5                                             # rafter tails under both eaves
+        while x < xr - 0.3:
+            b.box((x, yf - 0.2, zf - 0.2), (x + 0.1, yf, zf - 0.04), trim)
+            b.box((x, yb, zb - 0.2), (x + 0.1, yb + 0.2, zb - 0.04), trim)
+            x += 0.85
     return zr
 
 
@@ -273,6 +291,8 @@ def build_yali(sp, lod, rng):
                     if fl == 0 and k == sp["door"]:
                         ops.append(dict(kind="door", u0=cu - 0.7, u1=cu + 0.7, v0=GH, v1=GH + 2.5, r=0.25 if detail else 0.05,
                                         glass="M_Paint_Door_Blue", wall=base))
+                        if detail:
+                            win_op(ops, rng, cu - 0.62, cu + 0.62, GH + 2.56, GH + 2.9, wall, 0.5, True)
                     elif fl in sp["cumba_f"] and k in sp["cumba"]:
                         continue
                     else:
@@ -285,13 +305,31 @@ def build_yali(sp, lod, rng):
         bb.wall_decomp(b, f, ops, wall, base, GH)
         bb.emit_ops(b, f, ops, dface)
         if detail:
-            win_frames(b, f, ops, trim)
+            win_frames(b, f, ops, trim, surround=(name == "front"))
+            for o in ops:
+                if o["kind"] == "door":
+                    idt.door_panels(b, f, o, trim)
             for z in zs[1:]:
                 band_trim(b, f, f.W, z - 0.12, trim)
             bb.fbox(b, f, 0.0, f.W, GH - 0.1, GH + 0.05, -0.08, 0.0, "M_Concrete_Smooth")
             bb.fbox(b, f, -0.05, 0.22, GH, ze, -0.07, 0.0, trim)
             bb.fbox(b, f, f.W - 0.22, f.W + 0.05, GH, ze, -0.07, 0.0, trim)
             bb.fbox(b, f, -0.1, f.W + 0.1, ze - 0.22, ze, -0.15, 0.0, trim)
+            if name == "front":
+                excl = [(o["u0"], o["u1"], o["v0"], o["v1"]) for o in ops]
+                for fl in sp["cumba_f"]:
+                    for k in sp["cumba"]:
+                        cx = (k + 0.5) * bwid
+                        excl.append((cx - 2.2, cx + 2.2, zs[fl], zs[fl] + FH))
+                idt.siding(b, f, excl, f.W, GH + 0.05, ze - 0.25, wall)
+                idt.downpipe(b, f, 0.3, GH + 0.05, ze - 0.3, "M_Metal_Painted")
+                idt.downpipe(b, f, f.W - 0.4, GH + 0.05, ze - 0.3, "M_Metal_Painted")
+                cu_d = (sp["door"] + 0.5) * bwid
+                for sx in (-1, 1):
+                    idt.lantern(b, f, cu_d + sx * 1.35, GH + 1.7, "M_Metal_Painted")
+                for i, o in enumerate(ops):
+                    if o["kind"] == "win" and abs(o["v0"] - (zs[1] + 0.6)) < 1e-6 and i % 2 == 0:
+                        idt.flower_box(b, f, o, "M_Wood_Yali_Dark", "M_Paint_Shutter_Green")
         if name == "front":
             for fl in sp["cumba_f"]:
                 for k in sp["cumba"]:
@@ -301,13 +339,25 @@ def build_yali(sp, lod, rng):
             for i in range(3):                         # entrance steps
                 bb.fbox(b, f, cu - 0.95, cu + 0.95, 0.0, 0.3 * (i + 1), -0.35 * (3 - i), 0.0, "M_Concrete_Smooth")
             if detail:
-                bb.fbox(b, f, cu - 1.1, cu + 1.1, GH + 2.55, GH + 2.75, -0.7, 0.0, trim)       # door hood
+                bb.fbox(b, f, cu - 1.1, cu + 1.1, GH + 2.95, GH + 3.1, -0.7, 0.0, trim)        # door hood over the transom
                 for sx in (-1, 1):
-                    bb.fbox(b, f, cu + sx * 0.95 - 0.04, cu + sx * 0.95 + 0.04, GH + 1.9, GH + 2.55, -0.65, -0.55, trim)
+                    bb.fbox(b, f, cu + sx * 0.95 - 0.04, cu + sx * 0.95 + 0.04, GH + 1.9, GH + 2.95, -0.65, -0.55, trim)
             if lod == 0:
                 b.anchor("anchor_sign_01", f.P(cu, GH + 3.1, -0.15), f.N)
     zr = hip_roof(b, -W / 2, W / 2, 0.0, D, ze, sp["pitch"], sp["ov"], sp["ov"], sp["ov"] * 0.6, "M_Roof_Tile", trim, detail)
     if detail:
+        ov, pit, yf, yb = sp["ov"], math.radians(sp["pitch"]), -sp["ov"], D + sp["ov"] * 0.6
+        xl, xr = -W / 2 - sp["ov"], W / 2 + sp["ov"]
+        ym, zeave = 0.5 * (yf + yb), ze - math.tan(pit) * sp["ov"]
+        hh = 0.5 * max(2.0, (xr - xl) - (yb - yf))
+        for p0, p1 in (((xl, yf, zeave), (-hh, ym, zr)), ((xr, yf, zeave), (hh, ym, zr)),
+                       ((xl, yb, zeave), (-hh, ym, zr)), ((xr, yb, zeave), (hh, ym, zr))):
+            idt.ridge_strip(b, p0, p1, "M_Roof_Tile")
+        if sp["variant"] in ("a", "c"):
+            yd = yf + 0.5 * (ym - yf)
+            zsl = zeave + (zr - zeave) * (yd - yf) / (ym - yf)
+            for xc in (-0.25 * W, 0.25 * W):
+                idt.dormer(b, xc, yd - 0.45, zsl - 0.25, 1.1, trim, "M_WindowAtlas", "M_Roof_Tile", rng)
         for (cx, cy) in sp["chim"]:
             chimney(b, cx, cy, ze + 0.6, zr - ze + 0.7)
         # exposed rafter brackets under the wide eave (front and back)
@@ -325,16 +375,16 @@ def H_(fl):
 
 
 ROWS = [
-    dict(id="bld_ahsap_row", variant="a", name="pastel street row, 3 houses", D=10.4, gh=0.5, houses=[
+    dict(id="bld_ahsap_row", variant="a", name="pastel street row, 3 houses", D=10.4, gh=0.5, siding=False, houses=[
         dict(w=5.6, F=3, wall="M_Plaster_Butter", trim="M_Plaster_Cream", cumba=[1, 2], shop="M_Awning_Red", pitch=0.34, chim=True),
         dict(w=6.2, F=4, wall="M_Plaster_Rose", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.30, chim=False),
         dict(w=5.2, F=3, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.34, chim=True)]),
-    dict(id="bld_ahsap_row", variant="b", name="wooden row, 4 narrow houses", D=9.6, gh=0.5, houses=[
+    dict(id="bld_ahsap_row", variant="b", name="wooden row, 4 narrow houses", D=9.6, gh=0.5, siding=False, houses=[
         dict(w=4.6, F=3, wall="M_Wood_Yali_Dark", trim="M_Plaster_Cream", cumba=[1, 2], shop=None, pitch=0.36, chim=True, shut=True),
         dict(w=5.0, F=3, wall="M_Plaster_Ochre", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.32, chim=False, shut=True),
         dict(w=4.4, F=4, wall="M_Wood_Oxblood", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.36, chim=True, shut=True),
         dict(w=5.2, F=3, wall="M_Plaster_Sage", trim="M_Plaster_Cream", cumba=[1], shop="M_Awning_Red", pitch=0.32, chim=False, shut=True)]),
-    dict(id="bld_ahsap_row", variant="c", name="old apartment row with balconies and a corner cumba", D=11.0, gh=0.5, houses=[
+    dict(id="bld_ahsap_row", variant="c", name="old apartment row with balconies and a corner cumba", D=11.0, gh=0.5, siding=False, houses=[
         dict(w=6.4, F=5, wall="M_Plaster_Cream", trim="M_Plaster_Ochre", cumba=[2, 3], shop="M_Awning_Teal", pitch=0.26, chim=True, balc=[1, 3, 4]),
         dict(w=6.2, F=5, wall="M_Plaster_Ochre", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Red", pitch=0.26, chim=False, balc=[1, 2, 3, 4]),
         dict(w=5.6, F=4, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[1, 2, 3], shop=None, pitch=0.30, chim=True)]),
@@ -406,7 +456,12 @@ def build_row(sp, lod, rng):
             bb.wall_decomp(b, f, ops, wall, base, gh if name == "front" else 0.0)
             bb.emit_ops(b, f, ops, dd)
             if detail:
-                win_frames(b, f, ops, trim)
+                win_frames(b, f, ops, trim, surround=(name == "front"))
+                for o in ops:
+                    if o["kind"] == "door":
+                        idt.door_panels(b, f, o, trim)
+                    if o.get("balc"):
+                        idt.balcony_bars(b, f, o, "M_Metal_Painted")
             if dd:
                 for fl in range(1, F):
                     band_trim(b, f, w, 3.5 + (fl - 1) * 3.1 - 0.12, trim)
@@ -428,8 +483,26 @@ def build_row(sp, lod, rng):
                         ub = ua + (w - 1.5) / 5.0
                         b.poly([f.P(ua, 2.95, -0.05), f.P(ub, 2.95, -0.05), f.P(ub, 2.45, -1.2), f.P(ua, 2.45, -1.2)],
                                f.N * 0.5 + Z, h["shop"] if k % 2 == 0 else "M_Plaster_Cream")
+                    if detail:
+                        idt.awning_arms(b, f, [1.4, w - 0.5], 2.45, 1.2, "M_Metal_Painted")
                     if lod == 0:
                         b.anchor("anchor_sign_%02d" % shopi, f.P(w / 2 + 0.6, 3.2, -0.13), f.N)
+                if detail:
+                    excl = [(o["u0"], o["u1"], o["v0"], o["v1"]) for o in ops]
+                    if h["shop"]:
+                        excl.append((1.2, w - 0.15, 2.95, 3.4))
+                    for fl in h["cumba"]:
+                        z0 = 3.5 + (fl - 1) * 3.1
+                        cw = min(2.3, w - 1.8)
+                        excl.append((w / 2 - cw / 2 - 0.9, w / 2 + cw / 2 + 0.9, z0, z0 + 3.0))
+                    if sp.get("siding", True):
+                        idt.siding(b, f, excl, w, gh + 0.05, ze - 0.25, wall)
+                    if not h["shop"]:
+                        idt.downpipe(b, f, 0.3, gh + 0.05, ze - 0.3, "M_Metal_Painted")
+                        idt.lantern(b, f, w / 2 + 0.78, 1.7, "M_Metal_Painted")
+                    for i, o in enumerate(ops):
+                        if sp["variant"] != "a" and o["kind"] == "win" and abs(o["v0"] - 4.1) < 1e-6 and i % 3 == 0:
+                            idt.flower_box(b, f, o, "M_Wood_Yali_Dark", "M_Paint_Shutter_Green")
                 for fl in h["cumba"]:
                     z0 = 3.5 + (fl - 1) * 3.1
                     cw = min(2.3, w - 1.8)

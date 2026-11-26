@@ -31,6 +31,8 @@ func test_catalog_files_and_materials() -> void:
 	for b: Variant in buildings:
 		var bd: Dictionary = b
 		check(int(bd["tris"]["LOD1"]) <= 0.3 * int(bd["tris"]["LOD0"]), "%s LOD1 over 30 percent of LOD0" % bd["id"])
+		check(int(bd["tris"]["LOD0"]) <= 12000, "%s LOD0 over the 12000 triangle budget" % bd["id"])
+		check(int(bd["tris"]["LOD1"]) <= 1200, "%s LOD1 over the 1200 triangle budget" % bd["id"])
 		for p: Variant in bd["impostor_textures"]:
 			check(FileAccess.file_exists(DIR + String(p)), "missing impostor " + String(p))
 			check(FileAccess.file_exists("res://assets/world/kits/buildings/" + String(p)), "impostor not copied to buildings/textures: " + String(p))

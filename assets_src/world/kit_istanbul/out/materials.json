@@ -3,13 +3,13 @@
  "generator": "build_istanbul.py",
  "materials": {
   "M_Plaster_Butter": {
-   "base_color": "#E9CF8E",
+   "base_color": "#D2B98A",
    "roughness": 0.85,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#CDB57A",
+   "tint_for_impostor": "#A38B5E",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
@@ -20,13 +20,13 @@
    "source": "cc0 set beige_wall_001"
   },
   "M_Plaster_Rose": {
-   "base_color": "#D6948E",
+   "base_color": "#B88277",
    "roughness": 0.85,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#B87F7A",
+   "tint_for_impostor": "#8D6259",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
@@ -37,13 +37,13 @@
    "source": "cc0 set beige_wall_001"
   },
   "M_Plaster_Sky": {
-   "base_color": "#93B3C9",
+   "base_color": "#8E9E8A",
    "roughness": 0.85,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#7C98AB",
+   "tint_for_impostor": "#6F7E6B",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
@@ -54,13 +54,13 @@
    "source": "cc0 set beige_wall_001"
   },
   "M_Plaster_Sage": {
-   "base_color": "#A9BE98",
+   "base_color": "#7F9079",
    "roughness": 0.85,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#8CA07C",
+   "tint_for_impostor": "#64745D",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
@@ -71,13 +71,13 @@
    "source": "cc0 set beige_wall_001"
   },
   "M_Plaster_Ochre": {
-   "base_color": "#C99A52",
+   "base_color": "#B9914F",
    "roughness": 0.85,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#A98245",
+   "tint_for_impostor": "#8E6C3A",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/clay_plaster/basecolor.jpg",
@@ -88,13 +88,13 @@
    "source": "cc0 set clay_plaster"
   },
   "M_Plaster_Cream": {
-   "base_color": "#E8DDC2",
+   "base_color": "#E3D7BB",
    "roughness": 0.75,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#C9BEA4",
+   "tint_for_impostor": "#B9AD92",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
@@ -105,13 +105,13 @@
    "source": "cc0 set beige_wall_001"
   },
   "M_Wood_Yali_Dark": {
-   "base_color": "#D9B48E",
+   "base_color": "#8A6A4E",
    "roughness": 0.7,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#6A4A34",
+   "tint_for_impostor": "#5A4534",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/dark_wooden_planks/basecolor.jpg",
@@ -122,13 +122,13 @@
    "source": "cc0 set dark_wooden_planks"
   },
   "M_Wood_Oxblood": {
-   "base_color": "#C46A52",
+   "base_color": "#8C4A3D",
    "roughness": 0.7,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#7A3A2C",
+   "tint_for_impostor": "#6B3A2F",
    "licence": "CC0-1.0",
    "textures": {
     "basecolor": "game/assets/textures/cc0/dark_wooden_planks/basecolor.jpg",
@@ -149,13 +149,13 @@
    "licence": "project-owned"
   },
   "M_Paint_Door_Blue": {
-   "base_color": "#2E4A6B",
+   "base_color": "#34495A",
    "roughness": 0.6,
    "metallic": 0.0,
    "emission_color": "#000000",
    "emission_strength": 0.0,
    "uv": "metres, tiled every uv_tile_m",
-   "tint_for_impostor": "#2E4A6B",
+   "tint_for_impostor": "#34495A",
    "licence": "project-owned"
   },
   "M_Roof_Tile": {

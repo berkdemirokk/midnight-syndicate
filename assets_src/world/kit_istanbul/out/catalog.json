@@ -20,11 +20,11 @@
     "cumba"
    ],
    "storeys": 3,
-   "width": 21.28,
-   "depth": 13.36,
+   "width": 21.299,
+   "depth": 13.379,
    "height": 14.697,
    "tris": {
-    "LOD0": 4460,
+    "LOD0": 7246,
     "LOD1": 396,
     "LOD2": 16
    },
@@ -33,12 +33,14 @@
     "M_Concrete_Smooth",
     "M_Concrete_Stained",
     "M_ImpostorAtlas",
+    "M_Metal_Painted",
     "M_Paint_Door_Blue",
     "M_Paint_Shutter_Green",
     "M_Plaster_Butter",
     "M_Plaster_Cream",
     "M_Roof_Tile",
-    "M_WindowAtlas"
+    "M_WindowAtlas",
+    "M_Wood_Yali_Dark"
    ],
    "impostor_textures": [
     "textures/impostor_bld_yali_a_basecolor.png",
@@ -64,9 +66,9 @@
     "name": "bld_yali_a-colonly",
     "type": "box",
     "size": [
-     21.28,
+     21.299,
      14.697,
-     13.36
+     13.379
     ],
     "center": [
      0.0,
@@ -89,11 +91,11 @@
     "cumba"
    ],
    "storeys": 2,
-   "width": 27.48,
-   "depth": 13.2,
+   "width": 27.499,
+   "depth": 13.219,
    "height": 11.021,
    "tris": {
-    "LOD0": 3814,
+    "LOD0": 6358,
     "LOD1": 318,
     "LOD2": 16
    },
@@ -102,6 +104,7 @@
     "M_Concrete_Smooth",
     "M_Concrete_Stained",
     "M_ImpostorAtlas",
+    "M_Metal_Painted",
     "M_Paint_Door_Blue",
     "M_Paint_Shutter_Green",
     "M_Plaster_Cream",
@@ -133,9 +136,9 @@
     "name": "bld_yali_b-colonly",
     "type": "box",
     "size": [
-     27.48,
+     27.499,
      11.021,
-     13.2
+     13.219
     ],
     "center": [
      0.0,
@@ -158,11 +161,11 @@
     "cumba"
    ],
    "storeys": 3,
-   "width": 18.28,
-   "depth": 14.92,
+   "width": 18.299,
+   "depth": 14.939,
    "height": 15.241,
    "tris": {
-    "LOD0": 4238,
+    "LOD0": 6760,
     "LOD1": 334,
     "LOD2": 16
    },
@@ -171,12 +174,14 @@
     "M_Concrete_Smooth",
     "M_Concrete_Stained",
     "M_ImpostorAtlas",
+    "M_Metal_Painted",
     "M_Paint_Door_Blue",
     "M_Paint_Shutter_Green",
     "M_Plaster_Cream",
     "M_Plaster_Rose",
     "M_Roof_Tile",
-    "M_WindowAtlas"
+    "M_WindowAtlas",
+    "M_Wood_Yali_Dark"
    ],
    "impostor_textures": [
     "textures/impostor_bld_yali_c_basecolor.png",
@@ -202,9 +207,9 @@
     "name": "bld_yali_c-colonly",
     "type": "box",
     "size": [
-     18.28,
+     18.299,
      15.241,
-     14.92
+     14.939
     ],
     "center": [
      0.0,
@@ -228,10 +233,10 @@
    ],
    "storeys": 4,
    "width": 17.24,
-   "depth": 12.0,
+   "depth": 12.2,
    "height": 14.48,
    "tris": {
-    "LOD0": 3968,
+    "LOD0": 5216,
     "LOD1": 488,
     "LOD2": 36
    },
@@ -243,6 +248,7 @@
     "M_Concrete_Smooth",
     "M_Concrete_Stained",
     "M_ImpostorAtlas",
+    "M_Metal_Painted",
     "M_Paint_Door_Blue",
     "M_Plaster_Butter",
     "M_Plaster_Cream",
@@ -293,12 +299,12 @@
     "size": [
      17.24,
      14.48,
-     12.0
+     12.2
     ],
     "center": [
      0.0,
      7.24,
-     -4.8
+     -4.9
     ]
    }
   },
@@ -317,10 +323,10 @@
    ],
    "storeys": 4,
    "width": 19.44,
-   "depth": 11.2,
+   "depth": 11.4,
    "height": 15.868,
    "tris": {
-    "LOD0": 4218,
+    "LOD0": 6306,
     "LOD1": 550,
     "LOD2": 48
    },
@@ -332,6 +338,7 @@
     "M_Concrete_Smooth",
     "M_Concrete_Stained",
     "M_ImpostorAtlas",
+    "M_Metal_Painted",
     "M_Paint_Door_Blue",
     "M_Paint_Shutter_Green",
     "M_Plaster_Cream",
@@ -384,12 +391,12 @@
     "size": [
      19.44,
      15.868,
-     11.2
+     11.4
     ],
     "center": [
      0.0,
      7.934,
-     -4.4
+     -4.5
     ]
    }
   },
@@ -408,10 +415,10 @@
    ],
    "storeys": 5,
    "width": 18.44,
-   "depth": 12.6,
+   "depth": 12.8,
    "height": 18.67,
    "tris": {
-    "LOD0": 6484,
+    "LOD0": 9616,
     "LOD1": 648,
     "LOD2": 36
    },
@@ -425,6 +432,7 @@
     "M_ImpostorAtlas",
     "M_Metal_Painted",
     "M_Paint_Door_Blue",
+    "M_Paint_Shutter_Green",
     "M_Plaster_Cream",
     "M_Plaster_Ochre",
     "M_Plaster_Sky",
@@ -432,7 +440,8 @@
     "M_ShopGlass",
     "M_ShopInterior",
     "M_SignBand",
-    "M_WindowAtlas"
+    "M_WindowAtlas",
+    "M_Wood_Yali_Dark"
    ],
    "impostor_textures": [
     "textures/impostor_bld_ahsap_row_c_basecolor.png",
@@ -473,12 +482,12 @@
     "size": [
      18.44,
      18.67,
-     12.6
+     12.8
     ],
     "center": [
      0.0,
      9.335,
-     -5.1
+     -5.2
     ]
    }
   }
