@@ -321,7 +321,7 @@ def _y(s):
 
 
 # nose: grille opening |x| <= 0.58, z .36..0.60; headlight pods |x| .62..0.88, two stacked z bands
-GR_X, GR_Z0, GR_Z1 = 0.58, 0.36, 0.60
+GR_X, GR_Z0, GR_Z1 = 0.60, 0.34, 0.66  # full-width grille, taller
 POD_X0, POD_X1 = 0.62, 0.90
 POD_LOW = (0.495, 0.575)
 POD_UP = (0.595, 0.670)
@@ -497,11 +497,17 @@ def build_trim(mats, body):
         add_thick(bm, P, N, 0.03, 0.03, 0)
     # grille: backing dark mesh (carbon bars) and one thick chrome-free satin bar, all inside the opening
     yb = -0.004 - Y0
-    for z in (0.395, 0.435, 0.515, 0.555):
-        add_box(bm, (0.0, yb, z), (1.10, 0.016, 0.016), 1)
-    add_box(bm, (0.0, yb - 0.006, 0.475), (1.12, 0.024, 0.046), 2)  # thick centre bar, polished (slot 2)
-    for xk in np.linspace(-0.50, 0.50, 9):
-        add_box(bm, (xk, yb + 0.003, 0.48), (0.008, 0.012, 0.22), 1)
+    for z in (0.38, 0.42, 0.46, 0.54, 0.58, 0.62):
+        add_box(bm, (0.0, yb, z), (1.16, 0.016, 0.016), 1)  # dark mesh bars
+    add_box(bm, (0.0, yb - 0.006, 0.50), (1.18, 0.024, 0.040), 2)  # thick centre bar, chrome (slot 2)
+    for xk in np.linspace(-0.54, 0.54, 10):
+        add_box(bm, (xk, yb + 0.003, 0.50), (0.008, 0.012, 0.30), 1)  # dark mesh slats
+    for z in (GR_Z0 + 0.008, GR_Z1 - 0.008):  # chrome surround: top and bottom
+        add_box(bm, (0.0, yb - 0.004, z), (2 * GR_X + 0.03, 0.024, 0.024), 2)
+    # dark mesh face across the opening: hides the pocket floor, so no pink studio reflection shows inside
+    add_box(bm, (0.0, yb + 0.002, 0.50), (2 * GR_X - 0.01, 0.010, GR_Z1 - GR_Z0 - 0.02), 1)
+    for sx in (1, -1):  # chrome surround: sides
+        add_box(bm, (sx * (GR_X - 0.004), yb - 0.004, 0.50), (0.024, 0.024, GR_Z1 - GR_Z0), 2)
     # hood: two blade vents each side on the bulge
     for sg in (1, -1):
         for xa, xb in ((0.060, 0.115), (0.175, 0.230)):

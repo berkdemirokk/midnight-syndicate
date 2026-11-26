@@ -312,6 +312,8 @@ def main():
         bmesh.ops.triangulate(bm, faces=list(bm.faces))
         bm.to_mesh(ob.data)
         bm.free()
+    B.smooth_normals(objs["body"])  # custom normals: Kestrel's approach (paint streaks near cut edges)
+    B.analytic_normals(objs["body"])
     tris0, total0 = build_lod0_check(objs)
     # the scene floor and rig materials are not part of the car: keep only car materials used
     for n in ("M_Clay",):

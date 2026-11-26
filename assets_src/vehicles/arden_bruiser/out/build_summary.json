@@ -1,18 +1,18 @@
 {
   "tris": {
-    "lod0": 83436,
+    "lod0": 83330,
     "lod1": 25796,
-    "lod2": 6799
+    "lod2": 6796
   },
   "tris_by_object": {
     "0": {
-      "body": 32029,
-      "glass": 2710,
+      "body": 31895,
+      "glass": 2832,
       "underbody": 4689,
-      "trim": 1444,
-      "lights_front": 2112,
+      "trim": 1540,
+      "lights_front": 1932,
       "lights_rear": 176,
-      "interior": 2824,
+      "interior": 2814,
       "exhaust": 896,
       "plate_rear": 60,
       "wheel_FL": 7540,
@@ -25,13 +25,13 @@
       "brake_RR": 1488
     },
     "1": {
-      "body": 32029,
-      "glass": 2710,
+      "body": 31895,
+      "glass": 2832,
       "underbody": 4689,
-      "trim": 1444,
-      "lights_front": 2112,
+      "trim": 1540,
+      "lights_front": 1932,
       "lights_rear": 176,
-      "interior": 2824,
+      "interior": 2814,
       "exhaust": 896,
       "plate_rear": 60,
       "wheel_FL": 7540,
@@ -44,11 +44,11 @@
       "brake_RR": 1488
     },
     "2": {
-      "body": 32029,
-      "glass": 2710,
+      "body": 31895,
+      "glass": 2832,
       "underbody": 4689,
-      "trim": 1444,
-      "lights_front": 2112,
+      "trim": 1540,
+      "lights_front": 1932,
       "lights_rear": 176,
       "exhaust": 896,
       "plate_rear": 60,
@@ -59,14 +59,14 @@
     }
   },
   "glb": {
-    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-11\\assets_src\\vehicles\\arden_bruiser\\out\\arden_bruiser_lod0.glb",
-    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-11\\assets_src\\vehicles\\arden_bruiser\\out\\arden_bruiser_lod1.glb",
-    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-11\\assets_src\\vehicles\\arden_bruiser\\out\\arden_bruiser_lod2.glb"
+    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_74ca9b41-d2d-2\\assets_src\\vehicles\\arden_bruiser\\out\\arden_bruiser_lod0.glb",
+    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_74ca9b41-d2d-2\\assets_src\\vehicles\\arden_bruiser\\out\\arden_bruiser_lod1.glb",
+    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_74ca9b41-d2d-2\\assets_src\\vehicles\\arden_bruiser\\out\\arden_bruiser_lod2.glb"
   },
   "glb_bytes": {
-    "0": 7287956,
-    "1": 4759492,
-    "2": 3621856
+    "0": 7275576,
+    "1": 4759564,
+    "2": 3622776
   },
   "textures": {
     "paint_flake_normal": [

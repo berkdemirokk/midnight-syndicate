@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://5davy65kr4ro"
+uid="uid://cv7u4pr31viep"
 path="res://.godot/imported/arden_bruiser_lod0.glb-c64a968a2dab2b0ae0744bf1e72b5c71.scn"
 
 [deps]
@@ -42,4 +42,4 @@ materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
-gltf/texture_map_mode=1
+gltf/texture_map_mode=0

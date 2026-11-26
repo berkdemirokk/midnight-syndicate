@@ -69,19 +69,19 @@ def _pchip(pts):
 
 
 L_TOTAL = 4.80  # station s runs 0 at the nose to L_TOTAL at the tail (overall 4.85 with nose cap and tail ring); curves are defined to 4.85
-_Z_TOP = _pchip([(0, .700), (0.10, .775), (0.40, .815), (0.95, .865), (1.40, .895), (1.80, .925),
-                 (2.00, 1.060), (2.25, 1.235), (2.50, 1.335), (2.80, 1.358), (3.10, 1.340),
-                 (3.45, 1.215), (3.75, 1.075), (4.00, .985), (4.20, .935), (4.45, .940),
+_Z_TOP = _pchip([(0, .740), (0.10, .800), (0.40, .845), (0.95, .890), (1.40, .915), (1.80, .945),
+                 (2.00, 1.085), (2.25, 1.260), (2.50, 1.360), (2.80, 1.385), (3.10, 1.365),
+                 (3.45, 1.235), (3.70, 1.040), (3.95, .960), (4.20, .940), (4.45, .945),
                  (4.62, .975), (4.74, .958), (4.85, .880)])
 _Z_BOT = _pchip([(0, .270), (0.15, .190), (0.50, .135), (4.00, .135), (4.25, .205), (4.85, .500)])
 _W_MAX = _pchip([(0, .735), (0.06, .830), (0.25, .915), (0.95, .958), (1.45, .915), (2.40, .868),
                  (3.10, .930), (3.80, .960), (4.25, .940), (4.60, .880), (4.85, .800)])
-_Z_SH = _pchip([(0, .640), (0.12, .700), (0.50, .760), (0.95, .815), (1.50, .855), (2.00, .895),
-                (2.70, .925), (3.20, .950), (3.80, .965), (4.30, .945), (4.85, .900)])
-_N_TOP = _pchip([(0, 2.0), (1.10, 2.2), (1.70, 2.8), (2.30, 3.0), (3.00, 2.9), (3.70, 2.6), (4.85, 2.0)])
+_Z_SH = _pchip([(0, .660), (0.12, .720), (0.50, .780), (0.95, .835), (1.50, .875), (2.00, .910),
+                (2.70, .935), (3.20, .955), (3.80, .965), (4.30, .945), (4.85, .900)])
+_N_TOP = _pchip([(0, 3.0), (1.10, 3.2), (1.70, 3.6), (2.30, 3.8), (3.00, 3.5), (3.70, 3.0), (4.85, 2.4)])
 _SHELF = _pchip([(0, 0.0), (1.50, 0.0), (1.90, .045), (3.60, .050), (4.20, 0.0), (4.85, 0.0)])
-BULGE_H = 0.034  # power bulge height on the bonnet centre line
-BULGE_HW = 0.30  # half width of the bulge
+BULGE_H = 0.070  # power bulge height on the bonnet centre line (muscle-car scoop, was 0.034)
+BULGE_HW = 0.36  # half width of the bulge
 
 
 def bulge(s, x):
@@ -828,6 +828,129 @@ def finish_shading(obj):
     mod.keep_sharp = True
 
 
+# ------------------------------------------------------------------ normals
+def _frame_at(s, cache):
+    """Section arrays at station s (1 mm snap): points, section tangents and d/ds of the points."""
+    key = round(s, 3)
+    if key in cache:
+        return cache[key]
+    h = 0.012
+    A = _half(min(max(key, 0.02), L_TOTAL - 0.02))
+    A0, A1 = _half(min(max(key - h, 0.0), L_TOTAL)), _half(min(max(key + h, 0.0), L_TOTAL))
+    X, Z = A["X"], A["Z"]
+    n = len(X)
+    tx, tz = np.gradient(X), np.gradient(Z)
+    # relax the tangent over 3 points: removes the polyline's piecewise-constant steps
+    k = np.array([0.25, 0.5, 0.25])
+    tx = np.convolve(np.pad(tx, 1, mode="edge"), k, "valid")
+    tz = np.convolve(np.pad(tz, 1, mode="edge"), k, "valid")
+    dx, dz = (A1["X"] - A0["X"]) / (2 * h), (A1["Z"] - A0["Z"]) / (2 * h)
+    cache[key] = (X, Z, tx, tz, dx, dz)
+    return cache[key]
+
+
+def analytic_normals(obj, tol=0.0012):
+    """Overwrite the custom normals of vertices that lie on the smooth paint surface (within tol of
+    the section curve) with the analytic normal of the surface: cross(d/ds, d/dv) of the shell
+    parametrisation. Vertices created by pocket slices, bevels and grooves then agree with their
+    neighbours, which removes the kinks the studio strip light showed in the reflection."""
+    me = obj.data
+    nv, nl = len(me.vertices), len(me.loops)
+    co = np.empty(nv * 3, np.float32)
+    me.vertices.foreach_get("co", co)
+    co = co.reshape(nv, 3).astype(float)
+    cn = np.empty(nl * 3, np.float32)
+    me.corner_normals.foreach_get("vector", cn)
+    cn = cn.reshape(nl, 3).astype(float)
+    lv = np.empty(nl, np.int32)
+    me.loops.foreach_get("vertex_index", lv)
+    cache = {}
+    new = np.full((nv, 3), np.nan)
+    for i in range(nv):
+        x, y, z = co[i]
+        s = y + Y_OFFSET
+        if not (0.40 <= s <= L_TOTAL - 0.10) or z < 0.2:
+            continue
+        X, Z, tx, tz, dx, dz = _frame_at(s, cache)
+        ax = abs(x)
+        d2 = (X - ax) ** 2 + (Z - z) ** 2
+        k = int(np.argmin(d2))
+        # nearest point on the two segments around k (linear), tangent interpolated with it
+        best = None
+        for a_, b_ in ((k - 1, k), (k, k + 1)):
+            if a_ < 0 or b_ >= len(X):
+                continue
+            ex, ez = X[b_] - X[a_], Z[b_] - Z[a_]
+            L2 = ex * ex + ez * ez
+            if L2 < 1e-12:
+                continue
+            u = min(max(((ax - X[a_]) * ex + (z - Z[a_]) * ez) / L2, 0.0), 1.0)
+            dist = math.hypot(X[a_] + u * ex - ax, Z[a_] + u * ez - z)
+            if best is None or dist < best[0]:
+                best = (dist, a_, b_, u)
+        if best is None or best[0] > tol:
+            continue
+        _, a_, b_, u = best
+        tv = np.array([tx[a_] + u * (tx[b_] - tx[a_]), 0.0, tz[a_] + u * (tz[b_] - tz[a_])])
+        ts = np.array([dx[a_] + u * (dx[b_] - dx[a_]), 1.0, dz[a_] + u * (dz[b_] - dz[a_])])
+        nrm = np.cross(ts, tv)
+        ln = np.linalg.norm(nrm)
+        if ln < 1e-9:
+            continue
+        nrm /= ln
+        if x < 0:
+            nrm[0] = -nrm[0]
+        new[i] = nrm
+    ok = ~np.isnan(new[:, 0])
+    # only trust it where it agrees with the existing normal (guards against a wrong projection)
+    cur = np.zeros((nv, 3))
+    np.add.at(cur, lv, cn)
+    cur /= np.maximum(np.linalg.norm(cur, axis=1, keepdims=True), 1e-12)
+    dots = np.einsum("ij,ij->i", np.nan_to_num(new), cur)
+    ok &= dots > 0.80
+    out = np.where(ok[lv][:, None], new[lv], cn)
+    me.normals_split_custom_set(out.tolist())
+    print("ANALYTIC_NORMALS on %d of %d verts" % (int(ok.sum()), nv))
+
+
+def smooth_normals(obj, iters=14):
+    """Low-pass the vertex normals of the smooth (non-sharp) part of the paint shell. The shell is a
+    grid with arch cuts, pocket slices and 1 mm groove strips; the per-corner normals carry a little
+    noise there, and the engine's mirror clearcoat shows it as thin wobbling contour lines. Vertices
+    on a sharp edge keep their normals, so grooves, pockets and the shoulder crease stay crisp."""
+    me = obj.data
+    nv, nl = len(me.vertices), len(me.loops)
+    sharp = np.zeros(nv, bool)
+    adj = [[] for _ in range(nv)]
+    for e in me.edges:
+        a, b = e.vertices
+        if e.use_edge_sharp:
+            sharp[a] = sharp[b] = True
+        else:
+            adj[a].append(b)
+            adj[b].append(a)
+    cn = np.empty(nl * 3, np.float32)
+    me.corner_normals.foreach_get("vector", cn)
+    cn = cn.reshape(nl, 3).astype(float)
+    lv = np.empty(nl, np.int32)
+    me.loops.foreach_get("vertex_index", lv)
+    n = np.zeros((nv, 3))
+    np.add.at(n, lv, cn)
+    n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
+    free = ~sharp
+    for _ in range(iters):
+        m = n.copy()
+        for v in np.nonzero(free)[0]:
+            nb = [u for u in adj[v] if free[u]]  # sharp neighbours carry bent corner averages: skip them
+            if nb:
+                m[v] = n[v] * 2.0 + n[nb].sum(axis=0) / len(nb) * 2.0
+        m /= np.maximum(np.linalg.norm(m, axis=1, keepdims=True), 1e-12)
+        n = np.where(free[:, None], m, n)
+    out = np.where(free[lv][:, None], n[lv], cn)
+    me.normals_split_custom_set(out.tolist())
+    print("SMOOTH_NORMALS free verts %d of %d" % (int(free.sum()), nv))
+
+
 # ------------------------------------------------------------------ checks
 def checks(body_obj=None):
     """Prints and returns the spec dimension checks. Raises if any is off by more than 3%."""
@@ -841,9 +964,9 @@ def checks(body_obj=None):
     add("length_s_range", L_TOTAL, 4.85)
     add("width_max_w", 2 * max(w_max(s) for s in s_grid), 1.92)
     add("height_max_ztop", max(z_top(s) for s in s_grid), 1.36)
-    add("shoulder_front_axle", z_sh(0.95), 0.815)
+    add("shoulder_front_axle", z_sh(0.95), 0.835)
     add("shoulder_rear_axle", z_sh(3.80), 0.965)
-    add("bonnet_centre_front_axle", z_top(0.95) + bulge(0.95, 0.0), 0.899)
+    add("bonnet_centre_front_axle", z_top(0.95) + bulge(0.95, 0.0), 0.960)
     if body_obj is not None:
         d = body_obj.dimensions
         add("length_mesh_incl_nose_tail", float(d.y), 4.85)
