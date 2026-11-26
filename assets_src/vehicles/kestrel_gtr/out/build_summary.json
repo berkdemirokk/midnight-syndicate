@@ -1,0 +1,127 @@
+{
+  "tris": {
+    "lod0": 83665,
+    "lod1": 25788,
+    "lod2": 6799
+  },
+  "tris_by_object": {
+    "0": {
+      "body": 29966,
+      "glass": 3252,
+      "underbody": 5168,
+      "trim": 1936,
+      "lights_front": 640,
+      "lights_rear": 1200,
+      "interior": 3091,
+      "exhaust": 896,
+      "plate_rear": 60,
+      "wheel_FL": 7148,
+      "wheel_FR": 7148,
+      "wheel_RL": 7340,
+      "wheel_RR": 7340,
+      "brake_FL": 2120,
+      "brake_FR": 2120,
+      "brake_RL": 2120,
+      "brake_RR": 2120
+    },
+    "1": {
+      "body": 29966,
+      "glass": 3252,
+      "underbody": 5168,
+      "trim": 1936,
+      "lights_front": 640,
+      "lights_rear": 1200,
+      "interior": 3091,
+      "exhaust": 896,
+      "plate_rear": 60,
+      "wheel_FL": 7148,
+      "wheel_FR": 7148,
+      "wheel_RL": 7340,
+      "wheel_RR": 7340,
+      "brake_FL": 2120,
+      "brake_FR": 2120,
+      "brake_RL": 2120,
+      "brake_RR": 2120
+    },
+    "2": {
+      "body": 29966,
+      "glass": 3252,
+      "underbody": 5168,
+      "trim": 1936,
+      "lights_front": 640,
+      "lights_rear": 1200,
+      "exhaust": 896,
+      "plate_rear": 60,
+      "wheel_FL": 7148,
+      "wheel_FR": 7148,
+      "wheel_RL": 7340,
+      "wheel_RR": 7340
+    }
+  },
+  "glb": {
+    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-3\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod0.glb",
+    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-3\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod1.glb",
+    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-3\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod2.glb"
+  },
+  "glb_bytes": {
+    "0": 7197416,
+    "1": 4739960,
+    "2": 3629084
+  },
+  "textures": {
+    "paint_flake_normal": [
+      512,
+      512
+    ],
+    "carbon_base": [
+      512,
+      512
+    ],
+    "carbon_normal": [
+      512,
+      512
+    ],
+    "tyre_normal": [
+      1024,
+      1024
+    ],
+    "tyre_base": [
+      1024,
+      1024
+    ],
+    "brake_roughness": [
+      512,
+      512
+    ],
+    "brake_normal": [
+      512,
+      512
+    ],
+    "lens_normal": [
+      256,
+      256
+    ],
+    "plate_base": [
+      512,
+      128
+    ]
+  },
+  "materials_car": [
+    "M_BrakeDisc",
+    "M_Caliper",
+    "M_Carbon",
+    "M_Chrome",
+    "M_Glass",
+    "M_Interior",
+    "M_Lens",
+    "M_LightFront",
+    "M_LightRear",
+    "M_Paint",
+    "M_Pillar",
+    "M_Plate",
+    "M_Rim",
+    "M_Tire",
+    "M_Trim"
+  ],
+  "blender": "5.3.0"
+}
