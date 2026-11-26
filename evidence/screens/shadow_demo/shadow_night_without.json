@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "shadow_night_without",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 304,
+    "draw_calls_min": 187,
+    "driver": "vulkan",
+    "fps": 598.695,
+    "frame_ms_avg": 1.67,
+    "frame_ms_p95": 1.979,
+    "frame_ms_p99": 2.083,
+    "frames": 60,
+    "objects": 14197,
+    "os": "Windows",
+    "primitives": 294761,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 582.232,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-4/evidence/screens/shadow_demo/shadow_night_without.png",
+  "preset": "high",
+  "scenario": "shadow_demo"
+}

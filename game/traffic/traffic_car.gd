@@ -122,6 +122,7 @@ func build_visual(paint_slot: int) -> void:
 			holder.add_child(mi)
 	set_headlights(true)
 	_set_brake(false)
+	ContactShadow.attach(self, false, LOD_END_M[LOD_END_M.size() - 1])  # grounding blob, one draw; origin is the road contact
 
 
 func set_headlights(on: bool) -> void:

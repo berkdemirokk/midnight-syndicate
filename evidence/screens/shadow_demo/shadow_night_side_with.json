@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "shadow_night_side_with",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 171,
+    "draw_calls_min": 84,
+    "driver": "vulkan",
+    "fps": 667.475,
+    "frame_ms_avg": 1.498,
+    "frame_ms_p95": 1.873,
+    "frame_ms_p99": 1.908,
+    "frames": 60,
+    "objects": 13956,
+    "os": "Windows",
+    "primitives": 227035,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 582.232,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-4/evidence/screens/shadow_demo/shadow_night_side_with.png",
+  "preset": "high",
+  "scenario": "shadow_demo"
+}

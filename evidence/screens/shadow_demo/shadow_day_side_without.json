@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.019,
+  "name": "shadow_day_side_without",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 134,
+    "draw_calls_min": 128,
+    "driver": "vulkan",
+    "fps": 793.189,
+    "frame_ms_avg": 1.261,
+    "frame_ms_p95": 1.487,
+    "frame_ms_p99": 1.619,
+    "frames": 60,
+    "objects": 14027,
+    "os": "Windows",
+    "primitives": 167782,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 572.76,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-4/evidence/screens/shadow_demo/shadow_day_side_without.png",
+  "preset": "high",
+  "scenario": "shadow_demo"
+}

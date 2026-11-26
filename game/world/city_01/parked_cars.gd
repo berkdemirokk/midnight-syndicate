@@ -13,10 +13,20 @@ const PAINT_NAME: String = "M_Paint"
 const HEADLIGHT_NAME: String = "M_LightFront"  ## parked cars have their headlights off
 
 
-## Muted night paints, one MultiMesh each. Order matches paint_names().
+## Muted night paints, one MultiMesh each. Order matches paint_names(). Traffic cars use these.
 static func paint_colours() -> Array[Color]:
 	return [Color(0.085, 0.09, 0.10), Color(0.03, 0.05, 0.11), Color(0.20, 0.04, 0.05),
 		Color(0.72, 0.73, 0.75), Color(0.45, 0.47, 0.50), Color(0.015, 0.015, 0.02)]
+
+
+## Parked cars: as paint_colours, but white and silver are darker. TimeOfDay multiplies parked paint by 2.2 in daylight,
+## which clipped 0.72 white and 0.45 silver to flat white (bogaz_day). shortcut: the day boost belongs in TimeOfDay
+## (parked_albedo, time_of_day.gd); upgrade to that when it is tuned, then return paint_colours().
+static func parked_paint_colours() -> Array[Color]:
+	var out: Array[Color] = paint_colours()
+	out[paint_names().find("white")] = Color(0.30, 0.30, 0.31)
+	out[paint_names().find("silver")] = Color(0.26, 0.27, 0.29)
+	return out
 
 
 static func paint_names() -> PackedStringArray:
