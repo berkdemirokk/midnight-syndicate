@@ -28,6 +28,9 @@ const PAINT_CLEAR_ROUGHNESS: float = 0.04
 const PAINT_FLAKE_SCALE: float = 0.035  ## flake normal strength, low on purpose (0.12 read as sandpaper on the wheel close-up)
 const PAINT_PEEL_SCALE: float = 0.04  ## solid paint: orange peel only, no sparkle
 const PAINT_FLAKE_TILING: float = 48.0  ## fine tiling of the 512 px flake normal: at race distance it averages out, no sandpaper
+const RAIN_BEAD_SCALE: float = 0.4  ## bead normal strength on wet paint
+const RAIN_BEAD_TILING: float = 1.5  ## repeats per metre: beads of 5 to 20 mm (2.4 read as sand)
+const RAIN_PAINT_ROUGHNESS: float = 0.16  ## a wet clear coat is glossier than a dry one
 const RIM_ROUGHNESS: float = 0.34  ## times the brushed map (0.55..1.0): streaked satin metal
 const RIM_ANISOTROPY: float = 0.75  ## stretched highlight across the brushing
 const TIRE_ROUGHNESS: float = 0.92  ## rubber: matte, with sidewall variation from the map
@@ -82,6 +85,21 @@ static func set_paint(car: Node, colour: Color) -> void:
 
 static func set_rim_color(car: Node, colour: Color) -> void:
 	_each_material(car, "M_Rim", func(m: StandardMaterial3D) -> void: m.albedo_color = colour)
+
+
+## Rain on the clear coat: beads replace the flake normal on the paint (object-space triplanar, so every model
+## gets them whatever its UVs are). Call once after apply() when it rains.
+static func set_wet(car: Node, wet: bool) -> void:
+	if not wet:
+		return
+	_each_material(car, "M_Paint", func(m: StandardMaterial3D) -> void:
+		m.normal_enabled = true
+		m.normal_texture = _tex_file("car_rain_beads_normal.png")
+		m.normal_scale = RAIN_BEAD_SCALE
+		m.uv1_triplanar = true
+		m.uv1_scale = Vector3(RAIN_BEAD_TILING, RAIN_BEAD_TILING, RAIN_BEAD_TILING)
+		m.roughness_texture = null
+		m.roughness = RAIN_PAINT_ROUGHNESS)
 
 
 static func set_brake_lights(car: Node, on: bool) -> void:

@@ -395,6 +395,8 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 				cm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if lod != null and not tod.is_night() and tod.sun_shadows and Settings.get_preset_id() != "low":
 		_add_shadow_proxy(lod)
+	if lod != null and tod.rain:
+		CarMaterials.set_wet(lod, true)  # rain beads on the clear coat
 	# Engine, tyres, nitro and impacts; rivals get the cheaper, quieter positional set.
 	var audio := CarAudio.new()
 	audio.name = "CarAudio"
