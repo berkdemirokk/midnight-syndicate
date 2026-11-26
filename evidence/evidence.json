@@ -1,5 +1,5 @@
 {
-  "commit": "f705929",
+  "commit": "3ca478f",
   "engine": "Godot 4.7.2 stable, Mobile renderer, GDScript",
   "run_command": "Godot_v4.7.2-stable_win64_console.exe --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]",
   "captures": {
@@ -9,10 +9,10 @@
     "gameplay": "evidence/gameplay.png"
   },
   "test_log": "evidence/test.log",
-  "visual_review": "Lead review of real engine captures (not the concept image). Better than before: licensed car with panel gaps, interior and Turkish-layout plate; mosque with relief, drum, turrets and fluted minarets; 3D bridge, far shore and ferry; houses with casings, shutters, awnings; wet road mirrors lamps and mosque at night; HUD with live data. Still weak, not accepted as final: houses read plain in daylight from 8-40 m, roofs are slabs; mosque stone is flat cream by day; no spectators (flat cards removed as toy-like); no rain beads on paint; player and rivals are licensed cars now; amber indicators do not glow. Gate score by the lead about 72/100, target 90 not reached. The owner decides acceptance.",
+  "visual_review": "Lead review of real engine captures (not the concept image). Since the last set: six licensed cars (player and rivals), photo-based sandstone on the mosque, baked ambient occlusion on the mosque and houses, timber houses with real plank texture, rubber and oil on the asphalt, day sun and sky fill retuned, greyed glass reflections. Still weak, not accepted as final: house fronts are still simple (flat roofs from the road, plain ground floors), trees are dark card clusters, sea-side wall and kerb are plain, the bridge is plain grey by day, no spectators, no rain beads on paint. Gate score by the lead about 76/100, target 90 not reached. The owner decides acceptance.",
   "device": "Desktop PC, Windows 11, NVIDIA GeForce RTX 5060 Ti 8 GB, 1920x1080, High preset. Not an iPhone measurement.",
-  "fps": 185.7,
-  "frame_time_ms": 5.385,
+  "fps": 320.0,
+  "frame_time_ms": 3.125,
   "ios_test": "not_run",
-  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 185.7 fps average, frame 5.39 ms avg, 6.92 ms p95, 397 draw calls, 398640 primitives. Day gameplay 281 fps / 3.56 ms, sunset 153 fps / 6.54 ms. Peak over all 15 benchmark shots: 397 draws, 411001 primitives (budget 500 / 450000). Uncapped desktop numbers over 60 frames, other programs running; they say nothing about iPhone."
+  "perf_note": "Night gameplay shot with 3 licensed rivals (bench_night_gameplay.json): 320 fps average, 3.13 ms avg, 4.07 ms p95, 395 draw calls, 416446 primitives. Day gameplay 420 fps / 2.38 ms, dusk 364 fps / 2.75 ms. Peak over all 15 benchmark shots: 395 draws, 430799 primitives (budget 500 / 450000; the primitive headroom is 4 %). Uncapped desktop numbers over 60 frames; they say nothing about iPhone."
 }

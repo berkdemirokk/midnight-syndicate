@@ -1,11 +1,11 @@
 # Graphics rescue progress (max 30 lines)
 
-- HEAD: f705929 on feature/vertical-slice (last pushed c191d50; no push since the rescue package arrived). Main untouched.
+- HEAD: 3ca478f on feature/vertical-slice (last pushed c191d50; no push since the rescue package arrived). Main untouched.
 - Engine: Godot 4.7.2 stable, Mobile renderer. Device: Windows 11, RTX 5060 Ti 8 GB. No Mac, no iPhone test.
 - Run the benchmark: `godot --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]`
-- Last valid state: 307 tests, 0 failed (evidence/test.log); asset manifest 532 records, 0 failing; third_party_assets.json 0 errors.
+- Last valid state: 309 tests, 0 failed (evidence/test.log); asset manifest 534 records, 0 failing; third_party_assets.json 0 errors.
 - Evidence (real engine captures): evidence/before.png, after_day.png, after_night.png, gameplay.png; all 15 benchmark shots in evidence/screens/ortakoy_benchmark/; Blender previews in evidence/car_preview/ and assets_src/third_party/vinish_cars/renders/.
-- Performance, night gameplay shot (3 licensed rivals): 186 fps, 5.39 ms avg, 6.92 ms p95, 397 draws, 399k primitives (desktop, uncapped, not iPhone).
+- Performance, night gameplay shot (3 licensed rivals): 320 fps, 3.13 ms avg, 4.07 ms p95, 395 draws, 416k primitives; peak of all shots 431k primitives of 450k (desktop, uncapped, not iPhone).
 
 ## Gates (MIDNIGHT_RESCUE/03_QUALITY_GATE.md)
 - G0 baseline: done. G1 car: six licensed CC BY 4.0 cars in the game (starter Noctra Tayfun; rivals drawn from them), credits shown in settings.
@@ -14,9 +14,9 @@
 - G4 gameplay: real race, live HUD, 306 regression tests green. G5: desktop numbers only. G6: waiting for the owner's review.
 
 ## Three open flaws
-1. Houses and roofs still read simple in daylight (geometry, not lighting).
+1. House fronts and roofs are still simple from the road; primitive headroom is 4 %, so more geometry needs cuts elsewhere (mirror pass, LOD ranges).
 2. Mosque stone is flat cream by day; amber indicators on the licensed cars do not glow; old saves keep the Sable until the free Tayfun is picked in the garage.
-3. No spectators, no rain beads on paint, no puddle break-up on the road.
+3. Trees are dark card clusters; no spectators; no rain beads on paint.
 
 ## Next single task
 Owner review of the captures (gate G6). Then: house roofs and facade depth, or spectators, by the owner's choice.
