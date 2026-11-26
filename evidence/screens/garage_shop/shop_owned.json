@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "shop_owned",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 264,
+    "draw_calls_min": 264,
+    "driver": "vulkan",
+    "fps": 456.597,
+    "frame_ms_avg": 2.19,
+    "frame_ms_p95": 3.729,
+    "frame_ms_p99": 3.83,
+    "frames": 60,
+    "objects": 413,
+    "os": "Windows",
+    "primitives": 232766,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 456.551,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_0929d959-435-3/evidence/screens/garage_shop/shop_owned.png",
+  "preset": "high",
+  "scenario": "garage_shop"
+}

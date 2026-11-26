@@ -108,6 +108,17 @@ func own_car(car_id: String) -> bool:
 	return true
 
 
+## Pays price and adds the car in one save. False when owned, unaffordable or the price is negative.
+func buy_car(car_id: String, price: int) -> bool:
+	if car_id.is_empty() or has_car(car_id) or price < 0 or price > get_cash():
+		return false
+	profile["cash"] = get_cash() - price
+	(profile["owned_cars"] as Array).append(car_id)
+	_setups()[car_id] = _default_setup()
+	_commit()
+	return true
+
+
 func get_selected_car() -> String:
 	return profile["selected_car"]
 

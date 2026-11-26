@@ -3,9 +3,7 @@ extends Node3D
 ## eight lights matched to the room fixtures, one soft shadowed key, a box-projected reflection probe, and the
 ## orbit camera. The 2D layer is GarageHud. Game state changes go through GameState; paint goes through CarMaterials.
 
-const CAR_SCENE: String = "res://vehicles/noctra_sable/noctra_sable.tscn"
 const LAYOUT_PATH: String = "res://assets/world/garage/garage_layout.json"
-const SPEC_PATH: String = "res://vehicles/specs/noctra_sable.tres"
 const MAIN_MENU: String = "res://ui/menus/main_menu.tscn"
 const RACE_SCENE: String = "res://ui/menus/event_select.tscn"  ## RACE opens the career ladder (rewards count there)
 const CAR_Y: float = 0.065  ## turntable plate top, from garage_layout.json
@@ -70,8 +68,8 @@ func _ready() -> void:
 	layout = _read_json(LAYOUT_PATH)
 	orbit.configure(layout)
 	orbit.set_pose(GarageOrbit.PRESETS["overview"]["yaw"], GarageOrbit.PRESETS["overview"]["pitch"], GarageOrbit.PRESETS["overview"]["dist"])
-	car_id = GameState.get_selected_car()
-	spec = load(SPEC_PATH) as CarSpec
+	car_id = CarCatalog.race_car_id()
+	spec = load(CarCatalog.spec_path(car_id)) as CarSpec
 	_turntable = _room.find_child("turntable", true, false) as Node3D
 	GarageMaterials.bind(_room)
 	for n: Node in _room.find_children("*", "MeshInstance3D", true, false):
@@ -158,6 +156,7 @@ func preview_paint(c: Color) -> void:
 ## Applies and saves the paint for the car.
 func commit_paint(c: Color) -> bool:
 	if not GameState.set_paint(car_id, c):
+		_hud.show_message("garage.car_not_owned", true)
 		return false
 	preview_paint(c)
 	_refresh_hud()
@@ -166,6 +165,7 @@ func commit_paint(c: Color) -> bool:
 
 func commit_rim(c: Color) -> bool:
 	if not GameState.set_rim(car_id, c):
+		_hud.show_message("garage.car_not_owned", true)
 		return false
 	if car != null:
 		CarMaterials.set_rim_color(car, c)
@@ -175,6 +175,9 @@ func commit_rim(c: Color) -> bool:
 
 ## Buys the next level of part. A short message and a shake when the cash is short. Returns true on success.
 func buy_upgrade(part: String) -> bool:
+	if not GameState.has_car(car_id):
+		_hud.show_message("garage.car_not_owned", true)
+		return false
 	var lvl: int = GameState.get_upgrade_level(car_id, part)
 	if lvl >= GameState.MAX_UPGRADE_LEVEL:
 		_hud.show_message("garage.max_reached", true)
@@ -222,13 +225,60 @@ func state() -> Dictionary:
 		"can_afford": afford,
 		"paint": Color.from_string(str(setup["paint_color"]), CarMaterials.DEFAULT_PAINT),
 		"rim": Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM),
+		"car_id": car_id,
+		"class": CarCatalog.class_id(car_id),
+		"owned": GameState.has_car(car_id),
+		"selected": GameState.get_selected_car() == car_id,
+		"price": CarCatalog.price(car_id),
+		"block": CarCatalog.buy_block(car_id),
+		"rep_needed": CarCatalog.rep_needed(car_id),
+		"car_count": CarCatalog.available_ids().size(),
 	}
 
 
 # --- internals --------------------------------------------------------------
 
+## Carousel step: dir +1 next, -1 previous, wraps. Shows that car on the turntable. Returns the new car id.
+func step_car(dir: int) -> String:
+	var ids: Array[String] = CarCatalog.available_ids()
+	if ids.size() > 1:
+		var i: int = ids.find(car_id)
+		show_car(ids[posmod(i + dir, ids.size())])
+	return car_id
+
+
+## Puts id on the turntable; the paint, rim and upgrade tabs then work on it (once owned).
+func show_car(id: String) -> void:
+	if not CarCatalog.is_available(id):
+		return
+	car_id = id
+	spec = load(CarCatalog.spec_path(id)) as CarSpec
+	if car != null:
+		car.free()
+	_spawn_car()
+	_refresh_hud()
+
+
+## Buy the shown car when it is not owned, else select it. Returns true when something changed.
+func car_action() -> bool:
+	if GameState.has_car(car_id):
+		var changed: bool = GameState.get_selected_car() != car_id and GameState.select_car(car_id)
+		if changed:
+			_hud.show_message("garage.car_selected_msg")
+			_refresh_hud()
+		return changed
+	if CarCatalog.buy(car_id):
+		GameState.select_car(car_id)
+		_hud.show_message("garage.car_bought")
+		_refresh_hud()
+		return true
+	if CarCatalog.buy_block(car_id) == "cash":
+		_hud.show_message("garage.not_enough_car", true)
+	return false
+
+
 func _spawn_car() -> void:
-	var packed: PackedScene = load(CAR_SCENE) as PackedScene
+	var packed: PackedScene = load(CarCatalog.scene_path(car_id)) as PackedScene
 	car = packed.instantiate() as CarLod
 	var setup: Dictionary = GameState.get_setup(car_id)
 	car.force_lod0 = true
@@ -336,6 +386,8 @@ func _build_hud() -> void:
 	_hud.paint_committed.connect(commit_paint)
 	_hud.rim_pressed.connect(commit_rim)
 	_hud.upgrade_pressed.connect(buy_upgrade)
+	_hud.car_step_pressed.connect(step_car)
+	_hud.car_action_pressed.connect(car_action)
 	_refresh_hud()
 
 

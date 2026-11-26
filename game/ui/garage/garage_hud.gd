@@ -11,6 +11,8 @@ signal paint_previewed(colour: Color)
 signal paint_committed(colour: Color)
 signal rim_pressed(colour: Color)
 signal upgrade_pressed(part: String)
+signal car_step_pressed(dir: int)  ## carousel: -1 previous car, +1 next car
+signal car_action_pressed  ## BUY, SELECT
 
 const PAINTS: Array[Color] = [
 	Color("8E0F1E"), Color("0A1A5C"), Color("33363B"), Color("E8E9EE"), Color("0B0D12"), Color("19E6FF"),
@@ -69,6 +71,9 @@ var _hue_strip: GradientStrip
 var _value_strip: GradientStrip
 var _back_btn: Button
 var _race_btn: Button
+var _car_prev: Button
+var _car_next: Button
+var _car_action: Button
 var _hue: float = 0.0
 var _value: float = 1.0
 var _built: bool = false
@@ -182,6 +187,7 @@ func build() -> void:
 	cash.add_child(_cash_value)
 
 	_build_stats(ins, m)
+	_build_carousel(ins, m)
 	_build_panel(ins, m)
 	_build_views(ins, m)
 	apply_language()
@@ -207,6 +213,31 @@ func _build_stats(ins: Vector4, m: float) -> void:
 		box.add_child(row)
 		_stat_labels[s] = lab
 		_bars[s] = bar
+
+
+## Car carousel under the stat bars: [<] [BUY / SELECT / SELECTED / LOCKED] [>].
+func _build_carousel(ins: Vector4, m: float) -> void:
+	var row := HBoxContainer.new()
+	row.name = "Carousel"
+	row.add_theme_constant_override("separation", 12)
+	_place(row, 0.0, 0.0, 0.0, 0.0, ins.x + m, ins.y + m + 450.0, ins.x + m + 560.0, ins.y + m + 506.0)
+	_car_prev = Button.new()
+	_car_prev.name = "CarPrev"
+	_car_prev.text = "<"
+	_car_prev.custom_minimum_size = Vector2(84.0, 56.0)
+	_car_prev.pressed.connect(func() -> void: car_step_pressed.emit(-1))
+	row.add_child(_car_prev)
+	_car_action = Button.new()
+	_car_action.name = "CarAction"
+	_car_action.custom_minimum_size = Vector2(300.0, 56.0)
+	_car_action.pressed.connect(func() -> void: car_action_pressed.emit())
+	row.add_child(_car_action)
+	_car_next = Button.new()
+	_car_next.name = "CarNext"
+	_car_next.text = ">"
+	_car_next.custom_minimum_size = Vector2(84.0, 56.0)
+	_car_next.pressed.connect(func() -> void: car_step_pressed.emit(1))
+	row.add_child(_car_next)
 
 
 func _build_panel(ins: Vector4, m: float) -> void:
@@ -349,6 +380,7 @@ func _build_views(ins: Vector4, m: float) -> void:
 func refresh(state: Dictionary) -> void:
 	_state = state.duplicate()
 	_car_name.text = str(state.get("name", ""))
+	_refresh_car(state)
 	_cash_value.text = I18n.t("garage.money") % int(state.get("cash", 0))
 	var stats: Dictionary = state.get("stats", {})
 	for s: String in STATS:
@@ -382,11 +414,31 @@ func refresh(state: Dictionary) -> void:
 		_rim_buttons[i].modulate = Color.WHITE if RIM_COLOURS[i].is_equal_approx(rim) else Color(1, 1, 1, 0.75)
 
 
+func _refresh_car(state: Dictionary) -> void:
+	var cls_key: String = "garage.class_" + str(state.get("class", "street"))
+	_car_class.text = GarageText.t(cls_key)
+	var many: bool = int(state.get("car_count", 1)) > 1
+	_car_prev.disabled = not many
+	_car_next.disabled = not many
+	if bool(state.get("selected", true)):
+		_car_action.text = GarageText.t("garage.car_selected")
+		_car_action.disabled = true
+	elif bool(state.get("owned", true)):
+		_car_action.text = GarageText.t("garage.car_select")
+		_car_action.disabled = false
+	elif str(state.get("block", "")) == "rep":
+		_car_action.text = GarageText.t("garage.car_rep") % int(state.get("rep_needed", 0))
+		_car_action.disabled = true
+	else:
+		_car_action.text = GarageText.t("garage.car_buy") % int(state.get("price", 0))
+		_car_action.disabled = false  ## short cash: pressing it shows the message
+
+
 ## Message line under the tabs. error true draws it in danger red.
 func show_message(key: String, error: bool = false) -> void:
 	_msg_key = key
 	_msg_error = error
-	_msg.text = I18n.t(key) if not key.is_empty() else ""
+	_msg.text = GarageText.t(key) if not key.is_empty() else ""
 	_msg.add_theme_color_override("font_color", MSTheme.DANGER if error else MSTheme.CYAN)
 	_msg.modulate = Color.WHITE
 	if _msg_tw != null:
@@ -437,7 +489,7 @@ func apply_language() -> void:
 	if not _state.is_empty():
 		refresh(_state)
 	if not _msg_key.is_empty():
-		_msg.text = I18n.t(_msg_key)
+		_msg.text = GarageText.t(_msg_key)
 
 
 func get_race_button() -> Button:

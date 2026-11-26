@@ -102,6 +102,9 @@ static func config_for(id: String) -> RaceConfig:
 		return null
 	var c := RaceConfig.new()
 	c.event_id = id
+	var car_id: String = CarCatalog.race_car_id()  # the player races the garage's selected car
+	c.car_scene = CarCatalog.scene_path(car_id)
+	c.car_spec_path = CarCatalog.spec_path(car_id)
 	if ev.has("track"):
 		c.track_scene = str(ev["track"])
 	c.laps = int(ev["laps"])
