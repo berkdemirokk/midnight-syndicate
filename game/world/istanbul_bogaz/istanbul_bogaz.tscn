@@ -19,6 +19,9 @@ lamp_district_scale = {
 }
 ambient_color = Color(0.15, 0.17, 0.22, 1)
 ambient_energy = 1.9
+glow_intensity = 0.9
+glow_bloom = 0.14
+glow_threshold = 1.05
 sky_glow_colour = Color(0.26, 0.15, 0.08, 1)
 sky_mid_colour = Color(0.03, 0.065, 0.15, 1)
 moon_energy = 0.45

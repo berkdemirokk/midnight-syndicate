@@ -88,6 +88,9 @@ const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 1
 @export var flip_signs: bool = false  ## turn sign props 180 degrees if their text reads mirrored in a capture
 @export var ambient_color: Color = Color("#1E2740")  ## night fill for unlit walls; was #1B2B4D, walls read black
 @export_range(0.0, 4.0) var ambient_energy: float = 1.2  ## was 0.6: facades away from lamps were black slabs
+@export var glow_intensity: float = 0.55  ## bloom strength; a wet night coast wants more (lamp halos, tail lights)
+@export var glow_bloom: float = 0.05
+@export var glow_threshold: float = 1.3
 @export var track_name: String = ""  ## shown on the HUD lap strip; empty = the generic HUD name
 @export var sky_glow_colour: Color = Color(0.0, 0.0, 0.0, 0.0)  ## horizon light-pollution colour of the night sky; alpha 0 keeps the shader default (violet, Arden Bay)
 @export var sky_mid_colour: Color = Color(0.0, 0.0, 0.0, 0.0)  ## sky colour above the glow; alpha 0 keeps the shader default
@@ -1647,9 +1650,9 @@ func _build_environment() -> void:
 	env.fog_depth_end = fog_end_m
 	env.fog_sky_affect = 0.2
 	env.glow_enabled = true
-	env.glow_intensity = 0.55
-	env.glow_bloom = 0.05
-	env.glow_hdr_threshold = 1.3
+	env.glow_intensity = glow_intensity
+	env.glow_bloom = glow_bloom
+	env.glow_hdr_threshold = glow_threshold
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
 	env.tonemap_exposure = 1.0
 	env.tonemap_white = 1.0
