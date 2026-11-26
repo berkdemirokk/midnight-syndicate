@@ -288,12 +288,17 @@ func test_mirror_lod_stands_in_for_lod0() -> void:
 		for i: int in mini(copy_meshes.size(), lod1_meshes.size()):
 			check(copy_meshes[i].mesh == lod1_meshes[i].mesh, "mirror LOD must share the LOD1 mesh resource")
 			check(copy_meshes[i].layers == CarLod.MIRROR_LAYER_BIT, "mirror LOD mesh is not on the mirror-only layer")
-			check(is_equal_approx(copy_meshes[i].visibility_range_end, car.lod1_start_m), "mirror LOD range end is not LOD0's")
+			check(is_equal_approx(copy_meshes[i].visibility_range_end, CarLod.MIRROR_LOD2_START_M), "mirror LOD1 range end is not the LOD2 copy's start")
+	var copy2: Node3D = car.find_child(CarLod.MIRROR_LOD2_NAME, true, false) as Node3D
+	check(copy2 != null, "no mirror LOD2 copy")
+	if copy2 != null:
+		for mi: MeshInstance3D in _mesh_nodes(copy2):
+			check(mi.layers == CarLod.MIRROR_LAYER_BIT and is_equal_approx(mi.visibility_range_begin, CarLod.MIRROR_LOD2_START_M) and is_equal_approx(mi.visibility_range_end, car.lod2_start_m), "mirror LOD2 copy layer or range wrong")
 	for mi: MeshInstance3D in _mesh_nodes(car.get_node("LOD0")):
 		check(mi.layers == CarLod.DETAIL_LAYER_BIT, "LOD0 mesh %s is not on the detail layer alone" % mi.name)
 	for mi: MeshInstance3D in _mesh_nodes(car.get_node("LOD1")):
-		check((mi.layers & CarLod.DETAIL_LAYER_BIT) == 0, "LOD1 mesh %s is on the detail layer" % mi.name)
+		check(mi.layers == CarLod.DETAIL_LAYER_BIT, "LOD1 mesh %s is not on the detail layer alone (the mirror sees the copies)" % mi.name)
 	car.set_forced(2)
-	check(not car.get_mirror_lod().visible, "mirror LOD still visible with LOD2 forced")
+	check(not car.get_mirror_lod().visible and not (car.find_child(CarLod.MIRROR_LOD2_NAME, true, false) as Node3D).visible, "mirror LOD still visible with LOD2 forced")
 	await cleanup(_spawned)
 	_spawned.clear()

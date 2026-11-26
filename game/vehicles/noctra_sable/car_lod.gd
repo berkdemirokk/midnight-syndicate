@@ -11,6 +11,8 @@ const BRAKE_NAMES: PackedStringArray = ["brake_FL", "brake_FR", "brake_RL", "bra
 const DETAIL_LAYER_BIT: int = 1 << 2  ## LOD0 meshes (instead of the default bit 0): the planar mirror leaves them out
 const MIRROR_LAYER_BIT: int = 1 << 3  ## mirror-only LOD1 copy: the main, chase and replay cameras leave it out
 const MIRROR_LOD_NAME: String = "LOD1Mirror"
+const MIRROR_LOD2_NAME: String = "LOD2Mirror"
+const MIRROR_LOD2_START_M: float = 10.0  ## the mirror shows the 7k-tri LOD2 copy from here to lod2_start_m: a blurry wet-road reflection does not need LOD1 there
 
 @export var lod1_start_m: float = 22.0  ## LOD0 ends and LOD1 starts here (metres from the camera)
 @export var lod2_start_m: float = 70.0  ## LOD1 ends and LOD2 starts here
@@ -22,6 +24,7 @@ const MIRROR_LOD_NAME: String = "LOD1Mirror"
 var _lods: Array[Node3D] = []
 var _active: int = 0
 var _mirror_lod: Node3D = null
+var _mirror_lod2: Node3D = null
 
 
 func _ready() -> void:
@@ -40,21 +43,30 @@ func _process(_delta: float) -> void:
 		_active = _forced_index()
 
 
-## Race only: a copy of LOD1 (shared meshes and materials) on the mirror-only layer, visible over LOD0's distance
-## range, and LOD0 on the detail layer. With the mirror camera excluding the detail layer and every other camera
-## excluding the mirror layer, the road reflection of a near car costs LOD1 instead of LOD0. Call after _ready().
+## Race only: copies of LOD1 and LOD2 (shared meshes and materials) on the mirror-only layer, LOD0 and LOD1 on the
+## detail layer. With the mirror camera excluding the detail layer and every other camera excluding the mirror layer,
+## the road reflection of a car costs LOD1 up to MIRROR_LOD2_START_M and LOD2 beyond, instead of LOD0/LOD1. Call after _ready().
 func build_mirror_lod() -> void:
 	if _mirror_lod != null or _lods.size() < 2 or _lods[0] == null or _lods[1] == null:
 		return
-	_mirror_lod = _lods[1].duplicate() as Node3D
-	_mirror_lod.name = MIRROR_LOD_NAME
-	add_child(_mirror_lod)
-	for n: Node in _mirror_lod.find_children("*", "MeshInstance3D", true, false):
-		(n as MeshInstance3D).layers = MIRROR_LAYER_BIT
-	for n: Node in _lods[0].find_children("*", "MeshInstance3D", true, false):
-		var mi: MeshInstance3D = n as MeshInstance3D
-		mi.layers = (mi.layers & ~1) | DETAIL_LAYER_BIT  # no default bit: a camera that skips the detail layer must not see it
+	_mirror_lod = _make_mirror_copy(_lods[1], MIRROR_LOD_NAME)
+	if _lods.size() > 2 and _lods[2] != null:
+		_mirror_lod2 = _make_mirror_copy(_lods[2], MIRROR_LOD2_NAME)
+	for lod: Node3D in [_lods[0], _lods[1]]:
+		for n: Node in lod.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = n as MeshInstance3D
+			if mi.layers & MIRROR_LAYER_BIT == 0:  # not the copies (a copy of LOD1 sits under the car, not under LOD1)
+				mi.layers = (mi.layers & ~1) | DETAIL_LAYER_BIT  # no default bit: a camera that skips the detail layer must not see it
 	_apply_ranges()
+
+
+func _make_mirror_copy(src: Node3D, copy_name: String) -> Node3D:
+	var copy: Node3D = src.duplicate() as Node3D
+	copy.name = copy_name
+	add_child(copy)
+	for n: Node in copy.find_children("*", "MeshInstance3D", true, false):
+		(n as MeshInstance3D).layers = MIRROR_LAYER_BIT
+	return copy
 
 
 func get_mirror_lod() -> Node3D:
@@ -127,18 +139,26 @@ func _apply_ranges() -> void:
 	_apply_mirror_ranges(f)
 
 
-## The mirror-only copy stands in for LOD0: same range (or, with LOD0 forced, no range); hidden when another LOD is forced.
+## Mirror view of a car (LOD1 is on the detail layer, so the mirror sees only these copies and the regular LOD2):
+## LOD1 copy from 0 to the split, LOD2 copy from the split to lod2_start_m. LOD0 or LOD1 forced: the LOD1 copy with
+## no range stands in; LOD2 forced: the regular LOD2 is seen by the mirror and the copies are hidden. Hard switches: no fade in a mirror.
 func _apply_mirror_ranges(forced: int) -> void:
 	if _mirror_lod == null:
 		return
-	_mirror_lod.visible = forced <= 0
-	var end: float = 0.0 if forced == 0 else lod1_start_m
-	var margin: float = 0.0 if forced == 0 else fade_margin_m
-	for n: Node in _mirror_lod.find_children("*", "MeshInstance3D", true, false):
+	var split: float = minf(MIRROR_LOD2_START_M, lod1_start_m)
+	_set_mirror_range(_mirror_lod, forced <= 1, 0.0, split if forced < 0 and _mirror_lod2 != null else (lod2_start_m if forced < 0 else 0.0))
+	if _mirror_lod2 != null:
+		_set_mirror_range(_mirror_lod2, forced < 0, split, lod2_start_m)
+
+
+func _set_mirror_range(root: Node3D, shown: bool, begin: float, end: float) -> void:
+	root.visible = shown
+	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
-		mi.visibility_range_begin = 0.0
+		mi.visibility_range_begin = begin
+		mi.visibility_range_begin_margin = 0.0
 		mi.visibility_range_end = end
-		mi.visibility_range_end_margin = margin
+		mi.visibility_range_end_margin = 0.0
 		mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 
 

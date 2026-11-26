@@ -8,17 +8,17 @@
   "name": "replay_tv_2",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 197,
+    "draw_calls": 183,
     "draw_calls_min": 132,
     "driver": "vulkan",
-    "fps": 623.415,
-    "frame_ms_avg": 1.604,
-    "frame_ms_p95": 1.998,
-    "frame_ms_p99": 2.226,
+    "fps": 575.374,
+    "frame_ms_avg": 1.738,
+    "frame_ms_p95": 2.435,
+    "frame_ms_p99": 2.483,
     "frames": 60,
-    "objects": 218,
+    "objects": 204,
     "os": "Windows",
-    "primitives": 251228,
+    "primitives": 212071,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 564.197,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_replay/replay_tv_2.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_54b8f232-f66-2/evidence/screens/race_replay/replay_tv_2.png",
   "preset": "high",
   "scenario": "race_replay"
 }

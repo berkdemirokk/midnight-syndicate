@@ -8,17 +8,17 @@
   "name": "countdown_2",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 381,
+    "draw_calls": 360,
     "draw_calls_min": 231,
     "driver": "vulkan",
-    "fps": 218.198,
-    "frame_ms_avg": 4.583,
-    "frame_ms_p95": 6.543,
-    "frame_ms_p99": 7.673,
+    "fps": 464.421,
+    "frame_ms_avg": 2.153,
+    "frame_ms_p95": 3.452,
+    "frame_ms_p99": 3.735,
     "frames": 60,
-    "objects": 12746,
+    "objects": 12725,
     "os": "Windows",
-    "primitives": 375588,
+    "primitives": 336952,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 563.885,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_city/countdown_2.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_54b8f232-f66-2/evidence/screens/race_city/countdown_2.png",
   "preset": "high",
   "scenario": "race_city"
 }
