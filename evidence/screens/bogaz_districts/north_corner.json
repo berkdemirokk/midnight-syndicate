@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "north_corner",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 158,
+    "draw_calls_min": 158,
+    "driver": "vulkan",
+    "fps": 937.046,
+    "frame_ms_avg": 1.067,
+    "frame_ms_p95": 1.219,
+    "frame_ms_p99": 1.852,
+    "frames": 60,
+    "objects": 158,
+    "os": "Windows",
+    "primitives": 123762,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-3/evidence/screens/bogaz_districts/north_corner.png",
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}

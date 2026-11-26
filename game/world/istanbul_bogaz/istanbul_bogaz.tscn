@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://world/city_01/city_builder.gd" id="1_builder"]
+
+[node name="IstanbulBogaz" type="Node3D"]
+script = ExtResource("1_builder")
+width = 14.0
+layout_path = "res://assets/world/istanbul_bogaz/istanbul_bogaz_layout.json"
+road_glb = "res://assets/world/istanbul_bogaz/istanbul_bogaz_road.glb"
+catalog_path = "res://assets/world/kits/istanbul/catalog.json"
+centre_path = "res://assets/world/istanbul_bogaz/istanbul_bogaz_centerline.json"
+lamp_district_scale = {
+"arnavutkoy": 4.0,
+"bebek": 4.0,
+"cengelkoy": 4.0,
+"kalyoncu": 4.0,
+"yokus": 4.0
+}
+ambient_color = Color(0.12, 0.17, 0.27, 1)
+ambient_energy = 1.9
+moon_energy = 0.45
+lod0_end_m = 50.0
+lod1_end_m = 150.0
+prop_far_end_m = 200.0
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="RacingLine" type="Path3D" parent="."]
+
+[node name="StartGrid" type="Node3D" parent="."]
+
+[node name="Checkpoints" type="Node3D" parent="."]
+
+[node name="Lighting" type="Node3D" parent="."]

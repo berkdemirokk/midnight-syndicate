@@ -1,0 +1,95 @@
+{
+ "checks": {
+  "lap_length_m": 2210.26,
+  "lap_length_ok": true,
+  "min_radius_m": 40.33,
+  "min_radius_method": "circumradius of 3 consecutive 2 m centreline samples",
+  "min_radius_at_s": 138.0,
+  "min_radius_ok": true,
+  "max_gradient_pct": 1.91,
+  "max_gradient_ok": true,
+  "nonadjacent_def": "arc separation >= 150 m (shorter spans are the same bend or sweep)",
+  "nonadjacent_min_plan_dist_m": 128.97,
+  "nonadjacent_pair_s": [
+   60.0,
+   210.0
+  ],
+  "nonadjacent_ok_45m": true,
+  "nonadjacent_min_arc45_m": [
+   44.37,
+   116.0,
+   162.0
+  ],
+  "nonadjacent_min_arc100_m": [
+   90.3,
+   88.0,
+   188.0
+  ],
+  "sample_spacing_m": 2.0002,
+  "sample_count": 1105,
+  "seam_gap_m": 2.0,
+  "cp_s_m": [
+   0.0,
+   136.6,
+   258.4,
+   389.2,
+   540.5,
+   672.0,
+   784.2,
+   908.2,
+   1027.7,
+   1140.9,
+   1258.3,
+   1379.0,
+   1521.4,
+   1673.4,
+   1815.0,
+   1948.1,
+   2080.4
+  ]
+ },
+ "road_normals_up_fraction": 0.8571,
+ "triangles_by_kind": {
+  "decals": 464,
+  "ground": 19496,
+  "markings": 9086,
+  "road": 30940,
+  "sidewalk": 5466,
+  "structure": 8466,
+  "wall": 8840,
+  "water": 694
+ },
+ "objects_by_kind": {
+  "decals": 9,
+  "ground": 1,
+  "markings": 15,
+  "road": 19,
+  "sidewalk": 19,
+  "structure": 6,
+  "wall": 19,
+  "water": 1
+ },
+ "triangles_total": 83452,
+ "decals_placed": {
+  "manholes": 24,
+  "grates": 16
+ },
+ "ground_cells_kept": [
+  9748,
+  9476
+ ],
+ "chunks": 19,
+ "chunk_m": 120.0,
+ "district_sample_counts": {
+  "Bebek Sahil": 202,
+  "Arnavutkoy Sahil": 184,
+  "Kalyoncu Sokak": 116,
+  "Yokus Tepe": 190,
+  "Cengelkoy Donus": 413
+ },
+ "elevated_samples": 249,
+ "tube_samples": 0,
+ "cut_samples": 0,
+ "water_samples": 347,
+ "runtime_s": 4.5
+}

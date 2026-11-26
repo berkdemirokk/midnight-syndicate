@@ -82,8 +82,11 @@ MAT_SPEC = {
     "M_Rail": dict(hex="#7C8290", rough=0.4, metal=0.8, emis=None, strength=0.0,
                    uv="metres", note="steel top rail on parapets"),
 }
+if RCFG.get("cobble_cp"):   # cobbled street surface (Istanbul tracks): the engine binds M_Cobble from the Istanbul kit
+    MAT_SPEC["M_Cobble"] = dict(hex="#6B665F", rough=0.7, metal=0.0, emis=None, strength=0.0,
+                                uv="metres, tiled 1 m", note="granite setts, road surface of the cobbled section")
 SLOTS = {
-    "road": ["M_Asphalt", "M_Curb"],
+    "road": ["M_Asphalt", "M_Curb"] + (["M_Cobble"] if RCFG.get("cobble_cp") else []),
     "sidewalk": ["M_Paving", "M_Concrete_Wall"],
     "structure": ["M_Concrete_Wall", "M_Rail", "M_TunnelLight", "M_TunnelStripe"],
     "wall": ["M_Concrete_Wall"],
@@ -251,6 +254,12 @@ SLOPE = [(SZ[(i + 1) % NS] - SZ[(i - 1) % NS]) / (2 * DSA) for i in range(NS)]
 _wide = RCFG.get("wide_cp")
 WID = [ROAD_W + (WIDE_W - ROAD_W) * (blend_in(s, S_CP[_wide[0]], S_CP[_wide[1]], 40.0) if _wide else 0.0)
        for s in SARC]
+_narrow = RCFG.get("narrow_cp")   # [cp_a, cp_b]: road narrows to narrow_w (old street), 40 m blends
+if _narrow:
+    _nw = float(RCFG["narrow_w"])
+    WID = [w - (ROAD_W - _nw) * blend_in(s, S_CP[_narrow[0]], S_CP[_narrow[1]], 40.0) for w, s in zip(WID, SARC)]
+_cob = RCFG.get("cobble_cp")      # [cp_a, cp_b]: road surface is M_Cobble, no paint
+COB = [bool(_cob) and S_CP[_cob[0]] <= s < S_CP[_cob[1]] for s in SARC]
 _prom = RCFG.get("prom_cp")    # promenade + open water on the left; null = none
 PB = [blend_in(s, S_CP[_prom[0]], S_CP[_prom[1]], 25.0) if _prom else 0.0 for s in SARC]
 WSL = [SIDE_W + (PROM_W - SIDE_W) * p for p in PB]
@@ -489,7 +498,7 @@ def build_road_surface():
                 puddle = puddle_at(k, u)
                 groove = 0.2 + 0.55 * math.exp(-((u - 2.0) / 1.2) ** 2)
                 cols.append((puddle, clamp(groove), DIST[k] / 4.0, 1.0))
-            Bd.poly(pts, uvs, cols, 0, (0.0, 0.0, 1.0))
+            Bd.poly(pts, uvs, cols, 2 if COB[i] else 0, (0.0, 0.0, 1.0))
 
 
 PUDDLE_PATCHES = []
@@ -625,6 +634,8 @@ def edge_line(Bd, s0, s1, side, mat):
     for q in range(n):
         sa = s0 + (s1 - s0) * q / n
         sb = s0 + (s1 - s0) * (q + 1) / n
+        if COB[min(int(sa / DSA), NS - 1)]:
+            continue
         wa, wb = fr(sa)[6], fr(sb)[6]
         ua_a, ub_a = side * (wa / 2.0 - 0.375), side * (wa / 2.0 - 0.225)
         ua_b, ub_b = side * (wb / 2.0 - 0.375), side * (wb / 2.0 - 0.225)
@@ -655,7 +666,7 @@ def build_markings():
         s = 0.0
         while s < LAP:
             near_grid = sf - 75 < s < sf + 12
-            if not near_grid and not ELEV_ZONE(s):
+            if not near_grid and not ELEV_ZONE(s) and not COB[min(int(s / DSA), NS - 1)]:
                 ribbon(bld("markings", chunk_of_s(s)), s, s + 3.0, ul - 0.075, ul + 0.075, 0.005, paint)
             s += 12.0
     # solid edge lines, both sides, per chunk
@@ -708,7 +719,7 @@ def build_markings():
     # expansion joints across the elevated deck every 20 m
     s = 0.0
     while s < LAP:
-        if ELEV_ZONE(s):
+        if ELEV_ZONE(s) and not COB[min(int(s / DSA), NS - 1)]:
             ribbon(bld("markings", chunk_of_s(s)), s, s + 0.15, -ROAD_W / 2.0, ROAD_W / 2.0, 0.006, joint)
         s += 20.0
 
@@ -724,7 +735,7 @@ def build_decals():
 
     def ok(s, u):
         k = min(int(s / DSA), NS - 1)
-        if TUBE[k] or ELEV[k] or CUT[k] or WATER[k]:
+        if TUBE[k] or ELEV[k] or CUT[k] or WATER[k] or COB[k]:
             return False
         if sf - 75 < s < sf + 20:
             return False
@@ -789,6 +800,49 @@ def build_water():
                (SX[i2] + (ub + WATER_EXT) * LXa[i2], SY[i2] + (ub + WATER_EXT) * LYa[i2], WATER_Z),
                (SX[i] + (ua + WATER_EXT) * LXa[i], SY[i] + (ua + WATER_EXT) * LYa[i], WATER_Z)]
         Bd.poly(pts, [(0, 0)] * 4, [(0, 0, 0, 1)] * 4, 0, (0, 0, 1))
+
+
+PIERS = []   # [{"offset_m", "pos", "left", "tangent", "len", "w"}] for the layout (pier lights)
+
+
+def build_piers():
+    """Ferry piers: a paved slab with concrete skirts reaching from the quay edge out over the water."""
+    for pc in RCFG.get("piers", []):
+        s = S_CP[pc["cp"]] + float(pc["s"])
+        ln, pw = float(pc["len"]), float(pc["w"])
+        x, y, z, tn, lx, ly, w = fr(s)
+        k = min(int(s / DSA), NS - 1)
+        u0 = uo(k, 1)
+        tx, ty = ly, -lx
+        bx, by = x + lx * u0, y + ly * u0
+        zt = z + 0.15
+
+        def pp(a, b, zz):
+            return (bx + lx * a + tx * b, by + ly * a + ty * b, zz)
+
+        Bd = bld("sidewalk", chunk_of_s(s))
+        a0, a1, b0, b1, zb = -0.4, ln, -pw / 2.0, pw / 2.0, WATER_Z - 1.2
+        Bd.poly([pp(a0, b0, zt), pp(a1, b0, zt), pp(a1, b1, zt), pp(a0, b1, zt)],
+                [(b0, a0), (b0, a1), (b1, a1), (b1, a0)], [(0, 0, 0, 1)] * 4, 0, (0, 0, 1))
+        Bd.poly([pp(a0, b1, zt), pp(a1, b1, zt), pp(a1, b1, zb), pp(a0, b1, zb)],
+                [(a0, zt), (a1, zt), (a1, zb), (a0, zb)], [(0, 0, 0, 1)] * 4, 1, (tx, ty, 0.0))
+        Bd.poly([pp(a0, b0, zb), pp(a1, b0, zb), pp(a1, b0, zt), pp(a0, b0, zt)],
+                [(a0, zb), (a1, zb), (a1, zt), (a0, zt)], [(0, 0, 0, 1)] * 4, 1, (-tx, -ty, 0.0))
+        Bd.poly([pp(a1, b1, zt), pp(a1, b0, zt), pp(a1, b0, zb), pp(a1, b1, zb)],
+                [(b1, zt), (b0, zt), (b0, zb), (b1, zb)], [(0, 0, 0, 1)] * 4, 1, (lx, ly, 0.0))
+        for q in range(0, int(ln), 6):   # mooring posts along both edges
+            for b in (b0 + 0.2, b1 - 0.2):
+                c = pp(q + 1.0, b, zt)
+                r, h = 0.18, 0.5
+                ring = [(c[0] + r * math.cos(2 * math.pi * j / 6), c[1] + r * math.sin(2 * math.pi * j / 6)) for j in range(6)]
+                for j in range(6):
+                    p1, p2 = ring[j], ring[(j + 1) % 6]
+                    Bd.poly([(p1[0], p1[1], zt), (p2[0], p2[1], zt), (p2[0], p2[1], zt + h), (p1[0], p1[1], zt + h)],
+                            [(0, 0)] * 4, [(0, 0, 0, 1)] * 4, 1, (p1[0] - c[0], p1[1] - c[1], 0.0))
+                Bd.poly([(p[0], p[1], zt + h) for p in ring], [(0, 0)] * 6, [(0, 0, 0, 1)] * 6, 1, (0, 0, 1))
+        PIERS.append({"offset_m": round(s, 3), "pos": [round(c, 4) for c in g((bx, by, zt))],
+                      "left": [round(c, 5) for c in g((lx, ly, 0.0))], "tangent": [round(c, 5) for c in g((tx, ty, 0.0))],
+                      "len": ln, "w": pw})
 
 
 def build_ground():
@@ -907,6 +961,7 @@ def build_all():
     build_markings()
     placed = build_decals()
     build_water()
+    build_piers()
     kept, total = build_ground()
     return placed, kept, total
 
@@ -998,6 +1053,8 @@ def write_outputs(placed, kept, total, tri_by_kind, obj_count_by_kind, road_norm
         "gates": gates,
         "control_points": cps,
         "zebra_positions": zebra,
+        "piers": PIERS,
+        "control_offsets_m": [round(x, 3) for x in S_CP],
         "districts": DIST_NAMES,
         "helper_points_added": ([{"after_cp": HELPER["after_cp"], "pos": list(HELPER_WF),
                                   "reason": HELPER["reason"]}] if HELPER else []),

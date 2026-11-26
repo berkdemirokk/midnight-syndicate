@@ -1,0 +1,283 @@
+{
+  "coords": "godot_y_up",
+  "source": "assets_src/world/tracks/istanbul_bogaz/build_props_bogaz.py",
+  "items": [
+    {
+      "id": "sign_box_iskele_kahvesi_8m",
+      "category": "sign",
+      "file": "prop_sign_box_iskele_kahvesi_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1436,
+      "lod1_tris": 174,
+      "lod1_file": "prop_sign_box_iskele_kahvesi_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Amber"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.761,
+            0.239
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_kayik_balik_8m",
+      "category": "sign",
+      "file": "prop_sign_box_kayik_balik_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1004,
+      "lod1_tris": 132,
+      "lod1_file": "prop_sign_box_kayik_balik_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_kandil_lokanta_8m",
+      "category": "sign",
+      "file": "prop_sign_box_kandil_lokanta_8m.glb",
+      "size": [
+        8.0,
+        1.0,
+        0.254
+      ],
+      "tris": 1236,
+      "lod1_tris": 157,
+      "lod1_file": "prop_sign_box_kandil_lokanta_8m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Red"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.231,
+            0.188
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 8 m wide"
+    },
+    {
+      "id": "sign_box_mavi_deniz_4m",
+      "category": "sign",
+      "file": "prop_sign_box_mavi_deniz_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 820,
+      "lod1_tris": 107,
+      "lod1_file": "prop_sign_box_mavi_deniz_4m_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_box_nar_evi_4m",
+      "category": "sign",
+      "file": "prop_sign_box_nar_evi_4m.glb",
+      "size": [
+        4.0,
+        1.0,
+        0.254
+      ],
+      "tris": 708,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0,
+            0.5,
+            0.52
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 2.0,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Fascia box sign 4 m wide"
+    },
+    {
+      "id": "sign_blade_nar_meyhane",
+      "category": "sign",
+      "file": "prop_sign_blade_nar_meyhane.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 1208,
+      "lod1_tris": 159,
+      "lod1_file": "prop_sign_blade_nar_meyhane_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Magenta",
+        "M_Neon_Amber",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            1.0,
+            0.169,
+            0.839
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    },
+    {
+      "id": "sign_blade_deniz_kafe",
+      "category": "sign",
+      "file": "prop_sign_blade_deniz_kafe.glb",
+      "size": [
+        0.265,
+        2.6,
+        1.42
+      ],
+      "tris": 912,
+      "lod1_tris": 122,
+      "lod1_file": "prop_sign_blade_deniz_kafe_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_SignBox",
+        "M_Neon_Cyan",
+        "M_Neon_Amber",
+        "M_Metal_Dark"
+      ],
+      "lights": [
+        {
+          "pos_godot": [
+            0.5,
+            0,
+            0.7
+          ],
+          "color": [
+            0.098,
+            0.902,
+            1.0
+          ],
+          "energy": 1.5,
+          "range": 9.0,
+          "type": "omni",
+          "direction_godot": null
+        }
+      ],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Blade sign, text on +X face, reads toward +Y"
+    }
+  ]
+}

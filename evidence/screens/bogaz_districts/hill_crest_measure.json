@@ -1,0 +1,26 @@
+{
+  "name": "hill_crest_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 96,
+    "draw_calls_min": 96,
+    "driver": "vulkan",
+    "fps": 847.906,
+    "frame_ms_avg": 1.179,
+    "frame_ms_p95": 1.585,
+    "frame_ms_p99": 1.966,
+    "frames": 300,
+    "objects": 96,
+    "os": "Windows",
+    "primitives": 113716,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}

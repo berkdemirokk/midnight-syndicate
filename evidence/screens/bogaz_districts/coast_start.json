@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "coast_start",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 241,
+    "draw_calls_min": 241,
+    "driver": "vulkan",
+    "fps": 815.162,
+    "frame_ms_avg": 1.227,
+    "frame_ms_p95": 2.157,
+    "frame_ms_p99": 2.333,
+    "frames": 60,
+    "objects": 241,
+    "os": "Windows",
+    "primitives": 177476,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-3/evidence/screens/bogaz_districts/coast_start.png",
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}

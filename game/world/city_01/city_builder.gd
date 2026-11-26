@@ -10,6 +10,7 @@ const FAR_LOD_UPDATE_MS: int = 100
 const FAR_LOD_CHUNKS: int = 3  ## prop chunks per LOD2 batch
 const BUILDING_DIR: String = "res://assets/world/kits/buildings/"
 const PROP_DIR: String = "res://assets/world/kits/props/"
+const ISTANBUL_DIR: String = "res://assets/world/kits/istanbul/"  
 const VEHICLE_LAYER_BIT: int = 1 << 1
 const NIGHT_SKY: Shader = preload("res://world/materials/night_sky.gdshader")
 const TRIGGER_LAYER_BIT: int = 1 << 2
@@ -320,7 +321,7 @@ func _build_buildings(inst: Array, lap: float) -> void:
 			continue
 		if kind != "building":
 			continue
-		var root: Node3D = _scene(BUILDING_DIR + asset + ".glb").instantiate() as Node3D
+		var root: Node3D = _scene(_bld_path(asset)).instantiate() as Node3D
 		root.name = "%s_%03d" % [asset, int(stats["first_row"])]
 		root.transform = xf
 		MaterialLibrary.apply(root, asset)
@@ -342,7 +343,7 @@ func _build_buildings(inst: Array, lap: float) -> void:
 		if colliders.has(asset):
 			for xf_v: Variant in arr:
 				_solid.append(_box_entry((xf_v as Transform3D) * Transform3D(Basis(), colliders[asset]["center"] as Vector3), colliders[asset]["size"] as Vector3))
-		var lod2: Dictionary = _find_mesh(_prototype(BUILDING_DIR + asset + ".glb", asset), "LOD2")
+		var lod2: Dictionary = _find_mesh(_prototype(_bld_path(asset), asset), "LOD2")
 		if lod2.is_empty():
 			push_warning("CityBuilder: no LOD2 in " + asset)
 			continue
@@ -393,7 +394,7 @@ func _emit_far_lod(first: Node3D) -> void:
 	for key: String in _far_groups.keys():
 		var g: Dictionary = _far_groups[key]
 		var asset: String = String(g["asset"])
-		var lod2: Dictionary = _find_mesh(_prototype(BUILDING_DIR + asset + ".glb", asset), "LOD2")
+		var lod2: Dictionary = _find_mesh(_prototype(_bld_path(asset), asset), "LOD2")
 		if lod2.is_empty():
 			continue
 		var xfs: Array = g["xfs"]
@@ -621,7 +622,7 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 			stats["signs_dropped_overlap"] = int(stats.get("signs_dropped_overlap", 0)) + 1
 			continue
 		var file: String = String(d["file"]).get_file()
-		if not ResourceLoader.exists(PROP_DIR + file):
+		if not ResourceLoader.exists(_prop_path(file)):
 			stats["missing_props"] = int(stats["missing_props"]) + 1
 			push_warning("CityBuilder: missing prop " + file)
 			continue
@@ -648,11 +649,11 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 ## Mesh children of one prop group (one file, chunk and category): a near MultiMesh per mesh and a far LOD1 band
 ## when the kit ships a _lod1 file. Returns the prototype; the caller turns its shapes into colliders.
 func _emit_prop_meshes(parent: Node3D, file: String, chunk: int, cat: String, xfs: Array) -> Dictionary:
-	var path: String = PROP_DIR + file
+	var path: String = _prop_path(file)
 	var end_m: float = prop_far_end_m
 	if cat == "furniture":
 		end_m = prop_furniture_end_m
-	elif cat == "bay":
+	elif cat == "bay" or cat == "skyline":
 		end_m = 0.0
 	var near: Dictionary = _prototype(path, "")
 	var lod1_path: String = path.replace(".glb", "_lod1.glb")
@@ -1560,6 +1561,16 @@ func _build_environment() -> void:
 
 
 # --- helpers --------------------------------------------------------------------------------
+
+static func _bld_path(asset: String) -> String:
+	var p: String = BUILDING_DIR + asset + ".glb"
+	return p if ResourceLoader.exists(p) else ISTANBUL_DIR + asset + ".glb"
+
+
+static func _prop_path(file: String) -> String:
+	var p: String = PROP_DIR + file
+	return p if ResourceLoader.exists(p) else ISTANBUL_DIR + file
+
 
 func _scene(path: String) -> PackedScene:
 	if not _packed.has(path):

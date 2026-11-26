@@ -1,0 +1,26 @@
+{
+  "name": "descent_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 91,
+    "draw_calls_min": 91,
+    "driver": "vulkan",
+    "fps": 806.64,
+    "frame_ms_avg": 1.24,
+    "frame_ms_p95": 1.682,
+    "frame_ms_p99": 2.004,
+    "frames": 300,
+    "objects": 91,
+    "os": "Windows",
+    "primitives": 126612,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}

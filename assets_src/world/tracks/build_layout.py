@@ -79,7 +79,18 @@ LAMP_DECK = bool(LC.get("lamp_on_deck", False))   # lamps on the elevated deck s
 BILLBOARD_N = int(LC.get("billboard_count", 8))
 ACCENT_N = int(LC.get("accent_count", 6))
 RAIL_D = LC.get("guardrails", True)
+CORNER_BARRIERS = bool(LC.get("corner_barriers", True))
+QUAY = LC.get("quay")      # Istanbul seaside: railing + promenade lamps on the water side instead of the City 01 quay props
+TRAM = LC.get("tram")      # tram rails along a control point range
+PIER_LIGHTS = LC.get("pier_lights")
 PROBE_STEP = int(LC.get("probe_step", 30))
+
+
+def cp_index(e):
+    """Sample index of an entry given as {"i":} or {"cp":, "s":} (metres after control point cp)."""
+    if "i" in e:
+        return int(e["i"])
+    return int(round((CL["control_offsets_m"][int(e["cp"])] + float(e["s"])) / SP)) % N
 
 
 def hexcol(rgb):
@@ -89,6 +100,8 @@ def hexcol(rgb):
 def load_inputs():
     cl = json.load(open(CL_PATH, encoding="utf-8"))
     bcat = json.load(open(BCAT_PATH, encoding="utf-8"))
+    for rel in LC.get("extra_building_catalogs", []):   # Istanbul kit buildings: same catalog format
+        bcat["buildings"] = bcat["buildings"] + json.load(open(os.path.join(REPO, rel), encoding="utf-8"))["buildings"]
     pcat = json.load(open(PCAT_PATH, encoding="utf-8"))
     props = {p["id"]: p for p in pcat["items"]}
     for rel in LC.get("extra_prop_catalogs", []):   # per-track props (new sign texts): catalog dir is the file prefix
@@ -480,7 +493,7 @@ def place_corner_barriers():
     kr = (dT * R2).sum(1)                        # > 0 means turning right
     kap = np.abs(kr)
     n = 0
-    for i in range(N):
+    for i in range(N if CORNER_BARRIERS else 0):
         if kap[i] < 1 / 100.0 or Y[i] > 0.8 or Y[i] < -0.8 or DIST[i] == TUNNEL_D:   # corners: radius under 100 m
             continue
         outer = "left" if kr[i] > 0 else "right"   # outside of a right turn is the left side
@@ -612,7 +625,82 @@ def place_market_stalls():
     return n
 
 
+def place_seaside():
+    """Istanbul coast: seaside railing on the quay edge, warm promenade lamps, a few promenade furniture props."""
+    n = 0
+    water_idx = [i for i in range(N) if WATER[i]]
+    step = int(QUAY.get("railing_step", 3))
+    for i in water_idx:
+        if i % step or not (WATER[(i - 1) % N] and WATER[(i + step) % N]):
+            continue
+        if any(abs(i * SP - pr["offset_m"]) < pr["w"] / 2.0 + 4.0 for pr in CL.get("piers", [])):
+            continue   # the ferry pier opens the railing
+        pt = point_on("left", i, float(QUAY.get("railing_k", 0.3)))
+        t = T2[i] / np.linalg.norm(T2[i])
+        yaw = math.atan2(-t[1], t[0])          # local +X (the 6 m run) along the direction of travel
+        prop(QUAY["railing"], [pt[0], Y[i] + 0.15, pt[2]], yaw, int(DIST[i]), "left", i, lights_on=False)
+        n += 1
+    s = RNG.uniform(0, 8.0)
+    lamps = 0
+    while s < L:
+        i = int(s / SP) % N
+        if WATER[i] and WATER[(i - 8) % N] and WATER[(i + 8) % N]:
+            pt = point_on("left", i, float(QUAY.get("lamp_k", 1.7)))
+            f = unit(INW["left"][i])
+            prop(QUAY["lamp"], [pt[0], Y[i] + 0.15, pt[2]], yaw_from_front(f), int(DIST[i]), "left", i, source="lamp_head")
+            lamps += 1
+        s += RNG.uniform(*QUAY.get("lamp_step_m", [22.0, 25.0]))
+    for i in water_idx[::5]:
+        for name, p, k in QUAY.get("furniture", []):
+            if RNG.random() < p and WATER[(i - 4) % N] and WATER[(i + 4) % N]:
+                pt = point_on("left", i, k)
+                f = unit(INW["left"][i])
+                prop(name, [pt[0], Y[i] + 0.15, pt[2]], yaw_from_front(f), int(DIST[i]), "left", i, lights_on=False)
+                n += 1
+    return n + lamps
+
+
+def place_tram():
+    """Tram rail segments (12 m, rails + poles + catenary) along the right-hand lane of a control point range."""
+    if not TRAM:
+        return 0
+    a, b = [CL["control_offsets_m"][c] for c in TRAM["cps"]]
+    step = float(TRAM.get("step_m", 12.0))
+    u = float(TRAM.get("u", 2.3))
+    n = 0
+    s = a
+    while s + step <= b:
+        j = int(round((s + step) / SP)) % N      # segment origin = its far end; local +X runs back toward the start
+        t = T2[j] / np.linalg.norm(T2[j])
+        yaw = math.atan2(-t[1], t[0]) + math.pi  # local -Z (the pole side) = right of travel
+        pos = P2[j] + R2[j] * u
+        prop(TRAM["asset"], [float(pos[0]), float(Y[j]) + 0.03, float(pos[1])], yaw, int(DIST[j]), "right", j, lights_on=False)
+        n += 1
+        s += step
+    return n
+
+
+def place_pier_lights():
+    """Three cool masts on each ferry pier: root, middle and head."""
+    n = 0
+    for pr in CL.get("piers", []) if PIER_LIGHTS else []:
+        base = np.array([pr["pos"][0], pr["pos"][2]])
+        left = np.array([pr["left"][0], pr["left"][2]])
+        tan = np.array([pr["tangent"][0], pr["tangent"][2]])
+        for a in (2.0, pr["len"] * 0.5, pr["len"] - 1.2):
+            for b in (-pr["w"] / 2.0 + 0.6, pr["w"] / 2.0 - 0.6):
+                pt = base + left * a + tan * b
+                f = unit(-left if a > 3.0 else left)
+                i = nearest_index(pt)
+                prop(PIER_LIGHTS["asset"], [float(pt[0]), pr["pos"][1], float(pt[1])], yaw_from_front(f), int(DIST[i]), "left", i,
+                     lights_on=True, source="ferry_pier_light")
+                n += 1
+    return n
+
+
 def place_quay():
+    if QUAY:
+        return place_seaside()
     n = 0
     water_idx = [i for i in range(N) if WATER[i]]
     # promenade runs from the building line (offset 10.5) to the quay face (offset 16.5); k < 0 is outward
@@ -634,16 +722,16 @@ def place_quay():
 def place_bay_backdrop():
     n = 0
     for e in BAY:
-        i, off, aid = e["i"], e["off"], e["asset"]
+        i, off, aid = cp_index(e), e["off"], e["asset"]
         base = P2[i] - (INW["left"][i] * 0) + (-INW["left"][i]) * (off - 10.5)
         prop(aid, [base[0], 0.0, base[1]], yaw_from_front(unit(-(base - P2[i]))),
              e.get("district", 2), "left", i, lights_on=True, source="bay_crane_light", extra={"far": True})
         n += 1
     for e in SKYLINES:
-        i = e["i"]
+        i = cp_index(e)
         side = e.get("side", "left")
         sk = P2[i] - INW[side][i] * e["off"]
-        prop("skyline_card", [sk[0], 0.0, sk[1]], yaw_from_front(unit(-(sk - P2[i]))), e["district"], side, i,
+        prop(e.get("asset", "skyline_card"), [sk[0], 0.0, sk[1]], yaw_from_front(unit(-(sk - P2[i]))), e["district"], side, i,
              lights_on=False, extra={"far": True})
         n += 1
     return n
@@ -653,10 +741,11 @@ def place_plaza():
     """Original props (fountain sculpture) in an open stretch, off the road on the given side."""
     n = 0
     for e in PLAZA:
-        i = e["i"]
+        i = cp_index(e)
         v = R2[i] if e["side"] == "right" else -R2[i]
         pt = P2[i] + v * e["off"]
-        prop(e["asset"], [float(pt[0]), e.get("y", -0.28), float(pt[1])], 0.0, e.get("district", int(DIST[i])),
+        yaw = yaw_from_front(unit(-v)) if e.get("face") == "road" else 0.0
+        prop(e["asset"], [float(pt[0]), e.get("y", -0.28) if "y" in e else -0.28, float(pt[1])], yaw, e.get("district", int(DIST[i])),
              e["side"], i, lights_on=True, source="plaza_light")
         n += 1
     return n
@@ -799,7 +888,7 @@ def coverage():
             ok = best <= 6.0
             tot += 1
             cov += int(ok)
-            eligible = (DIST[i] != 3) and not (side == "left" and WATER[i]) and Y[i] >= -0.8
+            eligible = (DIST[i] != TUNNEL_D) and not (side == "left" and WATER[i]) and Y[i] >= -0.8
             if eligible:
                 tot_e += 1
                 cov_e += int(ok)
@@ -897,6 +986,8 @@ def main():
     counts_quay = place_quay()
     counts_bay = place_bay_backdrop()
     counts_plaza = place_plaza()
+    counts_tram = place_tram()
+    counts_pier = place_pier_lights()
     signs = place_signs_and_roofs()
     n_neon = add_neon_fills(signs)
     n_acc = add_accents()
@@ -962,6 +1053,7 @@ def main():
     print("barriers", counts_barr, "guardrails", counts_guard, "chevrons/cones", counts_chev, "apexes", apexes)
     print("zebra", counts_zeb, "bus", counts_bus, "string/cable", counts_str, "stalls", counts_stall,
           "quay", counts_quay, "bay", counts_bay, "plaza", counts_plaza, "signs", len(signs), "neon fills", n_neon, "accents", n_acc)
+    print("tram", counts_tram, "pier lights", counts_pier)
     print("max lights within 60 m", max60, "at offset", max60_at)
     print("racing line max shift", round(max_shift, 3), "points", len(line_pts))
     print("worst3", worst)
