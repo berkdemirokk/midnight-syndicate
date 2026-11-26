@@ -8,7 +8,6 @@ extends Node3D
 const SPECIES_DIR: String = "res://assets/world/kits/trees/"
 const FOLIAGE_SHADER: Shader = preload("res://shaders/foliage.gdshader")
 const BLOB_SHADER: Shader = preload("res://world/greenery/tree_blob.gdshader")
-const LEAF_ATLAS: String = "res://assets/world/kits/trees/leaf_atlas.png"
 
 const CHUNK_M: float = 240.0
 const SPACING_MIN_M: float = 9.0  ## was 18-30: about 70 trees per track read as bare streets
@@ -20,7 +19,7 @@ const SIDEWALK_MAX_M: float = 6.5
 const TRIES_PER_STEP: int = 3
 const WORLD_MASK: int = 1  ## physics layer 1: buildings and static geometry, as rain.gd
 const PROBE_RADIUS_M: float = 1.0
-const CROWN_R_M: Dictionary = {"plane": 3.0, "judas": 1.8, "cypress": 1.1, "street": 1.5}  ## crown reach per species
+const CROWN_R_M: Dictionary = {"plane": 3.7, "judas": 2.4, "cypress": 0.9, "street": 1.1}  ## crown reach per species: 90th percentile of the leaf radius (assets_src/world/kit_trees/prepare_licensed_trees.py)
 const ROOF_CHECK_M: float = 9.0  ## overpass or tunnel roof above the tree disqualifies the spot
 const GRADE_TOL_M: float = 1.0  ## the tree must stand on the same grade as the racing line
 const BLOB_LIFT_M: float = 0.04
@@ -30,10 +29,10 @@ const LOD_RANGES: Array = [[0.0, 60.0], [60.0, 150.0], [150.0, 320.0]]
 
 ## Blob diameter in metres and per-tree scale range. Species geometry is built in assets_src/world/kit_trees.
 const SPECIES: Dictionary = {
-	"plane": {"blob_m": 9.0, "scale": Vector2(0.9, 1.1)},
+	"plane": {"blob_m": 8.0, "scale": Vector2(0.9, 1.1)},
 	"judas": {"blob_m": 5.0, "scale": Vector2(0.9, 1.1)},
-	"cypress": {"blob_m": 2.6, "scale": Vector2(0.9, 1.15)},
-	"street": {"blob_m": 3.2, "scale": Vector2(0.9, 1.1)},
+	"cypress": {"blob_m": 2.2, "scale": Vector2(0.9, 1.15)},
+	"street": {"blob_m": 2.8, "scale": Vector2(0.9, 1.1)},
 }
 ## Species weights by track. Bogaz: erguvan, cypress and planes; Maslak: planters and planes; City 01: planters.
 const MIX: Dictionary = {
@@ -55,7 +54,8 @@ var _probe := SphereShape3D.new()  ## trunk-and-crown-base clearance probe, radi
 
 
 ## Leaf tint per species (multiplies the atlas). Judas: muted blossom, the raw magenta glowed under the lamps. Cypress: its needles are painted almost black.
-const LEAF_TINT: Dictionary = {"judas": Color(0.68, 0.56, 0.56), "cypress": Color(1.05, 1.2, 0.8)}
+const LEAF_TINT: Dictionary = {"judas": Color(0.92, 0.66, 0.8), "cypress": Color(0.8, 0.95, 0.72), "street": Color(0.6, 0.76, 0.5)}
+const BARK_TINT: Dictionary = {"plane": Color(0.6, 0.56, 0.5), "judas": Color(0.7, 0.66, 0.64), "cypress": Color(0.75, 0.66, 0.58), "street": Color(0.62, 0.58, 0.52)}  ## multiplies the model's bark texture
 static var _leaf_materials: Array[ShaderMaterial] = []  ## every cached leaf material, so the hour can retune them
 
 
@@ -134,13 +134,11 @@ func _place() -> void:
 					s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
 					continue
 				species = "cypress" if mix.has("cypress") else "street"
-			# A wide crown must not poke into a facade: fall back to the track's narrow species, else skip the spot.
+			# A wide crown must not poke into a facade: the picked species keeps its weight, a spot that cannot take it is skipped.
 			if _crown_blocked(pos, float(CROWN_R_M.get(species, 1.5))):
-				species = "cypress" if mix.has("cypress") else "street"
-				if not mix.has(species) or _crown_blocked(pos, float(CROWN_R_M.get(species, 1.5))):
-					rejected["crown"] = int(rejected.get("crown", 0)) + 1
-					s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
-					continue
+				rejected["crown"] = int(rejected.get("crown", 0)) + 1
+				s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
+				continue
 			placements.append({"species": species, "pos": pos, "chunk": int(s / CHUNK_M),
 				"lateral": _track.get_lateral_offset(pos, s), "yaw": _rng.randf() * TAU,
 				"scale": _rng.randf_range(SPECIES[species].scale.x, SPECIES[species].scale.y)})
@@ -272,15 +270,16 @@ static func _lod_mesh(species: String, lod: int) -> Mesh:
 	inst.free()
 	var leaf := ShaderMaterial.new()
 	leaf.shader = FOLIAGE_SHADER
-	leaf.set_shader_parameter("tint", LEAF_TINT.get(species, Color(0.92, 1.02, 0.68)))  # the atlas paint is dark: lifted, a little yellow, so crowns read as sunlit leaves
+	leaf.set_shader_parameter("tint", LEAF_TINT.get(species, Color(0.72, 0.87, 0.64)))  # daylight mid-green: the lifted tint read as neon lime under the sun
 	if lod == 2:
 		leaf.set_shader_parameter("albedo_tex", load(SPECIES_DIR + "impostor_%s.png" % species))
 		mesh.surface_set_material(0, leaf)
 	else:
-		leaf.set_shader_parameter("albedo_tex", load(LEAF_ATLAS))
+		leaf.set_shader_parameter("albedo_tex", load(SPECIES_DIR + "leaf_%s.png" % species))  # the model's own leaf texture
 		var bark := StandardMaterial3D.new()
-		bark.vertex_color_use_as_albedo = true
-		bark.albedo_color = Color(0.42, 0.36, 0.30)  # the baked bark colour read pale grey-white in sunlight
+		bark.vertex_color_use_as_albedo = true  # vertex colour = baked AO only
+		bark.albedo_texture = load(SPECIES_DIR + "bark_%s.png" % species)  # the model's own bark texture, tiled
+		bark.albedo_color = BARK_TINT.get(species, Color(0.8, 0.76, 0.7))
 		bark.roughness = 0.95
 		mesh.surface_set_material(0, bark)  # GLB order: surface 0 bark, surface 1 leaves
 		mesh.surface_set_material(1, leaf)

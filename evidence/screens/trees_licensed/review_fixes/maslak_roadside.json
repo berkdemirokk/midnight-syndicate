@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "maslak_roadside",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 200,
+    "draw_calls_min": 200,
+    "driver": "vulkan",
+    "fps": 243.32,
+    "frame_ms_avg": 4.11,
+    "frame_ms_p95": 6.388,
+    "frame_ms_p99": 6.975,
+    "frames": 60,
+    "objects": 17366,
+    "os": "Windows",
+    "primitives": 143168,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 587.669,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_f06593fb-43d-8/evidence/screens/greenery_demo/maslak_roadside.png",
+  "preset": "high",
+  "scenario": "greenery_demo"
+}

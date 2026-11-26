@@ -42,7 +42,10 @@ func test_assets_budget_and_surfaces() -> void:
 			var want_surfaces: int = 1 if lod == 2 else 2
 			check(mesh.get_surface_count() == want_surfaces, "%s lod%d surfaces %d, want %d" % [sp, lod, mesh.get_surface_count(), want_surfaces])
 			check(mesh.surface_get_material(want_surfaces - 1) is ShaderMaterial, "%s lod%d leaf surface is not the foliage shader" % [sp, lod])
-	check(ResourceLoader.exists(DIR + "leaf_atlas.png"), "leaf atlas missing")
+	for sp: String in SPECIES:
+		check(ResourceLoader.exists(DIR + "leaf_%s.png" % sp), "leaf texture missing for " + sp)
+		check(ResourceLoader.exists(DIR + "bark_%s.png" % sp), "bark texture missing for " + sp)
+		check(ResourceLoader.exists(DIR + "impostor_%s.png" % sp), "impostor missing for " + sp)
 
 
 func test_foliage_shader_contract() -> void:
@@ -97,14 +100,19 @@ func test_species_mix_follows_track() -> void:
 	var bogaz: Array = await _populate("bogaz")
 	for p: Dictionary in (bogaz[1] as Greenery).placements:
 		check(["judas", "cypress", "plane"].has(p.species), "bogaz tree %s not in its mix" % p.species)
-	metric("bogaz_species", (bogaz[1] as Greenery).species_counts())
+	var bc: Dictionary = (bogaz[1] as Greenery).species_counts()
+	metric("bogaz_species", bc)
+	# The weights are picked per spot; crown rejections thin planes, so judas (the heaviest weight) must still lead.
+	check(int(bc.get("judas", 0)) >= int(bc.get("cypress", 0)) and int(bc.get("judas", 0)) >= int(bc.get("plane", 0)), "bogaz: judas must lead the mix, got %s" % str(bc))
 	var nodes_b: Array[Node] = [bogaz[0]]
 	cleanup(nodes_b)
 	await frames(2)
 	var maslak: Array = await _populate("maslak")
 	for p: Dictionary in (maslak[1] as Greenery).placements:
 		check(["street", "plane"].has(p.species), "maslak tree %s not in its mix" % p.species)
-	metric("maslak_species", (maslak[1] as Greenery).species_counts())
+	var mc: Dictionary = (maslak[1] as Greenery).species_counts()
+	metric("maslak_species", mc)
+	check(int(mc.get("street", 0)) > int(mc.get("plane", 0)), "maslak: street must lead the mix, got %s" % str(mc))
 	var nodes_m: Array[Node] = [maslak[0]]
 	cleanup(nodes_m)
 	await frames(2)
