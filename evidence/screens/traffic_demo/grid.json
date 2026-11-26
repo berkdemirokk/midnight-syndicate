@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.0,
+  "name": "grid",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 368,
+    "draw_calls_min": 143,
+    "driver": "vulkan",
+    "fps": 98.977,
+    "frame_ms_avg": 10.103,
+    "frame_ms_p95": 17.243,
+    "frame_ms_p99": 17.953,
+    "frames": 60,
+    "objects": 12733,
+    "os": "Windows",
+    "primitives": 341832,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 564.157,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_0929d959-435-2/evidence/screens/traffic_demo/grid.png",
+  "preset": "high",
+  "scenario": "traffic_demo"
+}

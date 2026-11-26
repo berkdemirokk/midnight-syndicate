@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "traffic_hit",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 339,
+    "draw_calls_min": 241,
+    "driver": "vulkan",
+    "fps": 113.18,
+    "frame_ms_avg": 8.836,
+    "frame_ms_p95": 11.73,
+    "frame_ms_p99": 18.245,
+    "frames": 60,
+    "objects": 13444,
+    "os": "Windows",
+    "primitives": 295414,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 564.348,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_0929d959-435-2/evidence/screens/traffic_demo/traffic_hit.png",
+  "preset": "high",
+  "scenario": "traffic_demo"
+}

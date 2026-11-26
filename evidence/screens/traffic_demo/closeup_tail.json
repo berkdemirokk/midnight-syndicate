@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.0,
+  "name": "closeup_tail",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 291,
+    "draw_calls_min": 231,
+    "driver": "vulkan",
+    "fps": 124.076,
+    "frame_ms_avg": 8.06,
+    "frame_ms_p95": 10.356,
+    "frame_ms_p99": 17.628,
+    "frames": 60,
+    "objects": 13756,
+    "os": "Windows",
+    "primitives": 197153,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 564.354,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_0929d959-435-2/evidence/screens/traffic_demo/closeup_tail.png",
+  "preset": "high",
+  "scenario": "traffic_demo"
+}

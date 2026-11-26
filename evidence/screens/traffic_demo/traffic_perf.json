@@ -1,0 +1,26 @@
+{
+  "name": "traffic_perf",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 354,
+    "draw_calls_min": 244,
+    "driver": "vulkan",
+    "fps": 107.752,
+    "frame_ms_avg": 9.281,
+    "frame_ms_p95": 12.031,
+    "frame_ms_p99": 14.074,
+    "frames": 240,
+    "objects": 14463,
+    "os": "Windows",
+    "primitives": 330973,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 564.354,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "traffic_demo"
+}
