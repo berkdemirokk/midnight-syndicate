@@ -56,6 +56,7 @@ const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
 const SHADOW_PROXY_NAME: String = "SunShadowProxy"
 const FILL_LIGHT_NAME: String = "CarFillLight"
 const RIM_LIGHT_NAME: String = "CarRimLight"
+const ISTANBUL_NAMES: PackedStringArray = ["Mert", "Emir", "Kerem", "Deniz", "Aras", "Baran", "Selim"]  ## rival names on the Istanbul tracks
 const BOGAZ_TRACK_KEY: String = "istanbul_bogaz"  ## track scenes with this in their path get the Bosphorus scenery
 const REFLECTION_NAME: String = "PlanarReflection"
 const WORLD_LAYER_MASK: int = 1  ## physics layer 1: world and static, the road surface
@@ -436,6 +437,8 @@ func _car_lod(car: ArcadeCar) -> CarLod:
 
 
 func _opponent_name(index: int) -> String:
+	if config_used.track_scene.contains("istanbul") and index < ISTANBUL_NAMES.size():
+		return ISTANBUL_NAMES[index]
 	if index < config_used.opponent_names.size():
 		return config_used.opponent_names[index]
 	return "Driver %d" % (index + 1)

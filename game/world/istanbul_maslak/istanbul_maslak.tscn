@@ -4,6 +4,7 @@
 
 [node name="IstanbulMaslak" type="Node3D"]
 script = ExtResource("1_builder")
+track_name = "Maslak"
 width = 18.0
 layout_path = "res://assets/world/istanbul_maslak/istanbul_maslak_layout.json"
 road_glb = "res://assets/world/istanbul_maslak/istanbul_maslak_road.glb"

@@ -4,6 +4,7 @@
 
 [node name="City01" type="Node3D"]
 script = ExtResource("1_builder")
+track_name = "Arden Bay"
 
 [node name="Geometry" type="Node3D" parent="."]
 

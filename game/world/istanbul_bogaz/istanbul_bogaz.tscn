@@ -4,6 +4,7 @@
 
 [node name="IstanbulBogaz" type="Node3D"]
 script = ExtResource("1_builder")
+track_name = "Ortaköy Sahil"
 width = 14.0
 layout_path = "res://assets/world/istanbul_bogaz/istanbul_bogaz_layout.json"
 road_glb = "res://assets/world/istanbul_bogaz/istanbul_bogaz_road.glb"
