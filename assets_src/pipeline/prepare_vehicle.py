@@ -175,6 +175,8 @@ def build_lod(src, cfg, level, out_dir, stats):
             if src_mat not in mats_map:
                 raise SystemExit("unmapped source material: %s (object %s)" % (src_mat, o.name))
             target = mats_by_obj.get(o.name + "|" + src_mat, mats_map[src_mat])
+            if target == "M_Plate" and f.center.y < 0.0 and cfg.get("front_plate_material"):
+                target = cfg["front_plate_material"]  # nose-side plate: a second plate would stretch the rear plate UVs
             ov = by_obj_mat.get(o.name + "|" + src_mat, nodes_map.get(src_mat))
             if ov == "drop":
                 continue

@@ -1,0 +1,225 @@
+{
+ "car_id": "noctra_meridian",
+ "source": "assets_src/third_party/vinish_cars/grand-tourer.glb",
+ "lod0": {
+  "tris": 89475,
+  "tris_by_node": {
+   "body": 24860,
+   "brake_FL": 1838,
+   "brake_FR": 1838,
+   "brake_RL": 1838,
+   "brake_RR": 1838,
+   "col_body": 90,
+   "exhaust": 7354,
+   "glass": 4144,
+   "interior": 8784,
+   "lights_front": 1532,
+   "lights_rear": 2206,
+   "plate_rear": 2,
+   "trim": 12509,
+   "underbody": 1774,
+   "wheel_FL": 4715,
+   "wheel_FR": 4715,
+   "wheel_RL": 4719,
+   "wheel_RR": 4719
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_Lens",
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Carbon",
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 28,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Caliper",
+   "M_Carbon",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 14
+ },
+ "lod1": {
+  "tris": 23959,
+  "tris_by_node": {
+   "body": 6213,
+   "col_body": 90,
+   "glass": 828,
+   "interior": 4391,
+   "lights_front": 764,
+   "lights_rear": 1100,
+   "trim": 6803,
+   "wheel_FL": 943,
+   "wheel_FR": 943,
+   "wheel_RL": 942,
+   "wheel_RR": 942
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 14,
+  "materials": [
+   "M_Glass",
+   "M_Interior",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 8
+ },
+ "lod2": {
+  "tris": 6696,
+  "tris_by_node": {
+   "body": 2768,
+   "col_body": 90,
+   "glass": 413,
+   "lights_rear": 258,
+   "trim": 1372,
+   "wheel_FL": 449,
+   "wheel_FR": 448,
+   "wheel_RL": 449,
+   "wheel_RR": 449
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 8,
+  "materials": [
+   "M_Glass",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 5
+ }
+}

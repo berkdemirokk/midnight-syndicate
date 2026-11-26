@@ -17,6 +17,12 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.23, "front_r": 0.335, "rear_r": 0.35, "wheelbase": 2.46,
 	},
 	{
+		"id": "noctra_meridian", "scene": "res://vehicles/noctra_meridian/noctra_meridian.tscn",
+		"spec": "res://vehicles/specs/noctra_meridian.tres", "name": "Noctra Meridian",
+		"len": 4.783, "width": 2.075, "height": 1.327,  # source GLB bounding box (metres), grand-tourer.glb
+		"axle": 1.4, "front_r": 0.355, "rear_r": 0.36, "wheelbase": 2.8,
+	},
+	{
 		"id": "arden_havoc", "scene": "res://vehicles/arden_havoc/arden_havoc.tscn",
 		"spec": "res://vehicles/specs/arden_havoc.tres", "name": "Arden Havoc",
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb
