@@ -5,6 +5,7 @@ extends RefCounted
 
 const DICT: Dictionary = {
 	"garage.class_hatch": {"tr": "SICAK HATCH", "en": "HOT HATCH"},
+	"garage.class_classic": {"tr": "KLASİK TUNING", "en": "CLASSIC TUNER"},
 	"garage.class_muscle": {"tr": "MUSCLE", "en": "MUSCLE"},
 	"garage.class_gt": {"tr": "GT", "en": "GT"},
 	"garage.car_buy": {"tr": "SATIN AL  %d TL", "en": "BUY  $%d"},

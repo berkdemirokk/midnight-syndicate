@@ -7,6 +7,9 @@ extends RefCounted
 const STARTER: String = "noctra_sable"
 const DEFAULT_CARS: Array[Dictionary] = [
 	{"id": "noctra_sable", "class": "street", "price": 0, "rep": 0},
+	# Original 80s-90s Istanbul sedan, the cheap tuner (modified variant; stock and taxi run in traffic).
+	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0,
+		"scene": "res://vehicles/bosfor_atmaca/atmaca_modified.tscn", "spec": "res://vehicles/specs/atmaca_modified.tres"},
 	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
 	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300},
 	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800},
