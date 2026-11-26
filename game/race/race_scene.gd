@@ -77,6 +77,7 @@ var results_screen: ResultsScreen
 var player_ai: AIDriver  ## set only in autopilot mode
 var recorder: ReplayRecorder  ## records the race for the replay, see start_replay()
 var replay: ReplayPlayer  ## null unless a replay is playing
+var _post_fx: PostFx = null  ## speed blur, grade and vignette under the HUD
 var _speed_lines: Node = null  ## res://fx/speed_lines.tscn instance under the HUD's SpeedFx node
 var last_results: Array[Dictionary] = []
 var dev_track_used: bool = false
@@ -125,6 +126,8 @@ func _process(delta: float) -> void:
 	# Speed lines follow the player only (never an opponent).
 	if _speed_lines != null and player != null and _speed_lines.has_method("set_speed"):
 		_speed_lines.call("set_speed", player.speed_kmh, player.nitro_active)
+	if _post_fx != null and player != null:
+		_post_fx.set_speed(player.speed_kmh, player.nitro_active)
 	if race.state == RaceManager.State.GRID:
 		_grid_t += delta
 		if _grid_t >= GRID_BEAT_S:
@@ -254,6 +257,11 @@ func _build_race() -> void:
 		_world.add_child(greenery)
 		greenery.setup(track)
 	ContactShadow.set_time_of_day(config_used.time_of_day)
+	if _post_fx == null:
+		_post_fx = PostFx.new()
+		_post_fx.name = "PostFx"
+		add_child(_post_fx)
+	_post_fx.set_time_of_day(config_used.time_of_day)
 	recorder = ReplayRecorder.new()
 	recorder.name = "ReplayRecorder"
 	_world.add_child(recorder)

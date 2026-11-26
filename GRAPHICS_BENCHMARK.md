@@ -451,3 +451,27 @@ Raw JSON per shot: evidence/screens/tod_tracks/<track>_<tod>[_preset].json.
 
 All inside High 500 / 450k and Medium 350. Low budget is 250 draws: Bogaz is over at sunset (263) but Bogaz night Low was
 already 266 with the same lamps, so this is not new; City 01 Low day is at 248.
+
+## Reference target (owner's Ortakoy night key art) — lead decomposition, 2026-11-26
+
+The reference is key-art quality (offline or AI render), not a phone frame; the car in it is a real production
+car and is not reproduced. Layers, and what each needs in a real-time Mobile-renderer scene:
+
+| layer | what makes it work in the reference | our real-time equivalent |
+|---|---|---|
+| car geometry | wide low coupe, deep rear diffuser, tall wing, round quad tail lamps, readable plate | own cars; needs widebody, diffuser, wing, plate, wheel/brake detail |
+| car paint | dark metallic with clearcoat, wet beads, long specular streaks from street lamps | flake + clearcoat (in), rain bead normal layer (todo), probe/analytic reflections |
+| glass, carbon | dark glass with sky/lamp reflections, carbon weave on the wing | glass fresnel (partly), carbon material (todo) |
+| tyres, rims | spray plumes, dark wet rubber | wheel spray (running), contact shadow (in) |
+| lamps | saturated red rings with bloom, headlight cones on the wet road | emissive + glow; headlight cones exist |
+| wet asphalt | mirror-like with broken reflections, puddles, long vertical light streaks | planar mirror (High), puddles, GGX streaks; needs more warm sources to reflect |
+| rain, spray | visible streaks, mist behind cars, drops on the lens | rain rewrite (in), spray + lens drops (running) |
+| street lighting | warm sodium lamps in a regular rhythm, lit shop fronts, cafe glow | lamp grid exists; needs warmer, denser practicals and lit terraces (running) |
+| architecture | recognisable Ortakoy: floodlit mosque, waterfront houses, cafes, trees | mosque (running), yali/rows (in), trees (in), terraces (running) |
+| sea | dark water carrying the bridge colours as long reflections | wave shader (in), fake reflection quads under the bridge (running) |
+| bridge | red-lit towers, blue-white necklace lights, deck lights | 3D bridge (running) |
+| sky | full moon in broken cloud | moon + cloud night sky (running) |
+| camera | low close chase, slight wide angle, motion blur at the frame edge | chase camera (in), PostFx radial blur + grade + vignette (in) |
+| HUD | position + leaderboard with gaps, progress strip with skyline, round minimap, tachometer, nitro | HUD restyle (running) |
+| grade | cool night with warm practicals, deep blacks kept, controlled bloom | PostFx grade per hour (in), glow tuning (todo) |
+

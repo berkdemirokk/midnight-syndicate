@@ -7,7 +7,7 @@ _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.92), 0.0, 0.0, 0, 0, Vect
 
 [resource]
 script = ExtResource("1_spec")
-display_name = "Kestrel GT-R"
+display_name = "Kestrel GT"
 mass_kg = 1560.0
 wheelbase = 2.75
 track_front = 1.64

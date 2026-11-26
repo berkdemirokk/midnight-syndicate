@@ -18,7 +18,7 @@ const SIDEWALK_MAX_M: float = 6.5
 const TRIES_PER_STEP: int = 3
 const WORLD_MASK: int = 1  ## physics layer 1: buildings and static geometry, as rain.gd
 const PROBE_RADIUS_M: float = 1.0
-const CROWN_R_M: Dictionary = {"plane": 3.8, "judas": 2.6, "cypress": 1.1, "street": 1.5}  ## crown reach per species
+const CROWN_R_M: Dictionary = {"plane": 3.0, "judas": 1.8, "cypress": 1.1, "street": 1.5}  ## crown reach per species
 const ROOF_CHECK_M: float = 9.0  ## overpass or tunnel roof above the tree disqualifies the spot
 const GRADE_TOL_M: float = 1.0  ## the tree must stand on the same grade as the racing line
 const BLOB_LIFT_M: float = 0.04
@@ -98,9 +98,13 @@ func _place() -> void:
 		var pos: Vector3 = centre
 		var reason: String = "inside"
 		for attempt: int in TRIES_PER_STEP:
-			var offset: float = _track.width * 0.5 + _rng.randf_range(SIDEWALK_MIN_M, SIDEWALK_MAX_M) - attempt * 1.0
+			# Later tries move in toward the road but never closer than the kerb clearance.
+			var offset: float = _track.width * 0.5 + maxf(SIDEWALK_MIN_M, _rng.randf_range(SIDEWALK_MIN_M, SIDEWALK_MAX_M) - attempt * 1.0)
 			pos = centre + right * side * offset
 			reason = _rejection(pos, centre)
+			# The centreline bends: measure the real lateral distance at the nearest point, not at this sample.
+			if reason == "" and absf(_track.get_lateral_offset(pos, s)) < _track.width * 0.5 + SIDEWALK_MIN_M - 0.5:
+				reason = "corridor"
 			if reason == "":
 				break
 		if reason == "":
