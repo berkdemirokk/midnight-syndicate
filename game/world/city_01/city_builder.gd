@@ -86,6 +86,8 @@ const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 1
 @export var flip_signs: bool = false  ## turn sign props 180 degrees if their text reads mirrored in a capture
 @export var ambient_color: Color = Color("#1E2740")  ## night fill for unlit walls; was #1B2B4D, walls read black
 @export_range(0.0, 4.0) var ambient_energy: float = 1.2  ## was 0.6: facades away from lamps were black slabs
+@export var sky_glow_colour: Color = Color(0.0, 0.0, 0.0, 0.0)  ## horizon light-pollution colour of the night sky; alpha 0 keeps the shader default (violet, Arden Bay)
+@export var sky_mid_colour: Color = Color(0.0, 0.0, 0.0, 0.0)  ## sky colour above the glow; alpha 0 keeps the shader default
 @export_range(0.0, 1.0) var moon_energy: float = 0.25  ## weak cool directional fill for far facades and roofs, no shadows
 @export var moon_color: Color = Color("#8FA8D8")
 ## Waterfront warehouse wall wash: warm low-energy spots over the road, aimed at the land-side facades.
@@ -1618,6 +1620,10 @@ func _build_environment() -> void:
 	# Gradient night sky with a horizon light-pollution glow; a flat colour read as a dead backdrop behind the skyline.
 	var sky_mat := ShaderMaterial.new()
 	sky_mat.shader = NIGHT_SKY
+	if sky_glow_colour.a > 0.0:
+		sky_mat.set_shader_parameter("glow_colour", sky_glow_colour)
+	if sky_mid_colour.a > 0.0:
+		sky_mat.set_shader_parameter("mid_colour", sky_mid_colour)
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
 	sky.radiance_size = Sky.RADIANCE_SIZE_64

@@ -101,7 +101,9 @@ void fragment() {
 		vec2 f = fract(c) * cell_size_m;
 		float gap = step(cell_mullion_m, f.x) * step(cell_mullion_m, f.y);
 		float pick = step(hash13(vec3(cell, floor(n.x > n.z ? world_pos.x : world_pos.z))), lit_fraction);
-		on *= pick * gap;
+		// With rooms behind the glass the atlas no longer decides which windows are lit: the cell does, so houses
+		// whose panes sample dark atlas texels still get their share of warm lit rooms.
+		on = mix(on * pick * gap, pick * gap, interior_strength);
 		lum *= mix(0.7, 1.15, hash13(vec3(cell.yx, 7.0)));
 	}
 	vec3 glow = mix(white * lum, e, glow_saturation) * on * glow_energy;

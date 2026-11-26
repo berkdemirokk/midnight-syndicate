@@ -251,7 +251,7 @@ func _build_race() -> void:
 		traffic.name = "Traffic"
 		_world.add_child(traffic)
 		traffic.setup(track, player, cars)
-	if not dev_track_used:
+	if not dev_track_used and Settings.get_preset_id() != "low":  # Low budget is 250 draws: trees cost about 30
 		var greenery := Greenery.new()
 		greenery.name = "Greenery"
 		_world.add_child(greenery)

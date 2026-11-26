@@ -16,8 +16,10 @@ lamp_district_scale = {
 "kalyoncu": 4.0,
 "yokus": 4.0
 }
-ambient_color = Color(0.12, 0.17, 0.27, 1)
+ambient_color = Color(0.15, 0.17, 0.22, 1)
 ambient_energy = 1.9
+sky_glow_colour = Color(0.26, 0.15, 0.08, 1)
+sky_mid_colour = Color(0.03, 0.065, 0.15, 1)
 moon_energy = 0.45
 lod0_end_m = 50.0
 lod1_end_m = 150.0

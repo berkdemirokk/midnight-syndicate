@@ -28,12 +28,12 @@ extends Resource
 @export_range(3.0, 60.0, 0.5) var rival_lod1_start_low_m: float = 8.0
 @export_range(5.0, 120.0, 0.5) var rival_lod2_start_low_m: float = 25.0
 @export_range(0.1, 1.0, 0.01) var reflection_fraction_medium: float = 0.2  ## unused: Medium has no mirror since 2026-11-24 (draw-call budget); kept for a future Medium+ preset
-@export_range(0.0, 4.0, 0.01) var car_fill_energy: float = 1.6 ## fill light on the car layer only, see RaceScene.CAR_FILL_LAYER
+@export_range(0.0, 4.0, 0.01) var car_fill_energy: float = 1.0 ## fill light on the car layer only, see RaceScene.CAR_FILL_LAYER
 @export var car_fill_color: Color = Color(0.82, 0.9, 1.0)
 @export_range(1.0, 60.0, 0.5) var car_fill_range_m: float = 25.0
 ## Warm rim from behind the car toward the camera, car layer only: edges of the body catch it, so the paint colour
 ## still reads when the violet sky and the cool fill dominate the reflections.
-@export_range(0.0, 4.0, 0.01) var car_rim_energy: float = 0.9
+@export_range(0.0, 4.0, 0.01) var car_rim_energy: float = 0.5
 @export var car_rim_color: Color = Color(1.0, 0.86, 0.78)
 @export_range(0.0, 80.0, 1.0) var car_rim_elevation_deg: float = 28.0
 @export var traffic_enabled: bool = false  ## ambient civilian traffic (TrafficSystem); career events switch it on

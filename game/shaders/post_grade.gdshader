@@ -18,7 +18,8 @@ void fragment() {
 	float r = length(d * vec2(1.0, 0.8));
 	vec3 c = texture(screen_tex, uv).rgb;
 	if (blur > 0.001) {
-		float amt = blur * 0.05 * smoothstep(0.16, 0.7, r);
+		// Weak above the horizon: the skyline, the bridge lights and the far shore must stay readable at speed.
+		float amt = blur * 0.024 * smoothstep(0.28, 0.85, r) * mix(0.3, 1.0, smoothstep(-0.2, 0.15, d.y));
 		vec3 acc = c;
 		for (int i = 1; i < 6; i++) {
 			acc += texture(screen_tex, uv - d * amt * float(i)).rgb;

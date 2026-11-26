@@ -22,12 +22,12 @@ const DEFAULT_FINISH: int = FINISH_METALLIC
 const PAINT_METALLIC: float = 0.85  ## metallic finish; solid uses 0.0, pearl PAINT_PEARL_METALLIC
 const PAINT_PEARL_METALLIC: float = 0.6
 const PAINT_PEARL_RIM: float = 0.35  ## pearl sheen at grazing angles (no iridescence in StandardMaterial3D on Godot 4.7)
-const PAINT_ROUGHNESS: float = 0.42  ## base; the flake roughness map (0.67..1.0 red) gives 0.28..0.42
+const PAINT_ROUGHNESS: float = 0.24  ## base; the flake roughness map (0.67..1.0 red) gives 0.16..0.24: a tight lobe, so night lamps make crisp highlights instead of a pink wash
 const PAINT_CLEAR: float = 1.0
 const PAINT_CLEAR_ROUGHNESS: float = 0.04
 const PAINT_FLAKE_SCALE: float = 0.035  ## flake normal strength, low on purpose (0.12 read as sandpaper on the wheel close-up)
 const PAINT_PEEL_SCALE: float = 0.04  ## solid paint: orange peel only, no sparkle
-const PAINT_FLAKE_TILING: float = 22.0  ## fine tiling of the 512 px flake normal
+const PAINT_FLAKE_TILING: float = 48.0  ## fine tiling of the 512 px flake normal: at race distance it averages out, no sandpaper
 const RIM_ROUGHNESS: float = 0.34  ## times the brushed map (0.55..1.0): streaked satin metal
 const RIM_ANISOTROPY: float = 0.75  ## stretched highlight across the brushing
 const TIRE_ROUGHNESS: float = 0.92  ## rubber: matte, with sidewall variation from the map
@@ -39,8 +39,8 @@ const GLASS_STREAK_SCALE: Vector3 = Vector3(1.5, 1.0, 1.5)  ## triplanar repeats
 const LENS_ALPHA: float = 0.25
 const CARBON_CLEAR: float = 0.6
 const CARBON_CLEAR_ROUGHNESS: float = 0.2
-const REAR_REST: float = 0.6  ## rear lamp emission multiplier at rest
-const REAR_BRAKE: float = 4.0  ## rear lamp emission multiplier while braking
+const REAR_REST: float = 1.8  ## rear lamp emission multiplier at rest: above the glow threshold (1.3), so running lights bloom at night
+const REAR_BRAKE: float = 5.0  ## rear lamp emission multiplier while braking
 const SHADOW_CASTERS: PackedStringArray = [
 	"body", "underbody", "trim", "wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR",
 ]

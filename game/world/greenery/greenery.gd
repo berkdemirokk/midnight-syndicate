@@ -13,6 +13,8 @@ const LEAF_ATLAS: String = "res://assets/world/kits/trees/leaf_atlas.png"
 const CHUNK_M: float = 240.0
 const SPACING_MIN_M: float = 9.0  ## was 18-30: about 70 trees per track read as bare streets
 const SPACING_MAX_M: float = 16.0
+const OPEN_VIEW_M: float = 35.0  ## no geometry this far outward of a spot: it is an open quay, the view matters more than shade
+const OPEN_SKIP: float = 0.7  ## share of open-view spots left empty
 const SIDEWALK_MIN_M: float = 2.5  ## from the road edge, clear of the kerb
 const SIDEWALK_MAX_M: float = 6.5
 const TRIES_PER_STEP: int = 3
@@ -109,6 +111,13 @@ func _place() -> void:
 				break
 		if reason == "":
 			var species: String = _pick(mix)
+			# Open side (a quay, the sea): keep the view. Most spots stay empty and the rest take a narrow species.
+			if _open_view(pos, right * side):
+				if _rng.randf() < OPEN_SKIP or not (mix.has("cypress") or mix.has("street")):
+					rejected["view"] = int(rejected.get("view", 0)) + 1
+					s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
+					continue
+				species = "cypress" if mix.has("cypress") else "street"
 			# A wide crown must not poke into a facade: fall back to the track's narrow species, else skip the spot.
 			if _crown_blocked(pos, float(CROWN_R_M.get(species, 1.5))):
 				species = "cypress" if mix.has("cypress") else "street"
@@ -141,6 +150,17 @@ func _rejection(pos: Vector3, centre: Vector3) -> String:
 		if not space.intersect_shape(q, 1).is_empty():
 			return "inside"
 	return ""
+
+
+## True when nothing stands within OPEN_VIEW_M outward of the spot: the far side is a quay or the water.
+func _open_view(pos: Vector3, outward: Vector3) -> bool:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	for h: float in [2.0, 6.0]:
+		var from: Vector3 = pos + Vector3.UP * h
+		var q := PhysicsRayQueryParameters3D.create(from, from + outward * OPEN_VIEW_M, WORLD_MASK)
+		if not space.intersect_ray(q).is_empty():
+			return false
+	return true
 
 
 ## True when static geometry (a facade, a balcony, a roof edge) is inside the crown's reach at crown height.
