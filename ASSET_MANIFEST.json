@@ -28,7 +28,7 @@
       "bytes": 10250083,
       "sha256": "2655327efaeff21b6551707880a8c50fef3572445d89eec2c4bd19327f9a0a26",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Asphalt_Main: main road carriageway, fine dark asphalt. Pinned in tools/cc0_assets.json."
     },
     {
@@ -58,7 +58,7 @@
       "bytes": 10862375,
       "sha256": "c6d77d219c8039590336a30b0a93139aa2c1fdaf02f7c620d1df5db54a1e953d",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Asphalt_Worn: worn and cracked asphalt, inside lanes and braking zones. Pinned in tools/cc0_assets.json."
     },
     {
@@ -88,7 +88,7 @@
       "bytes": 1793176,
       "sha256": "7afc631957f5ea861f7bae8afe8adb4faf0cbc6b9e5124452ece594431366a7d",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Concrete_Panels: road-side concrete panels, jersey barrier and kerb faces. Pinned in tools/cc0_assets.json."
     },
     {
@@ -118,7 +118,7 @@
       "bytes": 2573553,
       "sha256": "e24af05cd03ce00845d2bd38ba28d28ef016eefc70cbe1fab2e06e597ac68693",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Concrete_Smooth: smooth road-side concrete, kerbs and underpass walls. Pinned in tools/cc0_assets.json."
     },
     {
@@ -148,7 +148,7 @@
       "bytes": 2219497,
       "sha256": "ecd2bdec49cdf68839ed92ff4f143d93d6251cb184ddc9c1d0286087d3f140e7",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Concrete_Stained: stained concrete, retaining walls and underpass portals. Pinned in tools/cc0_assets.json."
     },
     {
@@ -178,7 +178,7 @@
       "bytes": 1737087,
       "sha256": "657926f1d60b4b1c2e486fb1d5c5d466b4c516a6c87e2f23681548c2e346798c",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Paving_Slab: sidewalk paving slabs. Pinned in tools/cc0_assets.json."
     },
     {
@@ -208,7 +208,7 @@
       "bytes": 2075648,
       "sha256": "186112b8bcf6a935b8e71a0314c8d9c2193f91f25ac1f9c3e6b50dfe6fb1947c",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Sidewalk_Tile: chequer sidewalk tiles, pedestrian areas. Pinned in tools/cc0_assets.json."
     },
     {
@@ -238,7 +238,7 @@
       "bytes": 2601187,
       "sha256": "d52adc63d97b11249481fa29c2554644bc12cc087979f98dcdd19f14bc6b1d6a",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Brick_Red: red brick facades, Old Market shop houses. Pinned in tools/cc0_assets.json."
     },
     {
@@ -268,7 +268,7 @@
       "bytes": 2587728,
       "sha256": "85f2b8e27e2fc66caccf3ef98a56407843bfeb2d8131fdb2e0fdba535c111999",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Brick_Dark: dark brick facades, Downtown and Neon Strip rear walls. Pinned in tools/cc0_assets.json."
     },
     {
@@ -298,7 +298,7 @@
       "bytes": 2162870,
       "sha256": "bf3694ee259ff1dd1b2ebdb99b704c39146a154374af233bf242ee375a8bc4ba",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Brick_Painted: painted white brick, shop house facades. Pinned in tools/cc0_assets.json."
     },
     {
@@ -328,7 +328,7 @@
       "bytes": 1484839,
       "sha256": "d9d41f648df52c904efe9959b987a79b8e992ac5f42ee3ce6cdd5a24f464ab48",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Plaster_Clay: rough clay plaster, Old Market walls. Pinned in tools/cc0_assets.json."
     },
     {
@@ -358,7 +358,7 @@
       "bytes": 337764,
       "sha256": "25685da7a8ecc4dd98ec465850b88775316c2463064aba06c1811cd366527f70",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Plaster_Beige: painted beige plaster, upper floor walls. Pinned in tools/cc0_assets.json."
     },
     {
@@ -388,7 +388,7 @@
       "bytes": 1036398,
       "sha256": "d77340946d8089b9dfcc517706a8168292850b99a25ff330fec6b8ec377e2f62",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Metal_Painted: painted steel shutters, awnings, handrails. Pinned in tools/cc0_assets.json."
     },
     {
@@ -418,7 +418,7 @@
       "bytes": 1179221,
       "sha256": "8c1c27e4a2ca721c84cfd8f0335a81a2e6a824cc7061cb1d530498c57bb0c41c",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Metal_Corrugated: corrugated sheet, market roofs and sheds. Pinned in tools/cc0_assets.json."
     },
     {
@@ -448,7 +448,7 @@
       "bytes": 1930419,
       "sha256": "9927a2ffca24b1e7ec08311b146d062f068ce2d9f4ce0a32fbc5212586917cd5",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Metal_Rusty: rusty corrugated iron, waterfront warehouse. Pinned in tools/cc0_assets.json."
     },
     {
@@ -478,7 +478,7 @@
       "bytes": 1898148,
       "sha256": "234336c3b538bef4124c7f529d3a9db237c0b3316f4190ed460610cd15726643",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Facade_Tile: tiled concrete facade, modern tower bases. Pinned in tools/cc0_assets.json."
     },
     {
@@ -508,7 +508,7 @@
       "bytes": 2033633,
       "sha256": "70313ac8f896b790fb69314462986d8f1a2aabba9a24e8c80f3efc44ad46e8bb",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Wood_Planks: old wood planks, market stall boards and pier. Pinned in tools/cc0_assets.json."
     },
     {
@@ -538,7 +538,7 @@
       "bytes": 1414799,
       "sha256": "857bd708f90af47276f78eca267455950c9f948ebf8aab24c31983de5edebe8a",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Roof_Bitumen: bitumen roof felt, rooftops. Pinned in tools/cc0_assets.json."
     },
     {
@@ -560,7 +560,7 @@
       "bytes": 6485327,
       "sha256": "4b65aa784f5491b5be667092c5c489220c02d7d207257bcf1ea072a28b83cb70",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "environment light (HDRI): night sky and lighting, Berlin riverside, artificial light. Pinned in tools/cc0_assets.json."
     },
     {
@@ -582,7 +582,7 @@
       "bytes": 7064424,
       "sha256": "e9b55cd14136e61170019725db933dffb663dd8afa33d5655e7b9a94a1fc0766",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "environment light (HDRI): night street lighting, narrow lamp-lit street. Pinned in tools/cc0_assets.json."
     },
     {
@@ -612,7 +612,7 @@
       "bytes": 10209884,
       "sha256": "2d323f5f3da13c88dca0976afab8dff26f5aa8d36fbc8f57dfec779e413f5aab",
       "test_result": "pass",
-      "added": "2026-11-24",
+      "added": "2026-11-26",
       "notes": "M_Asphalt_Patched: chipped granular asphalt with repair patches, urban road. Pinned in tools/cc0_assets.json."
     },
     {
@@ -6565,7 +6565,7 @@
       "material_count": 0,
       "bytes": 618952,
       "sha256": "b94fe021b2f59d7fa850ac3773544ec3f0a7a9f78b0c66a4d905fc6c0663f77b",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6582,7 +6582,7 @@
       "material_count": 0,
       "bytes": 741220,
       "sha256": "80e1ecd18c3feb9c005d41ef4d061d5568bb7d09498f296301557c7d1d0050f9",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6599,7 +6599,7 @@
       "material_count": 0,
       "bytes": 1084460,
       "sha256": "026e72f70c78b13e6932dee1b4b36c0b03aca67ed8480be09f97ae05629fffcb",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6616,7 +6616,7 @@
       "material_count": 0,
       "bytes": 804044,
       "sha256": "4ba6629620b0f3f9062492ab8660a02c437af42b82c94998ddacab947258e6ad",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6633,7 +6633,7 @@
       "material_count": 0,
       "bytes": 704416,
       "sha256": "93c9ed34dc5abf322e9fce3869dafd090bb67ad2b4bc844a22f6397c3f2d2dd5",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6650,7 +6650,7 @@
       "material_count": 0,
       "bytes": 746740,
       "sha256": "feb4599f0945a0cf564b52231bef029362d795d9975af8330e0565332edc1043",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6667,7 +6667,7 @@
       "material_count": 0,
       "bytes": 15579,
       "sha256": "e7cb0ce2a0f79e97a1bf0b445391a77a830f7a42d7d9dfc7308838e7f9828f92",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6684,7 +6684,7 @@
       "material_count": 0,
       "bytes": 8531,
       "sha256": "a23b1775e005ba9b89ee48b45804e78968974587f9f7217fd8ac714dc34988b4",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6701,7 +6701,7 @@
       "material_count": 0,
       "bytes": 182408,
       "sha256": "fdb316972ff5340b864b64a2342d56d07c51691305821e3cf44e47425f1efead",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6718,7 +6718,7 @@
       "material_count": 0,
       "bytes": 75240,
       "sha256": "d56b12419f05317145e2189b3fb91702c6bba9a8feabc24ca20255c379a3d780",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6735,7 +6735,7 @@
       "material_count": 0,
       "bytes": 49024,
       "sha256": "8144da2a72784644af0c6b5759b8f3cd440b5b7c91eb6776dc354d59028adc83",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6752,7 +6752,7 @@
       "material_count": 0,
       "bytes": 113576,
       "sha256": "9b7e16b75b21a4d1799a239efc5bff78a3fcb88bb11e31347dd5f08c92857a68",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6769,7 +6769,7 @@
       "material_count": 0,
       "bytes": 47504,
       "sha256": "b0051819c3bd40fb10a151a217b47976bdc37c84e7f6653dcc52ed117c8e076f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6786,7 +6786,7 @@
       "material_count": 0,
       "bytes": 62396,
       "sha256": "0e29c69e6b6f6e6257778be5d7ef2b05abbefa44d50392ed55346cc8b56838b5",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6803,7 +6803,7 @@
       "material_count": 0,
       "bytes": 28848,
       "sha256": "1c8f337a211487e62a3ec9f45536b1d555138aff3a898d86d64bdd44cf8add0f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6820,7 +6820,7 @@
       "material_count": 0,
       "bytes": 126356,
       "sha256": "49ae3cd9d4e4eda3d32abaf113ce95002fa69088307fb14d51e5f75d854025c8",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6837,7 +6837,7 @@
       "material_count": 0,
       "bytes": 48116,
       "sha256": "2660f32a6c56f19b2d9bacd906efd1f6f42545ac02e8b165190023288f9a08ca",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6854,7 +6854,7 @@
       "material_count": 0,
       "bytes": 139164,
       "sha256": "99682e553c5b6f3ff2b5d92feb6ec104e1cfd1fd672ac56b7d0bf41900114b55",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6871,7 +6871,7 @@
       "material_count": 0,
       "bytes": 60260,
       "sha256": "c4c2e053970c44c3eff81a62df6f3d7100bbfc10f6c6d11090ccc04bfdfda0e1",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6888,7 +6888,7 @@
       "material_count": 0,
       "bytes": 63936,
       "sha256": "88fc7ed8861e4c99304f2856522eca8470cfb494f961460dcc86d017e62c79df",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6905,7 +6905,7 @@
       "material_count": 0,
       "bytes": 48308,
       "sha256": "e11a988da3dc02e1a2077466c071cec2a7d0078a7b8cd34c79eda1bf0d2e31da",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6922,7 +6922,7 @@
       "material_count": 0,
       "bytes": 79188,
       "sha256": "497dfd33fe1a4f63303151f497a5540c3a6022a7fae8f5a8c97e63420f165a27",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6939,7 +6939,7 @@
       "material_count": 0,
       "bytes": 99180,
       "sha256": "0a095ff060211a71154108f3e6d08bd2469d2cc8fb1f28ccd6477e9c2c7fc3a6",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6956,7 +6956,7 @@
       "material_count": 0,
       "bytes": 45268,
       "sha256": "79dfef6524f629a3d4e800b28deef327db3102578015f2539fdd031c3da8e626",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6973,7 +6973,7 @@
       "material_count": 0,
       "bytes": 2869,
       "sha256": "013bb41a32909dd7b5452d9b29d3ee9a7a92113f376b5576fcc746cbc1878127",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -6995,7 +6995,7 @@
       "material_count": 0,
       "bytes": 1419362,
       "sha256": "0dcc2af25f77f62d5496248eb7f1e3d498a0df3013fcb945a8e2e0daa5d03065",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7017,7 +7017,7 @@
       "material_count": 0,
       "bytes": 53375,
       "sha256": "6408e4d2b534574b62dc10f1c191b7ee2fbbbf10587d4c0e0c9828ee99ce924a",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7039,7 +7039,7 @@
       "material_count": 0,
       "bytes": 1039356,
       "sha256": "4f59abe32a0138d6234e11abb03b624cc8de91b20c6929989eb8149d6dd9578e",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7061,7 +7061,7 @@
       "material_count": 0,
       "bytes": 7758,
       "sha256": "68a4b5bf41c892ebfb33ffc732eb81268f8a02da6aaf480d41317653684b475f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7083,7 +7083,7 @@
       "material_count": 0,
       "bytes": 7758,
       "sha256": "68a4b5bf41c892ebfb33ffc732eb81268f8a02da6aaf480d41317653684b475f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7105,7 +7105,7 @@
       "material_count": 0,
       "bytes": 3730,
       "sha256": "b0341f1005620a9b0f10d263f58812855d3303bac6a2b5eda4b70d3e5924ed7b",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7127,7 +7127,7 @@
       "material_count": 0,
       "bytes": 3730,
       "sha256": "b0341f1005620a9b0f10d263f58812855d3303bac6a2b5eda4b70d3e5924ed7b",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7149,7 +7149,7 @@
       "material_count": 0,
       "bytes": 6901,
       "sha256": "02dd479a84c68297ad96b58792c2d982d5cdd65e785e8627cd33601ede174d6e",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7171,7 +7171,7 @@
       "material_count": 0,
       "bytes": 6901,
       "sha256": "02dd479a84c68297ad96b58792c2d982d5cdd65e785e8627cd33601ede174d6e",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7193,7 +7193,7 @@
       "material_count": 0,
       "bytes": 3189,
       "sha256": "368155932f80c4efddeac17c825e82aacffbb9289278c1f624761f8b4fa2fdf6",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7215,7 +7215,7 @@
       "material_count": 0,
       "bytes": 3189,
       "sha256": "368155932f80c4efddeac17c825e82aacffbb9289278c1f624761f8b4fa2fdf6",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7237,7 +7237,7 @@
       "material_count": 0,
       "bytes": 8141,
       "sha256": "829fb1ee732192eedb6f86557e6acbaf1c3d81f5c3678e6ccf0c3b1676c89af9",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7259,7 +7259,7 @@
       "material_count": 0,
       "bytes": 8141,
       "sha256": "829fb1ee732192eedb6f86557e6acbaf1c3d81f5c3678e6ccf0c3b1676c89af9",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7281,7 +7281,7 @@
       "material_count": 0,
       "bytes": 3446,
       "sha256": "6c59befda21219e7893899c272dc2ceda3a0798a43b88536a0e2462387fca51f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7303,7 +7303,7 @@
       "material_count": 0,
       "bytes": 3446,
       "sha256": "6c59befda21219e7893899c272dc2ceda3a0798a43b88536a0e2462387fca51f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7325,7 +7325,7 @@
       "material_count": 0,
       "bytes": 7788,
       "sha256": "a0f2c91b4856c573243d53a45ccd1b73fe95fa08ca4e187b6c9e2fc7c9d14678",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7347,7 +7347,7 @@
       "material_count": 0,
       "bytes": 7788,
       "sha256": "a0f2c91b4856c573243d53a45ccd1b73fe95fa08ca4e187b6c9e2fc7c9d14678",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7369,7 +7369,7 @@
       "material_count": 0,
       "bytes": 3324,
       "sha256": "d73a041e3033a0c2f2ea068cdb79d9cecd1ad3bf1af86d7b0ae7afd61fc10f4d",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7391,7 +7391,7 @@
       "material_count": 0,
       "bytes": 3324,
       "sha256": "d73a041e3033a0c2f2ea068cdb79d9cecd1ad3bf1af86d7b0ae7afd61fc10f4d",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7413,7 +7413,7 @@
       "material_count": 0,
       "bytes": 6568,
       "sha256": "e099d9e3d6aac5fc7e70783b419055ff76312cb3850d4042732627742084ba39",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7435,7 +7435,7 @@
       "material_count": 0,
       "bytes": 6568,
       "sha256": "e099d9e3d6aac5fc7e70783b419055ff76312cb3850d4042732627742084ba39",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7457,7 +7457,7 @@
       "material_count": 0,
       "bytes": 2905,
       "sha256": "80872db63b1df093e42387a1b9dcc4e255928d5d1452e620df706cf644a4303f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7479,7 +7479,7 @@
       "material_count": 0,
       "bytes": 2905,
       "sha256": "80872db63b1df093e42387a1b9dcc4e255928d5d1452e620df706cf644a4303f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7501,7 +7501,7 @@
       "material_count": 0,
       "bytes": 6175,
       "sha256": "5323647c0e8b0222391967f773f05f9d782a65779b54ab901ecabf81330bb85a",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7523,7 +7523,7 @@
       "material_count": 0,
       "bytes": 6175,
       "sha256": "5323647c0e8b0222391967f773f05f9d782a65779b54ab901ecabf81330bb85a",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7545,7 +7545,7 @@
       "material_count": 0,
       "bytes": 2758,
       "sha256": "4fc81b5392acc1ecceca2a364e62d908228c2aac31eb6b96610ac369cd364e01",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7567,7 +7567,7 @@
       "material_count": 0,
       "bytes": 2758,
       "sha256": "4fc81b5392acc1ecceca2a364e62d908228c2aac31eb6b96610ac369cd364e01",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7589,7 +7589,7 @@
       "material_count": 0,
       "bytes": 447456,
       "sha256": "f88e1f466424ec7209bd550c5039fa58e4322bb1ee38fc6252949e0d7ef3d0ce",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7611,7 +7611,7 @@
       "material_count": 0,
       "bytes": 15239,
       "sha256": "1005289689346dc3fb99c3665407ffc74fee3216237bb9633c4a74a6f6356f8f",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7633,7 +7633,7 @@
       "material_count": 0,
       "bytes": 27112,
       "sha256": "497d60409ed9dfb77c66d9329a141bcf33d66be0bece147fcd9dc9ad0fa60fc6",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -7655,7 +7655,7 @@
       "material_count": 0,
       "bytes": 44091,
       "sha256": "9fb100e8caa4851434125b472b5a29a59c9bdb2e9e01fb020569ca9503e2238d",
-      "test_result": "unvalidated",
+      "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
     },
@@ -10026,6 +10026,66 @@
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Bosfor Yildirim). Downloaded 2026-11-26."
+    },
+    {
+      "id": "sandstone_blocks_08",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/sandstone_blocks_08",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/sandstone_blocks_08",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 571506,
+      "sha256": "7b7880fff6dc1ce9dbdabe56f9bb49b21be9c80ad04cc2c196008c59d0f542c0",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "M_Stone: landmark mosque walls and minarets: dressed sandstone blocks. Pinned in tools/cc0_assets.json."
+    },
+    {
+      "id": "marble_01",
+      "kind": "texture",
+      "path": "game/assets/textures/cc0/marble_01",
+      "source": "cc0:polyhaven",
+      "source_url": "https://polyhaven.com/a/marble_01",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel",
+      "tris": 0,
+      "texture_sizes": {
+        "basecolor.jpg": [
+          1024,
+          1024
+        ],
+        "normal.jpg": [
+          1024,
+          1024
+        ],
+        "roughness.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 1,
+      "bytes": 507107,
+      "sha256": "ff695492adb18bd69f8ea60bc360dc6910bb6679beb661bcb37f5e371f0686d8",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "M_Paving: landmark quay and square paving: marble. Pinned in tools/cc0_assets.json."
     }
   ]
 }

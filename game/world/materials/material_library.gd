@@ -46,6 +46,10 @@ static var _debug: StandardMaterial3D
 
 
 ## True when the name has a recipe in one of the materials.json files.
+## Materials of the road GLB: its vertex colours carry asphalt shader data (wear, lanes), so they must not be read as AO.
+const ROAD_VERTEX_DATA: PackedStringArray = ["M_Asphalt", "M_Cobble", "M_Concrete_Wall", "M_Curb", "M_Grate", "M_Ground", "M_Manhole", "M_Paving", "M_Rail", "M_RoadPaint", "M_Water"]
+
+
 static func is_bound(mat_name: String) -> bool:
 	_ensure_loaded()
 	return _recipes.has(mat_name)
@@ -248,6 +252,7 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 	m.albedo_color = Color(c.r * (1.0 - 0.3 * wet), c.g * (1.0 - 0.3 * wet), c.b * (1.0 - 0.3 * wet))
 	m.roughness = clampf(float(r["roughness"]) * (1.0 - 0.5 * wet), 0.08, 1.0)
 	m.metallic = float(r["metallic"])
+	m.vertex_color_use_as_albedo = not ROAD_VERTEX_DATA.has(mat_name)  # baked ambient occlusion from the kit builds; meshes without colours stay white
 	if tex.has("basecolor"):
 		m.albedo_texture = _tex(tex["basecolor"])
 	if tex.has("normal"):
@@ -346,6 +351,8 @@ static func _facade(mat_name: String, r: Dictionary, tex: Dictionary) -> ShaderM
 	sm.set_shader_parameter("streak_gloss", tuning.facade_streak_gloss)
 	sm.set_shader_parameter("sill_boost", tuning.facade_sill_boost)
 	sm.set_shader_parameter("grime", tuning.facade_grime)
+	if ROAD_VERTEX_DATA.has(mat_name):
+		sm.set_shader_parameter("ao_strength", 0.0)  # the road mesh keeps shader data in its vertex colours, not AO
 	return sm
 
 

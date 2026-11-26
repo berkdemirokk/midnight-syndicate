@@ -48,6 +48,7 @@ uniform float grime : hint_range(0.0, 1.0) = 0.2;
 uniform float macro_variation : hint_range(0.0, 1.0) = 0.35;
 uniform float contact_dark : hint_range(0.0, 1.0) = 0.45;
 uniform float contact_height_m : hint_range(0.05, 3.0) = 0.9;
+uniform float ao_strength : hint_range(0.0, 1.0) = 0.85;
 
 varying vec3 w_pos;
 varying vec3 w_nrm;
@@ -126,7 +127,9 @@ void fragment() {
 	// contact band at the pavement and grime creeping up from it
 	float contact = 1.0 - smoothstep(0.0, contact_height_m, w_pos.y + 0.6 * vnoise(vec2(uv.x * tile_m * 0.7, 3.0)));
 	col *= 1.0 - contact_dark * contact * contact;
-	ALBEDO = col;
+	// Baked ambient occlusion in the vertex colour (white when the mesh has none): the Mobile renderer has no SSAO.
+	ALBEDO = col * mix(vec3(1.0), COLOR.rgb, ao_strength);
+	AO = mix(1.0, COLOR.r, ao_strength);
 
 	rough *= (1.0 - wall_gloss) * (1.0 - wet_gloss * wet);
 	rough -= streak_gloss * streak;
