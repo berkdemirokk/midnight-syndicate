@@ -7,7 +7,7 @@ extends StreetFronts
 ## same facade is the glow map.
 
 const ATLAS_DIR: String = "res://assets/world/kits/photo_fronts/"
-const ATLASES: PackedStringArray = ["facade_row_01"]  ## each: <name>.jpg and, when present, <name>_night.jpg
+const ATLASES: PackedStringArray = ["facade_row_01", "facade_row_02"]  ## each: <name>.jpg and, when present, <name>_night.jpg
 const HOUSES_PER_ATLAS: int = 4
 const HOUSE_W_M: float = 5.4  ## one house of the picture is 384 x 1024 px
 const HOUSE_H_M: float = 14.4
@@ -16,8 +16,9 @@ const ROOF_RISE_M: float = 1.7
 const EAVE_M: float = 0.4  ## the roof comes this far out over the street face
 const FACADE_SHADER: Shader = preload("res://world/street_fronts/photo_facade.gdshader")
 const ROOF_COLOUR: Color = Color(0.2, 0.07, 0.045)  ## linear terracotta
-## side wall colour per house of an atlas (the average wall colour of that house in the picture)
-const WALL_COLOURS: Array[Color] = [Color(0.36, 0.31, 0.25), Color(0.38, 0.25, 0.12), Color(0.2, 0.09, 0.07), Color(0.17, 0.19, 0.2)]  ## linear
+## side wall colour per house, atlas after atlas (about the wall colour of that house in the picture)
+const WALL_COLOURS: Array[Color] = [Color(0.36, 0.31, 0.25), Color(0.38, 0.25, 0.12), Color(0.2, 0.09, 0.07), Color(0.17, 0.19, 0.2),
+		Color(0.5, 0.45, 0.37), Color(0.03, 0.09, 0.06), Color(0.6, 0.58, 0.53), Color(0.42, 0.17, 0.13)]  ## linear
 const NIGHT_GLOW: float = 1.6
 const SUNSET_GLOW: float = 0.7
 const NIGHT_TINT: Vector3 = Vector3(0.55, 0.5, 0.5)  ## unlit walls keep a little of the street's warm light
@@ -46,7 +47,7 @@ func _load_library() -> void:
 		for h: int in HOUSES_PER_ATLAS:
 			var id: String = "house_%d_%d" % [a, h]
 			_info[id] = {"width_m": HOUSE_W_M, "depth_m": HOUSE_DEPTH_M}
-			_lods[id] = [_house_mesh(h, facade, shell)]
+			_lods[id] = [_house_mesh(h, facade, shell, WALL_COLOURS[(a * HOUSES_PER_ATLAS + h) % WALL_COLOURS.size()])]
 
 
 func _apply_time() -> void:
@@ -93,7 +94,7 @@ func _place(root_xf: Transform3D, slot: Dictionary, parent: Node3D) -> void:
 
 ## Surface 0: the street face with the picture of house `index`. Surface 1: side walls, back wall and a pitched roof in
 ## vertex colours.
-func _house_mesh(index: int, facade: ShaderMaterial, shell: StandardMaterial3D) -> ArrayMesh:
+func _house_mesh(index: int, facade: ShaderMaterial, shell: StandardMaterial3D, wall: Color) -> ArrayMesh:
 	var w: float = HOUSE_W_M / 2.0
 	var h: float = HOUSE_H_M
 	var d: float = HOUSE_DEPTH_M
@@ -108,7 +109,6 @@ func _house_mesh(index: int, facade: ShaderMaterial, shell: StandardMaterial3D) 
 	st.set_material(facade)
 	st.commit(mesh)
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var wall: Color = WALL_COLOURS[index % WALL_COLOURS.size()]
 	var no_uv: Array = [Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]
 	_quad(st, [Vector3(w, h, 0.0), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(w, 0.0, 0.0)], no_uv, Vector3(1.0, 0.0, 0.0), wall)
 	_quad(st, [Vector3(-w, h, d), Vector3(-w, h, 0.0), Vector3(-w, 0.0, 0.0), Vector3(-w, 0.0, d)], no_uv, Vector3(-1.0, 0.0, 0.0), wall)
