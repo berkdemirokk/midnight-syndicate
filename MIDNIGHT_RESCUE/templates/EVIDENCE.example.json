@@ -1,0 +1,1 @@
+{"commit":"REPLACE","engine":"REPLACE","run_command":"REPLACE","captures":{"before":"evidence/before.png","day":"evidence/after_day.png","night":"evidence/after_night.png","gameplay":"evidence/gameplay.png"},"test_log":"evidence/test.log","visual_review":"REPLACE with observed flaws and acceptance decision","device":"REPLACE","fps":null,"frame_time_ms":null,"ios_test":"not_run"}

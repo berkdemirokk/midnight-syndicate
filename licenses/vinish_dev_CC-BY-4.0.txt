@@ -1,0 +1,25 @@
+Licence evidence for the car models from vinish.dev
+Checked by reading the pages on 2026-11-26:
+  https://vinish.dev/free-3d-models/realistic-cars
+  https://vinish.dev/free-3d-models/sports-cars
+
+Text on the pages (quoted):
+  "Real sizes, full interiors and original designs with no makes or logos. ... Free for commercial use under CC BY 4.0, no login."
+  "Licence: free with credit (CC BY 4.0). All models are made by vinish.dev and released under Creative Commons
+   Attribution 4.0. You may use them in personal and commercial projects, change them and share them. The one
+   condition is credit, for example in your game's credits, your app's about page or your video description"
+  "Each file carries its own credit line inside it (the glTF asset.copyright field)"
+
+Licence text: https://creativecommons.org/licenses/by/4.0/
+
+Credit lines carried inside the downloaded GLB files (asset.copyright):
+  "Mid-Engine Supercar" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0
+  "Muscle Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0
+  "Rear-Engine Sports Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0
+  "Grand Tourer" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0
+  "Widebody Drift Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0
+  "Hypercar" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0
+
+Use in this project: modified (materials merged, LODs, number plate, renamed in the game). Credits are shown in the
+game's settings screen (game/ui/credits_third_party.txt) and listed in THIRD_PARTY_LICENSES.md.
+Not a legal opinion: the owner should re-read the source pages before release.

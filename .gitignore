@@ -36,3 +36,7 @@ evidence/tmp/
 
 # Agent worktrees (local only)
 .claude/worktrees/
+
+# AI concept image supplied by the owner: reference only, never shipped or published
+MIDNIGHT_RESCUE/reference/
+asset_inbox/

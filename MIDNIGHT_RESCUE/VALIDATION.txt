@@ -1,0 +1,15 @@
+test_evidence_template_fails (test_tools.Tests.test_evidence_template_fails) ... ok
+test_glb (test_tools.Tests.test_glb) ... ok
+test_select (test_tools.Tests.test_select) ... ok
+test_template_fails (test_tools.Tests.test_template_fails) ... ok
+test_traversal (test_tools.Tests.test_traversal) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.006s
+
+OK
+Python syntax checks: passed (including Blender script syntax only).
+Project scan smoke test: passed on package directory, not user's game.
+Live asset download: not tested successfully (DNS unavailable in preparation environment).
+Blender render, game integration, iPhone performance: not run (Blender/Godot unavailable; project not supplied).
+GLB test uses a synthetic JSON chunk fixture; not a full conforming model or renderer test.

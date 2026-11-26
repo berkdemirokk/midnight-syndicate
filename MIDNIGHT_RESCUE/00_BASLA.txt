@@ -1,0 +1,12 @@
+MIDNIGHT SYNDICATE | GRAFİK KURTARMA PAKETİ v2
+
+1. Claude Code'u mevcut oyunun klasöründe durdur/sonraki komutu beklet. Çalışan dosyaları silme.
+2. ZIP içindeki MIDNIGHT_RESCUE klasörünü olduğu gibi mevcut oyun deposunun köküne çıkar. Oyunun kendi dosyalarının üzerine yazma.
+3. Claude Code'u aynı depo klasöründe aç. Fable 5.2 ve Haiku 5.5 erişimi varsa kullan; yoksa mevcut modelle devam et, modeli uydurma.
+4. Aşağıdaki TEK komutu Claude Code'a gönder:
+
+@MIDNIGHT_RESCUE/01_CLAUDE_PROMPT.md dosyasındaki kurtarma görevini uygula. @MIDNIGHT_RESCUE/reference/ORTAKOY_CONCEPT.png hedef görselini incele. Önce mevcut oyunu çalıştır, grafik benchmark'ını oluştur, gerçek önce/sonra ekran görüntülerini teslim et. Paket scriptlerini kullan. Main'e dokunma. Yeni özellik ekleme; önce grafik problemini çöz.
+
+5. İlk sonuçta evidence klasöründeki before.png, after_day.png, after_night.png ve gameplay.png dosyalarını kontrol et. Bunlar gerçek oyun render'ları olmalı.
+
+NOT: Bu ZIP hazır profesyonel araç veya İstanbul mesh paketi değildir. Bir konsept görsel, kaynak listesi, gerçek asset indirme yardımcı aracı, Blender benchmark scripti ve otomatik doğrulayıcı içerir. Önceki prosedürel texture paketini tekrar kullanma zorunluluğu yoktur. Blender/Godot kurulu olmayan hazırlama ortamında gerçek render veya oyun entegrasyonu test edilmemiştir.

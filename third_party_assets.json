@@ -1,0 +1,71 @@
+{
+  "note": "Third-party assets in the rescue-package format (MIDNIGHT_RESCUE/tools/validate_assets.py). The project-wide record stays in ASSET_MANIFEST.json; this file has another name because Windows file names are case-insensitive.",
+  "assets": [
+    {
+      "id": "vinish_mid_engine_supercar",
+      "path": "assets_src/third_party/vinish_cars/mid-engine-supercar.glb",
+      "role": "vehicle (source model)",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "author": "vinish.dev",
+      "license": "CC-BY-4.0",
+      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+      "attribution": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+      "sha256": "153bb0ff391dbcd816acb2f22cec30e212f65fffd6477ed903a20783cfbc2e3a"
+    },
+    {
+      "id": "vinish_muscle_coupe",
+      "path": "assets_src/third_party/vinish_cars/muscle-coupe.glb",
+      "role": "vehicle (source model)",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "author": "vinish.dev",
+      "license": "CC-BY-4.0",
+      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+      "attribution": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+      "sha256": "f3fc9864f2850c3cd62e9655f8529ce2a0641f1b863b9a9c1196dc4a9c9fc890"
+    },
+    {
+      "id": "vinish_rear_engine_sports_coupe",
+      "path": "assets_src/third_party/vinish_cars/rear-engine-sports-coupe.glb",
+      "role": "vehicle (source model)",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "author": "vinish.dev",
+      "license": "CC-BY-4.0",
+      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+      "attribution": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+      "sha256": "ab2e27716de230bd603964772bba723e72a6b6c1aebe9d1bb87cedf9415f078e"
+    },
+    {
+      "id": "vinish_grand_tourer",
+      "path": "assets_src/third_party/vinish_cars/grand-tourer.glb",
+      "role": "vehicle (source model)",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "author": "vinish.dev",
+      "license": "CC-BY-4.0",
+      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+      "attribution": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+      "sha256": "7998bce260ca45c5f0a5a9eea5ceb06c76c0f61399e1e2394c4dcaca0383c9c4"
+    },
+    {
+      "id": "vinish_widebody_drift_coupe",
+      "path": "assets_src/third_party/vinish_cars/widebody-drift-coupe.glb",
+      "role": "vehicle (source model)",
+      "source_url": "https://vinish.dev/free-3d-models/sports-cars",
+      "author": "vinish.dev",
+      "license": "CC-BY-4.0",
+      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+      "attribution": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+      "sha256": "835cf7e7fa31843d1d34e278928859f6eb83966b8b7bc0c2d40ccd1cc5b9a533"
+    },
+    {
+      "id": "vinish_hypercar",
+      "path": "assets_src/third_party/vinish_cars/hypercar.glb",
+      "role": "vehicle (source model)",
+      "source_url": "https://vinish.dev/free-3d-models/sports-cars",
+      "author": "vinish.dev",
+      "license": "CC-BY-4.0",
+      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+      "attribution": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+      "sha256": "2adc88136f5e69401340f295e1dbb3cdf78fb02ef616b29d249e6eb9f9eb8409"
+    }
+  ]
+}
