@@ -7,10 +7,12 @@ extends Node3D
 
 const FADE_S: float = 1.6
 const PUFF_COLOR: Color = Color(0.78, 0.8, 0.84, 1.0)
-const PUFF_PEAK_ALPHA: float = 0.6
+const PUFF_PEAK_ALPHA: float = 0.28
 const MAX_DRIFT_MS: float = 4.0  ## sideways puff speed cap
 const MAX_WIND_MS: float = 8.0  ## trail speed cap, so puffs stay near the car's wake
-const QUAD_M: float = 2.0
+const QUAD_M: float = 1.4
+const SCALE_MAX: float = 1.4
+const MAX_PUFF_M: float = QUAD_M * SCALE_MAX  ## widest a puff can get: thin tyre smoke, not a cloud
 const TRAIL_M: float = 20.0  ## culling radius around each emitter, longer than any trail
 ## shortcut: one emitter per rear wheel, drift and wind capped, upgrade if trails need per-wheel tuning
 @export var puff_amount: int = 36  ## at particle_amount_scale 1.0; slip ratio scales it down
@@ -40,10 +42,10 @@ func _ready() -> void:
 	## A dim self-light floor so the grey stays readable on the night road; lit shading still gives the form.
 	mat.emission_enabled = true
 	mat.emission = Color(0.45, 0.47, 0.5, 1.0)
-	mat.emission_energy_multiplier = 0.6
+	mat.emission_energy_multiplier = 0.3
 	mat.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_ALPHA
-	mat.distance_fade_min_distance = 1.5  ## fully transparent inside this distance
-	mat.distance_fade_max_distance = 5.0  ## fully opaque beyond this distance
+	mat.distance_fade_min_distance = 2.5  ## fully transparent inside this distance
+	mat.distance_fade_max_distance = 6.0  ## fully opaque beyond this distance
 	var ramp_colors := PackedColorArray([
 		Color(PUFF_COLOR.r, PUFF_COLOR.g, PUFF_COLOR.b, 0.0),
 		Color(PUFF_COLOR.r, PUFF_COLOR.g, PUFF_COLOR.b, PUFF_PEAK_ALPHA),
@@ -62,7 +64,7 @@ func _ready() -> void:
 		pm.initial_velocity_max = 0.8
 		pm.gravity = Vector3(0.0, 0.3, 0.0)
 		pm.scale_min = 1.0
-		pm.scale_max = 1.6
+		pm.scale_max = SCALE_MAX
 		pm.scale_curve = grow_tex
 		pm.color_ramp = FxUtil.ramp(ramp_colors)
 		var e := FxUtil.emitter(puff_amount, FADE_S, pm, mat, Vector2(QUAD_M, QUAD_M))

@@ -16,9 +16,11 @@ const NITRO_FULL_KMH: float = 250.0
 ## Rear slip angle above which tyre smoke starts, and the angle range over which it reaches full amount.
 @export var smoke_slip_deg: float = 8.0
 ## Wheelspin smoke only from a standing start: below this speed and at this throttle or more.
-@export var smoke_launch_max_kmh: float = 40.0
+@export var smoke_launch_max_kmh: float = 15.0
 @export var smoke_launch_throttle: float = 0.5
 const SMOKE_SLIP_RANGE_DEG: float = 12.0
+## Slip and drift smoke need this speed: a bump or spin at 20-30 km/h does not cook the tyres.
+@export var smoke_min_kmh: float = 35.0
 const SMOKE_MIN_SPEED_MS: float = 3.0  ## below this the slip angle is noise
 const DRIFT_SMOKE_MIN: float = 0.8  ## a drift always smokes hard, whatever its slip angle
 const WIND_FRACTION: float = 0.3  ## puffs trail at 30% of the car's velocity
@@ -106,11 +108,12 @@ func _process(delta: float) -> void:
 		_marks[i] = 0
 		if car.wheel_contact[idx]:
 			var slip_deg: float = _rear_slip_deg(i, xf)
-			amount = clampf((slip_deg - smoke_slip_deg) / SMOKE_SLIP_RANGE_DEG, 0.0, 1.0)
-			if car.is_drifting:
-				amount = maxf(amount, DRIFT_SMOKE_MIN)
-			elif car.speed_kmh < smoke_launch_max_kmh and car.input.throttle >= smoke_launch_throttle:
-				amount = maxf(amount, 0.6)  ## standing-start wheelspin
+			if car.speed_kmh >= smoke_min_kmh:
+				amount = clampf((slip_deg - smoke_slip_deg) / SMOKE_SLIP_RANGE_DEG, 0.0, 1.0)
+				if car.is_drifting:
+					amount = maxf(amount, DRIFT_SMOKE_MIN)
+			if amount == 0.0 and car.speed_kmh < smoke_launch_max_kmh and car.input.throttle >= smoke_launch_throttle:
+				amount = 0.4  ## standing-start wheelspin
 			_marks[i] = 1 if (car.is_drifting or slip_deg >= skid_slip_deg) else 0
 		_slip_out[i] = amount
 		_wheel_world[i] = xf * rear_wheel_offsets[i]
