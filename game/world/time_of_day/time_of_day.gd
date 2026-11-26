@@ -16,6 +16,7 @@ const IDS: PackedStringArray = ["day", "sunset", "night"]
 
 const DAY_SKY: Shader = preload("res://world/time_of_day/day_sky.gdshader")
 const WINDOW_SHADER: String = "res://world/materials/window_atlas.gdshader"
+const WATER_SHADER: String = "res://world/materials/water.gdshader"
 const NEON_SHADER: String = "res://shaders/neon.gdshader"
 const ASPHALT_SHADER: String = "res://shaders/wet_asphalt.gdshader"
 const FACADE_SHADER: String = "res://shaders/wet_facade.gdshader"
@@ -150,7 +151,7 @@ func _make_day() -> void:
 	impostor_desat = 0.5
 	impostor_scale = 0.8
 	container_albedo = 0.6
-	parked_albedo = 2.2
+	parked_albedo = 1.25  # 2.2 clipped white and silver cars to flat white
 	parked_metal = 0.45
 	lamps_on = false
 	sign_light_scale = 0.0
@@ -204,7 +205,7 @@ func _make_sunset() -> void:
 	impostor_scale = 0.75
 	container_albedo = 0.28
 	pane_std_albedo = 2.6
-	parked_albedo = 1.7
+	parked_albedo = 1.15
 	parked_metal = 0.55
 	lamps_on = true
 	sign_light_scale = 0.8
@@ -413,6 +414,13 @@ func tune_material(m: Material) -> void:
 			NEON_SHADER:
 				if not _keeps_emission(sm.resource_name):
 					_scale_param(sm, "energy", neon_scale)
+			WATER_SHADER:
+				if sky_params.has("zenith_colour"):
+					sm.set_shader_parameter("zenith_colour", sky_params["zenith_colour"])
+					sm.set_shader_parameter("horizon_colour", sky_params["horizon_colour"])
+					sm.set_shader_parameter("sky_fill", 0.3 if id == DAY else 0.2)
+				else:
+					sm.set_shader_parameter("sky_fill", 0.0)
 			ASPHALT_SHADER:
 				_scale_param(sm, "wetness", road_wetness)
 				_scale_param(sm, "puddle_level", road_puddles)

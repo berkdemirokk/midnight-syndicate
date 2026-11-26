@@ -32,11 +32,11 @@ static func set_time_of_day(tod_id: String) -> void:
 	var s: float = DEFAULT_STRENGTH
 	match tod_id:
 		"day":
-			s = 0.7
+			s = 0.92
 		"sunset":
-			s = 0.45
+			s = 0.7
 		"night":
-			s = 0.85
+			s = 0.95
 	shared_material().set_shader_parameter("strength", s)
 
 

@@ -248,6 +248,12 @@ func _build_race() -> void:
 		traffic.name = "Traffic"
 		_world.add_child(traffic)
 		traffic.setup(track, player, cars)
+	if not dev_track_used:
+		var greenery := Greenery.new()
+		greenery.name = "Greenery"
+		_world.add_child(greenery)
+		greenery.setup(track)
+	ContactShadow.set_time_of_day(config_used.time_of_day)
 	recorder = ReplayRecorder.new()
 	recorder.name = "ReplayRecorder"
 	_world.add_child(recorder)
@@ -355,6 +361,7 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	var audio := CarAudio.new()
 	audio.name = "CarAudio"
 	audio.is_player = not rival
+	ContactShadow.attach(car, true)  # soft grounding blob: the Mobile renderer has no ambient occlusion
 	audio.wetness = tod.audio_wetness  # night: the city road is always wet (rain or not, the asphalt shader is wet)
 	car.add_child(audio)
 	for n: Node in car.find_children("*", "MeshInstance3D", true, false):

@@ -11,13 +11,14 @@ const BLOB_SHADER: Shader = preload("res://world/greenery/tree_blob.gdshader")
 const LEAF_ATLAS: String = "res://assets/world/kits/trees/leaf_atlas.png"
 
 const CHUNK_M: float = 240.0
-const SPACING_MIN_M: float = 18.0
-const SPACING_MAX_M: float = 30.0
+const SPACING_MIN_M: float = 9.0  ## was 18-30: about 70 trees per track read as bare streets
+const SPACING_MAX_M: float = 16.0
 const SIDEWALK_MIN_M: float = 2.5  ## from the road edge, clear of the kerb
 const SIDEWALK_MAX_M: float = 6.5
 const TRIES_PER_STEP: int = 3
 const WORLD_MASK: int = 1  ## physics layer 1: buildings and static geometry, as rain.gd
 const PROBE_RADIUS_M: float = 1.0
+const CROWN_R_M: Dictionary = {"plane": 3.8, "judas": 2.6, "cypress": 1.1, "street": 1.5}  ## crown reach per species
 const ROOF_CHECK_M: float = 9.0  ## overpass or tunnel roof above the tree disqualifies the spot
 const GRADE_TOL_M: float = 1.0  ## the tree must stand on the same grade as the racing line
 const BLOB_LIFT_M: float = 0.04
@@ -104,6 +105,13 @@ func _place() -> void:
 				break
 		if reason == "":
 			var species: String = _pick(mix)
+			# A wide crown must not poke into a facade: fall back to the track's narrow species, else skip the spot.
+			if _crown_blocked(pos, float(CROWN_R_M.get(species, 1.5))):
+				species = "cypress" if mix.has("cypress") else "street"
+				if not mix.has(species) or _crown_blocked(pos, float(CROWN_R_M.get(species, 1.5))):
+					rejected["crown"] = int(rejected.get("crown", 0)) + 1
+					s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
+					continue
 			placements.append({"species": species, "pos": pos, "chunk": int(s / CHUNK_M),
 				"lateral": _track.get_lateral_offset(pos, s), "yaw": _rng.randf() * TAU,
 				"scale": _rng.randf_range(SPECIES[species].scale.x, SPECIES[species].scale.y)})
@@ -129,6 +137,21 @@ func _rejection(pos: Vector3, centre: Vector3) -> String:
 		if not space.intersect_shape(q, 1).is_empty():
 			return "inside"
 	return ""
+
+
+## True when static geometry (a facade, a balcony, a roof edge) is inside the crown's reach at crown height.
+func _crown_blocked(pos: Vector3, radius: float) -> bool:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var crown := SphereShape3D.new()
+	crown.radius = radius
+	for h: float in [4.0, 6.5]:
+		var q := PhysicsShapeQueryParameters3D.new()
+		q.shape = crown
+		q.transform = Transform3D(Basis(), pos + Vector3.UP * h)
+		q.collision_mask = WORLD_MASK
+		if not space.intersect_shape(q, 1).is_empty():
+			return true
+	return false
 
 
 func _mix_key() -> String:
@@ -204,6 +227,7 @@ static func _lod_mesh(species: String, lod: int) -> Mesh:
 	inst.free()
 	var leaf := ShaderMaterial.new()
 	leaf.shader = FOLIAGE_SHADER
+	leaf.set_shader_parameter("tint", Color(0.62, 0.70, 0.52))  # desaturated: the raw atlas green looked plastic next to the buildings
 	if lod == 2:
 		leaf.set_shader_parameter("albedo_tex", load(SPECIES_DIR + "impostor_%s.png" % species))
 		mesh.surface_set_material(0, leaf)
@@ -211,7 +235,8 @@ static func _lod_mesh(species: String, lod: int) -> Mesh:
 		leaf.set_shader_parameter("albedo_tex", load(LEAF_ATLAS))
 		var bark := StandardMaterial3D.new()
 		bark.vertex_color_use_as_albedo = true
-		bark.roughness = 0.92
+		bark.albedo_color = Color(0.42, 0.36, 0.30)  # the baked bark colour read pale grey-white in sunlight
+		bark.roughness = 0.95
 		mesh.surface_set_material(0, bark)  # GLB order: surface 0 bark, surface 1 leaves
 		mesh.surface_set_material(1, leaf)
 	_meshes[id] = mesh
