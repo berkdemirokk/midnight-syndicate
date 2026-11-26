@@ -31,6 +31,8 @@ uniform float reflection_smear : hint_range(0.0, 0.05) = 0.012;
 uniform float reflection_grain : hint_range(0.0, 0.1) = 0.012;
 // Share of the mirror that damp asphalt shows compared with standing water.
 uniform float damp_reflectivity : hint_range(0.0, 1.0) = 0.55;
+// Daylight wear: macro tone, repair patches, drain grates, oil band and surface grain. 0 = flat.
+uniform float dry_detail : hint_range(0.0, 1.0) = 1.0;
 
 varying vec3 world_pos;
 
@@ -39,6 +41,14 @@ float hash12(vec2 p) {
 	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
 	p3 += dot(p3, p3.yzx + 33.33);
 	return fract((p3.x + p3.y) * p3.z);
+}
+
+// Smooth value noise in [0,1] for the daylight variation.
+float vnoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash12(i), hash12(i + vec2(1.0, 0.0)), f.x), mix(hash12(i + vec2(0.0, 1.0)), hash12(i + vec2(1.0)), f.x), f.y);
 }
 
 // One layer of rain ripples: hashed cells, each with one expanding ring. Returns the
@@ -74,9 +84,37 @@ void fragment() {
 	vec3 base_n = texture(normal_tex, uv).rgb;
 	float base_r = texture(roughness_tex, uv).r;
 
+	// Daylight detail in world metres, so it never tiles visibly.
+	vec2 wp = world_pos.xz;
+	// Wet roads (night, rain) keep the mirror look: the dry detail fades with wetness.
+	float dd = dry_detail * (1.0 - 0.6 * wetness);
+	float macro = vnoise(wp / 14.0) * 0.6 + vnoise(wp / 4.5) * 0.3 + vnoise(wp / 1.3) * 0.1 - 0.5;
+	float tone = 1.0 + macro * 0.24 * dd;
+	// Repair patches: one hashed rectangle per 8 m cell, about a third of the cells, tone shifted.
+	vec2 pc = wp / 8.0;
+	vec2 pcell = floor(pc);
+	vec2 pl = fract(pc) - 0.5 - (vec2(hash12(pcell + 2.3), hash12(pcell + 9.1)) - 0.5) * 0.4;
+	vec2 psz = vec2(0.14, 0.1) + vec2(hash12(pcell + 4.4), hash12(pcell + 6.6)) * 0.22;
+	vec2 pe = 1.0 - smoothstep(psz, psz + 0.02, abs(pl));
+	float patch = step(hash12(pcell), 0.3) * pe.x * pe.y * dd;
+	tone *= 1.0 + (hash12(pcell + 11.0) - 0.5) * 0.18 * patch;
+	// Drain grates: about one per 24 m cell, random turn, dark disc with bars and a rim.
+	vec2 gcell = floor(wp / 24.0);
+	vec2 gd = (fract(wp / 24.0) - 0.5) * 24.0 - (vec2(hash12(gcell + 17.0), hash12(gcell + 19.0)) - 0.5) * 14.0;
+	float ga = hash12(gcell + 23.0) * 6.2832;
+	vec2 gq = mat2(vec2(cos(ga), sin(ga)), vec2(-sin(ga), cos(ga))) * gd;
+	float gl = length(gd);
+	float disc = 1.0 - smoothstep(0.36, 0.40, gl);
+	float rim = smoothstep(0.34, 0.38, gl) * (1.0 - smoothstep(0.42, 0.46, gl));
+	float bars = max(smoothstep(0.35, 0.5, abs(fract(gq.x * 9.0) - 0.5)), smoothstep(0.35, 0.5, abs(fract(gq.y * 9.0) - 0.5)));
+	float grate = step(hash12(gcell + 29.0), 0.15) * dd;
+	tone *= 1.0 - grate * (disc * (0.55 - 0.3 * bars) + 0.3 * rim);
+
 	// Damp asphalt: darker, a little glossy. Groove: darker and smoother.
 	float damp = wetness * (1.0 - puddle * 0.5);
 	vec3 col = alb.rgb * tint.rgb * mix(1.0, 0.3, damp);
+	col *= tone * (1.0 - 0.07 * wear * dd);
+	col *= mix(vec3(1.0), vec3(0.96, 0.97, 1.02), patch);
 	col *= mix(1.0, 0.72, wear * wetness);
 	col = mix(col, col * 0.15, puddle);
 
@@ -91,6 +129,9 @@ void fragment() {
 	// Damp asphalt keeps its grain: that grain is what breaks the mirror into wet glitter.
 	// Only standing water goes flat.
 	wn = normalize(mix(wn, vec3(0.0, 1.0, 0.0), clamp(puddle + damp * 0.3, 0.0, 1.0)));
+	// Fine grain tilt: the low sun shows it as a fine speckle on dry road.
+	vec2 gr = vec2(vnoise(wp * 7.0 + vec2(0.5, 0.0)) - vnoise(wp * 7.0 - vec2(0.5, 0.0)), vnoise(wp * 7.0 + vec2(0.0, 0.5)) - vnoise(wp * 7.0 - vec2(0.0, 0.5)));
+	wn = normalize(wn + vec3(gr.x, 0.0, gr.y) * 0.35 * dd * (1.0 - puddle));
 	if (puddle > 0.001) {
 		float t = TIME * (0.8 + 1.2 * rain_intensity);
 		vec2 r1 = ripple_offset(world_pos.xz * 1.5, t);

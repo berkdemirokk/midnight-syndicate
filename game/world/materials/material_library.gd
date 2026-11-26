@@ -16,6 +16,7 @@ const CC0_ROOT: String = "res://assets/textures/cc0/"
 const BUILDING_TEX: String = "res://assets/world/kits/buildings/textures/"
 const PROP_TEX: String = "res://assets/world/kits/props/"
 const ASPHALT_SHADER: String = "res://shaders/wet_asphalt.gdshader"
+const PAVING_SHADER: String = "res://shaders/paving.gdshader"
 const NEON_SHADER: String = "res://shaders/neon.gdshader"
 const TUNNEL_SHADER: String = "res://shaders/tunnel_light.gdshader"
 const WATER_SHADER: String = "res://world/materials/water.gdshader"
@@ -185,6 +186,8 @@ static func _build(mat_name: String) -> Material:
 	var r: Dictionary = _recipes[mat_name]
 	if mat_name == "M_Asphalt":
 		return _asphalt()
+	if mat_name == "M_Paving" or mat_name == "M_Curb":
+		return _paving(mat_name, r)
 	if mat_name == "M_Water":
 		return _water()
 	if mat_name == "M_WindowAtlas":
@@ -375,6 +378,22 @@ static func _asphalt() -> ShaderMaterial:
 	sm.set_shader_parameter("wetness", 1.0)
 	sm.set_shader_parameter("puddle_level", tuning.asphalt_puddle_level)
 	sm.set_shader_parameter("rain_intensity", tuning.asphalt_rain)
+	return sm
+
+
+## Sidewalk slabs and kerb stones: the recipe colour, lifted like the old StandardMaterial, with the stone shader.
+static func _paving(mat_name: String, r: Dictionary) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.resource_name = mat_name
+	sm.shader = load(PAVING_SHADER) as Shader
+	var kerb: bool = mat_name == "M_Curb"
+	var c: Color = r["colour"]
+	# Kerb: 0.7 of the tuned kerb lift, so the stripe along the road reads as concrete, not white paint.
+	var s: float = tuning.kerb_albedo_scale * 0.7 if kerb else tuning.sidewalk_albedo_scale
+	sm.set_shader_parameter("base_colour", Color(c.r * s, c.g * s, c.b * s, 1.0))
+	sm.set_shader_parameter("stone_m", 1.0 if kerb else 0.4)
+	sm.set_shader_parameter("joints", 0.0 if kerb else 1.0)
+	sm.set_shader_parameter("roughness_value", float(r["roughness"]))
 	return sm
 
 
