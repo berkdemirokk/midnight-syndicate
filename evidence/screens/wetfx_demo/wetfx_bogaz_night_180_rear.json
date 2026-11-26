@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "wetfx_bogaz_night_180_rear",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 340,
+    "draw_calls_min": 242,
+    "driver": "vulkan",
+    "fps": 299.924,
+    "frame_ms_avg": 3.334,
+    "frame_ms_p95": 5.112,
+    "frame_ms_p99": 5.29,
+    "frames": 60,
+    "objects": 340,
+    "os": "Windows",
+    "primitives": 293968,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 586.755,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-4/evidence/screens/wetfx_demo/wetfx_bogaz_night_180_rear.png",
+  "preset": "high",
+  "scenario": "wetfx_demo"
+}
