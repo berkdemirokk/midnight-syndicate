@@ -25,10 +25,13 @@ func _tris(mesh: Mesh) -> int:
 	return total
 
 
+## The model's meshes. The four photo wall quads (PhotoWall0..3, their own shader, drawn by the mirror too: 8 triangles)
+## are not part of the model.
 func _meshes(root: Node) -> Array[MeshInstance3D]:
 	var out: Array[MeshInstance3D] = []
 	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
-		out.append(n as MeshInstance3D)
+		if not String(n.name).begins_with("PhotoWall"):
+			out.append(n as MeshInstance3D)
 	return out
 
 
