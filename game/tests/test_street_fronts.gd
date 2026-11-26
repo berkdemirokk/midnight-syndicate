@@ -12,7 +12,7 @@ const FILES: PackedStringArray = ["lod0", "lod1", "mirror"]
 ## collapsing (a collapse left stretched triangles across the facades), which lands at 1.5x the first targets; the mansions
 ## stall at about 18k in LOD0. The frame budget (500 draws / 450k primitives) is what decides, see evidence/.
 const SHOP_MAX_TRIS: Array = [6000, 1300, 460]
-const MANSION_MAX_TRIS: Array = [19000, 3700, 1400]
+const MANSION_MAX_TRIS: Array = [19000, 3300, 1400]
 const TRI_SLACK: float = 1.02  ## the decimator lands within a few per cent of its target
 const SURFACES_LOD0: int = 8
 const SURFACES_LOD1: int = 2
@@ -76,8 +76,8 @@ func test_assets_load_and_stay_in_budget() -> void:
 			var max_surfaces: int = SURFACES_LOD0 if lod == 0 else SURFACES_LOD1
 			check(surfaces <= max_surfaces, "%s LOD%d has %d surfaces" % [id, lod, surfaces])
 			check(names.has("M_Flat"), "%s %s lacks M_Flat" % [id, FILES[lod]])
-			## LOD0 has the glass; LOD1 and the mirror copy may lose it when decimated (florist and corner-shop do)
-			check(lod != 0 or names.has("M_Glass"), "%s %s lacks M_Glass" % [id, FILES[lod]])
+			## every LOD keeps the glass (cull_islands never drops glass parts): the lit windows are the night look
+			check(names.has("M_Glass"), "%s %s lacks M_Glass" % [id, FILES[lod]])
 			for k: Variant in names.keys():
 				var key: String = String(k)
 				check(ALLOWED_SURFACES.has(key) or key.begins_with("T_"), "%s LOD%d surface '%s'" % [id, lod, key])

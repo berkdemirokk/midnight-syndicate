@@ -35,6 +35,7 @@ const EARLY_END_M: float = 350.0
 const FIGURE_IDS: PackedStringArray = ["hoodie", "summer_dress", "shorts_cap", "denim_jacket", "flannel", "puffer", "backpack", "tracksuit"]
 const PALETTE_SIZE: int = 3
 const CROWD_DIR: String = "res://assets/world/kits/crowd/"
+const FIGURE_SHADER: Shader = preload("res://shaders/crowd_figure.gdshader")
 const CROWD_YAW_RAD: float = 0.6109  ## 35 degrees either side of facing the road
 const CROWD_SCALE_MIN: float = 0.94
 const CROWD_SCALE_MAX: float = 1.06
@@ -58,9 +59,9 @@ const RANGE_CAFE_M: float = 220.0
 
 ## Per time of day: lit (bulbs, cables, light pools built), spectator tone, bulb emission, pool strength, awning glow.
 const TOD: Dictionary = {
-	"day": {"lit": false, "tone": Vector3(0.78, 0.76, 0.72), "bulb": 0.0, "pool": 0.0, "glow": 0.0},
-	"sunset": {"lit": true, "tone": Vector3(0.62, 0.52, 0.44), "bulb": 2.5, "pool": 0.55, "glow": 0.2},
-	"night": {"lit": true, "tone": Vector3(0.5, 0.42, 0.38), "bulb": 4.0, "pool": 1.0, "glow": 0.35},
+	"day": {"lit": false, "tone": Vector3(0.78, 0.76, 0.72), "fill": 0.0, "bulb": 0.0, "pool": 0.0, "glow": 0.0},
+	"sunset": {"lit": true, "tone": Vector3(0.62, 0.52, 0.44), "fill": 0.1, "bulb": 2.5, "pool": 0.55, "glow": 0.2},
+	"night": {"lit": true, "tone": Vector3(0.5, 0.42, 0.38), "fill": 0.2, "bulb": 4.0, "pool": 1.0, "glow": 0.35},
 }
 
 var placements: Array[Dictionary] = []  ## {kind, pos, s, lateral, chunk, face, ...} per piece, for tests and the demo
@@ -429,12 +430,11 @@ func _build_figures(chunk: int, items: Array) -> void:
 		_add(tag + "_lod1", _glb_mesh("%s_lod1.glb" % stem, [_figure_material()]), xf, CROWD_LOD1_M, no_custom, CROWD_LOD0_M, true)
 
 
-func _figure_material() -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.vertex_color_use_as_albedo = true  # the baked albedo x AO of the figure
-	var tone: Vector3 = TOD[_tod].tone
-	m.albedo_color = Color(tone.x, tone.y, tone.z)
-	m.roughness = 0.9
+func _figure_material() -> ShaderMaterial:
+	var m := ShaderMaterial.new()
+	m.shader = FIGURE_SHADER  # baked albedo x AO of the figure times the tone, plus a small fill after dark
+	m.set_shader_parameter("tone", TOD[_tod].tone)
+	m.set_shader_parameter("fill", float(TOD[_tod].fill))
 	return m
 
 
