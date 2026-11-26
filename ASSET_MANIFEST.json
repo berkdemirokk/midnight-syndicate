@@ -9289,6 +9289,50 @@
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "Procedural leaf-cluster atlas, 4 leaf shapes (assets_src/world/kit_trees/gen_leaf_atlas.py)"
+    },
+    {
+      "id": "water_swell_normal",
+      "kind": "texture",
+      "path": "game/assets/world/water/water_swell.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "Midnight Syndicate (tools/gen_water_textures.py)",
+      "tris": 0,
+      "texture_sizes": {
+        "water_swell.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 1,
+      "bytes": 483681,
+      "sha256": "44904783003fd106f5b4b9d2c4f6e17eafc7040972b674d07818f38a582fcf4b",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "procedural sea normal (slope encoded), stdlib only, deterministic; swell slope map, 16 m tile, 10 long waves (M_Water swell_tex)"
+    },
+    {
+      "id": "water_chop_normal",
+      "kind": "texture",
+      "path": "game/assets/world/water/water_chop.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "Midnight Syndicate (tools/gen_water_textures.py)",
+      "tris": 0,
+      "texture_sizes": {
+        "water_chop.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 1,
+      "bytes": 602133,
+      "sha256": "dc6a9704bb04d0c9d256b3031bcbc481294d911de023d004086b793f86c26135",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "procedural sea normal (slope encoded), stdlib only, deterministic; chop slope map, 4 m tile, 16 short waves (M_Water chop_tex)"
     }
   ]
 }

@@ -8,26 +8,26 @@
   "name": "waterfront",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 67,
-    "draw_calls_min": 67,
+    "draw_calls": 108,
+    "draw_calls_min": 108,
     "driver": "vulkan",
-    "fps": 303.919,
-    "frame_ms_avg": 3.29,
-    "frame_ms_p95": 5.04,
-    "frame_ms_p99": 5.487,
+    "fps": 798.669,
+    "frame_ms_avg": 1.252,
+    "frame_ms_p95": 1.518,
+    "frame_ms_p99": 1.68,
     "frames": 60,
-    "objects": 67,
+    "objects": 108,
     "os": "Windows",
-    "primitives": 67628,
+    "primitives": 103487,
     "renderer": "mobile",
-    "scaling_3d_scale": 0.67,
-    "video_mem_mb": 444.798,
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 513.366,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/city_districts/waterfront.png",
-  "preset": "low",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_9dd2a52b-0cb-2/evidence/screens/city_districts/waterfront.png",
+  "preset": "high",
   "scenario": "city_districts"
 }

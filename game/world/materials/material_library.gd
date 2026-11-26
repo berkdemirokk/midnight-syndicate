@@ -32,7 +32,7 @@ const CC0_SETS: Dictionary = {
 	"M_Concrete_Wall": "concrete_wall_006",
 }
 const ASPHALT_SET: String = "asphalt_02"
-const WATER_NORMAL_SET: String = "asphalt_04"
+const WATER_TEX: String = "res://assets/world/water/"  ## tools/gen_water_textures.py
 ## Names rendered unshaded with neon.gdshader (HDR colour that feeds the glow).
 const NEON_PREFIXES: Array[String] = ["M_Neon_", "M_Bulb_", "M_Lamp_", "M_Signal_Red", "M_CeilingStrip", "M_TunnelLight", "M_Aircraft_Red"]
 
@@ -401,8 +401,10 @@ static func _water() -> ShaderMaterial:
 	var sm := ShaderMaterial.new()
 	sm.resource_name = "M_Water"
 	sm.shader = load(WATER_SHADER) as Shader
-	sm.set_shader_parameter("normal_tex", _tex(_cc0_set(WATER_NORMAL_SET)["normal"]))
-	sm.set_shader_parameter("scroll", tuning.water_scroll)
+	sm.set_shader_parameter("swell_tex", _tex(WATER_TEX + "water_swell.png"))
+	sm.set_shader_parameter("chop_tex", _tex(WATER_TEX + "water_chop.png"))
+	sm.set_shader_parameter("swell_scroll", tuning.water_scroll)
+	sm.set_shader_parameter("chop_scroll", -tuning.water_scroll * 2.5)  # chop runs against the swell
 	return sm
 
 
