@@ -1,0 +1,28 @@
+{
+ "id": "pharmacy",
+ "front": "-Y",
+ "width_m": 6.06,
+ "depth_m": 7.8,
+ "height_m": 9.08,
+ "lod0_tris": 3790,
+ "lod1_tris": 598,
+ "mirror_tris": 298,
+ "lod0_surfaces": [
+  "M_Flat",
+  "M_Glass",
+  "T_Concrete",
+  "T_Display_Wood",
+  "T_Roof_Flat",
+  "T_Sign_Pharmacy",
+  "T_Stone_Trim",
+  "T_Stucco_Lemon"
+ ],
+ "lod1_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "mirror_surfaces": [
+  "M_Flat"
+ ],
+ "copyright": "\"Pharmacy\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
+}

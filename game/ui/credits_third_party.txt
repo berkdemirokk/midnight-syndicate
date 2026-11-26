@@ -17,3 +17,12 @@
 "Man with Backpack" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Istanbul spectator figure.
 "Woman in Tracksuit" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Istanbul spectator figure.
 "Double Ended Ferry" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosphorus ferry.
+"Café Front" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front (Kahve sign).
+"Bookshop" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front (Kitapci sign).
+"Barber Shop" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front (Berber sign).
+"Florist" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front (Cicekci sign).
+"Pharmacy" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front (Eczane sign).
+"Corner Shop" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front (Bakkal and Manav signs).
+"Town Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
+"Italianate Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
+"Second Empire Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.

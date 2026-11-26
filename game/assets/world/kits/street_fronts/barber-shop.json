@@ -1,0 +1,28 @@
+{
+ "id": "barber-shop",
+ "front": "-Y",
+ "width_m": 5.26,
+ "depth_m": 7.21,
+ "height_m": 9.08,
+ "lod0_tris": 4985,
+ "lod1_tris": 595,
+ "mirror_tris": 299,
+ "lod0_surfaces": [
+  "M_Flat",
+  "M_Glass",
+  "T_Concrete",
+  "T_Display_Wood",
+  "T_Roof_Flat",
+  "T_Sign_Barber",
+  "T_Stone_Trim",
+  "T_Stucco_White"
+ ],
+ "lod1_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "mirror_surfaces": [
+  "M_Flat"
+ ],
+ "copyright": "\"Barber Shop\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
+}

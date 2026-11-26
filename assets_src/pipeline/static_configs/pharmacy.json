@@ -1,0 +1,13 @@
+{
+ "kind": "shop",
+ "front": "auto",
+ "keep_textured": 6,
+ "lod0_max_tris": 6000,
+ "lod1_tris": 600,
+ "mirror_tris": 300,
+ "cell_m": 4.0,
+ "title": "Pharmacy",
+ "signs": {
+  "Sign_Pharmacy": "signs/pharmacy_Sign_Pharmacy.png"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "id": "cafe-front",
+ "front": "-Y",
+ "width_m": 6.06,
+ "depth_m": 8.86,
+ "height_m": 9.08,
+ "lod0_tris": 5999,
+ "lod1_tris": 594,
+ "mirror_tris": 336,
+ "lod0_surfaces": [
+  "M_Flat",
+  "M_Glass",
+  "T_Brick_Brown",
+  "T_Concrete",
+  "T_Display_Wood",
+  "T_Roof_Flat",
+  "T_Sign_Cafe",
+  "T_Stone_Trim"
+ ],
+ "lod1_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "mirror_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "copyright": "\"Café Front\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
+}

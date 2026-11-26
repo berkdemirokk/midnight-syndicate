@@ -1,0 +1,28 @@
+{
+ "id": "town-mansion",
+ "front": "-Y",
+ "width_m": 17.2,
+ "depth_m": 15.7,
+ "height_m": 18.046,
+ "lod0_tris": 18916,
+ "lod1_tris": 3061,
+ "mirror_tris": 3061,
+ "lod0_surfaces": [
+  "M_Flat",
+  "M_Glass",
+  "T_Ashlar_Cream",
+  "T_Concrete",
+  "T_Roof_Flat",
+  "T_Rustic",
+  "T_Stone_Trim"
+ ],
+ "lod1_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "mirror_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "copyright": "\"Town Mansion\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
+}

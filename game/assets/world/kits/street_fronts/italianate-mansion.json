@@ -1,0 +1,28 @@
+{
+ "id": "italianate-mansion",
+ "front": "-Y",
+ "width_m": 16.18,
+ "depth_m": 18.97,
+ "height_m": 15.396,
+ "lod0_tris": 18002,
+ "lod1_tris": 2597,
+ "mirror_tris": 2597,
+ "lod0_surfaces": [
+  "M_Flat",
+  "M_Glass",
+  "T_Concrete",
+  "T_Door_Wood",
+  "T_Render_Warm",
+  "T_Slate",
+  "T_Stone_Trim"
+ ],
+ "lod1_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "mirror_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "copyright": "\"Italianate Mansion\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
+}

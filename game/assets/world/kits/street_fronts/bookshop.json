@@ -1,0 +1,29 @@
+{
+ "id": "bookshop",
+ "front": "-Y",
+ "width_m": 5.66,
+ "depth_m": 7.87,
+ "height_m": 9.08,
+ "lod0_tris": 5218,
+ "lod1_tris": 594,
+ "mirror_tris": 309,
+ "lod0_surfaces": [
+  "M_Flat",
+  "M_Glass",
+  "T_Brick_Red",
+  "T_Concrete",
+  "T_Display_Wood",
+  "T_Roof_Flat",
+  "T_Sign_Books",
+  "T_Stone_Trim"
+ ],
+ "lod1_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "mirror_surfaces": [
+  "M_Flat",
+  "M_Glass"
+ ],
+ "copyright": "\"Bookshop\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
+}

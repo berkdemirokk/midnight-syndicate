@@ -1,0 +1,11 @@
+{
+ "kind": "mansion",
+ "front": "auto",
+ "keep_textured": 6,
+ "lod0_max_tris": 16000,
+ "lod1_tris": 2400,
+ "mirror_tris": 900,
+ "cell_m": 4.0,
+ "title": "Second Empire Mansion",
+ "signs": {}
+}
