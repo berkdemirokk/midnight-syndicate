@@ -8,26 +8,26 @@
   "name": "landmark_night_passing",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 69,
-    "draw_calls_min": 56,
+    "draw_calls": 85,
+    "draw_calls_min": 65,
     "driver": "vulkan",
-    "fps": 225.026,
-    "frame_ms_avg": 4.444,
-    "frame_ms_p95": 7.616,
-    "frame_ms_p99": 10.515,
+    "fps": 274.212,
+    "frame_ms_avg": 3.647,
+    "frame_ms_p95": 5.47,
+    "frame_ms_p99": 9.287,
     "frames": 60,
-    "objects": 12528,
+    "objects": 12544,
     "os": "Windows",
-    "primitives": 116151,
+    "primitives": 126279,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 575.091,
+    "video_mem_mb": 585.455,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-1/evidence/screens/landmark_demo/landmark_night_passing.png",
+  "png": "C:/Users/berk/car race/evidence/screens/landmark_demo/landmark_night_passing.png",
   "preset": "high",
   "scenario": "landmark_demo"
 }

@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.995,
+  "luma_max": 0.994,
   "luma_min": 0.0,
   "name": "grid",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 352,
-    "draw_calls_min": 242,
+    "draw_calls": 192,
+    "draw_calls_min": 192,
     "driver": "vulkan",
-    "fps": 166.216,
-    "frame_ms_avg": 6.016,
-    "frame_ms_p95": 8.083,
-    "frame_ms_p99": 19.696,
+    "fps": 204.343,
+    "frame_ms_avg": 4.894,
+    "frame_ms_p95": 7.622,
+    "frame_ms_p99": 48.377,
     "frames": 60,
-    "objects": 12721,
+    "objects": 12561,
     "os": "Windows",
-    "primitives": 311833,
+    "primitives": 167634,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 564.578,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 482.371,
     "viewport_size": [
       1920,
       1061
     ]
   },
   "png": "C:/Users/berk/car race/evidence/screens/race_city/grid.png",
-  "preset": "high",
+  "preset": "low",
   "scenario": "race_city"
 }

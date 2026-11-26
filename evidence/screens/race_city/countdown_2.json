@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.995,
+  "luma_max": 0.994,
   "luma_min": 0.0,
   "name": "countdown_2",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 354,
-    "draw_calls_min": 244,
+    "draw_calls": 194,
+    "draw_calls_min": 194,
     "driver": "vulkan",
-    "fps": 430.135,
-    "frame_ms_avg": 2.325,
-    "frame_ms_p95": 3.296,
-    "frame_ms_p99": 3.497,
+    "fps": 460.024,
+    "frame_ms_avg": 2.174,
+    "frame_ms_p95": 2.917,
+    "frame_ms_p99": 3.725,
     "frames": 60,
-    "objects": 12723,
+    "objects": 12563,
     "os": "Windows",
-    "primitives": 311837,
+    "primitives": 167638,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 568.578,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 486.371,
     "viewport_size": [
       1920,
       1061
     ]
   },
   "png": "C:/Users/berk/car race/evidence/screens/race_city/countdown_2.png",
-  "preset": "high",
+  "preset": "low",
   "scenario": "race_city"
 }

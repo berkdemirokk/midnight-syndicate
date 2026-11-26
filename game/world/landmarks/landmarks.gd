@@ -14,11 +14,11 @@ const PLACE_S_M: float = 300.0  ## metres along the racing line: the straight wi
 const EDGE_LAT_M: float = -13.0  ## lateral of the quay's landward edge: the seaside railing (sea side is negative)
 const WORLD_LAYER: int = 1  ## buildings and static geometry, as Greenery and rain
 const HALL_CENTRE_LOCAL: Vector3 = Vector3(0.0, 8.0, -18.0)  ## local (Godot) centre of the prayer hall, at the walls' mid-height
-const WARM: Color = Color(1.0, 0.74, 0.46)
+const WARM: Color = Color(1.0, 0.64, 0.3)  ## sodium floodlight gold (0.74, 0.46 read as cold white on pale stone)
 
 ## Surface name (glTF material name from the kit) -> look. glow is emission at night in units of the shader.
 const MATERIALS: Dictionary = {
-	"M_Stone": {"base": Color(0.88, 0.85, 0.79), "rough": 0.45, "metal": 0.0, "glow": 0.0, "flood": 0.45, "glow_color": WARM},
+	"M_Stone": {"base": Color(0.8, 0.74, 0.64), "rough": 0.55, "metal": 0.0, "glow": 0.0, "flood": 0.62, "course": 1.1, "glow_color": WARM},
 	"M_Dome": {"base": Color(0.42, 0.5, 0.5), "rough": 0.35, "metal": 0.5, "glow": 0.0, "flood": 0.3, "glow_color": WARM},
 	"M_Glass": {"base": Color(0.12, 0.15, 0.2), "rough": 0.15, "metal": 0.0, "glow": 3.0, "flood": 0.0, "glow_color": Color(1.0, 0.7, 0.35)},
 	"M_Lamp": {"base": Color(1.0, 0.88, 0.6), "rough": 0.3, "metal": 0.0, "glow": 6.0, "flood": 0.0, "glow_color": Color(1.0, 0.85, 0.55)},
@@ -88,6 +88,7 @@ func _material(surface: String) -> ShaderMaterial:
 	m.set_shader_parameter("metallic", p.metal)
 	m.set_shader_parameter("glow", p.glow)
 	m.set_shader_parameter("flood", p.flood)
+	m.set_shader_parameter("course_m", float(p.get("course", 0.0)))
 	m.set_shader_parameter("glow_color", p.glow_color)
 	m.set_shader_parameter("night", _night)
 	_materials[surface] = m
@@ -132,5 +133,5 @@ func _light(light_name: String, at: Vector3, range_m: float) -> OmniLight3D:
 
 
 func _light_energy(light_name: String) -> float:
-	var full: float = 2.2 if light_name == "FrontFlood" else 1.6
+	var full: float = 1.2 if light_name == "FrontFlood" else 0.9  # 2.2 / 1.6 burnt the stone to white
 	return full * _night

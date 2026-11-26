@@ -8,26 +8,26 @@
   "name": "underpass",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 210,
-    "draw_calls_min": 167,
+    "draw_calls": 166,
+    "draw_calls_min": 161,
     "driver": "vulkan",
-    "fps": 343.422,
-    "frame_ms_avg": 2.912,
-    "frame_ms_p95": 3.905,
-    "frame_ms_p99": 4.323,
+    "fps": 128.026,
+    "frame_ms_avg": 7.811,
+    "frame_ms_p95": 11.291,
+    "frame_ms_p99": 12.174,
     "frames": 60,
-    "objects": 13933,
+    "objects": 13942,
     "os": "Windows",
-    "primitives": 211338,
+    "primitives": 164521,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 568.723,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 486.513,
     "viewport_size": [
       1920,
       1061
     ]
   },
   "png": "C:/Users/berk/car race/evidence/screens/race_city/underpass.png",
-  "preset": "high",
+  "preset": "low",
   "scenario": "race_city"
 }

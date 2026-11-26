@@ -56,6 +56,7 @@ const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
 const SHADOW_PROXY_NAME: String = "SunShadowProxy"
 const FILL_LIGHT_NAME: String = "CarFillLight"
 const RIM_LIGHT_NAME: String = "CarRimLight"
+const BOGAZ_TRACK_KEY: String = "istanbul_bogaz"  ## track scenes with this in their path get the Bosphorus scenery
 const REFLECTION_NAME: String = "PlanarReflection"
 const WORLD_LAYER_MASK: int = 1  ## physics layer 1: world and static, the road surface
 const PLANE_PROBE_UP_M: float = 1.0  ## the road probe starts this far above the car origin...
@@ -255,7 +256,19 @@ func _build_race() -> void:
 		var greenery := Greenery.new()
 		greenery.name = "Greenery"
 		_world.add_child(greenery)
+		greenery.keep_open_view = config_used.track_scene.contains(BOGAZ_TRACK_KEY)
 		greenery.setup(track)
+	# Bosphorus coast: the bridge, the far shore, the ferry and their reflections (they replace the flat bridge card).
+	if not dev_track_used and config_used.track_scene.contains(BOGAZ_TRACK_KEY):
+		var far := FarScenery.new()
+		far.name = "FarScenery"
+		_world.add_child(far)
+		far.setup(track, config_used.time_of_day)
+		var landmark := Landmarks.new()
+		landmark.name = "Landmarks"
+		_world.add_child(landmark)
+		landmark.setup(track)
+		landmark.set_night(1.0 if tod.is_night() else (0.6 if config_used.time_of_day == "sunset" else 0.0))
 	ContactShadow.set_time_of_day(config_used.time_of_day)
 	if _post_fx == null:
 		_post_fx = PostFx.new()

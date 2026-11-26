@@ -1,0 +1,24 @@
+C:\Users\berk\car race\assets_src\world\kit_buildings\build_buildings.py:111: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+18:02:35 | INFO: Data are loaded, start creating Blender stuff
+18:02:35 | INFO: Blender create Mesh node bld_neon_01_a-colonly_mesh
+18:02:35 | INFO: Blender create Mesh node LOD0_mesh
+18:02:35 | INFO: Blender create Mesh node LOD1_mesh
+18:02:35 | INFO: Blender create Mesh node LOD2_mesh
+18:02:35 | INFO: glTF import finished in 0.02s
+00:02.563  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\close_shopfront.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\close_shopfront.png
+18:02:36 | INFO: Data are loaded, start creating Blender stuff
+18:02:36 | INFO: Blender create Mesh node bld_neon_03_a-colonly_mesh
+18:02:36 | INFO: Blender create Mesh node LOD0_mesh
+18:02:36 | INFO: Blender create Mesh node LOD1_mesh
+18:02:36 | INFO: Blender create Mesh node LOD2_mesh
+18:02:36 | INFO: glTF import finished in 0.04s
+00:03.282  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\close_window_reveal.png'
+00:03.625  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\close_rooftop.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\close_window_reveal.png
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\close_rooftop.png
+DONE close
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

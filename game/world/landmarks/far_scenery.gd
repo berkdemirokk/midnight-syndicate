@@ -12,6 +12,7 @@ const DECK_Y: float = 75.0  ## deck top above the sea, m
 const TOWER_X: float = 300.0  ## tower distance from the centre, m (main span 600 m)
 const END_X: float = 500.0  ## deck end distance from the centre, m (1 km deck)
 const TOWER_H: float = 130.0  ## tower top above the deck, m
+const TOWER_PANEL_M: float = 8.0  ## height of one tower leg panel
 const CABLE_Z: float = 10.0  ## cable offset from the centre line, m
 const SHORE_X: float = 640.0  ## far shore starts here, sea before it
 const SHORE_RISE: float = 380.0  ## m over which the hills climb to full height
@@ -115,9 +116,20 @@ func _build_bridge() -> void:
 		var tx: float = CENTRE.x + sx
 		var mid: float = (DECK_Y + TOWER_H - 6.0) * 0.5
 		var half_h: float = (DECK_Y + TOWER_H + 6.0) * 0.5
+		# Legs in 8 m panels: each panel carries its floodlight level as vertex colour (brightest at the deck, where
+		# the lamps stand, fading up the tower and down to the water), so the tower reads as lit steel, not a red beam.
+		var top_y: float = mid + half_h
 		for sz: float in [-CABLE_Z - 1.0, CABLE_Z + 1.0]:
-			_box(tower_st, Vector3(tx, mid, CENTRE.z + sz), Vector3(2.2, half_h, 2.2))
+			var y: float = mid - half_h
+			var n: int = 0
+			while y < top_y:
+				var h: float = minf(TOWER_PANEL_M, top_y - y)
+				tower_st.set_color(_tower_colour(y + h * 0.5, n))
+				_box(tower_st, Vector3(tx, y + h * 0.5, CENTRE.z + sz), Vector3(3.0, h * 0.5 - 0.12, 3.0))
+				y += h
+				n += 1
 		for by: float in [DECK_Y + 25.0, DECK_Y + 75.0, DECK_Y + TOWER_H - 6.0]:
+			tower_st.set_color(_tower_colour(by, 0) * 1.15)
 			_box(tower_st, Vector3(tx, by, CENTRE.z), Vector3(2.0, 1.6, CABLE_Z + 1.0))
 	_box(deck_st, Vector3(CENTRE.x, DECK_Y - 1.5, CENTRE.z), Vector3(END_X, 1.5, 11.0))
 	_box(steel_st, Vector3(CENTRE.x, DECK_Y - 5.5, CENTRE.z), Vector3(END_X, 2.5, 2.0))
@@ -138,9 +150,9 @@ func _build_bridge() -> void:
 	var deck_mat: StandardMaterial3D = _mat(Color(0.26, 0.26, 0.28), 0.0, 0.8)
 	var tower_mat: StandardMaterial3D = _mat(Color(0.3, 0.16, 0.14), 0.0, 0.7)
 	if _lit:
-		tower_mat.emission_enabled = true
-		tower_mat.emission = Color(1.0, 0.1, 0.08)
-		tower_mat.emission_energy_multiplier = 2.2 * _k
+		tower_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED  # the floodlight level is baked in the vertex colours
+		tower_mat.vertex_color_use_as_albedo = true
+		tower_mat.albedo_color = Color(_k, _k, _k)
 	add_child(_mesh_node("BridgeSteel", steel_st.commit(), steel_mat))
 	add_child(_mesh_node("BridgeDeck", deck_st.commit(), deck_mat))
 	add_child(_mesh_node("BridgeTowers", tower_st.commit(), tower_mat))
@@ -163,6 +175,13 @@ func _build_bridge() -> void:
 			pos.append(Vector3(CENTRE.x + float(i) * 14.0, DECK_Y + 1.2, CENTRE.z + sz))
 			cols.append(Color(1.6, 1.3, 0.85) * _k)
 	add_child(_glow_node("BridgeDeckLamps", pos, cols, 1.1))
+
+
+## Floodlit red of a tower panel at height y (m above the sea): 1.25 at the deck, 0.4 at the top, 0.3 at the water.
+static func _tower_colour(y: float, panel: int) -> Color:
+	var level: float = lerpf(1.25, 0.4, clampf((y - DECK_Y) / TOWER_H, 0.0, 1.0)) if y >= DECK_Y else lerpf(0.3, 0.9, clampf(y / DECK_Y, 0.0, 1.0))
+	level *= 0.94 if panel % 2 == 0 else 1.06
+	return Color(1.0 * level, 0.13 * level, 0.09 * level)
 
 
 # --- far shore -------------------------------------------------------------------------------------

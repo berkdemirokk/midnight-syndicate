@@ -18,11 +18,11 @@ const KICK_CLOCK_IDLE_S: float = 1000.0  ## starts the nitro kick clock far past
 @export var target: ArcadeCar: set = set_target
 @export var mode: Mode = Mode.CHASE
 @export_group("Chase")
-@export var distance_rest_m: float = 5.2
-@export var distance_top_m: float = 6.4
-@export var height_m: float = 1.45
+@export var distance_rest_m: float = 4.5
+@export var distance_top_m: float = 5.4
+@export var height_m: float = 1.28
 @export var look_ahead_m: float = 3.0
-@export var look_height_m: float = 0.3
+@export var look_height_m: float = 0.55
 @export var velocity_blend: float = 0.5  ## max weight of the travel direction against the facing
 @export var velocity_full_ms: float = 25.0  ## speed at which velocity_blend is fully applied
 @export var offset_smooth_s: float = 0.2  ## critically damped smoothing time of the offsets

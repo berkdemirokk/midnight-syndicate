@@ -34,7 +34,7 @@ func _load_city() -> CityBuilder:
 
 
 func test_preset_counts() -> void:
-	check(TrafficSystem.count_for_preset("low") == 6, "low preset must give 6 cars")
+	check(TrafficSystem.count_for_preset("low") == 4, "low preset must give 4 cars")
 	check(TrafficSystem.count_for_preset("medium") == 10, "medium preset must give 10 cars")
 	check(TrafficSystem.count_for_preset("high") == 14, "high preset must give 14 cars")
 

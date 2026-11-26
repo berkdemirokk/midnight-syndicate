@@ -64,6 +64,8 @@ const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 1
 @export var prop_lod1_begin_m: float = 60.0  ## props with a _lod1 file switch to it here
 @export var prop_furniture_end_m: float = 90.0  ## small street furniture
 @export var prop_far_end_m: float = 250.0  ## circuit, lamps, signs, overhead; bay backdrop is unlimited (0)
+@export var prop_far_end_low_m: float = 75.0  ## Low preset: lamps, signs and overhead props end here (budget 250 draws)
+@export var prop_sign_end_low_m: float = 40.0  ## Low preset: multi-surface signs are the costliest props per draw
 @export var sign_gap_m: float = 0.4  ## minimum free space between two signs on a facade
 @export var sign_overlap_height_m: float = 1.5  ## signs further apart vertically never collide
 @export var chunk_m: float = 240.0  ## road chunk length for prop MultiMeshes, merged colliders and light budget
@@ -673,6 +675,10 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 func _emit_prop_meshes(parent: Node3D, file: String, chunk: int, cat: String, xfs: Array) -> Dictionary:
 	var path: String = _prop_path(file)
 	var end_m: float = prop_far_end_m
+	if Settings.get_preset_id() == "low":
+		end_m = minf(end_m, prop_far_end_low_m)  # signs are about 75 of the 265 draws of a Low race frame
+		if file.contains("sign") or file.contains("neon") or file.contains("billboard"):
+			end_m = minf(end_m, prop_sign_end_low_m)
 	var lod1_at: float = prop_lod1_begin_m
 	var street: bool = _is_street_cat(cat)
 	if cat == "furniture":

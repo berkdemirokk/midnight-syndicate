@@ -8,7 +8,7 @@ extends Node3D
 ## Usage: var t := TrafficSystem.new(); world.add_child(t); t.setup(track, player, race_cars)
 ## The count follows the graphics preset (Low 6, Medium 10, High 14) unless count_override >= 0.
 
-const COUNT_LOW: int = 6
+const COUNT_LOW: int = 4
 const COUNT_MEDIUM: int = 10
 const COUNT_HIGH: int = 14
 const LANE_LAT_M: float = 5.0  ## lane centre from the racing line; the kerb is at 7 m, car half width 0.9

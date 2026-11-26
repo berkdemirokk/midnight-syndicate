@@ -1,0 +1,68 @@
+C:\Users\berk\car race\assets_src\world\kit_buildings\build_buildings.py:111: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_neon_01_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.03s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_neon_02_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.03s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_neon_03_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.05s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_downtown_01_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.04s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_downtown_02_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.06s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_downtown_03_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.05s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_market_01_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.03s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_market_02_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.05s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_waterfront_01_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.02s
+18:02:25 | INFO: Data are loaded, start creating Blender stuff
+18:02:25 | INFO: Blender create Mesh node bld_parking_01_a-colonly_mesh
+18:02:25 | INFO: Blender create Mesh node LOD0_mesh
+18:02:25 | INFO: Blender create Mesh node LOD1_mesh
+18:02:25 | INFO: Blender create Mesh node LOD2_mesh
+18:02:25 | INFO: glTF import finished in 0.02s
+00:03.594  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\lineup_elevation.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\lineup_elevation.png
+DONE sheet
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

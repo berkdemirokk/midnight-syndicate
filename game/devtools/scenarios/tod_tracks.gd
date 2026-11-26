@@ -73,9 +73,12 @@ func _one(track_key: String, tod_id: String) -> void:
 		_scene.queue_free()
 		return
 	var since_go: float = (Time.get_ticks_msec() - _go_ms) / 1000.0
-	if since_go < RACING_SHOT_S:
-		await cap.wait_seconds(RACING_SHOT_S - since_go)
+	var at_s: float = float(_arg("--at=")) if _arg("--at=") != "" else RACING_SHOT_S  # --at=5: shot 5 s after GO, named <track>_<tod>_t5
+	if since_go < at_s:
+		await cap.wait_seconds(at_s - since_go)
 	var suffix: String = "" if Settings.get_preset_id() == "high" else "_" + Settings.get_preset_id()
+	if _arg("--at=") != "":
+		suffix += "_t" + _arg("--at=")
 	var sun: Light3D = _scene.track.find_child("Sun", true, false) as Light3D
 	print("tod_tracks: %s/%s sun=%s shadow=%s" % [track_key, tod_id, str(sun != null), str(sun != null and sun.shadow_enabled)])
 	if "--casters" in OS.get_cmdline_user_args():

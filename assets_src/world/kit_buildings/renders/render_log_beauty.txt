@@ -1,0 +1,86 @@
+C:\Users\berk\car race\assets_src\world\kit_buildings\build_buildings.py:111: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+18:01:39 | INFO: Data are loaded, start creating Blender stuff
+18:01:39 | INFO: Blender create Mesh node bld_neon_01_a-colonly_mesh
+18:01:39 | INFO: Blender create Mesh node LOD0_mesh
+18:01:39 | INFO: Blender create Mesh node LOD1_mesh
+18:01:39 | INFO: Blender create Mesh node LOD2_mesh
+18:01:39 | INFO: glTF import finished in 0.02s
+00:04.046  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_neon_01.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_neon_01.png
+18:01:42 | INFO: Data are loaded, start creating Blender stuff
+18:01:42 | INFO: Blender create Mesh node bld_neon_02_a-colonly_mesh
+18:01:42 | INFO: Blender create Mesh node LOD0_mesh
+18:01:42 | INFO: Blender create Mesh node LOD1_mesh
+18:01:42 | INFO: Blender create Mesh node LOD2_mesh
+18:01:42 | INFO: glTF import finished in 0.04s
+00:04.578  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_neon_02.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_neon_02.png
+18:01:42 | INFO: Data are loaded, start creating Blender stuff
+18:01:42 | INFO: Blender create Mesh node bld_neon_03_a-colonly_mesh
+18:01:42 | INFO: Blender create Mesh node LOD0_mesh
+18:01:42 | INFO: Blender create Mesh node LOD1_mesh
+18:01:42 | INFO: Blender create Mesh node LOD2_mesh
+18:01:42 | INFO: glTF import finished in 0.04s
+00:05.250  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_neon_03.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_neon_03.png
+18:01:43 | INFO: Data are loaded, start creating Blender stuff
+18:01:43 | INFO: Blender create Mesh node bld_downtown_01_a-colonly_mesh
+18:01:43 | INFO: Blender create Mesh node LOD0_mesh
+18:01:43 | INFO: Blender create Mesh node LOD1_mesh
+18:01:43 | INFO: Blender create Mesh node LOD2_mesh
+18:01:43 | INFO: glTF import finished in 0.05s
+00:06.000  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_downtown_01.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_downtown_01.png
+18:01:44 | INFO: Data are loaded, start creating Blender stuff
+18:01:44 | INFO: Blender create Mesh node bld_downtown_02_a-colonly_mesh
+18:01:44 | INFO: Blender create Mesh node LOD0_mesh
+18:01:44 | INFO: Blender create Mesh node LOD1_mesh
+18:01:44 | INFO: Blender create Mesh node LOD2_mesh
+18:01:44 | INFO: glTF import finished in 0.06s
+00:06.687  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_downtown_02.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_downtown_02.png
+18:01:45 | INFO: Data are loaded, start creating Blender stuff
+18:01:45 | INFO: Blender create Mesh node bld_downtown_03_a-colonly_mesh
+18:01:45 | INFO: Blender create Mesh node LOD0_mesh
+18:01:45 | INFO: Blender create Mesh node LOD1_mesh
+18:01:45 | INFO: Blender create Mesh node LOD2_mesh
+18:01:45 | INFO: glTF import finished in 0.05s
+00:07.328  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_downtown_03.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_downtown_03.png
+18:01:45 | INFO: Data are loaded, start creating Blender stuff
+18:01:45 | INFO: Blender create Mesh node bld_market_01_a-colonly_mesh
+18:01:45 | INFO: Blender create Mesh node LOD0_mesh
+18:01:45 | INFO: Blender create Mesh node LOD1_mesh
+18:01:45 | INFO: Blender create Mesh node LOD2_mesh
+18:01:45 | INFO: glTF import finished in 0.03s
+00:07.781  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_market_01.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_market_01.png
+18:01:46 | INFO: Data are loaded, start creating Blender stuff
+18:01:46 | INFO: Blender create Mesh node bld_market_02_a-colonly_mesh
+18:01:46 | INFO: Blender create Mesh node LOD0_mesh
+18:01:46 | INFO: Blender create Mesh node LOD1_mesh
+18:01:46 | INFO: Blender create Mesh node LOD2_mesh
+18:01:46 | INFO: glTF import finished in 0.03s
+00:08.265  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_market_02.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_market_02.png
+18:01:46 | INFO: Data are loaded, start creating Blender stuff
+18:01:46 | INFO: Blender create Mesh node bld_waterfront_01_a-colonly_mesh
+18:01:46 | INFO: Blender create Mesh node LOD0_mesh
+18:01:46 | INFO: Blender create Mesh node LOD1_mesh
+18:01:46 | INFO: Blender create Mesh node LOD2_mesh
+18:01:46 | INFO: glTF import finished in 0.02s
+00:08.734  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_waterfront_01.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_waterfront_01.png
+18:01:47 | INFO: Data are loaded, start creating Blender stuff
+18:01:47 | INFO: Blender create Mesh node bld_parking_01_a-colonly_mesh
+18:01:47 | INFO: Blender create Mesh node LOD0_mesh
+18:01:47 | INFO: Blender create Mesh node LOD1_mesh
+18:01:47 | INFO: Blender create Mesh node LOD2_mesh
+18:01:47 | INFO: glTF import finished in 0.02s
+00:09.062  render           | Saved: 'C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_parking_01.png'
+RENDERED C:\Users\berk\car race\assets_src\world\kit_buildings\renders\beauty_bld_parking_01.png
+DONE beauty
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

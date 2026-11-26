@@ -11,6 +11,8 @@ uniform float glow : hint_range(0.0, 20.0) = 0.0;
 uniform float flood : hint_range(0.0, 4.0) = 0.0;
 uniform float flood_height_m : hint_range(1.0, 40.0) = 9.0;
 uniform float night : hint_range(0.0, 1.0) = 1.0;
+// Stone courses: a thin dark joint every course_m metres of height (0 = none), so big walls are not one flat sheet.
+uniform float course_m : hint_range(0.0, 4.0) = 0.0;
 
 varying float height_m;
 
@@ -19,9 +21,13 @@ void vertex() {
 }
 
 void fragment() {
-	ALBEDO = base_color.rgb * COLOR.rgb;
+	float joint = 1.0;
+	if (course_m > 0.0) {
+		joint = 1.0 - 0.22 * smoothstep(0.9, 0.98, abs(fract(height_m / course_m) - 0.5) * 2.0);
+	}
+	ALBEDO = base_color.rgb * COLOR.rgb * joint;
 	ROUGHNESS = roughness;
 	METALLIC = metallic;
 	float fl = flood * exp(-height_m / flood_height_m);
-	EMISSION = glow_color.rgb * (glow + fl) * night;
+	EMISSION = glow_color.rgb * (glow + fl * joint) * night;
 }

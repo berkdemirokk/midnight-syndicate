@@ -13,7 +13,7 @@ const LEAF_ATLAS: String = "res://assets/world/kits/trees/leaf_atlas.png"
 const CHUNK_M: float = 240.0
 const SPACING_MIN_M: float = 9.0  ## was 18-30: about 70 trees per track read as bare streets
 const SPACING_MAX_M: float = 16.0
-const OPEN_VIEW_M: float = 35.0  ## no geometry this far outward of a spot: it is an open quay, the view matters more than shade
+const OPEN_VIEW_M: float = 36.0  ## no ground this far outward of a spot: it is the water side, the view matters more than shade
 const OPEN_SKIP: float = 0.7  ## share of open-view spots left empty
 const SIDEWALK_MIN_M: float = 2.5  ## from the road edge, clear of the kerb
 const SIDEWALK_MAX_M: float = 6.5
@@ -52,6 +52,9 @@ var _track: Track = null
 var _pending: bool = false
 var _rng := RandomNumberGenerator.new()
 var _probe := SphereShape3D.new()  ## trunk-and-crown-base clearance probe, radius in m
+
+
+var keep_open_view: bool = false  ## coast tracks set this before setup(): the water side stays mostly free of trees
 
 
 func setup(track_in: Track) -> void:
@@ -112,7 +115,7 @@ func _place() -> void:
 		if reason == "":
 			var species: String = _pick(mix)
 			# Open side (a quay, the sea): keep the view. Most spots stay empty and the rest take a narrow species.
-			if _open_view(pos, right * side):
+			if keep_open_view and _open_view(pos, right * side):
 				if _rng.randf() < OPEN_SKIP or not (mix.has("cypress") or mix.has("street")):
 					rejected["view"] = int(rejected.get("view", 0)) + 1
 					s += _rng.randf_range(SPACING_MIN_M, SPACING_MAX_M)
@@ -152,15 +155,20 @@ func _rejection(pos: Vector3, centre: Vector3) -> String:
 	return ""
 
 
-## True when nothing stands within OPEN_VIEW_M outward of the spot: the far side is a quay or the water.
+## True when the ground ends within OPEN_VIEW_M outward of the spot: that side is the water, the view matters there.
+## (A sideways ray does not work: the track has invisible side walls.)
 func _open_view(pos: Vector3, outward: Vector3) -> bool:
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	for h: float in [2.0, 6.0]:
-		var from: Vector3 = pos + Vector3.UP * h
-		var q := PhysicsRayQueryParameters3D.create(from, from + outward * OPEN_VIEW_M, WORLD_MASK)
-		if not space.intersect_ray(q).is_empty():
-			return false
-	return true
+	# A block right behind the spot: built-up side, whatever lies behind the block.
+	var eye: Vector3 = pos + Vector3.UP * 8.0
+	if not space.intersect_ray(PhysicsRayQueryParameters3D.create(eye, eye + outward * 14.0, WORLD_MASK)).is_empty():
+		return false
+	for d: float in [OPEN_VIEW_M * 0.5, OPEN_VIEW_M]:
+		var from: Vector3 = pos + outward * d + Vector3.UP * 30.0
+		var q := PhysicsRayQueryParameters3D.create(from, from + Vector3.DOWN * 32.0, WORLD_MASK)
+		if space.intersect_ray(q).is_empty():
+			return true
+	return false
 
 
 ## True when static geometry (a facade, a balcony, a roof edge) is inside the crown's reach at crown height.
