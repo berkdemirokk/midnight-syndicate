@@ -208,7 +208,9 @@ func _build_shore() -> void:
 			st.set_normal(Vector3.LEFT)  # faces the track
 			st.set_uv(uvs[k])
 			# the top 40% of the picture fades out, so its sky melts into the real sky instead of a hard slab edge
-			st.set_color(Color(1.0, 1.0, 1.0, clampf((PHOTO_H - verts[k].y) / (PHOTO_H * 0.4), 0.0, 1.0)))
+			# ...and the two end tiles fade out sideways, so the band has no vertical edge either
+			var side: float = clampf((PHOTO_SPAN * 0.5 - absf(verts[k].z)) / tile, 0.0, 1.0)
+			st.set_color(Color(1.0, 1.0, 1.0, side * clampf((PHOTO_H - verts[k].y) / (PHOTO_H * 0.4), 0.0, 1.0)))
 			st.add_vertex(verts[k])
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
