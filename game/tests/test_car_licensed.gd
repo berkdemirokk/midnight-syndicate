@@ -23,6 +23,12 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.4, "front_r": 0.355, "rear_r": 0.36, "wheelbase": 2.8,
 	},
 	{
+		"id": "kestrel_marten", "scene": "res://vehicles/kestrel_marten/kestrel_marten.tscn",
+		"spec": "res://vehicles/specs/kestrel_marten.tres", "name": "Kestrel Marten",
+		"len": 4.335, "width": 1.996, "height": 1.259,  # source GLB bounding box (metres), rear-engine-sports-coupe.glb
+		"axle": 1.23, "front_r": 0.335, "rear_r": 0.35, "wheelbase": 2.46,
+	},
+	{
 		"id": "arden_havoc", "scene": "res://vehicles/arden_havoc/arden_havoc.tscn",
 		"spec": "res://vehicles/specs/arden_havoc.tres", "name": "Arden Havoc",
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb

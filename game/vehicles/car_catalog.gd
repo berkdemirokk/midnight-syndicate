@@ -16,6 +16,7 @@ const DEFAULT_CARS: Array[Dictionary] = [
 	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "arden_havoc", "class": "muscle", "price": 16000, "rep": 400},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "noctra_tayfun", "class": "tuner", "price": 0, "rep": 0},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "kestrel_marten", "class": "sport", "price": 22000, "rep": 500},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "noctra_meridian", "class": "gt", "price": 28000, "rep": 700},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 ]
 
