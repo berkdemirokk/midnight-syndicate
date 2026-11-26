@@ -1,0 +1,14 @@
+{
+  "variant": "taxi",
+  "tris": {
+    "lod0": 24320,
+    "lod1": 14998,
+    "lod2": 5000
+  },
+  "dims": {
+    "width": 1.661,
+    "length": 4.3,
+    "height": 1.505
+  },
+  "blender": "5.3.0"
+}

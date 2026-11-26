@@ -1,0 +1,14 @@
+{
+  "variant": "modified",
+  "tris": {
+    "lod0": 28036,
+    "lod1": 14999,
+    "lod2": 4997
+  },
+  "dims": {
+    "width": 1.77,
+    "length": 4.3,
+    "height": 1.35
+  },
+  "blender": "5.3.0"
+}
