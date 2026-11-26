@@ -321,7 +321,7 @@ func _refresh_text() -> void:
 
 func _info_line(ev: Dictionary) -> String:
 	var laps: int = int(ev["laps"])
-	return "%s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
+	return "%s  ·  %s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), I18n.t("tod.%s" % str(ev.get("tod", "night"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
 
 
 func _refresh_detail() -> void:

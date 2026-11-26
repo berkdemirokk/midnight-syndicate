@@ -13,17 +13,17 @@ const TRACK_MASLAK: String = "res://world/istanbul_maslak/istanbul_maslak.tscn"
 const TRACK_BOGAZ: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 
 const EVENTS: Array[Dictionary] = [
-	{"id": "wharf_sprint", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true},
-	{"id": "neon_strip_circuit", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true},
-	{"id": "midnight_time_trial", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
-	{"id": "overpass_duel", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
-	{"id": "harbour_run", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0},
-	{"id": "syndicate_final", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 3.0},
+	{"id": "wharf_sprint", "tod": "sunset", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true},
+	{"id": "neon_strip_circuit", "tod": "night", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true},
+	{"id": "midnight_time_trial", "tod": "night", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
+	{"id": "overpass_duel", "tod": "day", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
+	{"id": "harbour_run", "tod": "sunset", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0},
+	{"id": "syndicate_final", "tod": "night", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 3.0},
 	# World Tour: Istanbul (unlocked after the Arden Bay final)
-	{"id": "maslak_sprint", "laps": 1, "skills": [0.92, 0.90, 0.88], "level": 3, "mult": 3.2, "track": TRACK_MASLAK, "place": "maslak"},
-	{"id": "bogaz_circuit", "laps": 2, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 3.5, "track": TRACK_BOGAZ, "place": "bogaz"},
-	{"id": "maslak_night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak"},
-	{"id": "bogaz_final", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz"},
+	{"id": "maslak_sprint", "tod": "day", "laps": 1, "skills": [0.92, 0.90, 0.88], "level": 3, "mult": 3.2, "track": TRACK_MASLAK, "place": "maslak"},
+	{"id": "bogaz_circuit", "tod": "sunset", "laps": 2, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 3.5, "track": TRACK_BOGAZ, "place": "bogaz"},
+	{"id": "maslak_night", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak"},
+	{"id": "bogaz_final", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz"},
 ]
 
 
@@ -115,4 +115,5 @@ static func config_for(id: String) -> RaceConfig:
 	c.opponent_count = skills.size()
 	c.rival_mix = true
 	c.traffic_enabled = bool(ev.get("traffic", false))
+	c.time_of_day = str(ev.get("tod", "night"))
 	return c
