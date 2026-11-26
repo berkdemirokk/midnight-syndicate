@@ -1,12 +1,14 @@
-"""Waterfront mosque kit (Blender 5.3, deterministic, procedural only, no downloads).
+"""Waterfront mosque kit (Blender 5.3, deterministic, procedural only, no downloads). Pass 3.
 
 Run:  "C:\\Program Files\\Blender Foundation\\Blender 5.3\\blender.exe" --background --factory-startup --python build_landmark.py
 
-Original design, not a replica of any real building: a floodlit neo-baroque prayer hall on a plinth with pilasters,
-a three-step cornice and a string course, two window tiers of round-arched glass in raised archivolt frames, a porch
-of three arches on the road side, a windowed drum and a ribbed dome with a finial, four corner turrets with little
-domes, two fluted minarets with a balcony and a pencil cap, a stepped marble quay down to the water and a balustrade
-around the paved square. Lamp posts stand along the seaside.
+Original design, not a replica of any real building: a floodlit neo-baroque prayer hall on a plinth. Each wall has
+tall round-headed windows in moulded surrounds (a 0.5 m projecting surround framing the glass, stepped archivolt rings,
+engaged jamb columns, a keystone, and stone tracery bars over the glass), and round oculi above them. The cornice is a
+wavy segmental line over each bay with scroll-bracket consoles under it. The dome drum has buttress piers between its
+arched windows, the dome has a stepped base ring and clear ribs. Two fluted minarets have a square base, a slim upper
+shaft and a corbelled balcony. The road-side portico has three glass arches on columns with capitals, steps and a pair
+of lanterns. The quay has a turned-baluster balustrade on the sea edge and mooring posts.
 
 Frame (Blender metres, Z up; the glTF export turns Z into Godot Y, Blender Y into -Godot Z):
   origin  the quay's landward edge (Blender Y 0), centre of the quay, ground level
@@ -16,14 +18,14 @@ Frame (Blender metres, Z up; the glTF export turns Z into Godot Y, Blender Y int
   Quay top at Z 0.15 (the road kerbs sit at 0.15), the seaward steps run down to the water at Z -1.2.
 
 Output (game/assets/world/kits/landmarks/):
-  landmark_mosque_lod0.glb  <= 22 000 tris, one surface per material name
+  landmark_mosque_lod0.glb  <= 22 000 tris after AO subdivision, one surface per material name
   landmark_mosque_lod1.glb  <= 6 000 tris
   landmark_mosque_lod2.glb  <= 600 tris
   landmark_mosque_report.json  triangle counts per LOD and material
 
 Materials (names are read by game/world/landmarks/landmarks.gd):
   M_Stone  marble and limestone          M_Dome  lead dome, pencil caps
-  M_Glass  windows and portal (glow at night)   M_Lamp  lamp heads, minaret ring lights
+  M_Glass  windows and portal (glow at night)   M_Lamp  lamp heads, minaret ring lights, the finial ball
   M_Iron   railing, lamp posts, finial   M_Paving  wet paved square
 
 Every face is oriented by construction: each poly() call is given the outward direction and flips the face to match.
@@ -44,7 +46,7 @@ sys.path.insert(0, os.path.join(REPO, "assets_src", "pipeline"))
 import bake_vertex_ao as ao  # noqa: E402
 
 # baked ambient occlusion (vertex colour) per LOD: grid cell size in m, None = no subdivision (LOD1 budget is tight)
-AO_CELL = {0: 5.5, 1: None}
+AO_CELL = {0: 10.0, 1: None}
 
 MATS = ["M_Stone", "M_Dome", "M_Glass", "M_Lamp", "M_Iron", "M_Paving"]
 STONE, DOME, GLASS, LAMP, IRON, PAVE = range(6)
@@ -60,16 +62,26 @@ DRUM_Z0, DRUM_Z1 = 16.0, 24.0
 DOME_RISE = 9.0
 MIN_X, MIN_Y = 17.0, 3.0       # minaret axes, road-side corners beside the paved square
 MIN_TOP = 52.6                 # pencil cap tip; about 2.2 x the drum top (24 m)
-SEA_POST_Y = 28.5              # lamp posts, on the quay behind the seaward steps
+SEA_POST_Y = 28.5              # lamp posts, on the quay behind the seaward balustrade
 
 GLASS_OFF = 0.04               # glass pane proud of the wall
-FRAME_OFF = 0.26               # stone archivolt ring proud of the wall
-RF = 0.22                      # archivolt width
+FRAME_OFF = 0.54               # moulded surround front: 0.5 m proud of the glass, the visible reveal depth
+
+
+# Surround profiles: (grow, offset) pairs from the glass edge (grow 0, offset GLASS_OFF) out to the wall (offset 0).
+PROF_BIG = {
+    0: [(0.0, GLASS_OFF), (0.0, FRAME_OFF), (0.12, FRAME_OFF), (0.12, 0.42), (0.24, 0.42), (0.24, 0.30),
+        (0.36, 0.30), (0.36, 0.0)],                       # reveal, three stepped archivolt rings, skirt to the wall
+    1: [(0.0, GLASS_OFF), (0.0, FRAME_OFF), (0.22, FRAME_OFF), (0.22, 0.0)],   # reveal, one ring, skirt
+}
+PROF_SMALL = [(0.0, GLASS_OFF), (0.0, FRAME_OFF), (0.14, FRAME_OFF), (0.14, 0.0)]
+PROF_OCULUS = {0: [(0.0, GLASS_OFF), (0.0, FRAME_OFF), (0.14, FRAME_OFF), (0.14, 0.3), (0.28, 0.3), (0.28, 0.0)],
+               1: [(0.0, GLASS_OFF), (0.0, FRAME_OFF), (0.2, FRAME_OFF), (0.2, 0.0)]}
 
 
 def arch_loop(w, h, steps, grow=0.0, drop=0.0):
     """Round-headed opening in its own (u, v) plane: rectangle of height h, semicircular head of radius w/2 + grow,
-    the bottom pushed down by drop. Same point count for the same steps, so inner and outer loops pair by index."""
+    the bottom pushed down by drop. Same point count for the same steps, so loops of different grow pair by index."""
     r = w / 2 + grow
     pts = [(-r, -drop), (r, -drop), (r, h)]
     for j in range(1, steps):
@@ -77,6 +89,14 @@ def arch_loop(w, h, steps, grow=0.0, drop=0.0):
         pts.append((r * math.cos(a), h + r * math.sin(a)))
     pts.append((-r, h))
     return pts
+
+
+def circle_pts(r, n, cv=0.0):
+    return [(r * math.cos(2 * math.pi * k / n), cv + r * math.sin(2 * math.pi * k / n)) for k in range(n)]
+
+
+def shift(pts, du, dv):
+    return [(u + du, v + dv) for u, v in pts]
 
 
 def centre(pts):
@@ -163,31 +183,75 @@ class Part:
                     pts = [a, b, c, d]
                 self.poly(pts, mat, outward, smooth)
 
-    def window(self, fr, w, h, detail):
-        """Round-headed window in a wall frame: glowing pane (GLASS) at GLASS_OFF, a raised stone archivolt ring at
-        FRAME_OFF, reveals joining them, a sill. LOD0 adds the outer skirt to the wall and the mullions and transom."""
-        steps = {0: 8, 1: 5}[detail]
-        inner = arch_loop(w, h, steps)
-        outer = arch_loop(w, h, steps, RF, RF)
+    def surround(self, fr, loop_fn, prof, axis):
+        """Moulded surround around an opening. loop_fn(grow) gives the outline (same point count for every grow);
+        each consecutive (grow, offset) pair of prof is joined by quad strips. A flat ring faces out of the wall, a
+        reveal (grow 0, stepping out from the glass) faces into the opening, every other step faces away from it."""
+        loops = [loop_fn(g) for g, _ in prof]
+        n = len(loops[0])
+        for k in range(len(prof) - 1):
+            (g0, o0), (g1, o1) = prof[k], prof[k + 1]
+            a, b = loops[k], loops[k + 1]
+            for i in range(n):
+                j = (i + 1) % n
+                quad = [fr.at(a[i][0], a[i][1], o0), fr.at(a[j][0], a[j][1], o0),
+                        fr.at(b[j][0], b[j][1], o1), fr.at(b[i][0], b[i][1], o1)]
+                ctr = centre(quad)
+                if o0 == o1:
+                    out = fr.n3
+                elif g0 == 0.0 and g1 == 0.0:
+                    out = axis - ctr
+                else:
+                    out = ctr - axis
+                self.poly(quad, STONE, out)
+
+    def band(self, fr, inner, outer, off, mat=STONE):
+        """Flat stone band between two loops with the same point count, proud of the wall at offset off."""
         n = len(inner)
-        axis = fr.at(0.0, 0.5 * h, 0.5 * (GLASS_OFF + FRAME_OFF))
-        self.poly([fr.at(u, v, GLASS_OFF) for u, v in inner], GLASS, fr.n3)
         for i in range(n):
             j = (i + 1) % n
-            oi, oj = fr.at(*outer[i], FRAME_OFF), fr.at(*outer[j], FRAME_OFF)
-            ii, ij = fr.at(*inner[i], FRAME_OFF), fr.at(*inner[j], FRAME_OFF)
-            self.poly([oi, oj, ij, ii], STONE, fr.n3)                       # archivolt ring
-            gi, gj = fr.at(*inner[i], GLASS_OFF), fr.at(*inner[j], GLASS_OFF)
-            rev = [ii, ij, gj, gi]
-            self.poly(rev, STONE, axis - centre(rev))                       # reveal, faces into the opening
-            if detail == 0:
-                wi, wj = fr.at(*outer[i], 0.0), fr.at(*outer[j], 0.0)
-                skirt = [oi, oj, wj, wi]
-                self.poly(skirt, STONE, centre(skirt) - axis)               # outer edge of the frame, down to the wall
-        self.lbox(fr, -(w / 2 + RF + 0.1), w / 2 + RF + 0.1, -RF - 0.16, -RF, 0.0, 0.34, STONE)  # sill
-        if detail == 0:
-            self.lbox(fr, -0.06, 0.06, 0.0, h, GLASS_OFF, GLASS_OFF + 0.09, STONE)                  # mullion
+            self.poly([fr.at(inner[i][0], inner[i][1], off), fr.at(inner[j][0], inner[j][1], off),
+                       fr.at(outer[j][0], outer[j][1], off), fr.at(outer[i][0], outer[i][1], off)], mat, fr.n3)
+
+    def window(self, fr, w, h, detail, small=False):
+        """Round-headed window in a wall frame: glowing pane (GLASS) at GLASS_OFF, moulded surround to the wall.
+        Big windows (small=False) add the tracery, engaged jamb columns, keystone and mullion at LOD0."""
+        if small:
+            prof, steps, fancy = PROF_SMALL, {0: 6, 1: 4}[detail], False
+        else:
+            prof, steps, fancy = PROF_BIG[detail], {0: 8, 1: 5}[detail], detail == 0
+        axis = fr.at(0.0, 0.5 * h, GLASS_OFF)
+        self.poly([fr.at(u, v, GLASS_OFF) for u, v in arch_loop(w, h, steps)], GLASS, fr.n3)
+        if not (small and detail == 1):  # LOD1 budget: the small openings are a glass pane only
+            self.surround(fr, lambda g: arch_loop(w, h, steps, g), prof, axis)
+        if not small:
+            self.lbox(fr, -(w / 2 + 0.6), w / 2 + 0.6, -0.36, -0.12, 0.0, 0.6, STONE)  # sill
+        if fancy:
+            self.tracery(fr, w, h)
+            for s in (-1.0, 1.0):
+                uc = s * (w / 2 + 0.52)  # engaged jamb column: shaft and capital
+                self.lbox(fr, uc - 0.13, uc + 0.13, 0.0, h, 0.0, 0.46, STONE)
+                self.lbox(fr, uc - 0.22, uc + 0.22, h - 0.12, h + 0.1, 0.0, 0.56, STONE)
+            self.lbox(fr, -0.2, 0.2, h + w / 2 + 0.05, h + w / 2 + 0.5, 0.3, 0.62, STONE)  # keystone
+            self.lbox(fr, -0.06, 0.06, 0.0, h, GLASS_OFF, GLASS_OFF + 0.09, STONE)         # mullion
             self.lbox(fr, -w / 2, w / 2, 0.5 * h, 0.5 * h + 0.1, GLASS_OFF, GLASS_OFF + 0.09, STONE)  # transom
+
+    def tracery(self, fr, w, h):
+        """Stone bars raised over the glass: two small arched lights in the lower part, a round oculus in the head."""
+        off = GLASS_OFF + 0.09
+        for cu in (-w / 4, w / 4):
+            self.band(fr, shift(arch_loop(0.8, 1.5, 4), cu, 0.35), shift(arch_loop(0.8, 1.5, 4, 0.09), cu, 0.35), off)
+        self.band(fr, circle_pts(0.22, 12, h + 0.3), circle_pts(0.31, 12, h + 0.3), off)
+
+    def oculus(self, fr, r, cv, detail):
+        """Round window: glass disc, moulded ring surround, a rose of bars inside at LOD0."""
+        n = {0: 12, 1: 6}[detail]
+        axis = fr.at(0.0, cv, GLASS_OFF)
+        self.poly([fr.at(u, v, GLASS_OFF) for u, v in circle_pts(r, n, cv)], GLASS, fr.n3)
+        if detail == 0:  # LOD1 budget: the oculi are a glass disc only
+            self.surround(fr, lambda g: circle_pts(r + g, n, cv), PROF_OCULUS[detail], axis)
+        if detail == 0:
+            self.band(fr, circle_pts(0.5 * r, n, cv), circle_pts(0.62 * r, n, cv), GLASS_OFF + 0.09)
 
 
 def dome_ribs(p, cx, cy, n_ribs, stations, rh=0.22, hw=0.13):
@@ -231,15 +295,37 @@ def shaft(p, mx, my, z0, z1, r, flutes, segs):
         p.poly([bot[k], bot[k2], top[k2], top[k]], STONE, out, smooth=True)
 
 
+def wave_cornice(p, fr, u_edges, z_base, z_top_base):
+    """Segmental cornice line over each bay: the top edge rises and falls across the bay, not one straight edge."""
+    segs = 3 if p.detail == 0 else 1
+    for u0, u1 in zip(u_edges[:-1], u_edges[1:]):
+        for s in range(segs):
+            ua = u0 + (u1 - u0) * s / segs
+            ub = u0 + (u1 - u0) * (s + 1) / segs
+            top = z_top_base + 0.22 * math.sin(math.pi * (s + 0.5) / segs)
+            p.lbox(fr, ua, ub, z_base, top, 0.0, 0.6, STONE)
+
+
 def build_hall(p):
     d = p.detail
     p.box(-10.5, 10.5, HALL_Y0 - 0.5, HALL_Y1 + 0.5, 0.15, 1.5, STONE)          # plinth, 0.5 m proud
     p.box(-HALL_HALF, HALL_HALF, HALL_Y0, HALL_Y1, 1.5, WALL_TOP, STONE)        # walls
-    # three-step cornice, the outermost 0.6 m proud, then the roof slab
+    # cornice: stepped slab under a wavy segmental top line over each bay
     p.box(-10.25, 10.25, HALL_Y0 - 0.25, HALL_Y1 + 0.25, 15.0, 15.2, STONE)
     p.box(-10.45, 10.45, HALL_Y0 - 0.45, HALL_Y1 + 0.45, 15.2, 15.4, STONE)
-    p.box(-10.6, 10.6, HALL_Y0 - 0.6, HALL_Y1 + 0.6, 15.4, 15.65, STONE)
-    p.box(-9.8, 9.8, HALL_Y0 + 0.2, HALL_Y1 - 0.2, 15.65, 16.0, STONE)
+    p.box(-9.8, 9.8, HALL_Y0 + 0.2, HALL_Y1 - 0.2, 15.4, 16.0, STONE)
+    if d == 2:
+        p.box(-10.6, 10.6, HALL_Y0 - 0.6, HALL_Y1 + 0.6, 15.4, 15.65, STONE)
+    else:
+        # wall fronts: bays between the pilasters (u measured from the frame origin, which sits on the hall corner)
+        front = Frame(-HALL_HALF, HALL_Y0, 1.0, 0.0, 0.0, -1.0, 0.0)
+        back = Frame(-HALL_HALF, HALL_Y1, 1.0, 0.0, 0.0, 1.0, 0.0)
+        left = Frame(-HALL_HALF, HALL_Y0, 0.0, 1.0, -1.0, 0.0, 0.0)
+        right = Frame(HALL_HALF, HALL_Y0, 0.0, 1.0, 1.0, 0.0, 0.0)
+        wave_cornice(p, front, [0.0, 1.7, 7.0, 13.0, 18.3, 20.0], 15.4, 15.65)
+        wave_cornice(p, back, [0.0, 1.7, 7.0, 13.0, 18.3, 20.0], 15.4, 15.65)
+        wave_cornice(p, left, [0.0, 1.0, 6.5, 13.5, 20.0], 15.4, 15.65)
+        wave_cornice(p, right, [0.0, 1.0, 6.5, 13.5, 20.0], 15.4, 15.65)
     # string course between the two window tiers, 0.35 m proud, all round
     p.box(-10.35, 10.35, HALL_Y0 - 0.35, HALL_Y0 + 0.02, 9.15, 9.45, STONE)
     p.box(-10.35, 10.35, HALL_Y1 - 0.02, HALL_Y1 + 0.35, 9.15, 9.45, STONE)
@@ -267,24 +353,46 @@ def build_hall(p):
             p.box(HALL_HALF - 0.02, HALL_HALF + 0.6, y - 0.5, y + 0.5, 1.5, 2.0, STONE)
             p.box(-HALL_HALF - 0.6, -HALL_HALF + 0.02, y - 0.5, y + 0.5, 14.2, 15.0, STONE)
             p.box(HALL_HALF - 0.02, HALL_HALF + 0.6, y - 0.5, y + 0.5, 14.2, 15.0, STONE)
-    # two window tiers: the lower tier is taller, both are round-headed
-    for base, h in ((3.0, 4.6), (9.8, 3.0)):
-        front_xs = [-6.0, 6.0] if base < 5 else [-6.0, 0.0, 6.0]   # road side: the centre lower bay is the porch
-        for x in front_xs:
-            p.window(Frame(x, HALL_Y0, 1.0, 0.0, 0.0, -1.0, base), 2.2, h, d)
-        for x in (-6.0, 0.0, 6.0):
-            p.window(Frame(x, HALL_Y1, 1.0, 0.0, 0.0, 1.0, base), 2.2, h, d)
-        for y in (11.0, 18.0, 25.0):
-            p.window(Frame(-HALL_HALF, y, 0.0, 1.0, -1.0, 0.0, base), 2.2, h, d)
-            p.window(Frame(HALL_HALF, y, 0.0, 1.0, 1.0, 0.0, base), 2.2, h, d)
-    # entrance porch on the road side: three arches of glass, stepped top
+    if d == 0:
+        # scroll brackets under the cornice at every pilaster
+        for x in (-8.3, -3.0, 3.0, 8.3):
+            for y0 in (HALL_Y0, HALL_Y1):
+                fr = Frame(x, y0, 1.0, 0.0, 0.0, -1.0 if y0 == HALL_Y0 else 1.0, 0.0)
+                p.lbox(fr, -0.3, 0.3, 14.3, 15.0, 0.45, 0.95, STONE)
+        for y in (9.0, 14.5, 21.5):
+            for x0, sgn in ((-HALL_HALF, -1.0), (HALL_HALF, 1.0)):
+                fr = Frame(x0, y, 0.0, 1.0, sgn, 0.0, 0.0)
+                p.lbox(fr, -0.3, 0.3, 14.3, 15.0, 0.45, 0.95, STONE)
+    # two window tiers: the lower tier is tall round-headed glass, the upper tier is round oculi
+    for x in (-6.0, 6.0):
+        p.window(Frame(x, HALL_Y0, 1.0, 0.0, 0.0, -1.0, 3.0), 2.2, 4.6, d)
+    for x in (-6.0, 0.0, 6.0):
+        p.window(Frame(x, HALL_Y1, 1.0, 0.0, 0.0, 1.0, 3.0), 2.2, 4.6, d)
+    for y in (11.0, 18.0, 25.0):
+        p.window(Frame(-HALL_HALF, y, 0.0, 1.0, -1.0, 0.0, 3.0), 2.2, 4.6, d)
+        p.window(Frame(HALL_HALF, y, 0.0, 1.0, 1.0, 0.0, 3.0), 2.2, 4.6, d)
+    for x in (-6.0, 0.0, 6.0):
+        p.oculus(Frame(x, HALL_Y0, 1.0, 0.0, 0.0, -1.0, 9.8), 0.7, 1.5, d)
+        p.oculus(Frame(x, HALL_Y1, 1.0, 0.0, 0.0, 1.0, 9.8), 0.7, 1.5, d)
+    for y in (11.0, 18.0, 25.0):
+        p.oculus(Frame(-HALL_HALF, y, 0.0, 1.0, -1.0, 0.0, 9.8), 0.7, 1.5, d)
+        p.oculus(Frame(HALL_HALF, y, 0.0, 1.0, 1.0, 0.0, 9.8), 0.7, 1.5, d)
+    # entrance portico on the road side: block, three glass arches on columns, steps, a pair of lanterns
     p.box(-4.2, 4.2, 4.6, HALL_Y0 + 0.02, 0.15, 6.6, STONE)
     p.box(-4.6, 4.6, 4.2, HALL_Y0 + 0.1, 6.6, 7.0, STONE)
     p.box(-3.4, 3.4, 4.4, HALL_Y0 + 0.1, 7.0, 7.5, STONE)
     p.box(-2.2, 2.2, 4.7, HALL_Y0 + 0.1, 7.5, 8.0, STONE)
     for x in (-2.6, 0.0, 2.6):
-        p.window(Frame(x, 4.6, 1.0, 0.0, 0.0, -1.0, 1.2), 1.9, 3.2, d)
-    # balustrade on the roof edge and handrails
+        p.window(Frame(x, 4.6, 1.0, 0.0, 0.0, -1.0, 1.4), 1.5, 2.8, d, small=True)
+    if d < 2:
+        for x in (-3.95, -1.3, 1.3, 3.95):
+            p.lathe([(0.24, 0.15), (0.24, 0.3), (0.19, 0.36), (0.19, 4.1), (0.3, 4.2), (0.3, 4.3), (0.0, 4.3)],
+                    8, STONE, x, 3.85)
+        p.box(-4.6, 4.6, 3.55, 3.85, 0.17, 0.45, STONE)   # steps up to the portico
+        p.box(-4.6, 4.6, 3.25, 3.55, 0.17, 0.30, STONE)
+        for x in (-4.9, 4.9):
+            p.lathe([(0.12, 0.17), (0.09, 0.5), (0.09, 3.4), (0.2, 3.55), (0.2, 3.7)], 8, IRON, x, 3.2)
+            p.box(x - 0.3, x + 0.3, 2.9, 3.5, 3.7, 4.1, LAMP)
     if d == 0:
         for x in [-9.0 + 1.0 * i for i in range(19)]:
             p.box(x - 0.11, x + 0.11, HALL_Y0 + 0.5, HALL_Y0 + 0.72, 16.0, 16.9, STONE)
@@ -292,10 +400,11 @@ def build_hall(p):
         for y in [9.0 + 1.0 * i for i in range(19)]:
             p.box(-HALL_HALF + 0.5, -HALL_HALF + 0.72, y - 0.11, y + 0.11, 16.0, 16.9, STONE)
             p.box(HALL_HALF - 0.72, HALL_HALF - 0.5, y - 0.11, y + 0.11, 16.0, 16.9, STONE)
-    p.box(-9.6, 9.6, HALL_Y0 + 0.4, HALL_Y0 + 0.6, 16.9, 17.1, STONE)
-    p.box(-9.6, 9.6, HALL_Y1 - 0.6, HALL_Y1 - 0.4, 16.9, 17.1, STONE)
-    p.box(-9.8, -9.4, HALL_Y0 + 0.4, HALL_Y1 - 0.4, 16.9, 17.1, STONE)
-    p.box(9.4, 9.8, HALL_Y0 + 0.4, HALL_Y1 - 0.4, 16.9, 17.1, STONE)
+    if d < 2:
+        p.box(-9.6, 9.6, HALL_Y0 + 0.4, HALL_Y0 + 0.6, 16.9, 17.1, STONE)
+        p.box(-9.6, 9.6, HALL_Y1 - 0.6, HALL_Y1 - 0.4, 16.9, 17.1, STONE)
+        p.box(-9.8, -9.4, HALL_Y0 + 0.4, HALL_Y1 - 0.4, 16.9, 17.1, STONE)
+        p.box(9.4, 9.8, HALL_Y0 + 0.4, HALL_Y1 - 0.4, 16.9, 17.1, STONE)
 
 
 def build_drum_and_dome(p):
@@ -305,9 +414,10 @@ def build_drum_and_dome(p):
     dome_rings = {0: 12, 1: 6, 2: 3}[d]
     cy = HALL_CY
     p.lathe([(DRUM_R, DRUM_Z0), (DRUM_R, DRUM_Z1)], seg_drum, STONE, 0.0, cy, smooth=False)
-    if d < 2:  # cornice band under the dome
-        p.lathe([(7.95, DRUM_Z1 - 0.4), (7.95, DRUM_Z1 + 0.3), (7.45, DRUM_Z1 + 0.3), (7.45, DRUM_Z1 - 0.4)],
-                seg_drum, STONE, 0.0, cy, smooth=False)
+    if d < 2:
+        # stepped base ring under the dome, two steps out from the drum
+        p.lathe([(8.1, DRUM_Z1 - 0.4), (8.1, DRUM_Z1 + 0.15), (7.9, DRUM_Z1 + 0.15), (7.9, DRUM_Z1 + 0.45),
+                 (7.55, DRUM_Z1 + 0.45)], seg_drum, STONE, 0.0, cy, smooth=False)
     dome = []
     for i in range(dome_rings + 1):
         phi = (math.pi / 2) * i / dome_rings
@@ -321,12 +431,16 @@ def build_drum_and_dome(p):
     if d < 2:
         ball = [(0.35 * math.sin(math.pi * i / 8), top + 3.9 - 0.35 * math.cos(math.pi * i / 8)) for i in range(9)]
         p.lathe(ball, 12, LAMP, 0.0, cy)
-        # windowed drum: one round-headed window per facet of the 16-sided drum
+        # the drum: one round-headed window per facet, buttress piers at the 16 vertices between them
         apo = DRUM_R * math.cos(math.pi / 16)
         for k in range(seg_drum):
             a = 2 * math.pi * (k + 0.5) / seg_drum
             ca, sa = math.cos(a), math.sin(a)
-            p.window(Frame(apo * ca, cy + apo * sa, -sa, ca, ca, sa, 17.2), 1.3, 2.0, d)
+            p.window(Frame(apo * ca, cy + apo * sa, -sa, ca, ca, sa, 17.2), 1.3, 2.0, d, small=True)
+        for k in range(seg_drum):
+            a = 2 * math.pi * k / seg_drum
+            ca, sa = math.cos(a), math.sin(a)
+            p.lbox(Frame(DRUM_R * ca, cy + DRUM_R * sa, -sa, ca, ca, sa, DRUM_Z0), -0.45, 0.45, 0.0, 8.0, -0.1, 0.45, STONE)
 
 
 def build_turrets(p):
@@ -342,36 +456,42 @@ def build_turrets(p):
             p.lathe(dome, seg, DOME, x, y, math.pi / 8)
             if d == 0:
                 for nx, ny in ((0.0, -1.0), (0.0, 1.0), (-1.0, 0.0), (1.0, 0.0)):
-                    p.window(Frame(x + nx * 1.6, y + ny * 1.6, -ny, nx, nx, ny, 17.0), 1.0, 2.2, d)
+                    p.window(Frame(x + nx * 1.6, y + ny * 1.6, -ny, nx, nx, ny, 17.0), 1.0, 2.2, d, small=True)
 
 
 def build_minaret(p, mx, my):
     d = p.detail
-    seg = {0: 16, 1: 12, 2: 6}[d]
+    seg = {0: 16, 1: 10, 2: 6}[d]
     flutes = {0: 16, 1: 8, 2: 0}[d]
     if d == 2:  # silhouette: plain plinth, shaft and cap
         p.lathe([(1.95, 0.15), (1.95, 3.0), (1.0, 3.3)], seg, STONE, mx, my)
         shaft(p, mx, my, 3.3, 46.2, 1.1, 0, seg)
         p.lathe([(1.15, 46.2), (0.0, MIN_TOP)], seg, DOME, mx, my)
         return
-    p.lathe([(1.95, 0.15), (1.95, 1.1), (1.7, 1.2), (1.7, 2.9), (2.0, 3.0), (2.0, 3.3), (1.0, 3.3)], seg, STONE, mx, my)
-    shaft(p, mx, my, 3.3, 46.2, 1.1, flutes, seg)
+    # square base with a string course and cornice, a shoulder into the round fluted shaft
+    p.box(mx - 1.9, mx + 1.9, my - 1.9, my + 1.9, 0.15, 3.0, STONE)
+    p.box(mx - 2.05, mx + 2.05, my - 2.05, my + 2.05, 0.9, 1.05, STONE)
+    p.box(mx - 2.05, mx + 2.05, my - 2.05, my + 2.05, 2.9, 3.05, STONE)
+    p.lathe([(1.7, 3.0), (1.1, 3.3)], seg, STONE, mx, my)
+    shaft(p, mx, my, 3.3, 35.0, 1.1, flutes, seg)
+    # slim upper shaft, stepped capital at the balcony and the pencil cap
+    shaft(p, mx, my, 35.0, 46.2, 0.92, flutes, seg)
     p.lathe([(1.3, 46.0), (1.3, 46.4), (1.15, 46.5)], seg, STONE, mx, my)
     p.lathe([(1.15, 46.5), (0.0, MIN_TOP)], seg, DOME, mx, my)  # pencil lead cap
     p.lathe([(0.14, MIN_TOP - 0.1), (0.14, MIN_TOP + 1.0), (0.0, MIN_TOP + 1.6)], 6, IRON, mx, my)
-    if d < 2:
-        # one balcony: deck, rail ring, and a ring of lamps on the rail
-        p.lathe([(0.9, 33.4), (1.8, 33.4), (1.8, 33.8), (0.9, 33.8)], seg, STONE, mx, my)
-        p.lathe([(1.75, 34.9), (1.85, 34.9), (1.85, 35.05), (1.75, 35.05)], seg, STONE, mx, my)
-        for k in range(12):
-            a = 2 * math.pi * k / 12
-            x, y = mx + 1.8 * math.cos(a), my + 1.8 * math.sin(a)
-            p.box(x - 0.08, x + 0.08, y - 0.08, y + 0.08, 35.05, 35.3, LAMP)
     if d == 0:
-        for k in range(8):  # bracketed underside of the balcony
-            a = 2 * math.pi * k / 8
-            x, y = mx + 1.4 * math.cos(a), my + 1.4 * math.sin(a)
-            p.box(x - 0.12, x + 0.12, y - 0.12, y + 0.12, 32.7, 33.4, STONE)
+        for zc in (12.0, 24.0):  # two string rings on the shaft
+            p.lathe([(1.1, zc - 0.1), (1.3, zc - 0.1), (1.3, zc + 0.3), (1.1, zc + 0.3)], seg, STONE, mx, my)
+    # balcony: stacked corbel rings flaring out under the deck, deck, rail ring, and a ring of lamps on the rail
+    p.lathe([(1.1, 32.55), (1.6, 32.55), (1.6, 32.75), (1.8, 32.75), (1.8, 32.95), (2.0, 32.95), (2.0, 33.4),
+             (1.1, 33.4)], seg, STONE, mx, my)
+    p.lathe([(0.9, 33.4), (2.0, 33.4), (2.0, 33.8), (0.9, 33.8)], seg, STONE, mx, my)
+    p.lathe([(1.75, 34.9), (1.85, 34.9), (1.85, 35.05), (1.75, 35.05)], seg, STONE, mx, my)
+    for k in range(12):
+        a = 2 * math.pi * k / 12
+        x, y = mx + 1.8 * math.cos(a), my + 1.8 * math.sin(a)
+        p.box(x - 0.08, x + 0.08, y - 0.08, y + 0.08, 35.05, 35.3, LAMP)
+    if d == 0:
         for k in range(16):  # balusters of the rail
             a = 2 * math.pi * k / 16
             x, y = mx + 1.8 * math.cos(a), my + 1.8 * math.sin(a)
@@ -395,8 +515,19 @@ def build_quay(p):
             p.box(x - 0.06, x + 0.06, y - 0.06, y + 0.06, 0.17, 1.0, STONE)
             y += step
         p.box(x - 0.1, x + 0.1, 0.0, 8.0, 1.0, 1.1, STONE)
-    # six lamp posts along the seaside
-    for x in (-34.0, -24.0, -14.0, 14.0, 24.0, 34.0):
+    # sea-edge balustrade: square piers every 8 m, a rail, turned balusters between (LOD0)
+    for x in range(-40, 41, 8):
+        p.box(x - 0.25, x + 0.25, 28.75, 29.25, 0.17, 1.1, STONE)
+    p.box(-40.0, 40.0, 28.9, 29.1, 0.95, 1.05, STONE)
+    if d == 0:
+        for k in range(54):
+            x = -39.0 + 1.5 * k
+            p.lathe([(0.07, 0.17), (0.11, 0.3), (0.05, 0.5), (0.1, 0.7), (0.07, 0.8), (0.0, 0.95)], 4, STONE, x, 29.0)
+    # mooring posts on the quay near the water edge
+    for x in (-30.0, -10.0, 10.0, 30.0):
+        p.lathe([(0.14, 0.15), (0.14, 0.4), (0.1, 0.5), (0.16, 0.55), (0.0, 0.6)], 8, IRON, x, 27.0)
+    # eight lamp posts along the seaside
+    for x in (-36.0, -28.0, -22.0, -16.0, 16.0, 22.0, 28.0, 36.0):
         p.lathe([(0.12, 0.15), (0.09, 0.5), (0.09, 6.4), (0.2, 6.6), (0.2, 6.75)], 8, IRON, x, SEA_POST_Y)
         p.box(x - 0.3, x + 0.3, SEA_POST_Y - 0.3, SEA_POST_Y + 0.3, 6.75, 7.2, LAMP)
 

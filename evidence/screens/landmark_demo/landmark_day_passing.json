@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 1.0,
-  "luma_min": 0.036,
+  "luma_max": 0.999,
+  "luma_min": 0.0,
   "name": "landmark_day_passing",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 72,
-    "draw_calls_min": 72,
+    "draw_calls": 73,
+    "draw_calls_min": 73,
     "driver": "vulkan",
-    "fps": 415.01,
-    "frame_ms_avg": 2.41,
-    "frame_ms_p95": 3.558,
-    "frame_ms_p99": 4.151,
+    "fps": 238.025,
+    "frame_ms_avg": 4.201,
+    "frame_ms_p95": 5.802,
+    "frame_ms_p99": 6.904,
     "frames": 60,
-    "objects": 17072,
+    "objects": 17073,
     "os": "Windows",
-    "primitives": 129341,
+    "primitives": 178497,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 611.232,
+    "video_mem_mb": 617.86,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/mosque2/evidence/screens/landmark_demo/landmark_day_passing.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_f06593fb-43d-4/evidence/screens/landmark_demo/landmark_day_passing.png",
   "preset": "high",
   "scenario": "landmark_demo"
 }

@@ -178,3 +178,33 @@ func _night_param(lm: Landmarks) -> float:
 			if m != null:
 				return float(m.get_shader_parameter("night"))
 	return -1.0
+
+
+func test_mirror_layers() -> void:
+	## LOD0 is left out of the wet-road mirror; the LOD1 near range has a mirror-only copy (no shadows, 0 to LOD0 end)
+	var pair: Array = await _populate()
+	var track: Track = pair[0]
+	var lm: Landmarks = pair[1]
+	var lod0_end: float = float(Landmarks.LOD_RANGES[0][1])
+	var lod1_mains: int = 0
+	var mirror_copies: int = 0
+	for mi: MeshInstance3D in _meshes(lm):
+		if mi.visibility_range_begin == 0.0:
+			check((mi.layers & 1) == 0, "near landmark mesh still on the default layer, the mirror draws it")
+		if mi.layers == Landmarks.MIRROR_ONLY_BIT:
+			mirror_copies += 1
+			check(mi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF, "mirror-only copy casts shadows")
+			check(is_equal_approx(mi.visibility_range_end, lod0_end), "mirror-only copy range end is not the LOD0 end")
+		elif mi.visibility_range_begin == float(Landmarks.LOD_RANGES[1][0]):
+			lod1_mains += 1
+	metric("landmark_mirror_copies", mirror_copies)
+	check(mirror_copies > 0 and mirror_copies == lod1_mains, "one mirror-only copy per LOD1 mesh (%d vs %d)" % [mirror_copies, lod1_mains])
+	# the copy's bit is not a car light bit, is in the mirror's cull mask and is kept out of the current camera
+	check(Landmarks.MIRROR_ONLY_BIT & RaceScene.CAR_LIGHT_MASK == 0, "landmark mirror copy is lit by the car fill and rim lights")
+	check(Landmarks.MIRROR_ONLY_BIT & PlanarReflection.new().excluded_layers == 0, "planar mirror leaves the landmark copy out")
+	var cam := Camera3D.new()
+	track.add_child(cam)
+	cam.make_current()
+	await frames(2)
+	check(cam.cull_mask & Landmarks.MIRROR_ONLY_BIT == 0, "current camera still draws the landmark mirror copy")
+	await cleanup([track])

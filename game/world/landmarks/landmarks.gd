@@ -14,14 +14,18 @@ const PLACE_S_M: float = 300.0  ## metres along the racing line: the straight wi
 const EDGE_LAT_M: float = -13.0  ## lateral of the quay's landward edge: the seaside railing (sea side is negative)
 const CC0_DIR: String = "res://assets/textures/cc0/"
 const WORLD_LAYER: int = 1  ## buildings and static geometry, as Greenery and rain
+const MIRROR_SKIP_BIT: int = 1 << 4  ## props layer: the planar mirror leaves it out (PlanarReflection.excluded_layers)
+## mirror-only copy of LOD1: only the planar mirror's cull mask includes it. Not CarLod's bit 3: the car fill and rim
+## lights see bit 3 (race_scene CAR_LIGHT_MASK), so a copy on bit 3 would be lit like a car.
+const MIRROR_ONLY_BIT: int = 1 << 5
 const HALL_CENTRE_LOCAL: Vector3 = Vector3(0.0, 8.0, -18.0)  ## local (Godot) centre of the prayer hall, at the walls' mid-height
 const WARM: Color = Color(1.0, 0.64, 0.3)  ## sodium floodlight gold (0.74, 0.46 read as cold white on pale stone)
 
 ## Surface name (glTF material name from the kit) -> look. glow is emission at night in units of the shader.
 const MATERIALS: Dictionary = {
-	"M_Stone": {"base": Color(0.93, 0.86, 0.74), "rough": 0.55, "metal": 0.0, "glow": 0.0, "flood": 1.05, "course": 0.0, "tex": "sandstone_blocks_08", "tile": 2.6, "glow_color": Color(1.0, 0.74, 0.46)},
+	"M_Stone": {"base": Color(0.93, 0.86, 0.74), "rough": 0.55, "metal": 0.0, "glow": 0.0, "flood": 0.85, "course": 0.0, "tex": "sandstone_blocks_08", "tile": 2.6, "glow_color": Color(1.0, 0.74, 0.46)},
 	"M_Dome": {"base": Color(0.42, 0.5, 0.5), "rough": 0.35, "metal": 0.5, "glow": 0.0, "flood": 0.3, "glow_color": WARM},
-	"M_Glass": {"base": Color(0.12, 0.15, 0.2), "rough": 0.15, "metal": 0.0, "glow": 2.4, "flood": 0.0, "glow_color": Color(1.0, 0.7, 0.35)},
+	"M_Glass": {"base": Color(0.12, 0.15, 0.2), "rough": 0.15, "metal": 0.0, "glow": 1.8, "flood": 0.0, "glow_color": Color(1.0, 0.7, 0.35)},
 	"M_Lamp": {"base": Color(1.0, 0.88, 0.6), "rough": 0.3, "metal": 0.0, "glow": 6.0, "flood": 0.0, "glow_color": Color(1.0, 0.85, 0.55)},
 	"M_Iron": {"base": Color(0.1, 0.1, 0.11), "rough": 0.4, "metal": 0.8, "glow": 0.0, "flood": 0.1, "glow_color": WARM},
 	"M_Paving": {"tex": "marble_01", "tile": 3.0, "base": Color(0.78, 0.76, 0.72), "rough": 0.25, "metal": 0.0, "glow": 0.0, "flood": 0.25, "glow_color": WARM},
@@ -50,6 +54,13 @@ func setup(track: Track) -> void:
 	set_night(_night)
 
 
+func _process(_delta: float) -> void:
+	# The current camera (chase, replay, capture) must not draw the mirror-only copy; the mirror camera is not current.
+	var cam: Camera3D = get_viewport().get_camera_3d()
+	if cam != null:
+		cam.cull_mask &= ~MIRROR_ONLY_BIT
+
+
 ## 0 day, 1 night. Emission and the two OmniLights follow it.
 func set_night(amount: float) -> void:
 	_night = clampf(amount, 0.0, 1.0)
@@ -68,6 +79,8 @@ func hall_centre() -> Vector3:
 func _style(mi: MeshInstance3D, lod: int) -> void:
 	mi.visibility_range_begin = float(LOD_RANGES[lod][0])
 	mi.visibility_range_end = float(LOD_RANGES[lod][1])
+	if lod == 0:
+		mi.layers = (mi.layers & ~1) | MIRROR_SKIP_BIT  ## the wet-road mirror leaves the near LOD0 out
 	for i: int in mi.mesh.get_surface_count():
 		var src: Material = mi.mesh.surface_get_material(i)
 		var surface: String = src.resource_name if src != null else ""
@@ -75,6 +88,14 @@ func _style(mi: MeshInstance3D, lod: int) -> void:
 			push_error("Landmarks: unknown surface material '%s' in %s" % [surface, mi.get_path()])
 			continue
 		mi.set_surface_override_material(i, _material(surface))
+	if lod == 1:
+		## mirror-only copy of LOD1 for the near range: the mirror draws it where it left LOD0 out, the cameras never do
+		var mirror: MeshInstance3D = mi.duplicate() as MeshInstance3D
+		mirror.layers = MIRROR_ONLY_BIT
+		mirror.visibility_range_begin = 0.0
+		mirror.visibility_range_end = float(LOD_RANGES[0][1])
+		mirror.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		mi.get_parent().add_child(mirror)
 
 
 func _material(surface: String) -> ShaderMaterial:
@@ -123,7 +144,7 @@ func _box(body: StaticBody3D, size: Vector3, at: Vector3) -> void:
 
 ## Two real lights in total: the road-side flood over the square and the sea-side flood on the back of the hall.
 func _add_lights() -> void:
-	_lights.append(_light("FrontFlood", Vector3(0.0, 6.0, -4.0), 46.0))
+	_lights.append(_light("FrontFlood", Vector3(0.0, 9.0, -1.5), 46.0))  ## was (0, 6, -4): 2 m from the portico arches, burnt them out
 	_lights.append(_light("SeaFlood", Vector3(0.0, 10.0, -36.0), 40.0))
 
 
@@ -139,5 +160,5 @@ func _light(light_name: String, at: Vector3, range_m: float) -> OmniLight3D:
 
 
 func _light_energy(light_name: String) -> float:
-	var full: float = 1.2 if light_name == "FrontFlood" else 0.9  # 2.2 / 1.6 burnt the stone to white
+	var full: float = 0.95 if light_name == "FrontFlood" else 0.9  # 2.2 / 1.6 burnt the stone to white
 	return full * _night

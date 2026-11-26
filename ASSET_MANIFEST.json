@@ -9342,14 +9342,14 @@
       "source_url": "",
       "license": "project-owned",
       "author": "project",
-      "tris": 0,
+      "tris": 21676,
       "texture_sizes": {},
       "material_count": 6,
-      "bytes": 1124692,
-      "sha256": "bbf3e32b7b404c53afdce4e10cfcf05071c81b3c91d743c1710c60d94d16262d",
+      "bytes": 1422816,
+      "sha256": "427e7442052a1d70d27e93af1fd0ae13158169fa573e8b4669724d11ed34cc8b",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD0, vertex-colour baked AO (assets_src/pipeline/bake_vertex_ao.py)"
+      "notes": "Waterfront mosque kit, original design, pass 3 review fixes, from assets_src/world/kit_landmarks/build_landmark.py, LOD0, vertex-colour baked AO (assets_src/pipeline/bake_vertex_ao.py, cell 10 m)"
     },
     {
       "id": "landmark_mosque_lod1",
@@ -9359,14 +9359,14 @@
       "source_url": "",
       "license": "project-owned",
       "author": "project",
-      "tris": 0,
+      "tris": 5749,
       "texture_sizes": {},
       "material_count": 6,
-      "bytes": 381888,
-      "sha256": "393a7b314532656d2fc2ad00c2e215770e6d2c4a51d839fd768e1f083a54cd24",
+      "bytes": 409356,
+      "sha256": "8d92493fa5dccf3bc781866eba1dfd7410da9e393afb2015b74e61fb5298fea6",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD1, vertex-colour baked AO (assets_src/pipeline/bake_vertex_ao.py)"
+      "notes": "Waterfront mosque kit, original design, pass 3 review fixes, from assets_src/world/kit_landmarks/build_landmark.py, LOD1, no AO subdivision"
     },
     {
       "id": "landmark_mosque_lod2",
@@ -9375,15 +9375,15 @@
       "source": "generated:blender",
       "source_url": "",
       "license": "project-owned",
-      "author": "Midnight Syndicate team",
+      "author": "project",
       "tris": 576,
       "texture_sizes": {},
       "material_count": 4,
       "bytes": 35428,
-      "sha256": "243eb75492e829fa9d8015c5926d3d6bc7a796759cb4885fbc385efcf599abcb",
+      "sha256": "6b8e825d1bcd0541e20dcdec03136b4ac99f916dabfbc1f30b03cc34698c1671",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD2 (detail pass)"
+      "notes": "Waterfront mosque kit, original design, pass 3, from assets_src/world/kit_landmarks/build_landmark.py, LOD2"
     },
     {
       "id": "event_banner_atlas",

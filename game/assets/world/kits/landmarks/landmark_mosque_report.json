@@ -2,15 +2,15 @@
   "generator": "assets_src/world/kit_landmarks/build_landmark.py",
   "lods": {
     "0": {
-      "tris": 13542,
-      "tris_after_ao": 19818,
+      "tris": 19048,
+      "tris_after_ao": 21676,
       "ao": {
         "landmark_mosque_lod0": {
           "min": 0.35,
-          "mean": 0.664,
+          "mean": 0.638,
           "max": 1.0,
-          "loops": 51350,
-          "tris": 19818
+          "loops": 61292,
+          "tris": 21676
         }
       },
       "materials_used": [
@@ -22,25 +22,25 @@
         "M_Stone"
       ],
       "tris_per_material": {
-        "M_Stone": 9816,
+        "M_Stone": 14852,
         "M_Paving": 12,
-        "M_Iron": 476,
-        "M_Lamp": 540,
-        "M_Glass": 522,
+        "M_Iron": 956,
+        "M_Lamp": 588,
+        "M_Glass": 464,
         "M_Dome": 2176
       },
       "file": "game/assets/world/kits/landmarks/landmark_mosque_lod0.glb"
     },
     "1": {
-      "tris": 5404,
-      "tris_after_ao": 5404,
+      "tris": 5749,
+      "tris_after_ao": 5749,
       "ao": {
         "landmark_mosque_lod1": {
           "min": 0.35,
-          "mean": 0.738,
+          "mean": 0.701,
           "max": 1.0,
-          "loops": 16212,
-          "tris": 5404
+          "loops": 17247,
+          "tris": 5749
         }
       },
       "materials_used": [
@@ -52,12 +52,12 @@
         "M_Stone"
       ],
       "tris_per_material": {
-        "M_Stone": 3444,
+        "M_Stone": 3308,
         "M_Paving": 12,
-        "M_Iron": 476,
-        "M_Lamp": 540,
-        "M_Glass": 252,
-        "M_Dome": 680
+        "M_Iron": 956,
+        "M_Lamp": 588,
+        "M_Glass": 209,
+        "M_Dome": 676
       },
       "file": "game/assets/world/kits/landmarks/landmark_mosque_lod1.glb"
     },
