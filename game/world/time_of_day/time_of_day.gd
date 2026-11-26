@@ -121,9 +121,9 @@ func _make_day() -> void:
 	sun_azimuth_deg = 165.0
 	sun_color = Color(1.0, 0.95, 0.84)
 	sun_energy = 3.0
-	ambient_energy = 1.3
+	ambient_energy = 0.6  # 1.3 of near-white ambient filled every shadow: facades read as flat pastel cards
 	ambient_sky_mix = 0.3
-	ambient_color = Color(0.95, 0.95, 1.0)
+	ambient_color = Color(0.66, 0.77, 0.96)  # sky fill: blue in the shade
 	road_brightness = 0.85
 	reflection_energy = 1.0
 	sky_params = {
@@ -137,7 +137,7 @@ func _make_day() -> void:
 	fog_begin_m = 260.0
 	fog_end_m = 1500.0
 	fog_sky_affect = 0.15
-	exposure = 1.0
+	exposure = 0.8  # the night albedo lifts on walls clipped to white at 1.0
 	glow_scale = 0.35
 	glow_threshold = 2.2
 	window_scale = 0.0
@@ -171,29 +171,29 @@ func _make_day() -> void:
 func _make_sunset() -> void:
 	id = SUNSET
 	label = "Sunset"
-	sun_elevation_deg = 11.0
+	sun_elevation_deg = 6.0
 	sun_azimuth_deg = 28.0
 	sun_color = Color(1.0, 0.70, 0.46)
-	sun_energy = 2.4
-	ambient_energy = 1.1
+	sun_energy = 1.1  # blue hour: the sun is almost down, the lamps carry the street (2.4 washed everything pink)
+	ambient_energy = 0.85
 	ambient_sky_mix = 0.3
-	ambient_color = Color(0.42, 0.52, 0.82)
+	ambient_color = Color(0.30, 0.38, 0.72)
 	reflection_energy = 1.0
 	sky_params = {
-		"zenith_colour": Color(0.10, 0.14, 0.38), "horizon_colour": Color(0.95, 0.52, 0.42),
+		"zenith_colour": Color(0.05, 0.09, 0.30), "horizon_colour": Color(0.72, 0.46, 0.52),
 		"ground_colour": Color(0.40, 0.25, 0.30), "sun_colour": Color(1.0, 0.62, 0.32),
 		"sun_disk_energy": 10.0, "halo_energy": 1.6, "halo_power": 10.0,
-		"band_colour": Color(1.0, 0.42, 0.22), "band_energy": 1.5, "band_height": 0.2, "band_spread": 1.6,
-		"cloud_cover": 0.55, "cloud_lit": Color(1.0, 0.72, 0.62), "cloud_shade": Color(0.36, 0.30, 0.50),
+		"band_colour": Color(1.0, 0.42, 0.22), "band_energy": 0.8, "band_height": 0.2, "band_spread": 1.6,
+		"cloud_cover": 0.42, "cloud_lit": Color(0.95, 0.60, 0.62), "cloud_shade": Color(0.22, 0.24, 0.46),
 	}
-	fog_color = Color(0.58, 0.50, 0.66)
+	fog_color = Color(0.36, 0.38, 0.60)
 	fog_begin_m = 240.0
 	fog_end_m = 1250.0
 	fog_sky_affect = 0.5
 	exposure = 1.0
-	glow_scale = 0.75
-	glow_threshold = 1.5
-	window_scale = 0.55
+	glow_scale = 1.0
+	glow_threshold = 1.2
+	window_scale = 0.9
 	neon_scale = 0.8
 	skyline_scale = 0.6
 	skyline_brighten = 1.2
@@ -212,7 +212,7 @@ func _make_sunset() -> void:
 	road_wetness = 0.85
 	road_puddles = 0.7
 	wall_wet = 0.35
-	road_mirror = false
+	road_mirror = true  # the wet road mirrors the lamps and tail lights at dusk
 	rain = false
 	headlights_on = true
 	car_fill_scale = 0.7

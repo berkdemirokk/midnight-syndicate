@@ -273,6 +273,11 @@ func _build_race() -> void:
 		_world.add_child(landmark)
 		landmark.setup(track)
 		landmark.set_night(1.0 if tod.is_night() else (0.6 if config_used.time_of_day == "sunset" else 0.0))
+		if Settings.get_preset_id() != "low":
+			var dressing := EventDressing.new()  # race barriers with banners, flags, spectators, cafe terraces
+			dressing.name = "EventDressing"
+			_world.add_child(dressing)
+			dressing.setup(track, config_used.time_of_day)
 	ContactShadow.set_time_of_day(config_used.time_of_day)
 	if _post_fx == null:
 		_post_fx = PostFx.new()
