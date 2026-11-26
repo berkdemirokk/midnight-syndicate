@@ -8,26 +8,26 @@
   "name": "bogaz_night",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 390,
-    "draw_calls_min": 241,
+    "draw_calls": 340,
+    "draw_calls_min": 254,
     "driver": "vulkan",
-    "fps": 135.968,
-    "frame_ms_avg": 7.355,
-    "frame_ms_p95": 10.534,
-    "frame_ms_p99": 13.451,
+    "fps": 154.347,
+    "frame_ms_avg": 6.479,
+    "frame_ms_p95": 8.94,
+    "frame_ms_p99": 9.702,
     "frames": 60,
-    "objects": 14559,
+    "objects": 14204,
     "os": "Windows",
-    "primitives": 328165,
+    "primitives": 303895,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 568.238,
+    "video_mem_mb": 611.19,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "evidence/screens/tod_tracks/bogaz_night.png",
+  "png": "C:/Users/berk/car race/evidence/screens/tod_tracks/bogaz_night.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }

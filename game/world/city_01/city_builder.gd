@@ -58,7 +58,7 @@ const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 1
 @export var crown_min_height_m: float = 60.0
 @export var crown_energy: float = 3.0
 @export_group("General")
-@export var lod0_end_m: float = 70.0  ## first-row building LOD0 up to here, LOD1 to lod1_end_m, LOD2 beyond
+@export var lod0_end_m: float = 45.0  ## first-row building LOD0 up to here, LOD1 to lod1_end_m, LOD2 beyond
 @export var lod1_end_m: float = 180.0
 @export var lod_fade_m: float = 4.0  ## dithered cross-fade band on every LOD and category switch
 @export var prop_lod1_begin_m: float = 60.0  ## props with a _lod1 file switch to it here

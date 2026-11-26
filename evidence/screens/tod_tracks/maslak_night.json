@@ -8,26 +8,26 @@
   "name": "maslak_night",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 356,
-    "draw_calls_min": 207,
+    "draw_calls": 365,
+    "draw_calls_min": 239,
     "driver": "vulkan",
-    "fps": 196.514,
-    "frame_ms_avg": 5.089,
-    "frame_ms_p95": 7.109,
-    "frame_ms_p99": 9.033,
+    "fps": 163.489,
+    "frame_ms_avg": 6.117,
+    "frame_ms_p95": 8.11,
+    "frame_ms_p99": 9.093,
     "frames": 60,
-    "objects": 14729,
+    "objects": 14394,
     "os": "Windows",
-    "primitives": 403347,
+    "primitives": 288332,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 543.478,
+    "video_mem_mb": 582.422,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "evidence/screens/tod_tracks/maslak_night.png",
+  "png": "C:/Users/berk/car race/evidence/screens/tod_tracks/maslak_night.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }

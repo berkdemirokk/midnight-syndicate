@@ -48,8 +48,9 @@ const CAR_FILL_LAYER: int = 19
 const MIRROR_SKIP_BIT: int = 1 << 4
 const CAR_LIGHT_MASK: int = (1 << CAR_FILL_LAYER) | CarLod.MIRROR_LAYER_BIT  ## fill and rim lights: car meshes and their mirror copy
 ## Prop MultiMesh nodes ("<prop file>_<chunk>_<mesh>") whose file name holds one of these stay out of the mirror.
-const MIRROR_SKIP_PROPS: PackedStringArray = ["bench", "litter_bin", "planter", "newspaper", "bollard", "cone"]
-const MIRROR_SKIP_ROOTS: PackedStringArray = ["Dressing", "ParkedCars"]
+const MIRROR_SKIP_PROPS: PackedStringArray = ["bench", "litter_bin", "planter", "newspaper", "bollard", "cone", "street_", "_LOD2"]  ## street_ = the street detail kit (dumpsters, AC units, fire escapes...)
+const MIRROR_KEEP_PROPS: PackedStringArray = ["street_signal", "street_glow"]  ## lit pieces whose reflection on the wet road is worth the draws
+const MIRROR_SKIP_ROOTS: PackedStringArray = ["Dressing", "ParkedCars", "SecondRow", "LOD2_Batches"]  ## far building batches: too small in the road reflection to pay for
 const ASPHALT_MATERIAL_NAME: String = "M_Asphalt"
 const ASPHALT_SHADER_PATH: String = "res://shaders/wet_asphalt.gdshader"
 const SHADOW_PROXY_NAME: String = "SunShadowProxy"
@@ -337,6 +338,7 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	if lod != null:
 		if rival:
 			lod.lod1_start_m = config_used.rival_lod1_start_m
+			lod.lod2_start_m = config_used.rival_lod2_start_m
 			if Settings.get_preset_id() == "low":
 				lod.lod1_start_m = config_used.rival_lod1_start_low_m
 				lod.lod2_start_m = config_used.rival_lod2_start_low_m
@@ -481,6 +483,9 @@ func _tag_mirror_skipped() -> void:
 			if gi.name.contains(part):
 				skip = true
 				break
+		for part: String in MIRROR_KEEP_PROPS:
+			if gi.name.contains(part):
+				skip = false
 		if not skip:
 			var root: Node = gi.get_parent()
 			while root != null and root != track and not skip:

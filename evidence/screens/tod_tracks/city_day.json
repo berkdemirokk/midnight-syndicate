@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 1.0,
-  "luma_min": 0.001,
+  "luma_max": 0.96,
+  "luma_min": 0.03,
   "name": "city_day",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 311,
-    "draw_calls_min": 303,
+    "draw_calls": 374,
+    "draw_calls_min": 371,
     "driver": "vulkan",
-    "fps": 178.839,
-    "frame_ms_avg": 5.592,
-    "frame_ms_p95": 7.702,
-    "frame_ms_p99": 8.789,
+    "fps": 233.449,
+    "frame_ms_avg": 4.284,
+    "frame_ms_p95": 6.148,
+    "frame_ms_p99": 7.442,
     "frames": 60,
-    "objects": 13694,
+    "objects": 13880,
     "os": "Windows",
-    "primitives": 375251,
+    "primitives": 376437,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 572.334,
+    "video_mem_mb": 580.503,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "evidence/screens/tod_tracks/city_day.png",
+  "png": "C:/Users/berk/car race/evidence/screens/tod_tracks/city_day.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }
