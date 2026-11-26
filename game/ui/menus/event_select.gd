@@ -9,7 +9,7 @@ extends Control
 
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
-const NEON_SHADER: String = "res://ui/menus/neon_bg.gdshader"
+const PHONE_WINDOW_ROWS: int = 4  ## rows shown at once on a phone: 44 pt rows do not fit ten at a time
 const TITLE_PX: int = 40
 const SUB_PX: int = 18
 const ROW_PX: int = 22
@@ -17,7 +17,8 @@ const ROW_INFO_PX: int = 15
 const DETAIL_TITLE_PX: int = 32
 const VAL_PX: int = 26
 const ROW_W: float = 760.0
-const ROW_H: float = 56.0  ## ten events (Arden Bay + Istanbul) fit above the Back/Start bar
+const ROW_H: float = 56.0  ## ten events (Arden Bay + Istanbul) fit above the Back/Start bar on desktop
+const ACCENT_W: float = 6.0
 const ROW_GAP_PX: float = 6.0
 const DETAIL_MIN_W: float = 520.0
 const EDGE_PX: float = 96.0
@@ -28,6 +29,7 @@ const STAR_STEP: float = 30.0
 const DETAIL_STAR_R: float = 18.0
 const FOCUS_PX: float = 2.0
 const RULE_LINES: int = 3
+const ARROW_R: float = 16.0
 const STAR_OFF: Color = Color(0.541, 0.580, 0.651, 0.3)
 
 ## The single canvas item the screen paints into.
@@ -59,6 +61,9 @@ var _d_rules: Array[HudText] = []
 var _all_texts: Array[HudText] = []
 var _start_btn: Button
 var _back_btn: Button
+var _up_btn: Button
+var _down_btn: Button
+var _win: int = 0  ## first visible row (phone only)
 var _buttons: Array[Button] = []
 var _text_nodes: Array = []  ## [button, i18n key]
 var _sel: int = 0
@@ -67,18 +72,7 @@ var _sel: int = 0
 func _ready() -> void:
 	theme = MSTheme.build()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var bg := ColorRect.new()
-	bg.color = MSTheme.BG
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
-	var neon := ColorRect.new()
-	neon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	neon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var mat := ShaderMaterial.new()
-	mat.shader = load(NEON_SHADER) as Shader
-	neon.material = mat
-	add_child(neon)
+	add_child(MenuBackdrop.new(0.0, 0.7))
 	_board = Board.new()
 	_board.painter = _paint_board
 	_board.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -136,10 +130,23 @@ func _ready() -> void:
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	footer.add_child(spacer)
+	# Phone: the list shows a window of rows, these two buttons move it (touch has no focus keys).
+	_up_btn = _plain_button(footer, Vector2(MSTheme.button_h(), MSTheme.button_h()))
+	_up_btn.pressed.connect(_step.bind(-1))
+	_down_btn = _plain_button(footer, Vector2(MSTheme.button_h(), MSTheme.button_h()))
+	_down_btn.pressed.connect(_step.bind(1))
+	_up_btn.visible = MSTheme.phone
+	_down_btn.visible = MSTheme.phone
+	_up_btn.focus_mode = Control.FOCUS_ALL
 	_start_btn = _button(footer, "event.start", start_race)
+	_start_btn.custom_minimum_size.x = MSTheme.BUTTON_MIN_W * 0.75
+	_start_btn.theme_type_variation = &"PrimaryButton"
+	for state: String in ["normal", "hover", "pressed", "disabled", "focus"]:
+		_start_btn.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 
 	_wire_neighbours()
 	_sel = _default_selection()
+	_update_window()
 	Settings.changed.connect(_on_settings_changed)
 	_refresh_text()
 	_sort_texts()
@@ -164,7 +171,35 @@ func select(index: int) -> void:
 	if index < 0 or index >= _row_btns.size() or index == _sel:
 		return
 	_sel = index
+	_update_window()
 	_refresh_text()
+
+
+## Phone only: keeps the selected row inside the window of visible rows. Desktop shows every row.
+func _update_window() -> void:
+	var n: int = _row_btns.size()
+	if not MSTheme.phone:
+		_win = 0
+		for b: Button in _row_btns:
+			b.visible = true
+		return
+	_win = clampi(_win, 0, maxi(n - PHONE_WINDOW_ROWS, 0))
+	if _sel < _win:
+		_win = _sel
+	elif _sel >= _win + PHONE_WINDOW_ROWS:
+		_win = _sel - PHONE_WINDOW_ROWS + 1
+	for i: int in n:
+		_row_btns[i].visible = i >= _win and i < _win + PHONE_WINDOW_ROWS
+	if _up_btn != null:
+		_up_btn.disabled = _sel <= 0
+		_down_btn.disabled = _sel >= n - 1
+
+
+func _step(delta: int) -> void:
+	var ni: int = clampi(_sel + delta, 0, _row_btns.size() - 1)
+	select(ni)
+	UiSounds.click()
+	_board.queue_redraw()
 
 
 ## Router params for the selected event: {"config": RaceConfig}. Empty when the event is locked.
@@ -186,7 +221,7 @@ func start_race() -> void:
 # --- build ---------------------------------------------------------------------------------------------
 
 func _text(kind: String, px: int, col: Color) -> HudText:
-	var t := HudText.new(kind, px, col, false)
+	var t := HudText.new(kind, MSTheme.px(px), col, false)
 	_all_texts.append(t)
 	return t
 
@@ -219,7 +254,7 @@ func _plain_button(parent: Container, min_size: Vector2) -> Button:
 
 
 func _button(parent: Container, key: String, handler: Callable) -> Button:
-	var b: Button = _plain_button(parent, Vector2(MSTheme.BUTTON_MIN_W * 0.5, MSTheme.BUTTON_MIN_H))
+	var b: Button = _plain_button(parent, Vector2(MSTheme.BUTTON_MIN_W * 0.5, MSTheme.button_h()))
 	b.pressed.connect(func() -> void: UiSounds.click())
 	b.pressed.connect(handler)
 	_text_nodes.append([b, key])
@@ -227,7 +262,7 @@ func _button(parent: Container, key: String, handler: Callable) -> Button:
 
 
 func _row_button(parent: Container, index: int) -> Button:
-	var b: Button = _plain_button(parent, Vector2(ROW_W, ROW_H))
+	var b: Button = _plain_button(parent, Vector2(ROW_W, MSTheme.button_h() if MSTheme.phone else ROW_H))
 	b.focus_entered.connect(select.bind(index))
 	b.pressed.connect(_on_row_pressed.bind(index))
 	return b
@@ -240,8 +275,16 @@ func _wire_neighbours() -> void:
 	_start_btn.focus_neighbor_top = _start_btn.get_path_to(last)
 	_back_btn.focus_neighbor_top = _back_btn.get_path_to(last)
 	_row_btns[0].focus_neighbor_top = _row_btns[0].get_path_to(_row_btns[0])
-	_start_btn.focus_neighbor_left = _start_btn.get_path_to(_back_btn)
-	_back_btn.focus_neighbor_right = _back_btn.get_path_to(_start_btn)
+	if MSTheme.phone:
+		_start_btn.focus_neighbor_left = _start_btn.get_path_to(_down_btn)
+		_down_btn.focus_neighbor_left = _down_btn.get_path_to(_up_btn)
+		_up_btn.focus_neighbor_left = _up_btn.get_path_to(_back_btn)
+		_back_btn.focus_neighbor_right = _back_btn.get_path_to(_up_btn)
+		_up_btn.focus_neighbor_right = _up_btn.get_path_to(_down_btn)
+		_down_btn.focus_neighbor_right = _down_btn.get_path_to(_start_btn)
+	else:
+		_start_btn.focus_neighbor_left = _start_btn.get_path_to(_back_btn)
+		_back_btn.focus_neighbor_right = _back_btn.get_path_to(_start_btn)
 
 
 ## First unlocked event without a star, else the last one (the whole ladder is done).
@@ -326,6 +369,21 @@ func _on_back() -> void:
 	Router.goto(MENU_SCENE)
 
 
+func _input(event: InputEvent) -> void:
+	if not MSTheme.phone:
+		return
+	var down: bool = event.is_action_pressed("ui_down")
+	if not (down or event.is_action_pressed("ui_up")):
+		return
+	var i: int = _row_btns.find(get_viewport().gui_get_focus_owner())
+	var ni: int = i + (1 if down else -1)
+	if i < 0 or ni < 0 or ni >= _row_btns.size():
+		return
+	select(ni)
+	_row_btns[ni].grab_focus()
+	get_viewport().set_input_as_handled()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
@@ -357,74 +415,96 @@ static func draw_stars(c: CanvasItem, right_x: float, cy: float, r: float, earne
 
 
 func _paint_board(c: Control) -> void:
-	var sep: float = float(MSTheme.GRID_PX)
+	var k: float = MSTheme.k()
+	var sep: float = float(MSTheme.GRID_PX) * (1.0 + (k - 1.0) * 0.5)
 	_title.pos = _local_rect(_title_slot).position
 	_subtitle.pos = _local_rect(_sub_slot).position
 	var detail: Rect2 = _local_rect(_detail_slot)
 
-	# Rows.
+	# Rows (only the visible ones: on a phone the list is a window).
 	var star_rights: Array[float] = []
 	for i: int in _row_btns.size():
+		var vis: bool = _row_btns[i].visible
+		var open_i: bool = GameState.is_event_unlocked(EventCatalog.id_at(i))
+		for t: HudText in [_row_num[i], _row_name[i], _row_info[i]]:
+			t.visible = vis
+		_row_lock[i].visible = vis and not open_i
+		if not vis:
+			star_rights.append(0.0)
+			continue
 		var r: Rect2 = _local_rect(_row_btns[i])
 		var right: float = r.end.x - MSTheme.BUTTON_PAD_X
 		star_rights.append(right)
-		var x: float = r.position.x + MSTheme.BUTTON_PAD_X
+		var x: float = r.position.x + MSTheme.BUTTON_PAD_X + ACCENT_W
 		_row_num[i].pos = Vector2(x, r.position.y + (r.size.y - _row_num[i].height()) * 0.5)
-		var nx: float = x + NUM_W
+		var nx: float = x + NUM_W * k
 		var block: float = _row_name[i].height() + _row_info[i].height()
 		var top: float = r.position.y + (r.size.y - block) * 0.5
 		_row_name[i].pos = Vector2(nx, top)
 		_row_info[i].pos = Vector2(nx, top + _row_name[i].height())
 		_row_lock[i].pos = Vector2(right - _row_lock[i].width(), r.position.y + (r.size.y - _row_lock[i].height()) * 0.5)
 
-	# Detail panel text.
-	var rx: float = detail.position.x + MSTheme.BUTTON_PAD_X * 1.5
+	# Detail panel: title, stars, then caption left and value right on one line each.
+	var pad: float = MSTheme.BUTTON_PAD_X * 1.5
+	var rx: float = detail.position.x + pad
+	var rr: float = detail.end.x - pad - detail.size.y * MSTheme.SKEW_RATIO * 0.25
 	var y: float = detail.position.y + MSTheme.BUTTON_PAD_Y * 1.5
 	_d_title.pos = Vector2(rx, y)
 	y += _d_title.height() + sep
-	var star_y: float = y + DETAIL_STAR_R
-	y += DETAIL_STAR_R * 2.0 + sep * 1.5
+	var star_r: float = DETAIL_STAR_R * k
+	var star_y: float = y + star_r
+	y += star_r * 2.0 + sep * 1.5
 	_d_state.pos = Vector2(rx, y)
 	if _d_state.text != "":
 		y += _d_state.height() + sep
 	for i: int in _d_caps.size():
-		_d_caps[i].pos = Vector2(rx, y)
-		y += _d_caps[i].height()
-		_d_vals[i].pos = Vector2(rx, y)
+		var row_h: float = maxf(_d_caps[i].height(), _d_vals[i].height())
+		_d_caps[i].pos = Vector2(rx, y + (row_h - _d_caps[i].height()) * 0.5)
+		var vx: float = rr - _d_vals[i].width()
 		if i == 3:
-			_d_rep.pos = Vector2(rx + _d_vals[i].width() + MSTheme.BUTTON_PAD_X, y)
-		y += _d_vals[i].height() + sep
+			_d_rep.pos = Vector2(rr - _d_rep.width(), y + (row_h - _d_rep.height()) * 0.5)
+			vx = _d_rep.pos.x - MSTheme.BUTTON_PAD_X - _d_vals[i].width()
+		_d_vals[i].pos = Vector2(vx, y + (row_h - _d_vals[i].height()) * 0.5)
+		y += row_h + sep
 	y += sep
 	for t: HudText in _d_rules:
 		t.pos = Vector2(rx, y)
 		y += t.height() + sep * 0.5
 
 	# Pass 1: rects and stars.
-	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.55))
-	ResultsScreen._fill_skewed(c, detail, MSTheme.PANEL_BG)
+	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.5))
+	ResultsScreen._fill_skewed(c, detail, MSTheme.PLATE_BG)
 	for i: int in _row_btns.size():
+		if not _row_btns[i].visible:
+			continue
 		var r2: Rect2 = _local_rect(_row_btns[i])
 		var open: bool = GameState.is_event_unlocked(EventCatalog.id_at(i))
-		var fill: Color = MSTheme.PANEL_BG if open else MSTheme.DISABLED_BG
+		var fill: Color = MSTheme.PLATE_BG if open else MSTheme.DISABLED_BG
 		if i == _sel:
-			fill = MSTheme.tint(MSTheme.CYAN, 0.18 if open else 0.08)
+			fill = MSTheme.tint(MSTheme.CYAN, 0.2 if open else 0.08)
 		ResultsScreen._fill_skewed(c, r2, fill)
+		if i == _sel:
+			ResultsScreen._fill_skewed(c, Rect2(r2.position, Vector2(ACCENT_W, r2.size.y)), MSTheme.CYAN if open else MSTheme.MUTED)
 		if open:
-			draw_stars(c, star_rights[i], r2.position.y + r2.size.y * 0.5, STAR_R, GameState.event_stars(EventCatalog.id_at(i)), STAR_STEP)
+			draw_stars(c, star_rights[i], r2.position.y + r2.size.y * 0.5, STAR_R * k, GameState.event_stars(EventCatalog.id_at(i)), STAR_STEP * k)
 	if GameState.is_event_unlocked(get_selected_id()):
-		draw_stars(c, rx + DETAIL_STAR_R * 2.0 + DETAIL_STAR_R * 2.4 * 2.0, star_y, DETAIL_STAR_R, GameState.event_stars(get_selected_id()), DETAIL_STAR_R * 2.4)
+		draw_stars(c, rx + star_r * 2.0 + star_r * 2.4 * 2.0, star_y, star_r, GameState.event_stars(get_selected_id()), star_r * 2.4)
 	for b: Button in _buttons:
-		if _is_footer(b):
+		if _is_footer(b) and b.visible:
 			ResultsScreen._fill_skewed(c, _local_rect(b), _button_fill(b))
+			if b == _up_btn or b == _down_btn:
+				_draw_arrow(c, _local_rect(b), b == _up_btn, MSTheme.MUTED if b.disabled else MSTheme.CYAN)
 	# Pass 2: lines.
 	ResultsScreen._outline_skewed(c, detail, MSTheme.BORDER, 1.0)
 	for i: int in _row_btns.size():
+		if not _row_btns[i].visible:
+			continue
 		var r3: Rect2 = _local_rect(_row_btns[i])
 		ResultsScreen._outline_skewed(c, r3, MSTheme.CYAN if i == _sel else MSTheme.BORDER, 1.0)
 		if _row_btns[i].has_focus():
 			ResultsScreen._outline_skewed(c, r3, MSTheme.MAGENTA, FOCUS_PX)
 	for b: Button in _buttons:
-		if _is_footer(b):
+		if _is_footer(b) and b.visible:
 			ResultsScreen._outline_skewed(c, _local_rect(b), _button_edge(b), 1.0)
 			if b.has_focus():
 				ResultsScreen._outline_skewed(c, _local_rect(b), MSTheme.MAGENTA, FOCUS_PX)
@@ -432,12 +512,24 @@ func _paint_board(c: Control) -> void:
 	HudText.paint(c, _all_texts)
 
 
+## Chevron inside a footer button.
+func _draw_arrow(c: CanvasItem, r: Rect2, up: bool, col: Color) -> void:
+	var m: Vector2 = r.get_center()
+	var d: float = ARROW_R * MSTheme.k()
+	var sgn: float = -1.0 if up else 1.0
+	c.draw_colored_polygon(PackedVector2Array([
+		Vector2(m.x - d, m.y - sgn * d * 0.5), Vector2(m.x + d, m.y - sgn * d * 0.5), Vector2(m.x, m.y + sgn * d * 0.5)]), col)
+
+
 func _is_footer(b: Button) -> bool:
-	return b == _start_btn or b == _back_btn
+	return b == _start_btn or b == _back_btn or b == _up_btn or b == _down_btn
 
 
 
 func _button_fill(b: Button) -> Color:
+	if b == _start_btn and not b.disabled:
+		var hot: bool = b.get_draw_mode() in [BaseButton.DRAW_HOVER, BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED]
+		return Color(0.45, 0.95, 1.0, 1.0) if hot else MSTheme.PRIMARY_FILL
 	match b.get_draw_mode():
 		BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED:
 			return MSTheme.tint(MSTheme.CYAN, 0.32)

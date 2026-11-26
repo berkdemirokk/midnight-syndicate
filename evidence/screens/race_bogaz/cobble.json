@@ -8,26 +8,26 @@
   "name": "cobble",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 138,
+    "draw_calls": 144,
     "draw_calls_min": 86,
     "driver": "vulkan",
-    "fps": 415.861,
-    "frame_ms_avg": 2.405,
-    "frame_ms_p95": 3.624,
-    "frame_ms_p99": 4.081,
+    "fps": 202.631,
+    "frame_ms_avg": 4.935,
+    "frame_ms_p95": 7.802,
+    "frame_ms_p99": 9.648,
     "frames": 60,
-    "objects": 14250,
+    "objects": 14279,
     "os": "Windows",
-    "primitives": 223201,
+    "primitives": 223157,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 568.269,
+    "video_mem_mb": 568.029,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_bogaz/cobble.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_bogaz/cobble.png",
   "preset": "high",
   "scenario": "race_bogaz"
 }

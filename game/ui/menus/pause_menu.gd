@@ -11,10 +11,10 @@ const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
 const DIM_ALPHA: float = 0.62
 const TITLE_PX: int = 40
-const PANEL_W: float = 440.0
-const BUTTON_W: float = 360.0
-const BUTTON_H: float = 64.0
-const GAP_PX: int = 16
+const PANEL_W: float = 520.0
+const BUTTON_W: float = 440.0
+const GAP_PX: int = 14
+const RULE_H: float = 3.0
 
 var _open: bool = false
 var _column: VBoxContainer
@@ -43,18 +43,25 @@ func _ready() -> void:
 	add_child(centre)
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(PANEL_W, 0.0)
+	panel.add_theme_stylebox_override("panel", MSTheme.card(Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.9), MSTheme.BORDER))
 	centre.add_child(panel)
 	var pad := MarginContainer.new()
 	for side: String in ["left", "right", "top", "bottom"]:
-		pad.add_theme_constant_override("margin_" + side, int(MSTheme.GRID_PX * 3))
+		pad.add_theme_constant_override("margin_" + side, int(MSTheme.GRID_PX * 4))
 	panel.add_child(pad)
 	_column = VBoxContainer.new()
 	_column.add_theme_constant_override("separation", GAP_PX)
 	pad.add_child(_column)
 
-	_title = MSTheme.make_label("", "bold", TITLE_PX, MSTheme.TEXT)
+	_title = MSTheme.make_label("", "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT)
 	_column.add_child(_title)
+	var rule := ColorRect.new()
+	rule.color = MSTheme.MAGENTA
+	rule.custom_minimum_size = Vector2(PANEL_W * 0.3, RULE_H)
+	rule.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_column.add_child(rule)
 	_resume_btn = _button("pause.resume", _on_resume)
+	_resume_btn.theme_type_variation = &"PrimaryButton"
 	_restart_btn = _button("pause.restart", _on_restart)
 	_settings_btn = _button("pause.settings", _on_settings)
 	_quit_btn = _button("pause.quit", _on_quit)
@@ -66,7 +73,8 @@ func _ready() -> void:
 
 func _button(key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(BUTTON_W, BUTTON_H)
+	b.custom_minimum_size = Vector2(BUTTON_W, MSTheme.button_h())
+	b.pressed.connect(func() -> void: UiSounds.click())
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.pressed.connect(handler)
 	_column.add_child(b)

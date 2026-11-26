@@ -11,23 +11,23 @@
     "draw_calls": 305,
     "draw_calls_min": 189,
     "driver": "vulkan",
-    "fps": 243.453,
-    "frame_ms_avg": 4.108,
-    "frame_ms_p95": 5.427,
-    "frame_ms_p99": 73.023,
+    "fps": 158.86,
+    "frame_ms_avg": 6.295,
+    "frame_ms_p95": 8.501,
+    "frame_ms_p99": 9.313,
     "frames": 60,
-    "objects": 12940,
+    "objects": 12944,
     "os": "Windows",
-    "primitives": 239090,
+    "primitives": 239098,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 539.346,
+    "video_mem_mb": 539.111,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_maslak/grid.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_maslak/grid.png",
   "preset": "high",
   "scenario": "race_maslak"
 }

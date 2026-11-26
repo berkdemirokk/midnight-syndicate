@@ -11,23 +11,23 @@
     "draw_calls": 277,
     "draw_calls_min": 277,
     "driver": "vulkan",
-    "fps": 580.108,
-    "frame_ms_avg": 1.724,
-    "frame_ms_p95": 1.911,
-    "frame_ms_p99": 2.402,
+    "fps": 550.08,
+    "frame_ms_avg": 1.818,
+    "frame_ms_p95": 2.245,
+    "frame_ms_p99": 2.342,
     "frames": 60,
     "objects": 450,
     "os": "Windows",
     "primitives": 234016,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 456.864,
+    "video_mem_mb": 456.879,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/garage/upgrades_tab.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/garage/upgrades_tab.png",
   "preset": "high",
   "scenario": "garage"
 }

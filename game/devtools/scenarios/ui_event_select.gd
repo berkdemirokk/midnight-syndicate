@@ -19,9 +19,12 @@ func run() -> void:
 	await cap.load_scene(SCENE)
 	await cap.wait_frames(SETTLE_FRAMES)
 	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
+	MSTheme.set_phone(true)  # the phone layout (type x1.5, 44 pt targets) is chosen at build time: rebuild the scene
 	cap.set_size(PHONE_W, PHONE_H)
+	await cap.load_scene(SCENE)
 	await cap.wait_frames(SETTLE_FRAMES)
 	await cap.shot("iphone_%dx%d" % [PHONE_W, PHONE_H])
 	for p: String in [PROFILE, PROFILE + ".bak", PROFILE + ".tmp"]:
 		if FileAccess.file_exists(p):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(p))
+	MSTheme.set_phone(false)

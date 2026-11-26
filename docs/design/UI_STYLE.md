@@ -39,3 +39,13 @@ No downloaded fonts or images.
 - Only update a label when its value changes (`RaceHUD._set_text`).
 - Every visible string goes through `I18n.t`. Tests fail on keys missing in Turkish or English, or used but undefined.
 - Menus refresh text on `Settings.changed("general")`.
+
+## Round 12 additions (see UI_REVIEW_R12.md)
+- Device class: `MSTheme.phone` (true on mobile builds). `MSTheme.px(n)` scales type 1.5x, `MSTheme.button_h()` is 64 px on
+  desktop and 124 px (44 pt on an iPhone) on a phone. Scenes read these at build time. Previews and tests call `MSTheme.set_phone(true)`.
+- Primary action: theme variation `PrimaryButton` (solid cyan, dark label), one per screen. Painted boards (results, event select)
+  use `MSTheme.PRIMARY_FILL` for the same look.
+- Backing plates: `MSTheme.PLATE_BG` under every HUD cluster and popup; cards with `MSTheme.card()` (unslanted) inside scroll areas.
+- Wordmark: `Logotype` control. Titles use the `bold` font kind (the `slant` kind has an uneven baseline).
+- Menu backdrop: `MenuBackdrop` (menu_backdrop.gdshader), one full-screen pass, used by main menu, settings, event select, results.
+- HUD: the whole frame scales by `RaceHUD.hud_scale()` (1.4 on phone); speed digits 96 px inside a radius-132 arc; gauge at 76 percent width.

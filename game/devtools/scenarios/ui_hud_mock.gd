@@ -30,6 +30,26 @@ func run() -> void:
 	var mock_race = MockRace
 	var backdrop: CanvasLayer = mock_race.make_backdrop()
 	tree.root.add_child(backdrop)
+	var race = await _build()
+	await cap.wait_frames(SETTLE_FRAMES)
+	for i: int in TICK_FRAMES:
+		race.race_time += 1.0 / 60.0
+		await cap.wait_frames(1)
+	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
+	MSTheme.set_phone(true)
+	cap.set_size(PHONE_W, PHONE_H)
+	race = await _build()
+	await cap.wait_frames(SETTLE_FRAMES)
+	for i: int in TICK_FRAMES:
+		race.race_time += 1.0 / 60.0
+		await cap.wait_frames(1)
+	await cap.shot("iphone_%dx%d" % [PHONE_W, PHONE_H])
+	MSTheme.set_phone(false)
+
+
+## Loads the HUD and binds the mock car, race and track. Returns the mock race so the caller can tick its clock.
+func _build() -> Object:
+	var mock_race = MockRace
 	var hud: RaceHUD = await cap.load_scene(SCENE) as RaceHUD
 	var car := ArcadeCar.new()
 	var race = mock_race.new()
@@ -56,11 +76,4 @@ func run() -> void:
 	car.is_drifting = true
 	car.drift_score = DRIFT_SCORE
 	car.drift_started.emit()
-	await cap.wait_frames(SETTLE_FRAMES)
-	for i: int in TICK_FRAMES:
-		race.race_time += 1.0 / 60.0
-		await cap.wait_frames(1)
-	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
-	cap.set_size(PHONE_W, PHONE_H)
-	await cap.wait_frames(SETTLE_FRAMES)
-	await cap.shot("iphone_%dx%d" % [PHONE_W, PHONE_H])
+	return race

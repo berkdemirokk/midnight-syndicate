@@ -6,24 +6,24 @@ extends CanvasLayer
 ## Draw cost: the whole HUD is painted from one canvas item (_paint) in four passes (rects, lines, dots, text) so
 ## Godot batches each pass into one draw call. Text is HudText, not Label: see hud_text.gd. Budget: <= 25 draws.
 
-const GAUGE_W: float = 320.0
-const GAUGE_H: float = 264.0
-const GAUGE_CENTRE_FRAC: float = 0.6  ## horizontal centre of the speedometer, fraction of the safe frame
-const GAUGE_CENTRE_Y: float = 120.0  ## arc centre, from the top of the gauge box
-const GAUGE_GEAR_Y: float = 224.0
+const GAUGE_W: float = 340.0
+const GAUGE_H: float = 312.0
+const GAUGE_CENTRE_FRAC: float = 0.76  ## horizontal centre of the speedometer, fraction of the safe frame (clear of the car at 0.5 to 0.65)
+const GAUGE_CENTRE_Y: float = 142.0  ## arc centre, from the top of the gauge box
+const GAUGE_GEAR_Y: float = 246.0
 const GAUGE_GEAR_W: float = 56.0
 const GAUGE_GEAR_H: float = 34.0
-const SPEED_H: float = 150.0  ## about one line of the 112 px digits, centred on the arc centre
-const UNIT_Y: float = 184.0
+const SPEED_H: float = 130.0  ## about one line of the 112 px digits, centred on the arc centre
+const UNIT_Y: float = 204.0
 const NITRO_W: float = 320.0
 const NITRO_H: float = 20.0
 const NITRO_LEFT_FRAC: float = 0.3
 const MINIMAP_PX: float = 240.0
 const CENTRE_TOP_PX: float = 120.0
-const POS_PX: int = 72
-const POS_SUFFIX_PX: int = 24
+const POS_PX: int = 80
+const POS_SUFFIX_PX: int = 28
 const POS_TOTAL_PX: int = 28
-const SPEED_PX: int = 112
+const SPEED_PX: int = 96  ## fits inside the arc (inner diameter 228 px) with room to spare
 const UNIT_PX: int = 20
 const LAP_PX: int = 40
 const TOP_SCRIM_PX: float = 300.0  ## height of the dark gradient behind the top HUD clusters
@@ -53,6 +53,9 @@ const WRONG_MAX_STEP: float = 0.5  ## larger progress jumps are a lap wrap, not 
 const WRONG_BLINK_HZ: float = 3.0
 const REVERSE_MS: float = 0.5
 const PANEL_SKEW: float = MSTheme.SKEW_RATIO * 0.5  ## same shear as MSTheme.box()
+const PLATE_PAD: float = 14.0  ## backing plates under every cluster: HUD text stays readable on bright signage
+const PHONE_HUD_SCALE: float = 1.4  ## 24 px timers are 8.6 pt on an iPhone at the 1080 px base: scale the whole frame
+const POPUP_PAD_X: float = 24.0
 
 
 ## The single canvas item the HUD paints into.
@@ -110,6 +113,12 @@ var _finish_label: HudText
 func _ready() -> void:
 	_build()
 	_apply_insets()
+	_root.resized.connect(_apply_insets)
+
+
+## 1.0 on desktop, PHONE_HUD_SCALE on a touch phone.
+static func hud_scale() -> float:
+	return PHONE_HUD_SCALE if MSTheme.phone else 1.0
 
 
 func _build() -> void:
@@ -128,7 +137,6 @@ func _build() -> void:
 	_frame = HudCanvas.new()
 	_frame.name = "Frame"
 	_frame.painter = _paint
-	_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_frame)
 
@@ -175,10 +183,12 @@ func _build_texts() -> void:
 ## Keeps the HUD clear of notches and rounded corners. Zero insets on desktop.
 func _apply_insets() -> void:
 	var ins: Vector4 = MSTheme.safe_insets()
-	_frame.offset_left = ins.x + MSTheme.SAFE_MARGIN_PX
-	_frame.offset_top = ins.y + MSTheme.SAFE_MARGIN_PX
-	_frame.offset_right = -(ins.z + MSTheme.SAFE_MARGIN_PX)
-	_frame.offset_bottom = -(ins.w + MSTheme.SAFE_MARGIN_PX)
+	var k: float = hud_scale()
+	var m: float = MSTheme.SAFE_MARGIN_PX
+	_frame.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_frame.position = Vector2(ins.x + m, ins.y + m)
+	_frame.size = (_root.size - Vector2(ins.x + ins.z + m * 2.0, ins.y + ins.w + m * 2.0)) / k
+	_frame.scale = Vector2(k, k)
 
 
 ## Lays every element out and paints it. Pass order is what makes the batches: rects, lines, dots, text.
@@ -236,8 +246,24 @@ func _paint(c: Control) -> void:
 	_countdown.pos = (sz - Vector2(_countdown.width(), _countdown.height())) * 0.5
 	_countdown.pivot = sz * 0.5
 
+	# Backing plates, measured from the layout above.
+	var pos_w: float = col_x + maxf(_pos_suffix.width(), _pos_total.width())
+	var pos_plate: Rect2 = Rect2(-PLATE_PAD, -PLATE_PAD * 0.5, pos_w + PLATE_PAD * 2.5, row_h + PLATE_PAD)
+	var stats_bottom: float = grid_y + float(stats.size()) * (stat_h + float(MSTheme.GRID_PX)) - float(MSTheme.GRID_PX)
+	var lap_plate: Rect2 = Rect2(box_x - PLATE_PAD * 1.5, -PLATE_PAD * 0.5, sz.x - box_x + PLATE_PAD * 2.5, stats_bottom + PLATE_PAD * 1.5)
+	var gauge_top: float = gauge_t + GAUGE_CENTRE_Y - speedo_radius()
+	var gauge_plate: Rect2 = Rect2(arc_centre.x - speedo_radius() - PLATE_PAD * 1.5, gauge_top - PLATE_PAD,
+		speedo_radius() * 2.0 + PLATE_PAD * 3.0, gear_rect.end.y - gauge_top + PLATE_PAD * 2.0)
+	var nitro_plate: Rect2 = Rect2(nitro_rect.position.x - PLATE_PAD * 1.5, _nitro_label.pos.y - PLATE_PAD * 0.5,
+		NITRO_W + PLATE_PAD * 3.0, nitro_rect.end.y - _nitro_label.pos.y + PLATE_PAD * 1.5)
+
 	# Pass 1: rects.
 	_paint_scrim(c)
+	for plate: Rect2 in [pos_plate, lap_plate, gauge_plate, nitro_plate]:
+		_paint_skew_fill(c, plate, MSTheme.PLATE_BG)
+	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label]:
+		if t.visible and t.text != "":
+			_paint_skew_fill(c, Rect2(t.pos.x - POPUP_PAD_X, t.pos.y, t.width() + POPUP_PAD_X * 2.0, t.height()), MSTheme.tint(MSTheme.PLATE_BG, MSTheme.PLATE_BG.a * t.modulate.a))
 	_minimap.paint_rects(c, map_origin)
 	_paint_skew_fill(c, gear_rect)
 	_nitro.paint_rects(c, nitro_rect)
@@ -252,22 +278,27 @@ func _paint(c: Control) -> void:
 	HudText.paint(c, _texts)
 
 
+func speedo_radius() -> float:
+	return _speedo.radius_px
+
+
 ## Dark gradient under the top clusters, as stacked rects. The top edge is the screen edge, not the safe frame.
 func _paint_scrim(c: Control) -> void:
-	var left: float = -c.position.x
-	var top: float = -c.position.y
+	var k: float = hud_scale()
+	var left: float = -c.position.x / k
+	var top: float = -c.position.y / k
 	var steps: int = ceili(TOP_SCRIM_PX / float(SCRIM_STEP_PX))
 	for i: int in steps:
 		var t: float = (float(i) + 0.5) / float(steps)
 		var a: float = TOP_SCRIM_ALPHA * 0.6 * (1.0 - t) / (1.0 - SCRIM_HOLD_AT) if t >= SCRIM_HOLD_AT \
 			else lerpf(TOP_SCRIM_ALPHA, TOP_SCRIM_ALPHA * 0.6, t / SCRIM_HOLD_AT)
-		c.draw_rect(Rect2(left, top + float(i * SCRIM_STEP_PX), _root.size.x, float(SCRIM_STEP_PX)), Color(0.0, 0.0, 0.0, a))
+		c.draw_rect(Rect2(left, top + float(i * SCRIM_STEP_PX), _root.size.x / k, float(SCRIM_STEP_PX)), Color(0.0, 0.0, 0.0, a))
 
 
 ## Panel fill sheared like MSTheme.box(): a skewed rect keeps the rect batch.
-func _paint_skew_fill(c: CanvasItem, r: Rect2) -> void:
+func _paint_skew_fill(c: CanvasItem, r: Rect2, col: Color = MSTheme.PANEL_BG) -> void:
 	c.draw_set_transform_matrix(Transform2D(Vector2(1.0, 0.0), Vector2(PANEL_SKEW, 1.0), Vector2(-PANEL_SKEW * (r.position.y + r.size.y * 0.5), 0.0)))
-	c.draw_rect(r, MSTheme.PANEL_BG)
+	c.draw_rect(r, col)
 	c.draw_set_transform_matrix(Transform2D.IDENTITY)
 
 

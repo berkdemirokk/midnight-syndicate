@@ -8,26 +8,26 @@
   "name": "racing_nitro",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 290,
-    "draw_calls_min": 196,
+    "draw_calls": 267,
+    "draw_calls_min": 174,
     "driver": "vulkan",
-    "fps": 389.07,
-    "frame_ms_avg": 2.57,
-    "frame_ms_p95": 3.528,
-    "frame_ms_p99": 3.928,
+    "fps": 125.838,
+    "frame_ms_avg": 7.947,
+    "frame_ms_p95": 10.711,
+    "frame_ms_p99": 12.421,
     "frames": 60,
-    "objects": 14776,
+    "objects": 14730,
     "os": "Windows",
-    "primitives": 268519,
+    "primitives": 241449,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 543.559,
+    "video_mem_mb": 543.331,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_maslak/racing_nitro.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_maslak/racing_nitro.png",
   "preset": "high",
   "scenario": "race_maslak"
 }

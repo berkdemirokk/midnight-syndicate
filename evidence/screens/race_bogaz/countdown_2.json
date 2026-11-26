@@ -11,23 +11,23 @@
     "draw_calls": 328,
     "draw_calls_min": 235,
     "driver": "vulkan",
-    "fps": 460.289,
-    "frame_ms_avg": 2.173,
-    "frame_ms_p95": 3.223,
-    "frame_ms_p99": 4.481,
+    "fps": 166.79,
+    "frame_ms_avg": 5.996,
+    "frame_ms_p95": 7.609,
+    "frame_ms_p99": 18.756,
     "frames": 60,
-    "objects": 12783,
+    "objects": 12787,
     "os": "Windows",
-    "primitives": 255692,
+    "primitives": 255700,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 568.087,
+    "video_mem_mb": 567.853,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_bogaz/countdown_2.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_bogaz/countdown_2.png",
   "preset": "high",
   "scenario": "race_bogaz"
 }

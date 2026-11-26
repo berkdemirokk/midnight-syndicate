@@ -1,27 +1,29 @@
 class_name MainMenu
 extends Control
-## Title screen: logotype, RACE / GARAGE / SETTINGS / QUIT, animated neon backdrop and an optional 3D backdrop.
+## Title screen: wordmark, RACE / GARAGE / SETTINGS / QUIT over a live night-city backdrop (menu_backdrop shader),
+## and a career strip (stars, cash, rep). set_backdrop() can still swap in a real 3D scene behind the UI.
 ## Keyboard, gamepad and touch all reach the buttons through Godot's focus navigation.
 
 const EVENT_SELECT_SCENE: String = "res://ui/menus/event_select.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
-const NEON_SHADER: String = "res://ui/menus/neon_bg.gdshader"
-const LOGO_PX: int = 96
-const LOGO_SUB_PX: int = 40
-const TAGLINE_PX: int = 18
+const TAGLINE_PX: int = 20
 const VERSION_PX: int = 16
 const TOAST_PX: int = 22
-const LOGO_BAR_W: float = 360.0
-const LOGO_BAR_H: float = 6.0
-const LOGO_GAP_PX: float = 56.0
-const MENU_GAP_PX: float = 16.0
+const STAT_PX: int = 24
+const STAT_CAP_PX: int = 16
+const LOGO_GAP_PX: float = 36.0
+const MENU_GAP_PX: float = 14.0
 const EDGE_PX: float = 96.0
-const EDGE_Y_PX: float = 64.0
+const EDGE_Y_PX: float = 56.0
+const MENU_W: float = 460.0
 const TOAST_HOLD_S: float = 1.4
 const TOAST_FADE_S: float = 0.4
+const INTRO_S: float = 0.5
+const INTRO_STAGGER_S: float = 0.07
 
 var _holder: Control
+var _backdrop: MenuBackdrop
 var _race_btn: Button
 var _garage_btn: Button
 var _settings_btn: Button
@@ -30,47 +32,30 @@ var _tagline: Label
 var _version: Label
 var _toast: Label
 var _toast_tw: Tween = null
+var _stat_stars: Label
+var _stat_cash: Label
+var _stat_rep: Label
+var _stat_caps: Array[Label] = []
 var _text_nodes: Array = []  ## [node, i18n key] pairs refreshed on language change
-
-
-class SlashBar extends Control:
-	func _draw() -> void:
-		var h: float = size.y
-		var sk: float = h * MSTheme.SKEW_RATIO
-		draw_colored_polygon(PackedVector2Array([
-			Vector2(sk, 0.0), Vector2(size.x, 0.0), Vector2(size.x - sk, h), Vector2(0.0, h)]), MSTheme.MAGENTA)
 
 
 func _ready() -> void:
 	MusicPlayer.get_instance().play_menu()
 	theme = MSTheme.build()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var bg := ColorRect.new()
-	bg.color = MSTheme.BG
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(bg)
+	_backdrop = MenuBackdrop.new(0.72)
+	add_child(_backdrop)
 	_holder = Control.new()
-	_holder.name = "Backdrop"
+	_holder.name = "Backdrop3D"
 	_holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_holder)
-	add_child(_make_neon())
 	_build_foreground()
 	Settings.changed.connect(_on_settings_changed)
+	GameState.profile_changed.connect(_refresh_stats)
 	_refresh_text()
 	_race_btn.grab_focus()
-
-
-func _make_neon() -> ColorRect:
-	var neon := ColorRect.new()
-	neon.name = "NeonLines"
-	neon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	neon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var mat := ShaderMaterial.new()
-	mat.shader = load(NEON_SHADER) as Shader
-	neon.material = mat
-	return neon
+	_play_intro()
 
 
 func _build_foreground() -> void:
@@ -91,17 +76,11 @@ func _build_foreground() -> void:
 	col.add_theme_constant_override("separation", 0)
 	margin.add_child(col)
 
-	var logo := MSTheme.make_label("MIDNIGHT", "slant", LOGO_PX, MSTheme.TEXT, false)
-	logo.name = "LogoTop"
+	var logo := Logotype.new(1.0 if not MSTheme.phone else 0.95)
+	logo.name = "Logo"
 	col.add_child(logo)
-	var sub := MSTheme.make_label("SYNDICATE", "tracked", LOGO_SUB_PX, MSTheme.CYAN, false)
-	sub.name = "LogoBottom"
-	col.add_child(sub)
-	var bar := SlashBar.new()
-	bar.custom_minimum_size = Vector2(LOGO_BAR_W, LOGO_BAR_H)
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	col.add_child(bar)
 	_tagline = MSTheme.make_label("", "tracked", TAGLINE_PX, MSTheme.MUTED, false)
+	_tagline.name = "Tagline"
 	col.add_child(_tagline)
 	var gap := Control.new()
 	gap.custom_minimum_size = Vector2(0.0, LOGO_GAP_PX)
@@ -109,13 +88,34 @@ func _build_foreground() -> void:
 
 	var menu := VBoxContainer.new()
 	menu.name = "Menu"
-	menu.add_theme_constant_override("separation", int(MENU_GAP_PX))
+	menu.add_theme_constant_override("separation", int(MENU_GAP_PX * (1.4 if MSTheme.phone else 1.0)))
 	col.add_child(menu)
 	_race_btn = _menu_button(menu, "menu.race", _on_race)
+	_race_btn.theme_type_variation = &"PrimaryButton"
 	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
 	_settings_btn = _menu_button(menu, "menu.settings", _on_settings)
 	_quit_btn = _menu_button(menu, "menu.quit", _on_quit)
 	_quit_btn.visible = not (OS.has_feature("ios") or OS.has_feature("android"))
+
+	# Career strip, bottom right: stars, cash, rep on one backing plate.
+	var strip_margin := MarginContainer.new()
+	strip_margin.name = "CareerStrip"
+	strip_margin.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	strip_margin.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	strip_margin.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	strip_margin.offset_right = -(ins.z + EDGE_PX * 0.6)
+	strip_margin.offset_bottom = -(ins.w + EDGE_Y_PX * 0.8)
+	strip_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(strip_margin)
+	var plate := PanelContainer.new()
+	plate.add_theme_stylebox_override("panel", MSTheme.box(MSTheme.PLATE_BG, MSTheme.BORDER))
+	strip_margin.add_child(plate)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", MSTheme.GRID_PX * 4)
+	plate.add_child(row)
+	_stat_stars = _stat(row, MSTheme.AMBER, "results.reward_stars")
+	_stat_cash = _stat(row, MSTheme.AMBER, "results.reward_cash")
+	_stat_rep = _stat(row, MSTheme.CYAN, "results.reward_rep")
 
 	_version = MSTheme.make_label("", "tracked", VERSION_PX, MSTheme.MUTED, false)
 	_version.name = "Version"
@@ -123,7 +123,7 @@ func _build_foreground() -> void:
 	_version.anchor_right = 1.0
 	_version.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_version.offset_top = ins.y + EDGE_Y_PX * 0.5
-	_version.offset_right = -(ins.z + EDGE_PX * 0.5)
+	_version.offset_right = -(ins.z + EDGE_PX * 0.6)
 	_version.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_version)
 
@@ -138,9 +138,23 @@ func _build_foreground() -> void:
 	add_child(_toast)
 
 
+## One caption over one value, tinted.
+func _stat(parent: Container, ink: Color, cap_key: String) -> Label:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 0)
+	var cap: Label = MSTheme.make_label("", "tracked", MSTheme.px(STAT_CAP_PX), MSTheme.MUTED)
+	cap.set_meta("key", cap_key)
+	_stat_caps.append(cap)
+	var val: Label = MSTheme.make_label("", "digits", MSTheme.px(STAT_PX), ink)
+	box.add_child(cap)
+	box.add_child(val)
+	parent.add_child(box)
+	return val
+
+
 func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W, MSTheme.BUTTON_MIN_H)
+	b.custom_minimum_size = Vector2(MENU_W, MSTheme.button_h())
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.pressed.connect(func() -> void: UiSounds.click())
 	b.pressed.connect(handler)
@@ -149,12 +163,25 @@ func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 	return b
 
 
-## Replaces the backdrop with a 3D scene rendered through a SubViewport behind the UI.
+## The column slides in from the left, button by button (skipped when the tree is not running a real frame loop).
+func _play_intro() -> void:
+	var items: Array[Control] = [_race_btn, _garage_btn, _settings_btn, _quit_btn]
+	for i: int in items.size():
+		var b: Control = items[i]
+		b.modulate.a = 0.0
+		var tw: Tween = create_tween()
+		tw.tween_interval(INTRO_STAGGER_S * float(i))
+		tw.tween_property(b, "modulate:a", 1.0, INTRO_S).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+## Replaces the live backdrop with a 3D scene rendered through a SubViewport behind the UI.
 func set_backdrop(node: Node) -> void:
 	for c: Node in _holder.get_children():
 		c.queue_free()
 	if node == null:
+		_backdrop.visible = true
 		return
+	_backdrop.visible = false
 	if node.get_parent() != null:
 		node.get_parent().remove_child(node)
 	var container := SubViewportContainer.new()
@@ -174,6 +201,15 @@ func _refresh_text() -> void:
 		(n as Button).text = I18n.t(pair[1])
 	_tagline.text = I18n.t("menu.tagline")
 	_version.text = I18n.t("menu.version") % str(ProjectSettings.get_setting("application/config/version", "0.0.0"))
+	for cap: Label in _stat_caps:
+		cap.text = I18n.t(str(cap.get_meta("key")))
+	_refresh_stats()
+
+
+func _refresh_stats() -> void:
+	_stat_stars.text = "%d / %d" % [GameState.total_stars(), EventCatalog.count() * GameState.MAX_STARS]
+	_stat_cash.text = I18n.t("garage.money") % GameState.get_cash()
+	_stat_rep.text = RaceHUD.group_int(GameState.get_rep())
 
 
 func _on_settings_changed(section: String) -> void:

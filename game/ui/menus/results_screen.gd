@@ -13,13 +13,21 @@ signal replay_pressed
 signal next_pressed
 
 const RACE_SCENE: String = "res://race/race_scene.tscn"
-const STAR_R: float = 20.0
-const STAR_STEP: float = 52.0
+const STAR_R: float = 26.0
+const STAR_STEP: float = 66.0
 const COUNT_UP_S: float = 1.2
+const HERO_PX: int = 88
+const HERO_SUFFIX_PX: int = 32
+const STAR_POP_S: float = 0.55
+const STAR_DELAY_S: float = 0.45  ## first star pops this long after the count-up starts, then one per step
+const STAR_STEP_S: float = 0.38
+const BURST_GROW: float = 1.9
+const ROW_MAX_H: float = 92.0
+const PANEL_TEXT_MAX_K: float = 1.25  ## the reward panel is narrow, so its type grows less than the rest on a phone
 const TITLE_PX: int = 40
 const SUB_PX: int = 18
 const ROW_PX: int = 26
-const REWARD_PX: int = 56
+const REWARD_PX: int = 48
 const REWARD_LABEL_PX: int = 18
 const COL_POS_W: float = 96.0
 const COL_TIME_W: float = 200.0
@@ -27,7 +35,7 @@ const COL_GAP_W: float = 160.0
 const COL_BEST_W: float = 200.0
 const ROW_MIN_H: float = 56.0
 const TABLE_W: float = 960.0
-const REWARD_W: float = 320.0
+const REWARD_W: float = 340.0
 const EDGE_PX: float = 96.0
 const EDGE_Y_PX: float = 56.0
 const BUTTON_GAP_PX: float = 16.0
@@ -57,6 +65,11 @@ var _row_texts: Array = []  ## per result row: Array[HudText] (pos, name, time, 
 var _row_player: Array[bool] = []
 var _cash_caption: HudText
 var _rep_caption: HudText
+var _hero_pos: HudText
+var _hero_suffix: HudText
+var _primary: Button = null
+var _star_pop: Array[float] = [0.0, 0.0, 0.0]  ## 0..1 pop progress per star
+var _star_tw: Tween = null
 var _cash_val: HudText
 var _rep_val: HudText
 var _all_texts: Array[HudText] = []  ## sorted by pixel size, the order HudText.paint needs
@@ -77,6 +90,7 @@ var _text_nodes: Array = []  ## [node, i18n key]
 func _ready() -> void:
 	theme = MSTheme.build()
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(MenuBackdrop.new(0.0, 0.5))
 	_board = Board.new()
 	_board.painter = _paint_board
 	_board.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -107,12 +121,14 @@ func _ready() -> void:
 	col.add_child(body)
 	_table_slot = _slot(body, Vector2(TABLE_W, 0.0))
 	_table_slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_reward_slot = _slot(body, Vector2(REWARD_W, 0.0))
+	_reward_slot = _slot(body, Vector2(REWARD_W * (1.0 + (MSTheme.k() - 1.0) * 0.6), 0.0))
 
-	_cash_caption = _text("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
-	_cash_val = _text("digits", REWARD_PX, MSTheme.AMBER)
-	_rep_caption = _text("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
-	_rep_val = _text("digits", REWARD_PX, MSTheme.CYAN)
+	_hero_pos = _ptext("digits", HERO_PX, MSTheme.TEXT)
+	_hero_suffix = _ptext("digits", HERO_SUFFIX_PX, MSTheme.CYAN)
+	_cash_caption = _ptext("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
+	_cash_val = _ptext("digits", REWARD_PX, MSTheme.AMBER)
+	_rep_caption = _ptext("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
+	_rep_val = _ptext("digits", REWARD_PX, MSTheme.CYAN)
 	_cash_val.set_text("0")
 	_rep_val.set_text("0")
 	for i: int in 5:
@@ -152,14 +168,21 @@ func _slot(parent: Container, min_size: Vector2) -> Control:
 
 
 func _text(kind: String, px: int, col: Color) -> HudText:
-	var t := HudText.new(kind, px, col, false)
+	var t := HudText.new(kind, MSTheme.px(px), col, false)
+	_all_texts.append(t)
+	return t
+
+
+## Text for the narrow reward panel (grows less than the table text on a phone).
+func _ptext(kind: String, px: int, col: Color) -> HudText:
+	var t := HudText.new(kind, roundi(px * minf(MSTheme.k(), PANEL_TEXT_MAX_K)), col, false)
 	_all_texts.append(t)
 	return t
 
 
 func _button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5, MSTheme.BUTTON_MIN_H)
+	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5 * (1.0 + (MSTheme.k() - 1.0) * 0.8), MSTheme.button_h())
 	b.pressed.connect(handler)
 	# The board paints the background; the button keeps only its label (same font, colours and size from the theme).
 	var none := StyleBoxEmpty.new()
@@ -259,7 +282,19 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 	var next: String = EventCatalog.next_id(event_id)
 	_next_id = next if not next.is_empty() and GameState.is_event_unlocked(next) else ""
 	_next_btn.visible = not _next_id.is_empty()
-	(_next_btn if _next_btn.visible else _retry_btn).grab_focus()
+	_primary = _next_btn if _next_btn.visible else _retry_btn
+	for b: Button in _buttons:
+		b.theme_type_variation = &"PrimaryButton" if b == _primary else &""
+	_primary.grab_focus()
+	var player_pos: int = 0
+	for r: Dictionary in results:
+		if bool(r.get("is_player", false)):
+			player_pos = int(r.get("position", 0))
+	_hero_pos.set_text(str(player_pos) if player_pos > 0 else "-")
+	_hero_pos.color = MSTheme.AMBER if player_pos == 1 else MSTheme.TEXT
+	_hero_suffix.set_text(I18n.ordinal(player_pos) if player_pos > 0 else "")
+	_hero_suffix.color = MSTheme.AMBER if player_pos == 1 else MSTheme.CYAN
+	_pop_stars()
 	_board.queue_redraw()
 
 
@@ -293,6 +328,37 @@ func _count_rewards(cash: int, rep: int) -> void:
 	_count_tw = create_tween().set_parallel(true)
 	_count_tw.tween_method(_set_cash, 0.0, float(cash), COUNT_UP_S)
 	_count_tw.tween_method(_set_rep, 0.0, float(rep), COUNT_UP_S)
+
+
+## Earned stars pop in one after another (overshoot scale plus an expanding ring); unearned ones stay dim.
+func _pop_stars() -> void:
+	if _star_tw != null and _star_tw.is_valid():
+		_star_tw.kill()
+	_star_pop = [0.0, 0.0, 0.0]
+	if not _show_stars or _stars <= 0:
+		return
+	_star_tw = create_tween().set_parallel(true)
+	for i: int in mini(_stars, GameState.MAX_STARS):
+		_star_tw.tween_method(_set_star_pop.bind(i), 0.0, 1.0, STAR_POP_S).set_delay(STAR_DELAY_S + STAR_STEP_S * float(i))
+
+
+func _set_star_pop(v: float, index: int) -> void:
+	_star_pop[index] = v
+	_board.queue_redraw()
+
+
+## Star pop scale: 0 -> about 1.1 -> 1 (back ease out), used by the painter and the tests.
+static func pop_scale(t: float) -> float:
+	if t <= 0.0:
+		return 0.0
+	if t >= 1.0:
+		return 1.0
+	var u: float = t - 1.0
+	return 1.0 + 2.70158 * u * u * u + 1.70158 * u * u
+
+
+func get_star_pop() -> Array[float]:
+	return _star_pop.duplicate()
 
 
 func _set_cash(v: float) -> void:
@@ -362,9 +428,10 @@ func _paint_board(c: Control) -> void:
 	y += head_h
 	var highlight: Rect2 = Rect2()
 	var has_highlight: bool = false
+	var row_slot: float = (table.end.y - MSTheme.BUTTON_PAD_Y - y) / maxf(float(_row_texts.size()), 1.0)
 	for ri: int in _row_texts.size():
 		var cells: Array = _row_texts[ri]
-		var row_h: float = maxf(ROW_MIN_H, (cells[0] as HudText).height() + ROW_PAD_Y * 2.0)
+		var row_h: float = clampf(row_slot, maxf(ROW_MIN_H, (cells[0] as HudText).height() + ROW_PAD_Y * 2.0), ROW_MAX_H)
 		for i: int in cells.size():
 			var t: HudText = cells[i]
 			t.pos = Vector2(_aligned_x(col_x[i], col_w[i], t.width(), i >= 2), y + (row_h - t.height()) * 0.5)
@@ -374,8 +441,11 @@ func _paint_board(c: Control) -> void:
 		y += row_h
 
 	# Rewards panel.
-	var rx: float = rewards.position.x + MSTheme.BUTTON_PAD_X
+	var rx: float = rewards.position.x + MSTheme.BUTTON_PAD_X * 1.5
 	var ry: float = rewards.position.y + MSTheme.BUTTON_PAD_Y
+	_hero_pos.pos = Vector2(rx, ry)
+	_hero_suffix.pos = Vector2(rx + _hero_pos.width() + float(MSTheme.GRID_PX), ry + (_hero_pos.height() - _hero_suffix.height()) * 0.28)
+	ry += _hero_pos.height() + sep
 	_cash_caption.pos = Vector2(rx, ry)
 	ry += _cash_caption.height() + sep
 	_cash_val.pos = Vector2(rx, ry)
@@ -383,16 +453,26 @@ func _paint_board(c: Control) -> void:
 	_rep_caption.pos = Vector2(rx, ry)
 	ry += _rep_caption.height() + sep
 	_rep_val.pos = Vector2(rx, ry)
-	var star_y: float = ry + _rep_val.height() + sep + STAR_R
+	var star_r: float = STAR_R * minf(MSTheme.k(), PANEL_TEXT_MAX_K)
+	var star_step: float = STAR_STEP * minf(MSTheme.k(), PANEL_TEXT_MAX_K)
+	var star_y: float = rewards.end.y - MSTheme.BUTTON_PAD_Y * 2.0 - star_r * 1.5
+	var star_right: float = rx + star_step * 2.0 + star_r * 2.0
 
 	# Pass 1: rects.
-	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.96))
-	_fill_skewed(c, table, MSTheme.PANEL_BG)
-	_fill_skewed(c, rewards, MSTheme.PANEL_BG)
+	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.84))
+	_fill_skewed(c, table, MSTheme.PLATE_BG)
+	_fill_skewed(c, rewards, MSTheme.PLATE_BG)
 	if has_highlight:
 		_fill_skewed(c, highlight, MSTheme.tint(MSTheme.CYAN, 0.14))
 	if _show_stars:
-		EventSelect.draw_stars(c, rx + STAR_STEP * 2.0 + STAR_R * 2.0, star_y, STAR_R, _stars, STAR_STEP)
+		for i: int in GameState.MAX_STARS:
+			var cx: float = star_right - star_r - float(GameState.MAX_STARS - 1 - i) * star_step
+			if i < _stars:
+				var sc: float = pop_scale(_star_pop[i])
+				if sc > 0.0:
+					c.draw_colored_polygon(EventSelect.star_points(Vector2(cx, star_y), star_r * sc), MSTheme.AMBER)
+			else:
+				c.draw_colored_polygon(EventSelect.star_points(Vector2(cx, star_y), star_r), EventSelect.STAR_OFF)
 	for b: Button in _buttons:
 		if b.visible:
 			_fill_skewed(c, _local_rect(b), _button_fill(b))
@@ -401,6 +481,12 @@ func _paint_board(c: Control) -> void:
 	_outline_skewed(c, rewards, MSTheme.BORDER, 1.0)
 	if has_highlight:
 		_outline_skewed(c, highlight, MSTheme.CYAN, 1.0)
+	if _show_stars:
+		for i: int in mini(_stars, GameState.MAX_STARS):
+			var t: float = _star_pop[i]
+			if t > 0.0 and t < 1.0:
+				var cx2: float = star_right - star_r - float(GameState.MAX_STARS - 1 - i) * star_step
+				c.draw_arc(Vector2(cx2, star_y), star_r * (1.0 + t * BURST_GROW), 0.0, TAU, 40, MSTheme.tint(MSTheme.AMBER, 1.0 - t), 3.0, true)
 	for b: Button in _buttons:
 		if b.visible:
 			_outline_skewed(c, _local_rect(b), _button_edge(b), 1.0)
@@ -415,6 +501,9 @@ static func _aligned_x(x: float, w: float, text_w: float, right: bool) -> float:
 
 
 func _button_fill(b: Button) -> Color:
+	if b == _primary and not b.disabled:
+		var hot: bool = b.get_draw_mode() in [BaseButton.DRAW_HOVER, BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED]
+		return Color(0.45, 0.95, 1.0, 1.0) if hot else MSTheme.PRIMARY_FILL
 	match b.get_draw_mode():
 		BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED:
 			return MSTheme.tint(MSTheme.CYAN, 0.32)

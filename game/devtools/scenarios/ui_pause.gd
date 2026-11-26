@@ -18,7 +18,12 @@ func run() -> void:
 	pause.pause()
 	await cap.wait_frames(SETTLE_FRAMES)
 	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
+	pause.resume()
+	MSTheme.set_phone(true)
 	cap.set_size(PHONE_W, PHONE_H)
+	pause = await cap.load_scene(SCENE) as PauseMenu
+	pause.pause()
 	await cap.wait_frames(SETTLE_FRAMES)
 	await cap.shot("iphone_%dx%d" % [PHONE_W, PHONE_H])
 	pause.resume()
+	MSTheme.set_phone(false)

@@ -8,26 +8,26 @@
   "name": "drift",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 266,
-    "draw_calls_min": 145,
+    "draw_calls": 290,
+    "draw_calls_min": 146,
     "driver": "vulkan",
-    "fps": 314.962,
-    "frame_ms_avg": 3.175,
-    "frame_ms_p95": 3.863,
-    "frame_ms_p99": 5.064,
+    "fps": 97.477,
+    "frame_ms_avg": 10.259,
+    "frame_ms_p95": 13.749,
+    "frame_ms_p99": 22.243,
     "frames": 60,
-    "objects": 14325,
+    "objects": 14301,
     "os": "Windows",
-    "primitives": 266433,
+    "primitives": 271395,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 543.574,
+    "video_mem_mb": 543.344,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/race_maslak/drift.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_maslak/drift.png",
   "preset": "high",
   "scenario": "race_maslak"
 }

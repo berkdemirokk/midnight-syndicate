@@ -22,6 +22,20 @@ func run() -> void:
 	cap.set_size(DESKTOP_W, DESKTOP_H)
 	var mock_race = MockRace
 	tree.root.add_child(mock_race.make_backdrop())
+	GameState.open_profile(PROFILE)
+	await _show()
+	await cap.wait_frames(COUNT_FRAMES)
+	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
+	MSTheme.set_phone(true)
+	cap.set_size(PHONE_W, PHONE_H)
+	await _show()
+	await cap.wait_frames(COUNT_FRAMES)
+	await cap.shot("iphone_%dx%d" % [PHONE_W, PHONE_H])
+	MSTheme.set_phone(false)
+
+
+## Builds the screen with six drivers (the player second) on a throwaway career profile: event 1 just finished 2nd.
+func _show() -> void:
 	var screen: ResultsScreen = await cap.load_scene(SCENE) as ResultsScreen
 	var results: Array[Dictionary] = []
 	for i: int in NAMES.size():
@@ -30,14 +44,7 @@ func run() -> void:
 			"total_time": BASE_TIME_S + float(i) * GAP_STEP_S,
 			"best_lap": BEST_BASE_S + float(i) * BEST_STEP_S,
 			"is_player": i + 1 == PLAYER_POS})
-	# Career mock: event 1 just finished 2nd (2 stars) on a throwaway profile, so NEXT EVENT shows.
-	GameState.open_profile(PROFILE)
 	GameState.reset_profile()
 	var rewards: Dictionary = GameState.record_result("wharf_sprint", BASE_TIME_S, PLAYER_POS)
 	screen.set_event_id("wharf_sprint")
 	screen.show_results(results, rewards)
-	await cap.wait_frames(COUNT_FRAMES)
-	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
-	cap.set_size(PHONE_W, PHONE_H)
-	await cap.wait_frames(SETTLE_FRAMES)
-	await cap.shot("iphone_%dx%d" % [PHONE_W, PHONE_H])

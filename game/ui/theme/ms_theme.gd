@@ -33,9 +33,37 @@ const SIZE_SMALL: int = 18
 const SIZE_HEAD: int = 40
 const SAFE_MARGIN_PX: float = 24.0
 
+## Touch phones get larger type and 44 pt touch targets. At the 1080 px base height an iPhone landscape screen is
+## about 0.36 pt per px, so 44 pt is 124 px and 11 pt text is 30 px. Desktop keeps the base sizes (boost 1.0).
+const PHONE_BOOST: float = 1.5
+const PHONE_BUTTON_H: float = 124.0  ## 44.6 pt on a 393 pt tall iPhone screen
+const PRIMARY_FILL: Color = Color(0.098, 0.902, 1.0, 0.94)
+const PLATE_BG: Color = Color(0.027, 0.039, 0.071, 0.66)  ## backing plate under HUD clusters, readable on bright signage
+
+static var phone: bool = OS.has_feature("mobile")
 static var _theme: Theme = null
 static var _fonts: Dictionary = {}
 static var _textures: Dictionary = {}
+
+
+## Switches phone layout on or off (tests and captures use it to preview the iPhone build on desktop).
+static func set_phone(on: bool) -> void:
+	if phone != on:
+		phone = on
+		_theme = null
+
+
+static func k() -> float:
+	return PHONE_BOOST if phone else 1.0
+
+
+## Pixel size scaled for the current device class.
+static func px(v: float) -> int:
+	return roundi(v * k())
+
+
+static func button_h() -> float:
+	return PHONE_BUTTON_H if phone else BUTTON_MIN_H
 
 
 static func tint(c: Color, a: float) -> Color:
@@ -71,10 +99,17 @@ static func box(bg: Color, border: Color, border_px: int = 1) -> StyleBoxFlat:
 	sb.border_color = border
 	sb.set_border_width_all(border_px)
 	sb.skew = Vector2(-SKEW_RATIO * 0.5, 0.0)
-	sb.content_margin_left = BUTTON_PAD_X
-	sb.content_margin_right = BUTTON_PAD_X
+	sb.content_margin_left = BUTTON_PAD_X * (1.0 + (k() - 1.0) * 0.5)
+	sb.content_margin_right = sb.content_margin_left
 	sb.content_margin_top = BUTTON_PAD_Y
 	sb.content_margin_bottom = BUTTON_PAD_Y
+	return sb
+
+
+## Unslanted card (settings, wide tables inside scroll areas, where a slanted edge would be clipped).
+static func card(bg: Color, border: Color, border_px: int = 1) -> StyleBoxFlat:
+	var sb: StyleBoxFlat = box(bg, border, border_px)
+	sb.skew = Vector2.ZERO
 	return sb
 
 
@@ -139,14 +174,16 @@ static func build() -> Theme:
 		return _theme
 	var th := Theme.new()
 	th.default_font = font("body")
-	th.default_font_size = SIZE_BODY
+	th.default_font_size = px(SIZE_BODY)
 	th.set_color("font_color", "Label", TEXT)
 	th.set_color("font_outline_color", "Label", OUTLINE)
 	th.set_constant("outline_size", "Label", 0)
 
 	var b_normal: StyleBoxFlat = box(PANEL_BG, BORDER)
 	var b_hover: StyleBoxFlat = box(tint(CYAN, 0.16), CYAN)
+	b_hover.border_width_left = 6
 	var b_pressed: StyleBoxFlat = box(tint(CYAN, 0.32), CYAN)
+	b_pressed.border_width_left = 6
 	var b_disabled: StyleBoxFlat = box(DISABLED_BG, tint(MUTED, 0.3))
 	var b_focus := StyleBoxFlat.new()
 	b_focus.draw_center = false
@@ -164,7 +201,19 @@ static func build() -> Theme:
 	th.set_color("font_focus_color", "Button", TEXT)
 	th.set_color("font_disabled_color", "Button", MUTED)
 	th.set_font("font", "Button", font("bold"))
-	th.set_font_size("font_size", "Button", SIZE_BUTTON)
+	th.set_font_size("font_size", "Button", px(SIZE_BUTTON))
+
+	# Primary call to action: solid cyan, dark label. One per screen (RACE, START, NEXT EVENT).
+	th.set_type_variation("PrimaryButton", "Button")
+	th.set_stylebox("normal", "PrimaryButton", box(PRIMARY_FILL, CYAN))
+	th.set_stylebox("hover", "PrimaryButton", box(Color(0.45, 0.95, 1.0, 1.0), TEXT))
+	th.set_stylebox("pressed", "PrimaryButton", box(Color(0.06, 0.62, 0.72, 1.0), CYAN))
+	th.set_stylebox("disabled", "PrimaryButton", b_disabled)
+	th.set_color("font_color", "PrimaryButton", BG)
+	th.set_color("font_hover_color", "PrimaryButton", BG)
+	th.set_color("font_pressed_color", "PrimaryButton", TEXT)
+	th.set_color("font_focus_color", "PrimaryButton", BG)
+	th.set_color("font_disabled_color", "PrimaryButton", MUTED)
 
 	th.set_stylebox("panel", "PanelContainer", box(PANEL_BG, BORDER))
 	th.set_stylebox("panel", "Panel", box(PANEL_BG, BORDER))
@@ -178,41 +227,43 @@ static func build() -> Theme:
 	th.set_color("font_hover_color", "OptionButton", CYAN)
 	th.set_color("font_focus_color", "OptionButton", TEXT)
 	th.set_font("font", "OptionButton", font("bold"))
-	th.set_font_size("font_size", "OptionButton", SIZE_BUTTON)
+	th.set_font_size("font_size", "OptionButton", px(SIZE_BUTTON))
 	th.set_stylebox("panel", "PopupMenu", box(BG, CYAN))
 	th.set_stylebox("hover", "PopupMenu", b_hover)
 	th.set_color("font_color", "PopupMenu", TEXT)
 	th.set_color("font_hover_color", "PopupMenu", CYAN)
 	th.set_font("font", "PopupMenu", font("body"))
-	th.set_font_size("font_size", "PopupMenu", SIZE_BODY)
+	th.set_font_size("font_size", "PopupMenu", px(SIZE_BODY))
 
 	var slider_bg: StyleBoxFlat = box(Color(1, 1, 1, 0.08), tint(MUTED, 0.0), 0)
-	slider_bg.content_margin_top = 3.0
-	slider_bg.content_margin_bottom = 3.0
+	slider_bg.content_margin_top = 5.0
+	slider_bg.content_margin_bottom = 5.0
 	slider_bg.content_margin_left = 0.0
 	slider_bg.content_margin_right = 0.0
 	var slider_fill: StyleBoxFlat = box(tint(CYAN, 0.9), tint(CYAN, 0.0), 0)
-	slider_fill.content_margin_top = 3.0
-	slider_fill.content_margin_bottom = 3.0
+	slider_fill.content_margin_top = 5.0
+	slider_fill.content_margin_bottom = 5.0
 	slider_fill.content_margin_left = 0.0
 	slider_fill.content_margin_right = 0.0
 	th.set_stylebox("slider", "HSlider", slider_bg)
 	th.set_stylebox("grabber_area", "HSlider", slider_fill)
 	th.set_stylebox("grabber_area_highlight", "HSlider", slider_fill)
-	th.set_icon("grabber", "HSlider", disc_texture(ICON_PX, CYAN))
-	th.set_icon("grabber_highlight", "HSlider", disc_texture(ICON_PX, TEXT))
+	th.set_icon("grabber", "HSlider", disc_texture(px(ICON_PX + 8), CYAN))
+	th.set_icon("grabber_highlight", "HSlider", disc_texture(px(ICON_PX + 8), TEXT))
 	th.set_constant("grabber_offset", "HSlider", 0)
 
-	th.set_icon("checked", "CheckButton", check_texture(CHECK_PX, true))
-	th.set_icon("unchecked", "CheckButton", check_texture(CHECK_PX, false))
-	th.set_icon("checked", "CheckBox", check_texture(CHECK_PX, true))
-	th.set_icon("unchecked", "CheckBox", check_texture(CHECK_PX, false))
+	th.set_icon("checked", "CheckButton", check_texture(px(CHECK_PX + 8), true))
+	th.set_icon("unchecked", "CheckButton", check_texture(px(CHECK_PX + 8), false))
+	th.set_icon("checked", "CheckBox", check_texture(px(CHECK_PX + 8), true))
+	th.set_icon("unchecked", "CheckBox", check_texture(px(CHECK_PX + 8), false))
 	th.set_color("font_color", "CheckButton", TEXT)
 	th.set_color("font_hover_color", "CheckButton", CYAN)
 	th.set_color("font_focus_color", "CheckButton", TEXT)
 	th.set_font("font", "CheckButton", font("bold"))
-	th.set_font_size("font_size", "CheckButton", SIZE_BUTTON)
+	th.set_font_size("font_size", "CheckButton", px(SIZE_BUTTON))
 	var none: StyleBoxFlat = box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0)
+	none.content_margin_left = 0.0
+	none.content_margin_right = 0.0
 	for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 		th.set_stylebox(state, "CheckButton", none)
 	th.set_stylebox("focus", "CheckButton", b_focus)
