@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "pack_city",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 434,
+    "draw_calls_min": 244,
+    "driver": "vulkan",
+    "fps": 121.224,
+    "frame_ms_avg": 8.249,
+    "frame_ms_p95": 10.009,
+    "frame_ms_p99": 15.502,
+    "frames": 60,
+    "objects": 13541,
+    "os": "Windows",
+    "primitives": 458024,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 601.006,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-8/evidence/screens/race_kestrel/pack_city.png",
+  "preset": "high",
+  "scenario": "race_kestrel"
+}

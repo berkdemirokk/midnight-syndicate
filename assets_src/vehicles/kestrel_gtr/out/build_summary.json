@@ -1,18 +1,18 @@
 {
   "tris": {
-    "lod0": 83665,
-    "lod1": 25788,
+    "lod0": 82603,
+    "lod1": 25795,
     "lod2": 6799
   },
   "tris_by_object": {
     "0": {
-      "body": 29966,
+      "body": 30210,
       "glass": 3252,
-      "underbody": 5168,
+      "underbody": 4748,
       "trim": 1936,
-      "lights_front": 640,
-      "lights_rear": 1200,
-      "interior": 3091,
+      "lights_front": 840,
+      "lights_rear": 108,
+      "interior": 3097,
       "exhaust": 896,
       "plate_rear": 60,
       "wheel_FL": 7148,
@@ -25,13 +25,13 @@
       "brake_RR": 2120
     },
     "1": {
-      "body": 29966,
+      "body": 30210,
       "glass": 3252,
-      "underbody": 5168,
+      "underbody": 4748,
       "trim": 1936,
-      "lights_front": 640,
-      "lights_rear": 1200,
-      "interior": 3091,
+      "lights_front": 840,
+      "lights_rear": 108,
+      "interior": 3097,
       "exhaust": 896,
       "plate_rear": 60,
       "wheel_FL": 7148,
@@ -44,12 +44,12 @@
       "brake_RR": 2120
     },
     "2": {
-      "body": 29966,
+      "body": 30210,
       "glass": 3252,
-      "underbody": 5168,
+      "underbody": 4748,
       "trim": 1936,
-      "lights_front": 640,
-      "lights_rear": 1200,
+      "lights_front": 840,
+      "lights_rear": 108,
       "exhaust": 896,
       "plate_rear": 60,
       "wheel_FL": 7148,
@@ -59,14 +59,14 @@
     }
   },
   "glb": {
-    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-3\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod0.glb",
-    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-3\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod1.glb",
-    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-3\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod2.glb"
+    "0": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-8\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod0.glb",
+    "1": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-8\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod1.glb",
+    "2": "C:\\Users\\berk\\car race\\.claude\\worktrees\\wf_2812458e-b03-8\\assets_src\\vehicles\\kestrel_gtr\\out\\kestrel_gtr_lod2.glb"
   },
   "glb_bytes": {
-    "0": 7197416,
-    "1": 4739960,
-    "2": 3629084
+    "0": 6458128,
+    "1": 4013728,
+    "2": 2905016
   },
   "textures": {
     "paint_flake_normal": [

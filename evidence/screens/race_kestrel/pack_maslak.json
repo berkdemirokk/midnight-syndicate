@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "pack_maslak",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 370,
+    "draw_calls_min": 213,
+    "driver": "vulkan",
+    "fps": 130.408,
+    "frame_ms_avg": 7.668,
+    "frame_ms_p95": 10.819,
+    "frame_ms_p99": 12.878,
+    "frames": 60,
+    "objects": 14711,
+    "os": "Windows",
+    "primitives": 397701,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 580.467,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-8/evidence/screens/race_kestrel/pack_maslak.png",
+  "preset": "high",
+  "scenario": "race_kestrel"
+}

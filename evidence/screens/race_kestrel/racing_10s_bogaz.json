@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "racing_10s_bogaz",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 351,
+    "draw_calls_min": 238,
+    "driver": "vulkan",
+    "fps": 244.78,
+    "frame_ms_avg": 4.085,
+    "frame_ms_p95": 5.905,
+    "frame_ms_p99": 6.455,
+    "frames": 60,
+    "objects": 14527,
+    "os": "Windows",
+    "primitives": 303826,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 605.231,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-8/evidence/screens/race_kestrel/racing_10s_bogaz.png",
+  "preset": "high",
+  "scenario": "race_kestrel"
+}

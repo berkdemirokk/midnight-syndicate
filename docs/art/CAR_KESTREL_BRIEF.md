@@ -9,16 +9,32 @@ textures, plates). Fictional maker **Noctra**, model **Kestrel GT-R**.
   cab-rearward greenhouse, fastback roof into a short high tail, big rear diffuser.
 - Reads as a heavy, fast, planted GT in a 64 px silhouette: the cabin sits over the rear axle,
   roughly 40% of the length is bonnet.
-- Signature (ours): wide shallow mouth with horizontal slats under a pair of slim pod head
-  lamps, a carbon bonnet louvre, front fender gills behind the front wheels, a "double bubble"
-  roof, FOUR round tail lamps (two per side, ring with a dark core) on a dark lamp panel, a
-  ducktail lip, a deep diffuser with seven strakes and quad centre-split exhaust tips,
-  10-spoke turbine wheels with a single centre-lock nut.
+- Signature (ours): wide shallow mouth with horizontal slats under a pair of slim wrap-round pod
+  head lamps (lit cells on a dark housing), a carbon bonnet louvre, front fender gills behind the
+  front wheels, a painted fastback roof, a full-width tail light signature of THREE STACKED
+  HORIZONTAL BLADES per side that join across the centre above the plate, a ducktail lip, a deep
+  diffuser with seven strakes and quad centre-split exhaust tips, 10-spoke turbine wheels with a
+  single centre-lock nut.
+
+## Originality: what keeps it away from real cars
+Review round 2 flagged the first pass (quad round tail lamps in a black panel, ducktail, slatted
+nose, long-bonnet fastback) as too close to the C4/C5-era American front-engine sports coupes.
+Changes, all kept in the final design:
+- Tail lamps: no round lamps at all. Stacked horizontal light blades of different lengths with a
+  centre link, a signature none of those cars has.
+- Roof and glass: the greenhouse is body paint with a gloss black A-pillar only (those cars have
+  a glass or black targa panel); the side glass is one continuous leaning pane.
+- Nose and head lamps: slim wrap-round pods with cells under a dark housing, not pop-up or round
+  lamps; wide slatted mouth with a flat splitter.
+- Flank: a deep door scallop, tucked sill and a wider rear haunch (the doors are narrower than the
+  fenders by 5 cm each side), no side coves.
+- Wheels, text and badges are our own (`KESTREL GT-R`, no marque badge).
 
 ## Hard dimensions (metres, tolerance +-3%)
 | item | value |
 |---|---|
-| overall length | 4.70 |
+| body length (nose cap to tail cap, no splitter or lip) | 4.70 |
+| overall length (with splitter and ducktail lip) | 4.80 (measured 4.80 on the shipped mesh) |
 | overall width (body, no mirrors) | 1.98 |
 | overall height | 1.28 |
 | wheelbase | 2.75 |
@@ -56,7 +72,7 @@ LOD0 at most 20 draw objects and 15 materials.
 2. Round arches concentric with the wheels, 35 to 55 mm tyre gap, arch lip, haunches wider
    than the cabin; the front fenders stand proud of the bonnet (power line).
 3. Greenhouse narrower than the body, tumblehome, raked A-pillar, fastback rear glass in one
-   piece, roof panel in carbon.
+   piece, roof panel in body paint.
 4. Panel gaps as 4 to 6 mm grooves: bonnet, doors, boot lid.
 5. Wheels: concave 10-spoke rim with barrel, centre-lock nut, ventilated disc and caliper.
 6. Nothing floats or intersects, symmetric left/right, no box shortcuts for the main forms.

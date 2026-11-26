@@ -139,7 +139,7 @@ def build_body_and_details(mats_extra):
     mats = B.make_materials()
     mats.update(D.extra_materials())
     mats["M_Interior"].node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = \
-        B._srgb_to_lin(B._lin((0x4A, 0x4E, 0x56)))
+        B._srgb_to_lin(B._lin((0x2A, 0x2D, 0x32)))
     # rim, brake and carbon materials
     m, b = B._principled("M_Rim", B._lin((0x50, 0x55, 0x5E)), 1.0, 0.28)
     mats["M_Rim"] = m
@@ -162,7 +162,8 @@ def build_body_and_details(mats_extra):
     D.pocket(body, D.p_tail_low, 0.035, "diffuser recess")
     D.pocket(body, D.p_tail_band, 0.008, "lamp surround")
     D.body_edit(body, D.sill_and_caps)
-    for ob in (body, glass, underbody):
+    B.finish_shading(body, weighted=False)  # custom smoothed normals are set after triangulation (main)
+    for ob in (glass, underbody):
         B.finish_shading(ob)
     glass.data.materials.clear()
     glass.data.materials.append(mats["M_Glass"])
@@ -197,7 +198,8 @@ def textures_and_uvs(objs, mats):
     box_uv(objs["trim"], 0.024)
     box_uv(objs["lights_front"], 0.05)
     plate_uv(objs["plate_rear"])
-    _principled_tex(mats["M_Paint"], p["paint_flake_normal"], None, True, normal_strength=0.12)
+    # No flake normal map on the paint: the box-projected tangents flip at every projection seam and the
+    # clearcoat turned those seams into thin green/orange contour lines in the engine (reviewer, round 2).
     _principled_tex(mats["M_Carbon"], p["carbon_base"], "Base Color", False)
     _principled_tex(mats["M_Carbon"], p["carbon_normal"], None, True, normal_strength=0.6,
                     loc=(-600, -100))
@@ -286,6 +288,8 @@ def main():
         bmesh.ops.triangulate(bm, faces=list(bm.faces))
         bm.to_mesh(ob.data)
         bm.free()
+    B.smooth_normals(objs["body"])
+    B.analytic_normals(objs["body"])
     tris0, total0 = build_lod0_check(objs)
     # the scene floor and rig materials are not part of the car: keep only car materials used
     for n in ("M_Clay",):

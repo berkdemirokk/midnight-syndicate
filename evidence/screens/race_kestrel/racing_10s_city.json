@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "racing_10s_city",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 433,
+    "draw_calls_min": 249,
+    "driver": "vulkan",
+    "fps": 120.922,
+    "frame_ms_avg": 8.27,
+    "frame_ms_p95": 11.515,
+    "frame_ms_p99": 17.839,
+    "frames": 60,
+    "objects": 13666,
+    "os": "Windows",
+    "primitives": 472292,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 601.006,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-8/evidence/screens/race_kestrel/racing_10s_city.png",
+  "preset": "high",
+  "scenario": "race_kestrel"
+}

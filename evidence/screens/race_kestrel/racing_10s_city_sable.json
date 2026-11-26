@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "racing_10s_city_sable",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 398,
+    "draw_calls_min": 243,
+    "driver": "vulkan",
+    "fps": 100.309,
+    "frame_ms_avg": 9.969,
+    "frame_ms_p95": 12.903,
+    "frame_ms_p99": 18.31,
+    "frames": 60,
+    "objects": 13984,
+    "os": "Windows",
+    "primitives": 399783,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 564.056,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-8/evidence/screens/race_kestrel/racing_10s_city_sable.png",
+  "preset": "high",
+  "scenario": "race_kestrel"
+}

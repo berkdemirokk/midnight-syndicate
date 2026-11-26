@@ -3,21 +3,21 @@
   "blender_version": "5.3.0",
   "engine_used": "CYCLES (OPTIX GPU, RTX 5060 Ti) for renders/, BLENDER_EEVEE for renders_iter/ rounds",
   "dims": {
-    "length": 4.8015,
+    "length": 4.8043,
     "width": 2.01,
     "height": 1.2819,
     "wheelbase": 2.75
   },
   "tris": {
-    "lod0": 83665,
-    "lod1": 25788,
-    "lod2": 6799
+    "lod0": 82603,
+    "lod1": 25791,
+    "lod2": 6790
   },
   "tris_note": "tris counts the visible objects only. col_body is excluded (it is collision-only, extras collision_only=1). tris_incl_col_body adds it, matching the GLB accessor totals.",
   "tris_incl_col_body": {
-    "0": 83735,
-    "1": 25858,
-    "2": 6869
+    "0": 82661,
+    "1": 25849,
+    "2": 6848
   },
   "objects_present": [
     "body",
@@ -79,10 +79,6 @@
       "size": 256
     },
     {
-      "name": "paint_flake_normal",
-      "size": 512
-    },
-    {
       "name": "plate_base",
       "size": 512
     },
@@ -95,18 +91,18 @@
       "size": 1024
     }
   ],
-  "non_manifold_edges_body": 10958,
+  "non_manifold_edges_body": 11172,
   "glb_sizes_bytes": {
-    "lod0": 7197416,
-    "lod1": 4739960,
-    "lod2": 3629084
+    "lod0": 6458128,
+    "lod1": 4013728,
+    "lod2": 2905016
   },
   "glb_reimport_ok": true,
   "checks": [
     {
       "name": "length",
       "pass": true,
-      "detail": "value 4.8015 target 4.7000 err 2.16%"
+      "detail": "value 4.8043 target 4.7000 err 2.22%"
     },
     {
       "name": "width",
@@ -156,17 +152,17 @@
     {
       "name": "lod0_budget_45k_85k",
       "pass": true,
-      "detail": "83665"
+      "detail": "82603"
     },
     {
       "name": "lod1_budget_26k",
       "pass": true,
-      "detail": "25788"
+      "detail": "25791"
     },
     {
       "name": "lod2_budget_7k",
       "pass": true,
-      "detail": "6799"
+      "detail": "6790"
     },
     {
       "name": "materials_le_15",

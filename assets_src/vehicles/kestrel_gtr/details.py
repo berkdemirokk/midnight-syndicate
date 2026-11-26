@@ -442,7 +442,7 @@ def extra_materials():
     out["M_Lens"] = m
     m, b = B._principled("M_LightFront", B._lin((0xDD, 0xEB, 0xFF)), 0.0, 0.2)
     b.inputs["Emission Color"].default_value = B._srgb_to_lin(B._lin((0xDD, 0xEB, 0xFF)))
-    b.inputs["Emission Strength"].default_value = 6.0
+    b.inputs["Emission Strength"].default_value = 1.1
     out["M_LightFront"] = m
     return out
 
@@ -453,15 +453,17 @@ def build_lights_front(mats):
     for sg in (1, -1):
         # slim pod: lens wraps the fender corner from the bonnet (x 0.60) down the nose corner
         P, N = v_grid(list(LAMP_S), lambda s: np.linspace(*light_band(s), 14), sg)
-        add_thick(bm, P, N, 0.006, 0.002, 1)  # clear lens (slot 1)
+        add_thick(bm, P, N, 0.0015, 0.0015, 2)  # dark housing behind the cells (M_Trim)
         v0, v1 = light_band(0.2675)
         edges = np.linspace(v0, v1, 6)
         for k in range(5):  # five lit cells (slot 0)
-            d = 0.10 * (edges[1] - edges[0])
+            d = 0.22 * (edges[1] - edges[0])
             a, b_ = edges[k] + d, edges[k + 1] - d
             P, N = v_grid([0.22, 0.31], lambda s: [a, 0.5 * (a + b_), b_], sg)
             add_thick(bm, P, N, 0.0035, 0.0015, 0)
-    return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"]])
+            P, N = v_grid([0.215, 0.315], lambda s: [a - 0.004, 0.5 * (a + b_), b_ + 0.004], sg)
+            add_thick(bm, P, N, 0.0065, 0.0012, 1)  # thin clear lens over each lit cell only (slot 1)
+    return finish_obj("lights_front", bm, [mats["M_LightFront"], mats["M_Lens"], mats["M_Trim"]])
 
 
 def build_trim(mats, body):
@@ -533,9 +535,11 @@ def build_lights_rear_plate(mats):
     bl = bmesh.new()
     y0 = YB + 0.001
     for sx in (1, -1):
-        for xc in (0.50, 0.73):  # four round lamps: bright ring, dark core, small bright dot
-            add_tube(bl, sx * xc, 0.80, y0, y0 + 0.012, 0.062, 0.040, 0, 1, 32)
-            add_cyl(bl, (sx * xc, y0, 0.80), (sx * xc, y0 + 0.009, 0.80), 0.022, 0, 20)
+        # three stacked light blades per side, longest at the top, with a dark housing behind them
+        add_box(bl, (sx * 0.545, y0 + 0.003, 0.805), (0.46, 0.006, 0.150), 1)
+        for z, x0, x1 in ((0.855, 0.10, 0.775), (0.815, 0.34, 0.775), (0.775, 0.46, 0.775)):
+            add_box(bl, (sx * 0.5 * (x0 + x1), y0 + 0.008, z), (x1 - x0, 0.010, 0.022), 0)
+    add_box(bl, (0.0, y0 + 0.008, 0.855), (0.20, 0.010, 0.022), 0)  # blade joins across the centre
     lights = finish_obj("lights_rear", bl, [mats["M_LightRear"], mats["M_Trim"]])
     bp = bmesh.new()
     # plate face 0.34 x 0.10 m (slot 0, M_Plate: the KESTREL text is in its texture), in the lamp panel

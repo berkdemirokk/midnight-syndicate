@@ -28,6 +28,20 @@ py -3.10 ship.py                      (copies the GLBs into game/, registers the
   and showed a flat grey disc where the rim should be.
 - SEG 48 (tyre, rim, discs) and 30 disc vanes keep LOD0 at 83.7k (hero uses 64 / 36).
 
+## Review round 2 changes
+- Normals: the paint shell's vertex normals are rebuilt in build_car.main (body.smooth_normals: low-pass over the
+  non-sharp vertices, then body.analytic_normals: exact cross(d/ds, d/dv) of the section parametrisation for every
+  vertex within 1.2 mm of the surface). The WeightedNormal modifier is not used on the body any more. This removed the
+  kinked strip-light reflections the pocket slices, groove strips and arch cuts caused on the flank.
+- No flake normal map on M_Paint (box-UV tangents flipped at projection seams).
+- Flank: door scallop 58 mm over s 1.6-3.55, waist 0.948 against 0.995 at the rear haunch, tucked lower flank,
+  sill raised to 0.165 between the arches, tail deck lowered and tapered.
+- Greenhouse is body paint (gloss black only on the A-pillar), interior liner darkened.
+- Tail lamps: three stacked blades per side joined across the centre. Head lamps: cells on a dark M_Trim housing,
+  thin lens over each cell only, emission 1.1.
+- render_car.py has flank / flank_rear views, the studio scenario has flank_closeup, cabin_closeup, hero34,
+  race_kestrel.gd races City 01 / Maslak / Bogaz with the Kestrel (add --car=sable for the hero baseline).
+
 ## Numbers (validate_car.py, report.json: every check passes)
 - Triangles: LOD0 83 665, LOD1 25 788, LOD2 6 799 (visible objects, col_body excluded). 17 draw objects, 15 materials.
 - Mesh bounds 4.80 x 2.01 x 1.28 m (length includes the nose and tail caps, width includes mirrors).
