@@ -12,13 +12,13 @@ const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
 const NEON_SHADER: String = "res://ui/menus/neon_bg.gdshader"
 const TITLE_PX: int = 40
 const SUB_PX: int = 18
-const ROW_PX: int = 26
-const ROW_INFO_PX: int = 18
+const ROW_PX: int = 22
+const ROW_INFO_PX: int = 15
 const DETAIL_TITLE_PX: int = 32
 const VAL_PX: int = 26
 const ROW_W: float = 760.0
-const ROW_H: float = 72.0
-const ROW_GAP_PX: float = 8.0
+const ROW_H: float = 56.0  ## ten events (Arden Bay + Istanbul) fit above the Back/Start bar
+const ROW_GAP_PX: float = 6.0
 const DETAIL_MIN_W: float = 520.0
 const EDGE_PX: float = 96.0
 const EDGE_Y_PX: float = 56.0
@@ -278,7 +278,7 @@ func _refresh_text() -> void:
 
 func _info_line(ev: Dictionary) -> String:
 	var laps: int = int(ev["laps"])
-	return "%d %s  ·  %d %s" % [laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
+	return "%s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
 
 
 func _refresh_detail() -> void:

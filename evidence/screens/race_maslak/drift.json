@@ -11,14 +11,14 @@
     "draw_calls": 268,
     "draw_calls_min": 145,
     "driver": "vulkan",
-    "fps": 247.663,
-    "frame_ms_avg": 4.038,
-    "frame_ms_p95": 5.11,
-    "frame_ms_p99": 7.706,
+    "fps": 255.709,
+    "frame_ms_avg": 3.911,
+    "frame_ms_p95": 5.148,
+    "frame_ms_p99": 5.663,
     "frames": 60,
-    "objects": 14237,
+    "objects": 14202,
     "os": "Windows",
-    "primitives": 279737,
+    "primitives": 279359,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 543.574,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-1/evidence/screens/race_maslak/drift.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_maslak/drift.png",
   "preset": "high",
   "scenario": "race_maslak"
 }

@@ -3,22 +3,22 @@
     1920,
     1061
   ],
-  "luma_max": 0.995,
+  "luma_max": 1.0,
   "luma_min": 0.0,
   "name": "countdown_2",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 326,
+    "draw_calls": 328,
     "draw_calls_min": 191,
     "driver": "vulkan",
-    "fps": 271.109,
-    "frame_ms_avg": 3.689,
-    "frame_ms_p95": 5.139,
-    "frame_ms_p99": 6.053,
+    "fps": 392.126,
+    "frame_ms_avg": 2.55,
+    "frame_ms_p95": 4.268,
+    "frame_ms_p99": 6.464,
     "frames": 60,
-    "objects": 12961,
+    "objects": 12963,
     "os": "Windows",
-    "primitives": 275212,
+    "primitives": 277744,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 543.346,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-1/evidence/screens/race_maslak/countdown_2.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_maslak/countdown_2.png",
   "preset": "high",
   "scenario": "race_maslak"
 }

@@ -11,6 +11,7 @@ const MAT_LIGHT_REAR: String = "M_LightRear"
 const WHEEL_COUNT: int = 4
 const FRONT_COUNT: int = 2
 const MIN_DT: float = 0.0001  ## divisor floor for the acceleration estimate, not a tunable
+const STATIC_SAG_M: float = 0.05  ## the car's own weight compresses the springs about this much (measured 0.046-0.058)
 
 @export var tilt_max_rad: float = 0.03  ## body pitch and roll clamp
 @export var tilt_per_accel: float = 0.0025  ## rad per m/s^2 of acceleration
@@ -74,7 +75,30 @@ func setup(car: ArcadeCar, model: Node3D) -> void:
 	_prev_steer = _car.steer_angle_rad
 	_curr_steer = _car.steer_angle_rad
 	_prev_vel = _car.linear_velocity
+	_seat_model_on_suspension()
 	_collect_materials(model)
+
+
+## The model's wheels rest where its author put them (Noctra: wheel centres 0.49 m above where the suspension holds
+## them), so the body floated over wheels pulled down to the physics position, and LOD1/LOD2 cars hovered. Lower the
+## whole model so its resting wheel centres sit at the physics rest height (mount - rest length + radius + static sag).
+func _seat_model_on_suspension() -> void:
+	if _car.spec == null:
+		return
+	var model_y: float = 0.0
+	var phys_y: float = 0.0
+	var n: int = 0
+	for i: int in WHEEL_COUNT:
+		if _wheels[i] == null:
+			continue
+		var radius: float = _car.spec.wheel_radius_front if i < FRONT_COUNT else _car.spec.wheel_radius_rear
+		model_y += _chain(_wheels[i]).origin.y
+		phys_y += _car.spec.mount_height - _car.spec.suspension_rest + radius + STATIC_SAG_M
+		n += 1
+	if n == 0:
+		return
+	_tilt_rest.origin.y += (phys_y - model_y) / float(n)
+	_tilt_node.transform = _tilt_rest
 
 
 ## Sets the albedo of every M_Paint material. Materials were duplicated in setup, so cars never share them.

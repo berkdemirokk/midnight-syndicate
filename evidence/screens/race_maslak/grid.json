@@ -3,22 +3,22 @@
     1920,
     1061
   ],
-  "luma_max": 0.995,
+  "luma_max": 1.0,
   "luma_min": 0.0,
   "name": "grid",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 324,
+    "draw_calls": 326,
     "draw_calls_min": 189,
     "driver": "vulkan",
-    "fps": 296.937,
-    "frame_ms_avg": 3.368,
-    "frame_ms_p95": 5.023,
-    "frame_ms_p99": 6.411,
+    "fps": 340.561,
+    "frame_ms_avg": 2.936,
+    "frame_ms_p95": 4.952,
+    "frame_ms_p99": 6.329,
     "frames": 60,
-    "objects": 12959,
+    "objects": 12961,
     "os": "Windows",
-    "primitives": 275208,
+    "primitives": 277740,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 539.346,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-1/evidence/screens/race_maslak/grid.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_maslak/grid.png",
   "preset": "high",
   "scenario": "race_maslak"
 }

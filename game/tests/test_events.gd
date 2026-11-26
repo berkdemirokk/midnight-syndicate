@@ -36,7 +36,12 @@ func _wipe() -> void:
 
 
 func test_catalog_shape() -> void:
-	check(EventCatalog.count() == 6, "six events")
+	check(EventCatalog.count() == 10, "six Arden Bay events and four Istanbul events")
+	for id: String in ["maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]:
+		var c: RaceConfig = EventCatalog.config_for(id)
+		check(c != null and ResourceLoader.exists(c.track_scene) and c.track_scene.contains("istanbul"), "%s races on an Istanbul track" % id)
+		check(I18n.t(EventCatalog.name_key(id)) != EventCatalog.name_key(id), "%s has a name" % id)
+	check(EventCatalog.config_for("wharf_sprint").track_scene.contains("city_01"), "Arden Bay events keep City 01")
 	var ids: Dictionary = {}
 	for i: int in EventCatalog.count():
 		var id: String = EventCatalog.id_at(i)
@@ -51,7 +56,8 @@ func test_catalog_shape() -> void:
 		check(EventCatalog.reward_multiplier(id) >= 1.0, "multiplier for " + id)
 	check(EventCatalog.reward_multiplier("syndicate_final") > EventCatalog.reward_multiplier("wharf_sprint"), "rewards grow along the ladder")
 	check(EventCatalog.previous_id("wharf_sprint") == "", "first event has no previous")
-	check(EventCatalog.next_id("syndicate_final") == "", "last event has no next")
+	check(EventCatalog.next_id("syndicate_final") == "maslak_sprint", "the Arden Bay final opens the Istanbul tour")
+	check(EventCatalog.next_id("bogaz_final") == "", "last event has no next")
 	check(EventCatalog.next_id("wharf_sprint") == "neon_strip_circuit", "ladder order")
 	check(EventCatalog.next_id("dev_circuit") == "", "unknown id has no next")
 

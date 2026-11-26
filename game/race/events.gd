@@ -1,6 +1,6 @@
 class_name EventCatalog
 extends RefCounted
-## Career ladder on City 01 "Neon Wharf Loop": six events, each an id, text keys, a RaceConfig recipe, a reward
+## Career ladder: six events on City 01 "Neon Wharf Loop", then four World Tour events in Istanbul (Maslak, Bogaz); each an id, text keys, a RaceConfig recipe, a reward
 ## multiplier and the star rule. Position events: 1st = 3 stars, podium = 2, finish = 1 (GameState.REWARD_STARS).
 ## Time events carry star_times = [3 stars, 2 stars, 1 star] in seconds; any finish earns at least 1 star, so a slow
 ## first try still opens the next event.
@@ -9,6 +9,8 @@ extends RefCounted
 ## a good human lap and want a play test.
 
 const PODIUM_PLACES: int = 3
+const TRACK_MASLAK: String = "res://world/istanbul_maslak/istanbul_maslak.tscn"
+const TRACK_BOGAZ: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 
 const EVENTS: Array[Dictionary] = [
 	{"id": "wharf_sprint", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0},
@@ -17,6 +19,11 @@ const EVENTS: Array[Dictionary] = [
 	{"id": "overpass_duel", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
 	{"id": "harbour_run", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0},
 	{"id": "syndicate_final", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 3.0},
+	# World Tour: Istanbul (unlocked after the Arden Bay final)
+	{"id": "maslak_sprint", "laps": 1, "skills": [0.92, 0.90, 0.88], "level": 3, "mult": 3.2, "track": TRACK_MASLAK, "place": "maslak"},
+	{"id": "bogaz_circuit", "laps": 2, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 3.5, "track": TRACK_BOGAZ, "place": "bogaz"},
+	{"id": "maslak_night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak"},
+	{"id": "bogaz_final", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz"},
 ]
 
 
@@ -95,6 +102,8 @@ static func config_for(id: String) -> RaceConfig:
 		return null
 	var c := RaceConfig.new()
 	c.event_id = id
+	if ev.has("track"):
+		c.track_scene = str(ev["track"])
 	c.laps = int(ev["laps"])
 	var skills := PackedFloat32Array()
 	for s: float in ev["skills"]:
