@@ -94,6 +94,25 @@ Parallel agents in isolated worktrees, each reviewed independently, merged by th
 - Captures and tests are silent and off-screen. 199+ tests pass.
 - Commits up to 6037fd2 (see git log).
 
+## Session 4 — 2026-11-26 (Ortakoy graphics rescue)
+Short status lives in `evidence/PROGRESS.md` (rescue package format); this is the session record.
+- Scope narrowed by the owner to ONE scene: the Ortakoy coast on `istanbul_bogaz`. Benchmark scenario
+  `ortakoy_benchmark` (day, dusk, night; hero, car34, street, mosque, gameplay). All shots are harness captures.
+- Cars: six CC BY 4.0 models by vinish.dev (original designs, no makes) through `assets_src/pipeline/prepare_vehicle.py`
+  (material merge to the engine names, three LODs, source corner normals kept, Turkish-layout plates).
+  Starter is Noctra Tayfun; rivals are drawn from the licensed cars. Credits in settings; licence evidence in `licenses/`.
+- Landmark and far scenery: mosque (two detail passes, sandstone and marble from Poly Haven CC0, floodlit at night),
+  3D bridge, far shore with lights, ferry, moon sky. Event dressing: barriers with banners, flags, cafe terraces.
+- Houses: Istanbul kit detail pass (casings, shutters, bays, balconies), baked per-vertex AO (`assets_src/pipeline/bake_vertex_ao.py`).
+- Look: day sun and sky fill, blue-hour preset, window rooms and greyed glass reflection, asphalt rubber and oil,
+  tyre spray, underglow, lens drops, HUD restyle with live data, closer chase camera.
+- Budgets: mirror pass skips building LOD0; Low preset trims props, signs, traffic. Peaks on the benchmark: see evidence/evidence.json.
+- Tests: 309, 0 failed at b4cbbf3 (evidence/test.log). Asset manifest 534 records, 0 failing.
+- Rescue package (MIDNIGHT_RESCUE/) adopted: gates, tools, `third_party_assets.json`, `evidence/evidence.json` (checker passes).
+- Not done: gate 90 (lead score about 76), house fronts still simple, trees, spectators, rain beads; iOS build (secrets missing),
+  iPhone test, signed Windows exe. No push since c191d50 (rescue package rule); main untouched.
+- Commits: 305e457 .. f284ce7 on feature/vertical-slice (see git log).
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,

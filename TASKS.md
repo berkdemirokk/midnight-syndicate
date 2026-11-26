@@ -10,19 +10,20 @@ GRAPHICS_BENCHMARK.md, RELEASE_CHECKLIST.md.
 - [ ] Windows exe is blocked by Smart App Control on the dev PC (unsigned template). The exported pck runs.
 - [x] Full loop: menu -> career -> race -> results -> rewards -> garage/shop (tests cover it).
 
-## P1 — graphics, driving, UX (most of today's effort)
-First milestone: ORTAKOY — BOSPHORUS NIGHT RACE (track istanbul_bogaz at night, rain).
-- [ ] Waterfront mosque landmark (running, Haiku)
-- [ ] 3D lit suspension bridge, far-shore lights, ferry, moon sky (running, Haiku)
-- [ ] Race dressing: barriers with banners, flags, crowd, cafe terraces, string lights (running, Haiku)
-- [ ] Wheel spray, underglow, rain on lens (running, Haiku)
-- [ ] HUD in the reference layout: leaderboard, progress strip, round minimap, tachometer (running, Haiku)
-- [ ] Lead: warm street lighting vs cool night balance, wet road reflections, bloom, grade (PostFx added)
-- [ ] Hero car detail pass: widebody, splitter, diffuser, wing, tyre tread, brake discs, Turkish-format plate, interior
-- [ ] Paint streak artefact near arches/doors on Vela, Bruiser, Sable (not fixed by two agent rounds)
-- [ ] 100-point visual gate from real captures against the reference
-- [x] Day/sunset/night, trees, sea, paving, contact shadows, window interiors and sky reflection, street kit
-- [x] Handling pass, traffic, mixed rival models, car shop, audio, career with Istanbul events
+## P1 — graphics, driving, UX
+First milestone: ORTAKOY — BOSPHORUS RACE (track istanbul_bogaz; benchmark scenario `ortakoy_benchmark`, day / dusk / night).
+- [x] Waterfront mosque: relief, drum, turrets, fluted minarets, photo-based sandstone (CC0), baked AO
+- [x] 3D suspension bridge, far-shore lights, ferry, moon sky (flat skyline cards hidden)
+- [x] Race dressing: barriers with banners, flags, cafe terraces (spectator cards switched off: read as toys)
+- [x] Wheel spray, underglow, rain on lens
+- [x] HUD in the reference layout with live data
+- [x] Licensed cars: six CC BY 4.0 models (starter Noctra Tayfun, licensed rival grid), credits in settings
+- [x] Road: photo-based asphalt, rubber on the racing groove, oil stains
+- [x] Day light: sun, neutral sky fill, baked AO, dry walls without sky mirror
+- [ ] House facades pass 2: shop fronts, eaves, roofs, real LOD1 (workflow running)
+- [ ] Trees (dark card clusters), sea-side wall and kerb, bridge day material
+- [ ] Spectators as real figures, rain beads on paint
+- [ ] Gate: lead score about 76/100, target 90 not reached; owner review pending (rescue gate G6)
 
 ## P2 — more content (only after the Ortakoy scene passes its gate)
 - [ ] Karakoy/Galata, Besiktas/Dolmabahce, Kadikoy/Moda, Taksim, Eurasia-tunnel themed tracks

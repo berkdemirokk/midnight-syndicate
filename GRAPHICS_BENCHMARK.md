@@ -500,3 +500,15 @@ turnarounds in `assets_src/third_party/vinish_cars/renders/`, being integrated a
 
 Open, in order: licensed cars in the race, house facades with depth, crowd figures (flat cards were removed as toy-like),
 rain beads on paint, puddle break-up on the road.
+
+### Gate score update, lead, b4cbbf3 (evening of 2026-11-26)
+| criterion | max | c191d50 | b4cbbf3 | why |
+|---|---:|---:|---:|---|
+| car geometry | 15 | 7 | 12 | licensed models: panel gaps, interior, wheels, wing; LOD1 loses calipers and plate |
+| car materials | 15 | 9 | 11 | paint keeps colour under lamps, per-car plates; no rain beads, amber lamps do not glow |
+| Istanbul architecture | 20 | 11 | 13 | sandstone mosque with AO; houses have casings and shutters but simple fronts and roofs |
+| lighting | 15 | 10 | 12 | baked AO, day sun and fill retuned, floodlit mosque; no GI |
+| asphalt and reflections | 15 | 11 | 12 | rubber and oil on the road, mirror keeps lamps and mosque |
+| camera and effects | 10 | 7 | 8 | spray, lens drops, underglow; trees are still dark cards |
+| HUD | 10 | 8 | 8 | unchanged |
+| total | 100 | 63 | 76 | target 90 is not reached |
