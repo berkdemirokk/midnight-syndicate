@@ -16,7 +16,7 @@ Commands
   selftest  Runs the built-in checks in a temp folder. Exit 0 when all pass.
 
 Global options (before the command): --root DIR (default: repo root), --manifest FILE.
-Sources: cc0:polyhaven, cc0:ambientcg, generated:blender, generated:script.
+Sources: cc0:polyhaven, cc0:ambientcg, generated:blender, generated:script, generated:ai (image model output made for this project from the owner's account; no third-party picture is used as input).
 Licences: CC0-1.0 (third-party) or project-owned (generated).
 """
 import argparse
@@ -33,7 +33,7 @@ import zlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 KINDS = ("texture", "model", "hdri", "audio", "generated")
-SOURCES = ("cc0:polyhaven", "cc0:ambientcg", "cc-by:vinish.dev", "generated:blender", "generated:script")
+SOURCES = ("cc0:polyhaven", "cc0:ambientcg", "cc-by:vinish.dev", "generated:blender", "generated:script", "generated:ai")
 LICENCES = ("CC0-1.0", "CC-BY-4.0", "project-owned")
 THIRD_PARTY_PREFIX = "cc0:"
 # third-party source prefix -> the one licence it may carry (CC BY needs a credit line: see cmd_licenses)

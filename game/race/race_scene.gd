@@ -59,6 +59,7 @@ const RIM_LIGHT_NAME: String = "CarRimLight"
 const UNDERGLOW_RIVAL: Array[Color] = [Color(1.0, 0.2, 0.55), Color(0.2, 0.75, 1.0), Color(1.0, 0.55, 0.15), Color(0.35, 1.0, 0.5)]  ## rival underglow colours, by grid slot
 const ISTANBUL_NAMES: PackedStringArray = ["Mert", "Emir", "Kerem", "Deniz", "Aras", "Baran", "Selim"]  ## rival names on the Istanbul tracks
 const STREET_FRONTS_SCRIPT: String = "res://world/street_fronts/street_fronts.gd"  ## optional module: setup(track, time_of_day_id)
+const PHOTO_FRONTS_SCRIPT: String = "res://world/street_fronts/photo_fronts.gd"  ## photo-textured row houses; used instead when present
 const BOGAZ_TRACK_KEY: String = "istanbul_bogaz"  ## track scenes with this in their path get the Bosphorus scenery
 const REFLECTION_NAME: String = "PlanarReflection"
 const WORLD_LAYER_MASK: int = 1  ## physics layer 1: world and static, the road surface
@@ -276,8 +277,9 @@ func _build_race() -> void:
 		landmark.setup(track)
 		landmark.set_night(1.0 if tod.is_night() else (0.6 if config_used.time_of_day == "sunset" else 0.0))
 		# Licensed street fronts (CC BY models) replace the kit houses on the land side when the module is present.
-		if ResourceLoader.exists(STREET_FRONTS_SCRIPT):
-			var fronts: Node3D = (load(STREET_FRONTS_SCRIPT) as GDScript).new() as Node3D
+		var fronts_script: String = PHOTO_FRONTS_SCRIPT if ResourceLoader.exists(PHOTO_FRONTS_SCRIPT) else STREET_FRONTS_SCRIPT
+		if ResourceLoader.exists(fronts_script):
+			var fronts: Node3D = (load(fronts_script) as GDScript).new() as Node3D
 			fronts.name = "StreetFronts"
 			_world.add_child(fronts)
 			fronts.call("setup", track, config_used.time_of_day)
