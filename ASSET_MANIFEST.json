@@ -9342,14 +9342,14 @@
       "source_url": "",
       "license": "project-owned",
       "author": "Midnight Syndicate team",
-      "tris": 5684,
+      "tris": 13542,
       "texture_sizes": {},
       "material_count": 6,
-      "bytes": 311680,
-      "sha256": "b8c42c232114657ed0b7eeb79a71fc7e130062fdc0a68e1841649fb9bd9a2d2b",
+      "bytes": 730104,
+      "sha256": "e6fb5ca4392a524ec1c488c52f885e7d8c0c5ed83ce037e87702d16531debde0",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD0"
+      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD0 (detail pass)"
     },
     {
       "id": "landmark_mosque_lod1",
@@ -9359,14 +9359,14 @@
       "source_url": "",
       "license": "project-owned",
       "author": "Midnight Syndicate team",
-      "tris": 3095,
+      "tris": 5404,
       "texture_sizes": {},
       "material_count": 6,
-      "bytes": 172560,
-      "sha256": "aa8915995ae591229574285ebc51c4d80d417b5898cc930c58c3b498a1b8b225",
+      "bytes": 294896,
+      "sha256": "8e24a7a7ddd18fe65e680b676c004e6a3cbe807895b4d242f4930b0bc0df2e94",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "Waterfront mosque kit, original design, LOD1"
+      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD1 (detail pass)"
     },
     {
       "id": "landmark_mosque_lod2",
@@ -9376,14 +9376,14 @@
       "source_url": "",
       "license": "project-owned",
       "author": "Midnight Syndicate team",
-      "tris": 464,
+      "tris": 576,
       "texture_sizes": {},
       "material_count": 4,
-      "bytes": 29416,
-      "sha256": "728c34df82e8b3960ab186bb722e7ef90ef6daf37790e3e17ade3c621df61dcb",
+      "bytes": 35428,
+      "sha256": "243eb75492e829fa9d8015c5926d3d6bc7a796759cb4885fbc385efcf599abcb",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "Waterfront mosque kit, original design, LOD2"
+      "notes": "Waterfront mosque kit, original design, from assets_src/world/kit_landmarks/build_landmark.py, LOD2 (detail pass)"
     },
     {
       "id": "event_banner_atlas",

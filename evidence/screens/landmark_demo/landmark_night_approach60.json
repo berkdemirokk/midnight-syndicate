@@ -8,26 +8,26 @@
   "name": "landmark_night_approach60",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 302,
-    "draw_calls_min": 254,
+    "draw_calls": 307,
+    "draw_calls_min": 257,
     "driver": "vulkan",
-    "fps": 268.804,
-    "frame_ms_avg": 3.72,
-    "frame_ms_p95": 5.335,
-    "frame_ms_p99": 6.471,
+    "fps": 225.973,
+    "frame_ms_avg": 4.425,
+    "frame_ms_p95": 6.641,
+    "frame_ms_p99": 8.122,
     "frames": 60,
-    "objects": 12761,
+    "objects": 17307,
     "os": "Windows",
-    "primitives": 266485,
+    "primitives": 302713,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 581.455,
+    "video_mem_mb": 599.549,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/landmark_demo/landmark_night_approach60.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/mosque2/evidence/screens/landmark_demo/landmark_night_approach60.png",
   "preset": "high",
   "scenario": "landmark_demo"
 }
