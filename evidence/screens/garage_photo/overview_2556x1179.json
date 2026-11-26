@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    2556,
+    1179
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "overview_2556x1179",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 296,
+    "draw_calls_min": 296,
+    "driver": "vulkan",
+    "fps": 425.662,
+    "frame_ms_avg": 2.349,
+    "frame_ms_p95": 2.62,
+    "frame_ms_p99": 2.799,
+    "frames": 60,
+    "objects": 445,
+    "os": "Windows",
+    "primitives": 350126,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 596.235,
+    "viewport_size": [
+      2556,
+      1179
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/intelligent-bardeen-e9d0dd/evidence/screens/garage/overview_2556x1179.png",
+  "preset": "high",
+  "scenario": "garage"
+}

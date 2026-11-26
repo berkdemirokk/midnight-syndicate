@@ -11670,6 +11670,160 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Night picture of the same four towers (irregularly lit offices and lobbies), used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/tower_row_01_night.png."
+    },
+    {
+      "id": "photo_garage_back_wall_day",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_back_wall_day.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_back_wall_day.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 655189,
+      "sha256": "5113c3cd974e9d4ef376fc90781116369ee840165c4e469bcb7f0f2837ac93e7",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_back_wall_day.png. photo-textured garage lining, back wall (day). Stored 2048x1024 with the 1536x1024 picture on the left 3/4 (the right quarter repeats the picture's last column and is never sampled, see garage_photo.gdshader pic_scale). Brief: Back wall of the garage hall, straight-on: brick lower wall, corrugated metal, two factory windows, closed roller shutter, abstract mural. Albedo of the photo lining on the back wall."
+    },
+    {
+      "id": "photo_garage_back_wall_night",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_back_wall_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_back_wall_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 389564,
+      "sha256": "e4ba5b4698f2d0378df4aa3f2436bb5daf43c303331a098910fbd445501a9acf",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_back_wall_night.png. lamps-on glow map of the back wall. Same 2048x1024 layout as garage_back_wall_day. Brief: Lamps-on version of garage_back_wall_day: everything near black, windows and mural glow. Emission map of the back-wall lining."
+    },
+    {
+      "id": "photo_garage_side_wall_day",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_side_wall_day.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_side_wall_day.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 646258,
+      "sha256": "a22bcccc0119b70770a986798ae93eb428933733322752ee7613edd280a1f2bf",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_side_wall_day.png. photo-textured garage lining, side walls (day). Same picture on both side walls, each laid facing into the room. Same 2048x1024 layout. Brief: Side wall of the garage hall, straight-on: tool wall with pegboard, steel shelving with tyres and drums, tyre racks, steel workbench under a work lamp."
+    },
+    {
+      "id": "photo_garage_side_wall_night",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_side_wall_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_side_wall_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 206470,
+      "sha256": "f1463f9cac8c9666e4c5ad678060a25aef31f51d001058e9c4a4ffcfa41bc57f",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_side_wall_night.png. lamps-on glow map of the side walls. Same 2048x1024 layout. Brief: Lamps-on version of garage_side_wall_day: work lamp and small window glow, the rest near black."
+    },
+    {
+      "id": "photo_garage_roof_day",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_roof_day.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_roof_day.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 532396,
+      "sha256": "023218cf2278758cc101e63d6c2e84edfa0807092f5785b0edc17299e10942ee",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_roof_day.png. photo-textured garage ceiling (day). Same 2048x1024 layout. Brief: Roof seen straight from below: steel trusses, purlins, corrugated deck, three frosted skylights, ceiling fixtures."
+    },
+    {
+      "id": "photo_garage_roof_night",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_roof_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_roof_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 224511,
+      "sha256": "2fa9a448bb8d53b2b5da778e1437a401dbc53c3ddc675b6ee4af61844d3281ae",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_roof_night.png. lamps-on glow map of the ceiling. Same 2048x1024 layout. Brief: Lamps-on version of garage_roof_day: ceiling fixtures and skylight edges glow, the rest near black."
+    },
+    {
+      "id": "photo_garage_floor_concrete",
+      "kind": "texture",
+      "path": "game/assets/world/garage_photo/garage_floor_concrete.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "garage_floor_concrete.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 373438,
+      "sha256": "e4468876bb27092cc19b30a8876859756273f59bf85ab680cba725d3d8289066",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/garage_floor_day.png. seamless concrete floor picture for the garage floor (1254 px square source resized to 1024). Repeated across the floor, never mirrored. Brief: Seamless tileable painted concrete floor seen straight from above, worn yellow lane lines, oil stains, tyre marks. Repeated every 5 m on the garage floor."
     }
   ]
 }

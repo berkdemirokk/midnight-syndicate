@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "rear34",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 230,
+    "draw_calls_min": 230,
+    "driver": "vulkan",
+    "fps": 619.003,
+    "frame_ms_avg": 1.616,
+    "frame_ms_p95": 1.836,
+    "frame_ms_p99": 1.93,
+    "frames": 60,
+    "objects": 379,
+    "os": "Windows",
+    "primitives": 355848,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 536.282,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/intelligent-bardeen-e9d0dd/evidence/screens/garage/rear34.png",
+  "preset": "high",
+  "scenario": "garage"
+}

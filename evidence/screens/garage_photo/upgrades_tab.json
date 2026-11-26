@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "upgrades_tab",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 288,
+    "draw_calls_min": 288,
+    "driver": "vulkan",
+    "fps": 543.336,
+    "frame_ms_avg": 1.84,
+    "frame_ms_p95": 2.014,
+    "frame_ms_p99": 2.064,
+    "frames": 60,
+    "objects": 468,
+    "os": "Windows",
+    "primitives": 343786,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 536.604,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/intelligent-bardeen-e9d0dd/evidence/screens/garage/upgrades_tab.png",
+  "preset": "high",
+  "scenario": "garage"
+}

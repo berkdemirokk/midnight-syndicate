@@ -8,6 +8,9 @@ extends Node3D
 ## Car frame: origin at the tyre contact plane, nose toward +Z.
 
 const FLOOR_SHADER: String = "res://world/garage_set/showroom_floor.gdshader"
+const PHOTO_SHADER: String = "res://world/garage_set/garage_photo.gdshader"
+const PHOTO_DIR: String = "res://assets/world/garage_photo/"
+const PHOTO_GLOW: float = 0.6  ## lamps-on picture strength (emission)
 const MIRROR_LAYER_BIT: int = 1 << 1  ## floor and shadow sit here: PlanarReflection leaves them out of the mirror
 const MIRROR_DISTANCE_GARAGE: float = 8.5  ## keeps the garage mirror from re-drawing the whole room (Medium budget: 350 draws)
 const WHEEL_X: float = 0.815
@@ -61,6 +64,8 @@ func attach_garage(room: Node3D, pivot: Node3D, plane_y: float, mirror: bool) ->
 	floor_material.set_shader_parameter("reflection_floor", 0.15)
 	floor_material.set_shader_parameter("light_specular", 0.08)  # the room key and ceiling strips glared white on the plate from behind
 	floor_material.set_shader_parameter("roughness_base", 0.3)
+	floor_material.set_shader_parameter("concrete_tex", load(PHOTO_DIR + "garage_floor_concrete.jpg"))
+	floor_material.set_shader_parameter("concrete_on", 1.0)
 	var bound: int = 0
 	for n: Node in room.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
@@ -81,6 +86,7 @@ func attach_garage(room: Node3D, pivot: Node3D, plane_y: float, mirror: bool) ->
 	pivot.add_child(contact_shadow)
 	_add_garage_lights()
 	_add_garage_neon(plane_y)
+	_add_garage_photo()
 
 
 ## One shared dark glossy floor material. pool_radius: size of the faint lit pad under the car.
@@ -336,6 +342,47 @@ func _add_garage_lights() -> void:
 	_track(_spot(Vector3(-3.4, 1.7, -4.0), target, RIM_COLOUR, 4.0, 32.0, false)).name = "RimL"
 	_track(_spot(Vector3(3.4, 1.7, 4.0), target, RIM_COLOUR, 3.5, 32.0, false)).name = "RimR"
 	_track(_spot(Vector3(3.8, 1.4, -1.0), target, FILL_COLOUR, 2.6, 40.0, false)).name = "CoolFill"
+
+
+## Photo lining for the room (layout: X[-8,8], Z[-6,6], height 4.6 m). Each picture sits 3 cm in front of its wall at the
+## picture's own aspect (1536 x 1024 = 3:2): back and sides 6.9 x 4.6 m, ceiling 16 x 10.67 m. Walls outside a picture
+## keep the room geometry. Pictures are not mirrored: each one is laid so a viewer in the room reads it the right way round.
+func _add_garage_photo() -> void:
+	const GAP: float = 0.03
+	const WALL_H: float = 4.6
+	const WALL_W: float = 6.9
+	add_child(_photo_panel("back_wall", "garage_back_wall", Vector2(WALL_W, WALL_H), Vector3(0.0, WALL_H / 2.0, 6.0 - GAP),
+			Vector3.FORWARD, Vector2(0.06, 0.0)))
+	add_child(_photo_panel("side_wall_R", "garage_side_wall", Vector2(WALL_W, WALL_H), Vector3(8.0 - GAP, WALL_H / 2.0, 0.0),
+			Vector3.LEFT, Vector2(0.06, 0.0)))
+	add_child(_photo_panel("side_wall_L", "garage_side_wall", Vector2(WALL_W, WALL_H), Vector3(-8.0 + GAP, WALL_H / 2.0, 0.0),
+			Vector3.RIGHT, Vector2(0.06, 0.0)))
+	add_child(_photo_panel("front_wall", "garage_side_wall", Vector2(WALL_W, WALL_H), Vector3(0.0, WALL_H / 2.0, -6.0 + GAP),
+			Vector3.BACK, Vector2(0.06, 0.0)))
+	add_child(_photo_panel("roof", "garage_roof", Vector2(16.0, 16.0 / 1.5), Vector3(0.0, 4.6 - GAP, 0.0),
+			Vector3.DOWN, Vector2(0.04, 0.04)))
+
+
+## One lit quad carrying a day picture (albedo) and its lamps-on picture (emission). `dir` is the way the face looks,
+## into the room; the quad's front is +Z, so its UV reads upright for a viewer standing in the room.
+func _photo_panel(tag: String, picture: String, size: Vector2, centre: Vector3, dir: Vector3, feather: Vector2) -> MeshInstance3D:
+	var m := ShaderMaterial.new()
+	m.shader = load(PHOTO_SHADER) as Shader
+	m.set_shader_parameter("albedo_tex", load(PHOTO_DIR + picture + "_day.jpg"))
+	m.set_shader_parameter("night_tex", load(PHOTO_DIR + picture + "_night.jpg"))
+	m.set_shader_parameter("night", PHOTO_GLOW)
+	m.set_shader_parameter("feather", feather)
+	m.set_shader_parameter("pic_scale", Vector2(0.75, 1.0))  # 1536 x 1024 picture in a 2048 x 1024 file
+	var q := QuadMesh.new()
+	q.size = size
+	q.material = m
+	var mi := MeshInstance3D.new()
+	mi.name = "Photo_" + tag  # unique per panel: Godot renames a duplicate child name and the lookup would miss it
+	mi.mesh = q
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var up: Vector3 = Vector3.UP if absf(dir.y) < 0.99 else Vector3.FORWARD
+	mi.transform = Transform3D(Basis.looking_at(-dir, up), centre)
+	return mi
 
 
 func _add_garage_neon(plane_y: float) -> void:

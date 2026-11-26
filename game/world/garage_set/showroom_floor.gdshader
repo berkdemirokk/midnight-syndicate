@@ -19,6 +19,11 @@ uniform float reflection_smear = 0.006;
 uniform float fade_start = 5.0;
 uniform float fade_end = 22.0;
 uniform vec3 fade_colour : source_color = vec3(0.02, 0.016, 0.04);
+// Garage only: a generated concrete picture replaces the dark albedo, repeated every concrete_tile_m metres (no mirroring).
+uniform sampler2D concrete_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+uniform float concrete_on = 0.0;
+uniform float concrete_tile_m = 5.0;
+uniform float concrete_gain = 0.3;
 
 varying vec3 world_pos;
 
@@ -36,6 +41,9 @@ void fragment() {
 	// Fine polished-concrete mottling: breaks the albedo flatness.
 	float mott = hash(floor(world_pos.xz * 0.9));  // large, faint slab-to-slab variation
 	vec3 base = albedo_dark * (0.9 + 0.2 * mott) + pool_colour * pool * 0.12;
+	if (concrete_on > 0.5) {
+		base = texture(concrete_tex, world_pos.xz / concrete_tile_m).rgb * concrete_gain * (0.9 + 0.2 * mott) + pool_colour * pool * 0.12;
+	}
 	float fade = smoothstep(fade_start, fade_end, d);
 	ALBEDO = mix(base, fade_colour, fade);
 	ROUGHNESS = roughness_base + 0.02 * mott;
