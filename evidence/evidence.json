@@ -1,0 +1,18 @@
+{
+  "commit": "f5ec4ff",
+  "engine": "Godot 4.7.2 stable, Mobile renderer, GDScript",
+  "run_command": "Godot_v4.7.2-stable_win64_console.exe --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]",
+  "captures": {
+    "before": "evidence/before.png",
+    "day": "evidence/after_day.png",
+    "night": "evidence/after_night.png",
+    "gameplay": "evidence/gameplay.png"
+  },
+  "test_log": "evidence/test.log",
+  "visual_review": "Lead review of real engine captures (not the concept image). Better than before: licensed car with panel gaps, interior and Turkish-layout plate; mosque with relief, drum, turrets and fluted minarets; 3D bridge, far shore and ferry; houses with casings, shutters, awnings; wet road mirrors lamps and mosque at night; HUD with live data. Still weak, not accepted as final: houses read plain in daylight from 8-40 m, roofs are slabs; mosque stone is flat cream by day; no spectators (flat cards removed as toy-like); no rain beads on paint; rivals are still the older procedural cars in this capture. Gate score by the lead about 70/100, target 90 not reached. The owner decides acceptance.",
+  "device": "Desktop PC, Windows 11, NVIDIA GeForce RTX 5060 Ti 8 GB, 1920x1080, High preset. Not an iPhone measurement.",
+  "fps": 302.0,
+  "frame_time_ms": 3.311,
+  "ios_test": "not_run",
+  "perf_note": "Night gameplay shot (bench_night_gameplay.json): 302 fps average, frame 3.31 ms avg, 4.14 ms p95, 377 draw calls, 373532 primitives. Sunset gameplay 342 fps / 2.92 ms. Day gameplay 430 fps / 2.32 ms. Uncapped desktop numbers over 60 frames; they say nothing about iPhone."
+}
