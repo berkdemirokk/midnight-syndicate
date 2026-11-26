@@ -9,12 +9,12 @@
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
     "draw_calls": 147,
-    "draw_calls_min": 112,
+    "draw_calls_min": 114,
     "driver": "vulkan",
-    "fps": 538.068,
-    "frame_ms_avg": 1.859,
-    "frame_ms_p95": 2.563,
-    "frame_ms_p99": 3.136,
+    "fps": 645.321,
+    "frame_ms_avg": 1.55,
+    "frame_ms_p95": 2.077,
+    "frame_ms_p99": 2.391,
     "frames": 60,
     "objects": 168,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_54b8f232-f66-2/evidence/screens/race_replay/replay_tv_3.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_replay/replay_tv_3.png",
   "preset": "high",
   "scenario": "race_replay"
 }

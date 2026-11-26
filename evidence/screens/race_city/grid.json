@@ -11,10 +11,10 @@
     "draw_calls": 358,
     "draw_calls_min": 229,
     "driver": "vulkan",
-    "fps": 389.745,
-    "frame_ms_avg": 2.566,
-    "frame_ms_p95": 4.195,
-    "frame_ms_p99": 4.861,
+    "fps": 360.87,
+    "frame_ms_avg": 2.771,
+    "frame_ms_p95": 4.35,
+    "frame_ms_p99": 6.273,
     "frames": 60,
     "objects": 12723,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_54b8f232-f66-2/evidence/screens/race_city/grid.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_city/grid.png",
   "preset": "high",
   "scenario": "race_city"
 }

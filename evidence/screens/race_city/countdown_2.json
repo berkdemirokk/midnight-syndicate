@@ -11,10 +11,10 @@
     "draw_calls": 360,
     "draw_calls_min": 231,
     "driver": "vulkan",
-    "fps": 464.421,
-    "frame_ms_avg": 2.153,
-    "frame_ms_p95": 3.452,
-    "frame_ms_p99": 3.735,
+    "fps": 207.128,
+    "frame_ms_avg": 4.828,
+    "frame_ms_p95": 7.043,
+    "frame_ms_p99": 9.602,
     "frames": 60,
     "objects": 12725,
     "os": "Windows",
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_54b8f232-f66-2/evidence/screens/race_city/countdown_2.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_city/countdown_2.png",
   "preset": "high",
   "scenario": "race_city"
 }

@@ -8,17 +8,17 @@
   "name": "replay_finish_orbit",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 370,
+    "draw_calls": 369,
     "draw_calls_min": 222,
     "driver": "vulkan",
-    "fps": 426.803,
-    "frame_ms_avg": 2.343,
-    "frame_ms_p95": 3.091,
-    "frame_ms_p99": 3.397,
+    "fps": 522.949,
+    "frame_ms_avg": 1.912,
+    "frame_ms_p95": 2.404,
+    "frame_ms_p99": 2.516,
     "frames": 60,
-    "objects": 391,
+    "objects": 390,
     "os": "Windows",
-    "primitives": 418489,
+    "primitives": 418475,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
     "video_mem_mb": 564.197,
@@ -27,7 +27,7 @@
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_54b8f232-f66-2/evidence/screens/race_replay/replay_finish_orbit.png",
+  "png": "C:/Users/berk/car race/evidence/screens/race_replay/replay_finish_orbit.png",
   "preset": "high",
   "scenario": "race_replay"
 }
