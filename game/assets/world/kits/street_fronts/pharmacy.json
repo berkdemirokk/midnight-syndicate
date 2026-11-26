@@ -4,9 +4,9 @@
  "width_m": 6.06,
  "depth_m": 7.8,
  "height_m": 9.08,
- "lod0_tris": 3790,
- "lod1_tris": 598,
- "mirror_tris": 298,
+ "lod0_tris": 3390,
+ "lod1_tris": 872,
+ "mirror_tris": 450,
  "lod0_surfaces": [
   "M_Flat",
   "M_Glass",
@@ -22,7 +22,8 @@
   "M_Glass"
  ],
  "mirror_surfaces": [
-  "M_Flat"
+  "M_Flat",
+  "M_Glass"
  ],
  "copyright": "\"Pharmacy\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
 }

@@ -8,10 +8,11 @@ const DIR: String = "res://assets/world/kits/street_fronts/"
 const SHOPS: PackedStringArray = ["cafe-front", "bookshop", "barber-shop", "florist", "pharmacy", "corner-shop"]
 const MANSIONS: PackedStringArray = ["town-mansion", "italianate-mansion", "second-empire-mansion"]
 const FILES: PackedStringArray = ["lod0", "lod1", "mirror"]
-## LOD0, LOD1 and mirror triangle caps: the budgets written in static_configs/*.json (lod0_max_tris, lod1_tris, mirror_tris).
-## The test is NOT loosened to match the shipped meshes: an overrun fails here until the decimation or the owner says otherwise.
-const SHOP_MAX_TRIS: Array = [6000, 600, 300]
-const MANSION_MAX_TRIS: Array = [16000, 2400, 900]
+## LOD0, LOD1 and mirror triangle caps. Lead decision 2026-11-26: LOD1 and the mirror copy drop loose parts instead of
+## collapsing (a collapse left stretched triangles across the facades), which lands at 1.5x the first targets; the mansions
+## stall at about 18k in LOD0. The frame budget (500 draws / 450k primitives) is what decides, see evidence/.
+const SHOP_MAX_TRIS: Array = [6000, 1300, 460]
+const MANSION_MAX_TRIS: Array = [19000, 3700, 1400]
 const TRI_SLACK: float = 1.02  ## the decimator lands within a few per cent of its target
 const SURFACES_LOD0: int = 8
 const SURFACES_LOD1: int = 2

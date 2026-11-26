@@ -4,9 +4,9 @@
  "width_m": 9.15,
  "depth_m": 6.37,
  "height_m": 12.08,
- "lod0_tris": 6340,
- "lod1_tris": 598,
- "mirror_tris": 581,
+ "lod0_tris": 5940,
+ "lod1_tris": 1256,
+ "mirror_tris": 450,
  "lod0_surfaces": [
   "M_Flat",
   "M_Glass",
@@ -18,10 +18,12 @@
   "T_Stucco_Sky"
  ],
  "lod1_surfaces": [
-  "M_Flat"
+  "M_Flat",
+  "M_Glass"
  ],
  "mirror_surfaces": [
-  "M_Flat"
+  "M_Flat",
+  "M_Glass"
  ],
  "copyright": "\"Corner Shop\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
 }

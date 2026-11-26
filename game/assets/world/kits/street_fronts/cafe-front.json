@@ -4,9 +4,9 @@
  "width_m": 6.06,
  "depth_m": 8.86,
  "height_m": 9.08,
- "lod0_tris": 5999,
- "lod1_tris": 594,
- "mirror_tris": 336,
+ "lod0_tris": 5599,
+ "lod1_tris": 1001,
+ "mirror_tris": 445,
  "lod0_surfaces": [
   "M_Flat",
   "M_Glass",

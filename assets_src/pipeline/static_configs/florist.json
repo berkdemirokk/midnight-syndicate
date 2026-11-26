@@ -2,9 +2,13 @@
  "kind": "shop",
  "front": "auto",
  "keep_textured": 6,
- "drop_materials": ["Flue"],
+ "drop_materials": [
+  "Flue",
+  "Steel",
+  "Iron"
+ ],
  "lod0_max_tris": 6000,
- "lod1_tris": 600,
+ "lod1_tris": 900,
  "mirror_tris": 300,
  "cell_m": 4.0,
  "title": "Florist",

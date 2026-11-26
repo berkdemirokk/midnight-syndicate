@@ -14,8 +14,9 @@ with "front": "+Y" / "-Y" / "+X" / "-X" (Blender axes, source frame) in the conf
 Materials: every untextured or dropped-to-flat material becomes ONE material "M_Flat" whose colour is the albedo baked into
 COLOR_0 (times the baked AO), so the engine multiplies nothing else. Glass becomes ONE material "M_Glass". At most
 keep_textured materials keep their textures (their names start with "T_"); signs are always among them. LOD0 keeps the
-source triangles (decimated only above lod0_max_tris), LOD1 keeps at most lod1_tris triangles and has two surfaces only
-(M_Flat, M_Glass): the textures are averaged into the vertex colours.
+source triangles (smallest loose parts dropped, then decimated, only above lod0_max_tris), LOD1 drops loose parts by size
+down to lod1_tris triangles (cull_islands) and has two surfaces only (M_Flat, M_Glass): the textures are averaged into the
+vertex colours.
 
 Triangle and surface counts are printed; the engine side reads them back from the GLB files.
 """
@@ -273,6 +274,68 @@ def decimate_to(obj, target):
     return tri_count(obj.data)
 
 
+def cull_islands(obj, target, max_size_m, always_below_m=0.0):
+    """Removes whole loose parts (window bars, brackets, pots, gutters), smallest first, until the mesh has at most
+    target triangles; parts whose largest side reaches max_size_m, glass and signs stay. Parts smaller than
+    always_below_m go in any case. Unlike a collapse this leaves every remaining wall and frame untouched, so no
+    stretched triangle crosses a facade at range. Parts are found by vertex position (the import splits vertices at
+    sharp edges). Returns the triangle count."""
+    me = obj.data
+    parent = {}
+
+    def find(a):
+        while parent.setdefault(a, a) != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    keys = [tuple(round(c, 3) for c in v.co) for v in me.vertices]
+    for p in me.polygons:
+        first = find(keys[p.vertices[0]])
+        for vi in p.vertices[1:]:
+            parent[find(keys[vi])] = first
+            first = find(first)
+    parts = {}
+    for p in me.polygons:
+        parts.setdefault(find(keys[p.vertices[0]]), []).append(p.index)
+    info = []
+    for root, faces in parts.items():
+        lo = [1e9] * 3
+        hi = [-1e9] * 3
+        tris, keep = 0, False
+        for fi in faces:
+            p = me.polygons[fi]
+            tris += len(p.vertices) - 2
+            name = mat_name(me, p.material_index)
+            keep = keep or is_glass(name) or "Sign" in name
+            for vi in p.vertices:
+                co = me.vertices[vi].co
+                for c in range(3):
+                    lo[c] = min(lo[c], co[c])
+                    hi[c] = max(hi[c], co[c])
+        info.append((max(hi[c] - lo[c] for c in range(3)), tris, keep, faces))
+    info.sort(key=lambda t: t[0])
+    total = sum(t[1] for t in info)
+    doomed = set()
+    for size, tris, keep, faces in info:
+        if keep or size >= max_size_m:
+            continue
+        if size >= always_below_m and total <= target:
+            break
+        doomed.update(faces)
+        total -= tris
+    if doomed:
+        bm = bmesh.new()
+        bm.from_mesh(me)
+        bm.faces.ensure_lookup_table()
+        bmesh.ops.delete(bm, geom=[bm.faces[i] for i in doomed], context="FACES")
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+        bm.to_mesh(me)
+        bm.free()
+        me.update()
+    return tri_count(me)
+
+
 def finalize(obj, albedo, keep_tex):
     """After the AO bake: flat faces get albedo * AO, the glass stays white, kept textures keep AO only; then the
     material slots are rebuilt as M_Flat, M_Glass and the kept T_ materials."""
@@ -380,12 +443,16 @@ def main():
     lod1_src.data = obj.data.copy()
     bpy.context.scene.collection.objects.link(lod1_src)
     # LOD0: source triangles, decimated only above lod0_max_tris, AO with the subdivision of the kit
-    tris0 = decimate_to(obj, int(cfg.get("lod0_max_tris", 30000)))
+    lod0_max = int(cfg.get("lod0_max_tris", 30000))
+    cull_islands(obj, lod0_max, float(cfg.get("lod0_cull_max_m", 0.7)), float(cfg.get("lod0_cull_always_m", 0.08)))
+    tris0 = decimate_to(obj, lod0_max)
     ao.bake_ao([obj], cell_m=float(cfg.get("cell_m", 2.5)))
     surf0 = finalize(obj, albedo, keep_tex)
     # LOD1: decimated copy, AO without subdivision, textures averaged into the colours
     lod1_tris_target = int(cfg.get("lod1_tris", 2500))
-    decimate_to(lod1_src, lod1_tris_target)
+    # loose parts go first (clean walls at range); a collapse only if that still leaves far too many triangles
+    if cull_islands(lod1_src, lod1_tris_target, float(cfg.get("lod1_cull_max_m", 2.5))) > lod1_tris_target * 1.5:
+        decimate_to(lod1_src, int(lod1_tris_target * 1.5))
     ao.bake_ao([lod1_src], cell_m=None)
     albedo1 = dict(albedo)  # textures of the kept materials are averaged into their colours for LOD1
     for name in keep_tex:
@@ -397,7 +464,9 @@ def main():
     mirror = lod1_src.copy()
     mirror.data = lod1_src.data.copy()
     bpy.context.scene.collection.objects.link(mirror)
-    decimate_to(mirror, int(cfg.get("mirror_tris", 800)))
+    mirror_target = int(cfg.get("mirror_tris", 800))
+    if cull_islands(mirror, mirror_target, float(cfg.get("mirror_cull_max_m", 4.0))) > mirror_target * 1.5:
+        decimate_to(mirror, int(mirror_target * 1.5))
     # textures: 1024 px at most
     for img in bpy.data.images:
         if img.size[0] > 1024 or img.size[1] > 1024:

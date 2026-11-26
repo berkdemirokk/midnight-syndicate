@@ -1,71 +1,335 @@
 {
-  "note": "Third-party assets in the rescue-package format (MIDNIGHT_RESCUE/tools/validate_assets.py). The project-wide record stays in ASSET_MANIFEST.json; this file has another name because Windows file names are case-insensitive.",
-  "assets": [
-    {
-      "id": "vinish_mid_engine_supercar",
-      "path": "assets_src/third_party/vinish_cars/mid-engine-supercar.glb",
-      "role": "vehicle (source model)",
-      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
-      "author": "vinish.dev",
-      "license": "CC-BY-4.0",
-      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
-      "attribution": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
-      "sha256": "153bb0ff391dbcd816acb2f22cec30e212f65fffd6477ed903a20783cfbc2e3a"
-    },
-    {
-      "id": "vinish_muscle_coupe",
-      "path": "assets_src/third_party/vinish_cars/muscle-coupe.glb",
-      "role": "vehicle (source model)",
-      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
-      "author": "vinish.dev",
-      "license": "CC-BY-4.0",
-      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
-      "attribution": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
-      "sha256": "f3fc9864f2850c3cd62e9655f8529ce2a0641f1b863b9a9c1196dc4a9c9fc890"
-    },
-    {
-      "id": "vinish_rear_engine_sports_coupe",
-      "path": "assets_src/third_party/vinish_cars/rear-engine-sports-coupe.glb",
-      "role": "vehicle (source model)",
-      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
-      "author": "vinish.dev",
-      "license": "CC-BY-4.0",
-      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
-      "attribution": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
-      "sha256": "ab2e27716de230bd603964772bba723e72a6b6c1aebe9d1bb87cedf9415f078e"
-    },
-    {
-      "id": "vinish_grand_tourer",
-      "path": "assets_src/third_party/vinish_cars/grand-tourer.glb",
-      "role": "vehicle (source model)",
-      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
-      "author": "vinish.dev",
-      "license": "CC-BY-4.0",
-      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
-      "attribution": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
-      "sha256": "7998bce260ca45c5f0a5a9eea5ceb06c76c0f61399e1e2394c4dcaca0383c9c4"
-    },
-    {
-      "id": "vinish_widebody_drift_coupe",
-      "path": "assets_src/third_party/vinish_cars/widebody-drift-coupe.glb",
-      "role": "vehicle (source model)",
-      "source_url": "https://vinish.dev/free-3d-models/sports-cars",
-      "author": "vinish.dev",
-      "license": "CC-BY-4.0",
-      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
-      "attribution": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
-      "sha256": "835cf7e7fa31843d1d34e278928859f6eb83966b8b7bc0c2d40ccd1cc5b9a533"
-    },
-    {
-      "id": "vinish_hypercar",
-      "path": "assets_src/third_party/vinish_cars/hypercar.glb",
-      "role": "vehicle (source model)",
-      "source_url": "https://vinish.dev/free-3d-models/sports-cars",
-      "author": "vinish.dev",
-      "license": "CC-BY-4.0",
-      "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
-      "attribution": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
-      "sha256": "2adc88136f5e69401340f295e1dbb3cdf78fb02ef616b29d249e6eb9f9eb8409"
-    }
-  ]
+ "note": "Third-party assets in the rescue-package format (MIDNIGHT_RESCUE/tools/validate_assets.py). The project-wide record stays in ASSET_MANIFEST.json; this file has another name because Windows file names are case-insensitive.",
+ "assets": [
+  {
+   "id": "vinish_mid_engine_supercar",
+   "path": "assets_src/third_party/vinish_cars/mid-engine-supercar.glb",
+   "role": "vehicle (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "153bb0ff391dbcd816acb2f22cec30e212f65fffd6477ed903a20783cfbc2e3a"
+  },
+  {
+   "id": "vinish_muscle_coupe",
+   "path": "assets_src/third_party/vinish_cars/muscle-coupe.glb",
+   "role": "vehicle (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "f3fc9864f2850c3cd62e9655f8529ce2a0641f1b863b9a9c1196dc4a9c9fc890"
+  },
+  {
+   "id": "vinish_rear_engine_sports_coupe",
+   "path": "assets_src/third_party/vinish_cars/rear-engine-sports-coupe.glb",
+   "role": "vehicle (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "ab2e27716de230bd603964772bba723e72a6b6c1aebe9d1bb87cedf9415f078e"
+  },
+  {
+   "id": "vinish_grand_tourer",
+   "path": "assets_src/third_party/vinish_cars/grand-tourer.glb",
+   "role": "vehicle (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "7998bce260ca45c5f0a5a9eea5ceb06c76c0f61399e1e2394c4dcaca0383c9c4"
+  },
+  {
+   "id": "vinish_widebody_drift_coupe",
+   "path": "assets_src/third_party/vinish_cars/widebody-drift-coupe.glb",
+   "role": "vehicle (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/sports-cars",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "835cf7e7fa31843d1d34e278928859f6eb83966b8b7bc0c2d40ccd1cc5b9a533"
+  },
+  {
+   "id": "vinish_hypercar",
+   "path": "assets_src/third_party/vinish_cars/hypercar.glb",
+   "role": "vehicle (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/sports-cars",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "2adc88136f5e69401340f295e1dbb3cdf78fb02ef616b29d249e6eb9f9eb8409"
+  },
+  {
+   "id": "vinish_bakery",
+   "path": "assets_src/third_party/vinish_env/bakery.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Bakery\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "d29d7fbd8bc309fc288bb2ec7ff79ec6d4547601329110422b1725c5d1d7bfd4"
+  },
+  {
+   "id": "vinish_barber_shop",
+   "path": "assets_src/third_party/vinish_env/barber-shop.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Barber Shop\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "ec38795c0d37d253962aa6ba0dd85207abc20c10256f6a2982858293bf0f4741"
+  },
+  {
+   "id": "vinish_bookshop",
+   "path": "assets_src/third_party/vinish_env/bookshop.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Bookshop\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "017a3631b7df36c5fb2444f8229f6ba38717cbeed8e78dd43a9c7799ee72af1b"
+  },
+  {
+   "id": "vinish_cafe_front",
+   "path": "assets_src/third_party/vinish_env/cafe-front.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Café Front\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "7fbb95117521f994686231196a8c2e6f9f48b763e3a3a975460840b3d35df2b7"
+  },
+  {
+   "id": "vinish_corner_shop",
+   "path": "assets_src/third_party/vinish_env/corner-shop.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Corner Shop\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "42925a054eb47737cf68e19449d6ee6a840834dabe598ea075f4e43a2465ce36"
+  },
+  {
+   "id": "vinish_double_ended_ferry",
+   "path": "assets_src/third_party/vinish_env/double-ended-ferry.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Double Ended Ferry\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "e8c73fd4c497fc0310eaa6d53abdaa0b2469de04dabd01bbfc3aace77e11c061"
+  },
+  {
+   "id": "vinish_florist",
+   "path": "assets_src/third_party/vinish_env/florist.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Florist\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "8bc58398338848c89881267820d7133e2ce6f6ec91a6a3d249e4eb291ac02191"
+  },
+  {
+   "id": "vinish_italian_cypress",
+   "path": "assets_src/third_party/vinish_env/italian-cypress.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Italian Cypress\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "1ae683112fefbbedfb31a84402e50f8683a8e2690d5c36ba95a24ee25b9d453d"
+  },
+  {
+   "id": "vinish_italianate_mansion",
+   "path": "assets_src/third_party/vinish_env/italianate-mansion.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Italianate Mansion\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "76308833ac566c5637e2c052afb0a4e407aaa582724b13f785a2fa3926d4cfe6"
+  },
+  {
+   "id": "vinish_magnolia_tree",
+   "path": "assets_src/third_party/vinish_env/magnolia-tree.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Magnolia Tree\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "9fb3462ffb12f1b9c5ce6a95c8b44d29228d3c9349d49a3db4253ab47054a962"
+  },
+  {
+   "id": "vinish_man_in_flannel_shirt",
+   "path": "assets_src/third_party/vinish_env/man-in-flannel-shirt.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Man in Flannel Shirt\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "03d0bbe8287523b96297757bcd060e8ee4a6254d959cd974606f9dbb2fa3a73f"
+  },
+  {
+   "id": "vinish_man_in_hoodie",
+   "path": "assets_src/third_party/vinish_env/man-in-hoodie.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Man in Hoodie\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "74931b00f1e4b8d2ca254f80bc031059c39eb6f69015c3b87859d10616576833"
+  },
+  {
+   "id": "vinish_man_in_shorts_and_cap",
+   "path": "assets_src/third_party/vinish_env/man-in-shorts-and-cap.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Man in Shorts and Cap\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "91bf4f366a048786583c3e5a544389fe6edca4fd90bcfc4dc421994be4ad6f67"
+  },
+  {
+   "id": "vinish_man_with_backpack",
+   "path": "assets_src/third_party/vinish_env/man-with-backpack.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Man with Backpack\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "88292dc193081277463ebdef3dc4a20213b0dceb2f0e068c02c73093d29229e7"
+  },
+  {
+   "id": "vinish_pharmacy",
+   "path": "assets_src/third_party/vinish_env/pharmacy.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Pharmacy\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "64216a6a221bd3398b7dbac946d1fc724cffc87ae8077736321b0d625f3b3f25"
+  },
+  {
+   "id": "vinish_plane_tree",
+   "path": "assets_src/third_party/vinish_env/plane-tree.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Plane Tree\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "89e5dab851149814be4e789e6202180f910db4afc6f64ad33f1cda0b1e86a04a"
+  },
+  {
+   "id": "vinish_second_empire_mansion",
+   "path": "assets_src/third_party/vinish_env/second-empire-mansion.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Second Empire Mansion\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "dcdc6f6ecc88f8677bfd76c6893d3e0404ac763d902298f8dbbc5b8a5bc58267"
+  },
+  {
+   "id": "vinish_town_mansion",
+   "path": "assets_src/third_party/vinish_env/town-mansion.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Town Mansion\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "bb1063fcb7ab2c55efe0b711d76668926d0aa91024b0263950f53adf71b0855a"
+  },
+  {
+   "id": "vinish_triple_globe_lamp_post",
+   "path": "assets_src/third_party/vinish_env/triple-globe-lamp-post.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Triple Globe Lamp Post\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "73953198c7de786af89d6c9cd91d506cf2e5e11622183574cd7ca77b4ed0c034"
+  },
+  {
+   "id": "vinish_woman_in_denim_jacket",
+   "path": "assets_src/third_party/vinish_env/woman-in-denim-jacket.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Woman in Denim Jacket\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "873ef1d415080b21d52231c71d3cbb87865d349397295d86db5fd6669f8febe5"
+  },
+  {
+   "id": "vinish_woman_in_puffer_jacket",
+   "path": "assets_src/third_party/vinish_env/woman-in-puffer-jacket.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Woman in Puffer Jacket\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "3afa44b1f18e7b674481cf544d002ed9a2c1f96ec1a8e78b9801ec5f8678e028"
+  },
+  {
+   "id": "vinish_woman_in_summer_dress",
+   "path": "assets_src/third_party/vinish_env/woman-in-summer-dress.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Woman in Summer Dress\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "72f174cadcace64167b59f869aecd577de3c254b1cf1cf5162f5f92d106b4212"
+  },
+  {
+   "id": "vinish_woman_in_tracksuit",
+   "path": "assets_src/third_party/vinish_env/woman-in-tracksuit.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Woman in Tracksuit\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "7c7076bcc95c822db81e0481d2f8a5a7658ea58c41a42309bb5ec22f3a3576e7"
+  },
+  {
+   "id": "vinish_young_staked_tree",
+   "path": "assets_src/third_party/vinish_env/young-staked-tree.glb",
+   "role": "environment (source model)",
+   "source_url": "https://vinish.dev/free-3d-models/",
+   "author": "vinish.dev",
+   "license": "CC-BY-4.0",
+   "license_evidence": "licenses/vinish_dev_CC-BY-4.0.txt",
+   "attribution": "\"Young Staked Tree\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0",
+   "sha256": "b804cb6e469aee44686e4061497f4279701e28a78f810b9add233a747b716baa"
+  }
+ ]
 }

@@ -4,9 +4,9 @@
  "width_m": 14.739,
  "depth_m": 16.169,
  "height_m": 16.472,
- "lod0_tris": 18080,
- "lod1_tris": 2398,
- "mirror_tris": 1460,
+ "lod0_tris": 17744,
+ "lod1_tris": 2232,
+ "mirror_tris": 1312,
  "lod0_surfaces": [
   "M_Flat",
   "M_Glass",
@@ -22,7 +22,8 @@
   "M_Glass"
  ],
  "mirror_surfaces": [
-  "M_Flat"
+  "M_Flat",
+  "M_Glass"
  ],
  "copyright": "\"Second Empire Mansion\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified"
 }
