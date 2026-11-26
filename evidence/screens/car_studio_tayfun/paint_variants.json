@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.965,
+  "luma_min": 0.0,
+  "name": "paint_variants",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 142,
+    "draw_calls_min": 142,
+    "driver": "vulkan",
+    "fps": 879.147,
+    "frame_ms_avg": 1.137,
+    "frame_ms_p95": 1.161,
+    "frame_ms_p99": 1.225,
+    "frames": 60,
+    "objects": 142,
+    "os": "Windows",
+    "primitives": 435070,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 474.403,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/cars3/evidence/screens/car_studio_tayfun/paint_variants.png",
+  "preset": "high",
+  "scenario": "car_studio_tayfun"
+}

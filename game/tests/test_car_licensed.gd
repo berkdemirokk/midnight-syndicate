@@ -11,6 +11,12 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.32, "front_r": 0.33, "rear_r": 0.355, "wheelbase": 2.64,
 	},
 	{
+		"id": "noctra_tayfun", "scene": "res://vehicles/noctra_tayfun/noctra_tayfun.tscn",
+		"spec": "res://vehicles/specs/noctra_tayfun.tres", "name": "Noctra Tayfun",
+		"len": 4.335, "width": 2.027, "height": 1.259,  # source GLB bounding box (metres), widebody-drift-coupe.glb
+		"axle": 1.23, "front_r": 0.335, "rear_r": 0.35, "wheelbase": 2.46,
+	},
+	{
 		"id": "arden_havoc", "scene": "res://vehicles/arden_havoc/arden_havoc.tscn",
 		"spec": "res://vehicles/specs/arden_havoc.tres", "name": "Arden Havoc",
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb
