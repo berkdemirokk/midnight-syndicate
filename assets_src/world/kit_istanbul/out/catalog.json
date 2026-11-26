@@ -163,7 +163,7 @@
    "storeys": 3,
    "width": 18.299,
    "depth": 14.939,
-   "height": 15.601,
+   "height": 16.001,
    "tris": {
     "LOD0": 9279,
     "LOD1": 350,
@@ -208,12 +208,12 @@
     "type": "box",
     "size": [
      18.299,
-     15.601,
+     16.001,
      14.939
     ],
     "center": [
      0.0,
-     7.8003,
+     8.0003,
      -6.02
     ]
    }
@@ -232,12 +232,12 @@
     "shops"
    ],
    "storeys": 4,
-   "width": 17.24,
+   "width": 17.32,
    "depth": 12.22,
-   "height": 14.48,
+   "height": 14.7,
    "tris": {
-    "LOD0": 6270,
-    "LOD1": 488,
+    "LOD0": 6100,
+    "LOD1": 688,
     "LOD2": 36
    },
    "materials": [
@@ -297,13 +297,13 @@
     "name": "bld_ahsap_row_a-colonly",
     "type": "box",
     "size": [
-     17.24,
-     14.48,
+     17.32,
+     14.7,
      12.22
     ],
     "center": [
      0.0,
-     7.24,
+     7.35,
      -4.89
     ]
    }
@@ -322,12 +322,12 @@
     "shops"
    ],
    "storeys": 4,
-   "width": 19.44,
+   "width": 19.48,
    "depth": 11.42,
    "height": 15.868,
    "tris": {
     "LOD0": 7491,
-    "LOD1": 550,
+    "LOD1": 654,
     "LOD2": 48
    },
    "materials": [
@@ -389,12 +389,12 @@
     "name": "bld_ahsap_row_b-colonly",
     "type": "box",
     "size": [
-     19.44,
+     19.48,
      15.868,
      11.42
     ],
     "center": [
-     0.0,
+     0.02,
      7.934,
      -4.49
     ]
@@ -418,8 +418,8 @@
    "depth": 12.82,
    "height": 18.67,
    "tris": {
-    "LOD0": 10976,
-    "LOD1": 648,
+    "LOD0": 10962,
+    "LOD1": 700,
     "LOD2": 36
    },
    "materials": [

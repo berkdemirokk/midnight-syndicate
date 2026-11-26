@@ -149,21 +149,21 @@ def shop_front(b, f, w, trim, awn):
     """Shop row front (u 0..w): pilasters with base and capital, a panelled stall riser under the glass,
     a moulding over the fascia, and a scalloped valance hanging from the awning edge."""
     for ua, ub in ((1.18, 1.36), (w - 0.3, w - 0.12)):
-        bb.fbox(b, f, ua, ub, 0.5, 2.95, -0.14, 0.0, trim)                  # pilaster shaft
-        bb.fbox(b, f, ua - 0.03, ub + 0.03, 0.3, 0.5, -0.19, 0.0, trim)     # base
-        bb.fbox(b, f, ua - 0.03, ub + 0.03, 2.85, 2.95, -0.19, 0.0, trim)   # capital
-    bb.fbox(b, f, 1.36, w - 0.3, 0.05, 0.55, -0.12, 0.0, trim)              # stall riser
-    bb.fbox(b, f, 1.5, w - 0.45, 0.14, 0.44, -0.17, -0.12, trim)            # raised panel on the riser
-    bb.fbox(b, f, 1.2, w - 0.15, 3.4, 3.46, -0.14, -0.04, trim)             # moulding over the fascia
+        bb.fbox(b, f, ua, ub, 0.5, 2.95, -0.32, 0.0, trim)                  # pilaster shaft, 32 cm relief
+        bb.fbox(b, f, ua - 0.04, ub + 0.04, 0.3, 0.5, -0.36, 0.0, trim)     # base
+        bb.fbox(b, f, ua - 0.04, ub + 0.04, 2.85, 2.95, -0.36, 0.0, trim)   # capital
+    bb.fbox(b, f, 1.36, w - 0.3, 0.05, 0.55, -0.26, 0.0, trim)              # stall riser, 26 cm proud
+    bb.fbox(b, f, 1.5, w - 0.45, 0.14, 0.44, -0.3, -0.24, trim)             # raised panel on the riser
+    bb.fbox(b, f, 1.2, w - 0.15, 3.36, 3.46, -0.34, -0.04, trim)            # moulding over the fascia
     edges = [1.25 + k * (w - 1.5) / 5.0 for k in range(6)]
     for ua, ub in zip(edges[:-1], edges[1:]):                               # valance scallops
         bb.fbox(b, f, ua + 0.06, ub - 0.06, 2.3, 2.45, -1.22, -1.14, awn)
 
 
 def pediment(b, f, uc, w, v0, apex, mat_wall, mat_trim, mat_glass):
-    """Street-facing gable on the front wall above the eave: a trimmed triangle with a square attic window."""
+    """Street-facing gable on the front wall above the eave: a cream triangle (trim, reads against the wall) with a square attic window."""
     t = -0.1                                                        # stands 10 cm proud of the wall, clear of the eave
-    b.poly([f.P(uc - w / 2, v0, t), f.P(uc + w / 2, v0, t), f.P(uc, apex, t)], f.N, mat_wall)
+    b.poly([f.P(uc - w / 2, v0, t), f.P(uc + w / 2, v0, t), f.P(uc, apex, t)], f.N, mat_trim)
     bb.fbox(b, f, uc - w / 2 - 0.1, uc + w / 2 + 0.1, v0 - 0.02, v0 + 0.1, -0.16, -0.1, mat_trim)   # base band
     s = 0.28
     bb.fbox(b, f, uc - s - 0.08, uc + s + 0.08, apex - 0.52, apex - 0.1, -0.16, -0.1, mat_trim)    # attic frame
@@ -172,7 +172,7 @@ def pediment(b, f, uc, w, v0, apex, mat_wall, mat_trim, mat_glass):
 
 def belvedere(b, xc, yc, zr, mat_wall, mat_roof):
     """Small lantern on the hip apex: a four-sided body with a pyramid cap (silhouette only)."""
-    r, h = 0.9, 1.1
+    r, h = 1.15, 1.5                                                # larger than v1 so the lantern shows from the road
     b.box((xc - r, yc - r, zr - 0.1), (xc + r, yc + r, zr + h), mat_wall)
     top = zr + h + 0.7
     c = [(xc - r - 0.1, yc - r - 0.1, zr + h), (xc + r + 0.1, yc - r - 0.1, zr + h),
@@ -180,6 +180,21 @@ def belvedere(b, xc, yc, zr, mat_wall, mat_roof):
     for k in range(4):
         a, d = c[k], c[(k + 1) % 4]
         b.poly([a, d, (xc, yc, top)], (a[0] + d[0] - 2 * xc, a[1] + d[1] - 2 * yc, 1.2), mat_roof)
+
+
+def oriel(b, f, u0, u1, v0, v1, wall, trim, glass_t, rng, bb_pick):
+    """Projecting timber oriel on an upper floor: a solid box 0.6 m proud of the wall, two glazed panes on its
+    front, cornice and base bands. The wall windows under it are dropped by the caller."""
+    t = -0.6
+    bb.fbox(b, f, u0, u1, v0, v1, t, 0.0, wall)
+    um = 0.5 * (u0 + u1)
+    bb.fbox(b, f, u0 - 0.06, u1 + 0.06, v1, v1 + 0.12, t - 0.06, 0.0, trim)
+    bb.fbox(b, f, u0 - 0.06, u1 + 0.06, v0 - 0.1, v0, t - 0.06, 0.0, trim)
+    for pa, pb in ((u0 + 0.14, um - 0.05), (um + 0.05, u1 - 0.14)):
+        tile = bb_pick(rng, glass_t)
+        b.poly([f.P(pa, v0 + 0.35, t - 0.02), f.P(pb, v0 + 0.35, t - 0.02),
+                f.P(pb, v1 - 0.35, t - 0.02), f.P(pa, v1 - 0.35, t - 0.02)], f.N, "M_WindowAtlas", bb.tile_uv(tile))
+    bb.fbox(b, f, um - 0.03, um + 0.03, v0, v1, t - 0.04, t, trim)
 
 
 def grilles(b, f, o, mat):

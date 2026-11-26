@@ -8,12 +8,14 @@ Reuses `kit_buildings/build_buildings.py` (Builder, Face, window atlas, impostor
 ## Content (one `catalog.json`: `buildings[]` in the building-kit format, `items[]` in the props-kit format)
 | id | what | LOD0 / LOD1 / LOD2 tris |
 |---|---|---|
-| bld_yali_a | butter pastel yali, 3 floors, 2 stacked cumba bays | 4460 / 396 / 16 |
-| bld_yali_b | dark-wood yali, 2 floors, 24 m, 1.7 m eaves, 3 cumba | 3814 / 318 / 16 |
-| bld_yali_c | dusty-rose yali, 3 floors, central 2-floor bay | 4238 / 334 / 16 |
-| bld_ahsap_row_a | 3 pastel houses (3-4 floors), shops, cumba | 3968 / 488 / 36 |
-| bld_ahsap_row_b | 4 narrow wooden houses, green shutters | 4218 / 550 / 48 |
-| bld_ahsap_row_c | old apartment row, balconies, cumba, shops | 6484 / 648 / 36 |
+| bld_yali_a | butter pastel yali, 3 floors, 2 stacked cumba bays | 9666 / 396 / 16 |
+| bld_yali_b | dark-wood yali, 2 floors, 24 m, 1.7 m eaves, 3 cumba | 8589 / 318 / 16 |
+| bld_yali_c | dusty-rose yali, 3 floors, central 2-floor bay, belvedere | 9279 / 350 / 16 |
+| bld_ahsap_row_a | 3 pastel houses (3-4 floors), shops, cumba, oriels, hip roofs, pediment | 6100 / 688 / 36 |
+| bld_ahsap_row_b | 4 narrow wooden houses, green shutters, oriels, hip roof | 7491 / 654 / 48 |
+| bld_ahsap_row_c | old apartment row, balconies, cumba, shops, oriel, hip roof | 10962 / 700 / 36 |
+
+(Counts are `loop_triangles` after the AO bake, as `report.json` writes them; the earlier table was stale.)
 | tram_rail_segment | 12 m bed, 2 rails, 2 poles, catenary | 1476 (LOD1 442) |
 | cobble_strip | 12 m granite kerb, setts, cobble field | 1764 (LOD1 528) |
 | seaside_railing | 6 m cast-iron railing, 4 scroll rings | 1636 (LOD1 489) |
@@ -39,3 +41,14 @@ M_Fish_Silver, M_Skyline_Asia/Bridge/Domes (single texture, albedo = emission). 
 - Blender warns that several prop meshes are "not valid" on glTF export (degenerate pole faces of spheres); the GLBs load and render.
 - QA lights are Blender point lights, not the game's lamps; pastel plasters will look different under the wet-facade shader.
 - Sign names are not baked in; the sign anchors are empty.
+
+## Facade pass 2, review fixes (commit "Istanbul kit facade pass 2: review fixes")
+Done in the scripts, rebuilt, shipped: hipped roofs on 5 of the 11 row houses (row_a h0/h2, row_b h1/h3, row_c h1), projecting
+timber oriels on upper floors (row_a h0/h2, row_b h0/h2, row_c h2), a pediment in cream trim and 0.6 m taller, a 1.15 m x 1.5 m
+belvedere, shop pilasters 32 cm proud and shop glazing recessed 60 cm (was 35 cm), ground-floor row windows at lit p=0.9.
+QA frames with camera poses: `render_istanbul.py -- facade_pediment | facade_shop | facade_belvedere` (ISTANBUL_QA_DAY=1);
+copies in evidence/screens/ortakoy_benchmark/qa/.
+Open follow-up (own acceptance criteria): LOD1 rework, eave and bracket rework on the rows, wall panels, silhouette variety
+beyond hips and oriels. LOD1 of row_a/b/c moved only from hips and oriels (488->688, 550->654, 648->700).
+Still weak: the shop interior is a flat texture (M_ShopInterior, shared, not rebuilt); night ground-floor windows on the near
+wooden row stay dark; awning and riser read only at close range.

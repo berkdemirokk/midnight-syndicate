@@ -382,20 +382,29 @@ def H_(fl):
     return 3.5 + (fl - 1) * 3.1
 
 
+# hip: hipped roof instead of the gable (varies the skyline). oriel: (upper floors, u start, width) of a projecting bay.
 ROWS = [
     dict(id="bld_ahsap_row", variant="a", name="pastel street row, 3 houses", D=10.4, gh=0.5, siding=False, houses=[
-        dict(w=5.6, F=3, wall="M_Plaster_Butter", trim="M_Plaster_Cream", cumba=[1, 2], shop="M_Awning_Red", pitch=0.34, chim=True),
+        dict(w=5.6, F=3, wall="M_Plaster_Butter", trim="M_Plaster_Cream", cumba=[1, 2], shop="M_Awning_Red", pitch=0.34, chim=True,
+             hip=True, oriel=([1, 2], 0.3, 1.35)),
         dict(w=6.2, F=4, wall="M_Plaster_Rose", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.30, chim=False, pediment=True),
-        dict(w=5.2, F=3, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.34, chim=True)]),
+        dict(w=5.2, F=3, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.34, chim=True,
+             hip=True, oriel=([1, 2], 0.5, 1.4))]),
     dict(id="bld_ahsap_row", variant="b", name="wooden row, 4 narrow houses", D=9.6, gh=0.5, siding=False, houses=[
-        dict(w=4.6, F=3, wall="M_Wood_Yali_Dark", trim="M_Plaster_Cream", cumba=[1, 2], shop=None, pitch=0.36, chim=True, shut=True),
-        dict(w=5.0, F=3, wall="M_Plaster_Ochre", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.32, chim=False, shut=True),
-        dict(w=4.4, F=4, wall="M_Wood_Oxblood", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.36, chim=True, shut=True),
-        dict(w=5.2, F=3, wall="M_Plaster_Sage", trim="M_Plaster_Cream", cumba=[1], shop="M_Awning_Red", pitch=0.32, chim=False, shut=True)]),
+        dict(w=4.6, F=3, wall="M_Wood_Yali_Dark", trim="M_Plaster_Cream", cumba=[1, 2], shop=None, pitch=0.36, chim=True, shut=True,
+             oriel=([2], 0.25, 1.3)),
+        dict(w=5.0, F=3, wall="M_Plaster_Ochre", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Teal", pitch=0.32, chim=False, shut=True,
+             hip=True),
+        dict(w=4.4, F=4, wall="M_Wood_Oxblood", trim="M_Plaster_Cream", cumba=[2, 3], shop=None, pitch=0.36, chim=True, shut=True,
+             oriel=([1], 0.25, 1.25)),
+        dict(w=5.2, F=3, wall="M_Plaster_Sage", trim="M_Plaster_Cream", cumba=[1], shop="M_Awning_Red", pitch=0.32, chim=False, shut=True,
+             hip=True)]),
     dict(id="bld_ahsap_row", variant="c", name="old apartment row with balconies and a corner cumba", D=11.0, gh=0.5, siding=False, houses=[
         dict(w=6.4, F=5, wall="M_Plaster_Cream", trim="M_Plaster_Ochre", cumba=[2, 3], shop="M_Awning_Teal", pitch=0.26, chim=True, balc=[1, 3, 4]),
-        dict(w=6.2, F=5, wall="M_Plaster_Ochre", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Red", pitch=0.26, chim=False, balc=[1, 2, 3, 4]),
-        dict(w=5.6, F=4, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[1, 2, 3], shop=None, pitch=0.30, chim=True)]),
+        dict(w=6.2, F=5, wall="M_Plaster_Ochre", trim="M_Plaster_Cream", cumba=[], shop="M_Awning_Red", pitch=0.26, chim=False, balc=[1, 2, 3, 4],
+             hip=True),
+        dict(w=5.6, F=4, wall="M_Plaster_Sky", trim="M_Plaster_Cream", cumba=[1, 2, 3], shop=None, pitch=0.30, chim=True,
+             oriel=([2], 0.2, 1.4))]),
 ]
 
 
@@ -427,7 +436,7 @@ def build_row(sp, lod, rng):
                 if h["shop"]:
                     ops.append(dict(kind="door", u0=0.3, u1=1.15, v0=0.0, v1=2.3, r=0.25 if detail else 0.05,
                                     glass="M_Paint_Door_Blue", wall=base))
-                    ops.append(dict(kind="shop", u0=1.35, u1=w - 0.3, v0=0.55, v1=2.8, r=0.35 if detail else 0.05,
+                    ops.append(dict(kind="shop", u0=1.35, u1=w - 0.3, v0=0.55, v1=2.8, r=0.6 if detail else 0.05,
                                     glass="M_ShopGlass", wall=base, interior=True, q=bb.shop_quad(off + shopi)))
                     shopi += 1
                 else:
@@ -436,16 +445,19 @@ def build_row(sp, lod, rng):
                     for s in (-1, 1):
                         if w > 4.9 or s < 0:
                             cu = uc + s * (1.75 if w > 4.9 else 1.45)
-                            if 0.5 < cu < w - 0.5:
-                                win_op(ops, rng, cu - 0.45, cu + 0.45, 0.95, 2.6, wall, 0.5, dface, shut=h.get("shut", False))
+                            if 0.5 < cu < w - 0.5:      # ground floor glows at night: lit tiles come up
+                                win_op(ops, rng, cu - 0.45, cu + 0.45, 0.95, 2.6, wall, 0.9, dface, shut=h.get("shut", False))
                 for fl in range(1, F):
                     z0 = H_(fl) - 3.1 if fl > 0 else 0
                     z0 = 3.5 + (fl - 1) * 3.1
                     if fl in h["cumba"]:
                         continue
                     n = 2 if w >= 5.0 else 1
+                    ob = h.get("oriel")
                     for k in range(n):
                         cu = (k + 0.5) * w / n
+                        if ob and fl in ob[0] and cu + 0.47 > ob[1] - 0.1 and cu - 0.47 < ob[1] + ob[2] + 0.1:
+                            continue                          # the oriel below carries this bay
                         win_op(ops, rng, cu - 0.47, cu + 0.47, z0 + 0.6, z0 + 2.4, wall, 0.5, dface,
                                shut=h.get("shut", False), balc=bool(detail and fl in h.get("balc", [])))
             else:
@@ -497,7 +509,7 @@ def build_row(sp, lod, rng):
                     if lod == 0:
                         b.anchor("anchor_sign_%02d" % shopi, f.P(w / 2 + 0.6, 3.2, -0.13), f.N)
                 if detail and h.get("pediment"):
-                    idt.pediment(b, f, w / 2, w, ze - 0.2, ze + 1.3, wall, trim, "M_WindowAtlas")
+                    idt.pediment(b, f, w / 2, w, ze - 0.2, ze + 1.9, wall, trim, "M_WindowAtlas")
                 if detail:
                     excl = [(o["u0"], o["u1"], o["v0"], o["v1"]) for o in ops]
                     if h["shop"]:
@@ -518,9 +530,17 @@ def build_row(sp, lod, rng):
                     z0 = 3.5 + (fl - 1) * 3.1
                     cw = min(2.3, w - 1.8)
                     cumba(b, f, w / 2, cw, 0.8, z0 + 0.1, 2.9, wall, trim, rng, detail, 0.55, roof=(fl == max(h["cumba"])))
-        # roof
+                if h.get("oriel"):
+                    fls, ou, ow = h["oriel"]
+                    for fl in fls:
+                        z0 = 3.5 + (fl - 1) * 3.1
+                        idt.oriel(b, f, ou, ou + ow, z0 + 0.2, z0 + 2.9, wall, trim, 0.55, rng, bb.pick_tile)
+        # roof: hipped houses break the row's gable line (same run and rise as the gable, so the chimney stays right)
         rise = h["pitch"] * (D / 2)
-        zr = gable_roof_x(b, x, x + w, 0.0, D, ze, rise, 0.9, 0.4, 0.12, "M_Roof_Tile", wall, trim, detail)
+        if h.get("hip"):
+            zr = hip_roof(b, x, x + w, 0.0, D, ze, math.degrees(math.atan(h["pitch"])), 0.9, 0.12, 0.4, "M_Roof_Tile", trim, detail)
+        else:
+            zr = gable_roof_x(b, x, x + w, 0.0, D, ze, rise, 0.9, 0.4, 0.12, "M_Roof_Tile", wall, trim, detail)
         if detail and h["chim"]:
             chimney(b, x + w * 0.7, D * 0.5 + 0.8, ze + 0.9, rise + 0.3)
         spans.append((x, x + w, ze, zr))

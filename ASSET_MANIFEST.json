@@ -6563,8 +6563,8 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 607664,
-      "sha256": "7c38ce626c6fdc18b6adeb078f0718e10fa8aaee4dd2bd2c69c7f2245b5423c6",
+      "bytes": 611256,
+      "sha256": "a24063acd3a9581642c841280571235aa83416090520cd2ed33021a187fae6d5",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
@@ -6580,8 +6580,8 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 717124,
-      "sha256": "2f931ce27a737bc8ddbce7d135c237f220f0e8fad557b940877cc905ad197800",
+      "bytes": 724752,
+      "sha256": "1ba56b6b0773e687b2e5c9ec41e0affc51be56fde2391cfbbb0312f4dd6ba089",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
@@ -6597,8 +6597,8 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 1016048,
-      "sha256": "a2a95771d65de7a250bb3fb3d36a59ea8fef60ae329ea714f6a915c18a13b859",
+      "bytes": 1018080,
+      "sha256": "2a8471ea282edeb39dad523938ea78b1c01a637422674eb97a0a3b440b13eae9",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
@@ -6648,8 +6648,8 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 788008,
-      "sha256": "ada8ef7d277a51386afb96bf2b06611fe794e722b6ffd12ac8e896ffe82b9a2a",
+      "bytes": 788004,
+      "sha256": "e7a529b797b3d04477f9b4ec314ee2dad0675565a26fc724ab58508090abe359",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
@@ -6665,8 +6665,8 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 15589,
-      "sha256": "9943fc013edd9d2bf2aa1c8e24295ec76ca97bb683691971f67a263d4b5605c9",
+      "bytes": 15588,
+      "sha256": "b2ace37fcb39621c91aa0bf9908b4c8998232c6f861f6f71334bbcf6c17ea8ef",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"
@@ -6972,7 +6972,7 @@
       "texture_sizes": {},
       "material_count": 0,
       "bytes": 2871,
-      "sha256": "7b29b79c779a13b236088dd2e9d13c830cdf3c07fe8ca0005b8e2aa3404424b5",
+      "sha256": "0832a96d8648313699adc6bbdea5e72b4175ac99313165938e24e595458879f6",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "World Tour Istanbul kit (assets_src/world/kit_istanbul)"

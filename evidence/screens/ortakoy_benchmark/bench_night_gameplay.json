@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.996,
+  "luma_max": 0.999,
   "luma_min": 0.0,
   "name": "bench_night_gameplay",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 389,
     "draw_calls_min": 307,
     "driver": "vulkan",
-    "fps": 357.145,
-    "frame_ms_avg": 2.8,
-    "frame_ms_p95": 3.324,
-    "frame_ms_p99": 3.547,
+    "fps": 353.112,
+    "frame_ms_avg": 2.832,
+    "frame_ms_p95": 3.46,
+    "frame_ms_p99": 3.555,
     "frames": 60,
     "objects": 18531,
     "os": "Windows",
-    "primitives": 387628,
+    "primitives": 388028,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 621.101,
+    "video_mem_mb": 621.135,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-1/evidence/screens/ortakoy_benchmark/bench_night_gameplay.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_ac6bae88-9e0-4/evidence/screens/ortakoy_benchmark/bench_night_gameplay.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

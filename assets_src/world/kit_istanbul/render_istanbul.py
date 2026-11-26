@@ -254,6 +254,19 @@ def main():
     if GROUP == "yali":
         sc = street_scene(["bld_yali_a.glb", "bld_yali_b.glb", "bld_yali_c.glb"], 26.0, back=34.0, lens=26.0, look_z=5.0)
         render(os.path.join(REN, "yali_row_front.png"))
+    # review frames: each names its camera. Row a origin is the centre of the 17 m front, the pediment is house 2 (x 0.2).
+    elif GROUP == "facade_pediment":                 # cam (0.2, -30, 2) -> (0.2, 0, 12), 35 mm
+        sc = street_scene(["bld_ahsap_row_a.glb"], 0.0, back=30.0, lens=35.0, look_z=12.0)
+        cam(sc, (0.2, -30.0, 2.0), (0.2, 0.0, 12.0), 35.0)
+        render(os.path.join(REN, "facade_pediment_row_a_h2.png"))
+    elif GROUP == "facade_shop":                     # street eye 1.6 m at 8 m from the fronts, house 1 shop (x -5.7)
+        sc = street_scene(["bld_ahsap_row_a.glb"], 0.0)
+        cam(sc, (-5.7, -8.0, 1.6), (-5.7, 0.0, 2.2), 35.0)
+        render(os.path.join(REN, "facade_shop_8m_row_a_h1.png"))
+    elif GROUP == "facade_belvedere":                # cam (0, -40, 3) -> (0, 0, 13), 35 mm, yali c hip apex
+        sc = street_scene(["bld_yali_c.glb"], 0.0, back=40.0, lens=35.0, look_z=13.0)
+        cam(sc, (0.0, -40.0, 3.0), (0.0, 0.0, 13.0), 35.0)
+        render(os.path.join(REN, "facade_belvedere_yali_c.png"))
     elif GROUP == "yali_road":                       # road-level eye, 1.2 m, about 24 m from the front
         for v in "abc":
             sc = setup(1600, 900)

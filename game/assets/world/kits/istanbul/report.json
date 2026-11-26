@@ -25,26 +25,26 @@
    "lod0_in_budget": true
   },
   "bld_ahsap_row_a": {
-   "lod0": 6270,
-   "lod1": 488,
+   "lod0": 6100,
+   "lod1": 688,
    "lod2": 36,
-   "lod1_ratio": 0.078,
+   "lod1_ratio": 0.113,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_ahsap_row_b": {
    "lod0": 7491,
-   "lod1": 550,
+   "lod1": 654,
    "lod2": 48,
-   "lod1_ratio": 0.073,
+   "lod1_ratio": 0.087,
    "lod1_ok": true,
    "lod0_in_budget": true
   },
   "bld_ahsap_row_c": {
-   "lod0": 10976,
-   "lod1": 648,
+   "lod0": 10962,
+   "lod1": 700,
    "lod2": 36,
-   "lod1_ratio": 0.059,
+   "lod1_ratio": 0.064,
    "lod1_ok": true,
    "lod0_in_budget": true
   }
