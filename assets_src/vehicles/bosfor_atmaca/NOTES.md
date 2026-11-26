@@ -15,11 +15,12 @@ melts flat panels (see the arden_civic renders). Instead: lower body = ring sect
 end rounding and one crease; cabin = trapezoid sections whose roof line is a rounded polyline; windows = prisms
 cut out of the cabin (so every window edge is straight and the pocket reads as an interior), glass recessed 12 mm;
 arches = exact boolean with cylinders; flares, bumpers, lamps, grille, wheels are bmesh builders.
-LODs by bisected collapse decimation per object (LOD1 <= 15k, LOD2 <= 5k, no brakes or interior at LOD2).
+LODs by bisected collapse decimation per object (LOD1 <= 12k, LOD2 <= 5k, no brakes or interior at LOD2), followed by
+a degenerate-face clean (dissolve_degenerate, zero-area faces and loose vertices removed); LOD0 is cleaned too.
 
-Measured (LOD0 / LOD1 / LOD2 triangles): stock 23.5k / 15.0k / 5.0k, modified 28.0k / 15.0k / 5.0k,
-taxi 24.3k / 15.0k / 5.0k. Dimensions: stock 1.66 x 1.40 x 4.30, modified 1.77 x 1.35 x 4.30, taxi height 1.51.
+Measured (LOD0 / LOD1 / LOD2 triangles): stock 33.1k / 12.0k / 5.0k, modified 37.2k / 12.0k / 5.0k,
+taxi 33.9k / 12.0k / 5.0k. Dimensions: stock 1.65 x 1.355 x 4.31, modified 1.77 x 1.305 x 4.31, taxi height 1.46.
+Premium pass: shut lines, louvres, lamp / grille / plate pockets are exact booleans (surface found by ray casts on the
+built shell, see body_cut_details and cabin_cut_details); render_atmaca.py also has `hood` and `boot` close-ups.
 
-Known limits: LOD1 sits at its budget (not much below), decimation leaves a few degenerate faces at LOD2
-(Blender warns "mesh not valid" on export, Godot imports cleanly); the 5-spoke rim is a plain tapered spoke;
-no textures (flat PBR colours), the engine adds clearcoat and metallic flakes to M_Paint at runtime.
+Known limits: LOD1 sits at its budget; one zero-area face may remain at LOD0 (text mesh); no textures (flat PBR colours), the engine adds clearcoat and metallic flakes to M_Paint at runtime.

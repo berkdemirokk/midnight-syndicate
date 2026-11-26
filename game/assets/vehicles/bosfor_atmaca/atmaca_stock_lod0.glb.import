@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dlfucv8f5vksi"
+uid="uid://t27mpdc6ily7"
 path="res://.godot/imported/atmaca_stock_lod0.glb-15d23ee7f5097298876d02c6866b757b.scn"
 
 [deps]
@@ -42,4 +42,4 @@ materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
-gltf/texture_map_mode=1
+gltf/texture_map_mode=0

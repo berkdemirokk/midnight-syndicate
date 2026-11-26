@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.963,
+  "luma_max": 0.964,
   "luma_min": 0.0,
   "name": "modified_wheel",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 53,
     "draw_calls_min": 53,
     "driver": "vulkan",
-    "fps": 587.59,
-    "frame_ms_avg": 1.702,
-    "frame_ms_p95": 2.625,
-    "frame_ms_p99": 3.484,
+    "fps": 628.18,
+    "frame_ms_avg": 1.592,
+    "frame_ms_p95": 1.793,
+    "frame_ms_p99": 1.861,
     "frames": 60,
     "objects": 53,
     "os": "Windows",
-    "primitives": 55526,
+    "primitives": 70956,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 460.507,
+    "video_mem_mb": 460.731,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_b7447ca2-250-1/evidence/screens/car_studio_atmaca/modified_wheel.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_d45452b9-4d2-1/evidence/screens/car_studio_atmaca/modified_wheel.png",
   "preset": "high",
   "scenario": "car_studio_atmaca"
 }

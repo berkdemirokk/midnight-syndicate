@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://c7oicm7pfuyaf"
+uid="uid://hd1a8dg4eonl"
 path="res://.godot/imported/atmaca_taxi_lod1.glb-813da3b69f714c3ce5755b3912b963fe.scn"
 
 [deps]
@@ -42,4 +42,4 @@ materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
-gltf/texture_map_mode=1
+gltf/texture_map_mode=0

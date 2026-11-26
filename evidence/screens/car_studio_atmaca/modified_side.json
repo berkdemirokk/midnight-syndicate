@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.964,
+  "luma_max": 0.965,
   "luma_min": 0.0,
   "name": "modified_side",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 47,
     "draw_calls_min": 47,
     "driver": "vulkan",
-    "fps": 832.339,
-    "frame_ms_avg": 1.201,
-    "frame_ms_p95": 1.72,
-    "frame_ms_p99": 2.832,
+    "fps": 987.898,
+    "frame_ms_avg": 1.012,
+    "frame_ms_p95": 1.181,
+    "frame_ms_p99": 1.258,
     "frames": 60,
     "objects": 47,
     "os": "Windows",
-    "primitives": 52134,
+    "primitives": 60970,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 460.507,
+    "video_mem_mb": 460.731,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_b7447ca2-250-1/evidence/screens/car_studio_atmaca/modified_side.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_d45452b9-4d2-1/evidence/screens/car_studio_atmaca/modified_side.png",
   "preset": "high",
   "scenario": "car_studio_atmaca"
 }

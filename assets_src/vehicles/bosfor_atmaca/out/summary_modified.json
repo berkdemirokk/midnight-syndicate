@@ -1,14 +1,14 @@
 {
   "variant": "modified",
   "tris": {
-    "lod0": 28036,
-    "lod1": 14999,
-    "lod2": 4997
+    "lod0": 37216,
+    "lod1": 11998,
+    "lod2": 4990
   },
   "dims": {
     "width": 1.77,
-    "length": 4.3,
-    "height": 1.35
+    "length": 4.31,
+    "height": 1.305
   },
   "blender": "5.3.0"
 }

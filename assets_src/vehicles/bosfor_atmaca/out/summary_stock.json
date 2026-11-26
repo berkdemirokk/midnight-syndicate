@@ -1,14 +1,14 @@
 {
   "variant": "stock",
   "tris": {
-    "lod0": 23476,
-    "lod1": 14999,
-    "lod2": 4994
+    "lod0": 33066,
+    "lod1": 11987,
+    "lod2": 4993
   },
   "dims": {
-    "width": 1.661,
-    "length": 4.3,
-    "height": 1.4
+    "width": 1.65,
+    "length": 4.31,
+    "height": 1.355
   },
   "blender": "5.3.0"
 }

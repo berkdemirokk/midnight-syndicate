@@ -25,12 +25,14 @@ HALF_W = 0.825
 ZC = 0.58  # the one body crease
 SLOPE_F = 0.52 / 0.75  # windscreen rise per metre
 SLOPE_R = 0.52 / 0.43  # rear screen drop per metre
-ROOF_Z = 1.40
+ROOF_Z = 1.355
+WB = 0.955  # side glass bottom (belt)
+WT = ROOF_Z - 0.072  # side glass top
 Y_ROOF0, Y_ROOF1 = -0.10, 0.95
 
 VARIANTS = {
     "stock": dict(dz=0.0, wx=0.71, R=0.295, tw=0.165, rim_r=0.165, kind="steel", flares=False, glass="M_GlassClear",
-                  paint=(0xE9, 0xDF, 0xC4), black_trim=False, arch_gap=0.045, brake_r=0.115, caliper=(0.45, 0.45, 0.47)),
+                  paint=(0xDF, 0xD3, 0xB2), black_trim=False, arch_gap=0.045, brake_r=0.115, caliper=(0.45, 0.45, 0.47)),
     "modified": dict(dz=-0.05, wx=0.74, R=0.2875, tw=0.195, rim_r=0.190, kind="star", flares=True, glass="M_Glass",
                      paint=(0xD6, 0x5A, 0x14), black_trim=True, arch_gap=0.024, brake_r=0.150, caliper=(0.85, 0.08, 0.06)),
     "taxi": dict(dz=0.0, wx=0.71, R=0.295, tw=0.165, rim_r=0.165, kind="steel", flares=False, glass="M_GlassClear",
@@ -181,9 +183,9 @@ def principled(name, base_srgb, metallic=0.0, rough=0.5):
 
 def make_mats(v):
     mats = {}
-    m, b = principled("M_Paint", v["paint"], 0.05, 0.3)
-    b.inputs["Coat Weight"].default_value = 1.0
-    b.inputs["Coat Roughness"].default_value = 0.05
+    m, b = principled("M_Paint", v["paint"], 0.0, 0.42)
+    b.inputs["Coat Weight"].default_value = 0.7
+    b.inputs["Coat Roughness"].default_value = 0.14
     mats["M_Paint"] = m
     if v["glass"] == "M_Glass":  # smoked, the engine replaces it with its own tinted glass
         m, b = principled("M_Glass", (0x0A, 0x0E, 0x12), 0.0, 0.04)
@@ -209,7 +211,7 @@ def make_mats(v):
     mats["M_LightRear"] = m
     m, b = principled("M_Reverse", (0xF0, 0xF0, 0xF0), 0.0, 0.2)
     mats["M_Reverse"] = m
-    mats["M_Rim"] = principled("M_Rim", (0x50, 0x55, 0x5E) if v["kind"] == "star" else (0x8C, 0x91, 0x96), 1.0, 0.3)[0]
+    mats["M_Rim"] = principled("M_Rim", (0x6E, 0x73, 0x7C) if v["kind"] == "star" else (0x8C, 0x91, 0x96), 1.0, 0.3)[0]
     mats["M_Tire"] = principled("M_Tire", (0x16, 0x16, 0x17), 0.0, 0.85)[0]
     mats["M_BrakeDisc"] = principled("M_BrakeDisc", (0x70, 0x74, 0x7A), 1.0, 0.45)[0]
     mats["M_Caliper"] = principled("M_Caliper", tuple(int(c * 255) for c in v["caliper"]), 0.0, 0.4)[0]
@@ -224,9 +226,27 @@ def make_mats(v):
 
 
 # ------------------------------------------------------------------ body shell
-def lower_profile(w, zb, zt):
-    ctl = [(0.0, zb), (w - 0.08, zb), (w, ZC + V["dz"]), (w - 0.085, zt), (0.0, zt)]
-    return round_poly(ctl, [0, 0.09, 0, 0.07, 0], 5)
+def smoothstep(t):
+    t = max(0.0, min(1.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def crown(y):
+    """Height of the bonnet / boot crown at station y (zero over the cabin, fading out toward the nose and tail)."""
+    if y < -0.70:
+        return 0.028 * smoothstep((y - Y_NOSE) / 0.40)
+    if y < -0.45:
+        return 0.028 * smoothstep((-0.45 - y) / 0.25)
+    if y > 1.35:
+        return 0.012 * smoothstep((y - 1.35) / 0.20) * smoothstep((Y_TAIL - y) / 0.30)
+    return 0.0
+
+
+def lower_profile(w, zb, zt, cr=0.0):
+    # side, crease, shoulder, then the crown with a centre ridge (the "centre crease" of the bonnet)
+    ctl = [(0.0, zb), (w - 0.045, zb), (w, ZC + V["dz"]), (w - 0.05, zt),
+           (0.48, zt + 0.28 * cr), (0.07, zt + 0.62 * cr), (0.0, zt + cr)]
+    return round_poly(ctl, [0, 0.09, 0, 0.07, 0, 0, 0], 8)
 
 
 def full_ring(half, y):
@@ -248,7 +268,8 @@ def loft(bm, rings, mi=0):
 
 ZT_T = [(-2.00, 0.80), (-1.50, 0.84), (-0.85, 0.88), (2.20, 0.88)]
 ZB_T = [(-2.00, 0.17), (-1.75, 0.17), (-1.45, 0.17), (1.50, 0.17), (1.95, 0.17), (2.20, 0.17)]
-END_D = [0.0, 0.006, 0.016, 0.03, 0.05, 0.075, 0.105, 0.14]
+END_D = [0.0, 0.003, 0.008, 0.014, 0.022, 0.032, 0.044, 0.058, 0.07]
+RH, RV = 0.07, 0.06  # nose / tail corner radii in plan and in profile
 MID_Y = ([-1.75] + [-1.65 + 0.075 * i for i in range(14)] + [-0.55, -0.30, 0.30, 0.55]
          + [0.80 + 0.075 * i for i in range(13)] + [1.80, 1.90])
 
@@ -260,13 +281,13 @@ def lower_body():
     rings = []
     for y in ys:
         d = min(y - Y_NOSE, Y_TAIL - y)
-        w = HALF_W - corner_off(d, 0.14)
-        zt = tbl(ZT_T, y) + dz - corner_off(d, 0.075)
+        w = HALF_W - corner_off(d, RH)
+        zt = tbl(ZT_T, y) + dz - corner_off(d, RV)
         zb = tbl(ZB_T, y) + dz + 0.0 + corner_off(d, 0.05)
         # front valance and tail apron lift off the ground
         zb += 0.07 * max(0.0, (y + 1.75) / -0.25) if y < -1.75 else 0.0
         zb += 0.07 * max(0.0, (y - 1.95) / 0.25) if y > 1.95 else 0.0
-        rings.append(full_ring(lower_profile(w, zb, zt), y))
+        rings.append(full_ring(lower_profile(w, zb, zt, crown(y)), y))
     bm = bmesh.new()
     loft(bm, rings)
     return new_obj("body_lower", bm, [MATS["M_Paint"]])
@@ -278,13 +299,13 @@ def lb_side_x(y, z):
     zc = ZC + V["dz"]
     w = HALF_W
     if z <= zc:
-        return (w - 0.08) + 0.08 * (z - zb) / (zc - zb)
-    return w - 0.085 * (z - zc) / (zt - zc)
+        return (w - 0.045) + 0.045 * (z - zb) / (zc - zb)
+    return w - 0.05 * (z - zc) / (zt - zc)
 
 
-# cabin: sides are planes, x(z) = 0.718 - 0.10 (z - dz - 0.70)
+# cabin: sides are planes with tumblehome, x(z) = 0.718 - 0.16 (z - dz - 0.70)
 def xs_side(z):
-    return 0.718 - 0.10 * (z - V["dz"] - 0.70)
+    return 0.718 - 0.16 * (z - V["dz"] - 0.70)
 
 
 def f_front(y):
@@ -303,36 +324,62 @@ def cabin():
     rings = []
     for y, zr in prof:
         xb, xr = xs_side(zbase), xs_side(zr)
-        half = round_poly([(0.0, zbase), (xb, zbase), (xr, zr), (0.0, zr)], [0, 0, 0.05, 0], 4)
+        half = round_poly([(0.0, zbase), (xb, zbase), (xr, zr), (0.0, zr)], [0, 0, 0.045, 0], 6)
         rings.append(full_ring(half, y))
     bm = bmesh.new()
     loft(bm, rings)
     return new_obj("cabin", bm, [MATS["M_Paint"]])
 
 
+def offset_poly(pts, d):
+    """Offset a closed convex-ish 2D polygon outward by d (vertex bisector offset)."""
+    P = [Vector(p) for p in pts]
+    n = len(P)
+    area = sum(P[i].x * P[(i + 1) % n].y - P[(i + 1) % n].x * P[i].y for i in range(n)) * 0.5
+    sg = 1.0 if area > 0 else -1.0
+    out = []
+    for i in range(n):
+        e1 = (P[i] - P[i - 1]).normalized()
+        e2 = (P[(i + 1) % n] - P[i]).normalized()
+        n1, n2 = Vector((e1.y, -e1.x)) * sg, Vector((e2.y, -e2.x)) * sg
+        q = P[i] + (n1 + n2) * d / (1.0 + n1.dot(n2))
+        out.append((q.x, q.y))
+    return out
+
+
+WIN_SIDE0 = 0.04   # front door glass rear edge (B pillar front)
+WIN_SIDE1 = 0.11   # rear door glass front edge
+
+
 def window_polys():
-    """Glass outlines as 3D loops on the cabin surface, one list per window, plus the prisms' directions."""
+    """Glass outlines: side glass in (y, z); windscreen and rear screen in (x, y) on their sloped planes."""
     dz = V["dz"]
     zz = lambda z: z + dz  # noqa: E731
     yA = lambda z: Y_ROOF0 + (z - dz - ROOF_Z) / SLOPE_F  # noqa: E731  A-pillar edge
+    zb, zt = zz(WB), zz(WT)
     sides = [
-        [(yA(zz(0.985)) + 0.075, zz(0.985)), (0.01, zz(0.985)), (0.01, zz(1.335)), (yA(zz(1.335)) + 0.075, zz(1.335))],
-        [(0.20, zz(0.985)), (0.80, zz(0.985)), (0.70, zz(1.335)), (0.20, zz(1.335))],
+        [(yA(zb) + 0.045, zb), (WIN_SIDE0, zb), (WIN_SIDE0, zt), (yA(zt) + 0.045, zt)],
+        [(WIN_SIDE1, zb), (0.78, zb), (0.74, zt), (WIN_SIDE1, zt)],
     ]
-    out = []
-    for poly in sides:
-        poly = round_closed(poly, 0.03, 3)
-        out.append(("side", poly))
-    # windscreen on plane z = f_front(y): (x, y) outline
-    yb, yt = -0.78, -0.17
-    wx = lambda y, f: xs_side(f(y)) - 0.075  # noqa: E731
+    out = [("side", round_closed(p, 0.028, 3)) for p in sides]
+    yb, yt = -0.70, -0.20
+    wx = lambda y, f: xs_side(f(y)) - 0.055  # noqa: E731
     ws = round_closed([(-wx(yb, f_front), yb), (wx(yb, f_front), yb), (wx(yt, f_front), yt), (-wx(yt, f_front), yt)], 0.03, 3)
     out.append(("front", ws))
     yb2, yt2 = 1.30, 1.04
-    rs = round_closed([(-(xs_side(f_rear(yb2)) - 0.10), yb2), ((xs_side(f_rear(yb2)) - 0.10), yb2),
-                       ((xs_side(f_rear(yt2)) - 0.10), yt2), (-(xs_side(f_rear(yt2)) - 0.10), yt2)], 0.03, 3)
+    rx = lambda y: xs_side(f_rear(y)) - 0.075  # noqa: E731
+    rs = round_closed([(-rx(yb2), yb2), (rx(yb2), yb2), (rx(yt2), yt2), (-rx(yt2), yt2)], 0.03, 3)
     out.append(("rear", rs))
     return out
+
+
+def win_map(kind, sx=1):
+    """Returns P(a, b, off) -> 3D point on the cabin skin of that window, `off` metres along the outward normal."""
+    if kind == "side":
+        return lambda a, b, off: (sx * (xs_side(b) + off), a, b)
+    f, sl = (f_front, SLOPE_F) if kind == "front" else (f_rear, -SLOPE_R)
+    n = Vector((0.0, -sl, 1.0)).normalized()
+    return lambda a, b, off: tuple(Vector((a, b, f(b))) + n * off)
 
 
 def window_geometry():
@@ -340,26 +387,32 @@ def window_geometry():
     cut, gl = bmesh.new(), bmesh.new()
     for kind, poly in window_polys():
         for sx in ((1, -1) if kind == "side" else (1,)):
-            if kind == "side":
-                def P(y, z, off, sx=sx):
-                    return (sx * (xs_side(z) + off), y, z)
-                outer = [P(y, z, 0.05) for y, z in poly]
-                inner = [P(y, z, -0.40) for y, z in poly]
-                glass = [P(y, z, -0.012) for y, z in poly]
-                if sx < 0:
-                    outer, inner, glass = outer[::-1], inner[::-1], glass[::-1]
-            else:
-                f, sl = (f_front, SLOPE_F) if kind == "front" else (f_rear, -SLOPE_R)
-                n = Vector((0.0, -sl, 1.0)).normalized()
-                depth = 0.30 if kind == "front" else 0.26
-                base = [(x, y, f(y)) for x, y in poly]
-                outer = [tuple(Vector(p) + n * 0.05) for p in base]
-                inner = [tuple(Vector(p) - n * depth) for p in base]
-                glass = [tuple(Vector(p) - n * 0.012) for p in base]
+            P = win_map(kind, sx)
+            depth = 0.40 if kind == "side" else (0.30 if kind == "front" else 0.26)
+            outer = [P(a, b, 0.05) for a, b in poly]
+            inner = [P(a, b, -depth) for a, b in poly]
+            glass = [P(a, b, -0.012) for a, b in poly]
+            if kind == "side" and sx < 0:
+                outer, inner, glass = outer[::-1], inner[::-1], glass[::-1]
             extrude_poly_between(cut, outer, inner, MATS["M_Interior"])
             vs = [gl.verts.new(p) for p in glass]
             gl.faces.new(vs).material_index = 0
     return cut, gl
+
+
+def window_rings(bm, mi):
+    """Flat surround (chrome on stock/taxi, rubber on the modified car) hugging every glass opening."""
+    for kind, poly in window_polys():
+        for sx in ((1, -1) if kind == "side" else (1,)):
+            P = win_map(kind, sx)
+            outer = offset_poly(poly, 0.011)
+            n = len(poly)
+            ri = [bm.verts.new(P(a, b, 0.0015)) for a, b in poly]
+            ro = [bm.verts.new(P(a, b, 0.0035)) for a, b in outer]
+            for i in range(n):
+                j = (i + 1) % n
+                q = [ri[i], ri[j], ro[j], ro[i]]
+                bm.faces.new(q if not (kind == "side" and sx < 0) else q[::-1]).material_index = mi
 
 
 def extrude_poly_between(bm, outer, inner, mat):
@@ -385,8 +438,9 @@ def apply_mod(ob, mod):
     bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
-def boolean_diff(ob, cutter, mat_transfer=True):
+def boolean_diff(ob, cutter, mat_transfer=True, use_self=False):
     m = ob.modifiers.new("cut", "BOOLEAN")
+    m.use_self = use_self
     m.operation = "DIFFERENCE"
     m.operand_type = "OBJECT"
     m.object = cutter
@@ -413,6 +467,16 @@ def smooth(ob, angle=22.0):
     bpy.ops.object.shade_smooth_by_angle(angle=math.radians(angle))
     for m in list(ob.modifiers):
         bpy.ops.object.modifier_apply(modifier=m.name)
+
+
+def weighted(ob):
+    """Weighted normals on top of the smooth-by-angle result: flat panels stay flat, creases stay crisp."""
+    select_only(ob)
+    m = ob.modifiers.new("wn", "WEIGHTED_NORMAL")
+    m.keep_sharp = True
+    m.weight = 50
+    m.mode = "FACE_AREA"
+    bpy.ops.object.modifier_apply(modifier=m.name)
 
 
 def join(parts, name):
@@ -451,67 +515,81 @@ def wheel_bm(side):
     # barrel (dark, seen through the spokes and past the dish)
     revolve(bm, [(hw - 0.015, rr - 0.004), (-(hw - 0.015), rr - 0.004)], seg, 0.0, 0.0, 3, xs)
     xf = hw - 0.012  # outer rim lip plane
+    def flat(pts2, cy, cz, th, x, mi):
+        """One flat polygon in the wheel plane at x: pts2 = [(radial, tangential)] around (cy, cz) at angle th."""
+        uy, uz = math.cos(th), math.sin(th)
+        ty, tz = -uz, uy
+        vs = [bm.verts.new((x * xs, cy + p * uy + q * ty, cz + p * uz + q * tz)) for p, q in pts2]
+        bm.faces.new(vs if xs > 0 else vs[::-1]).material_index = mi
+
+    def box_at(c, uy, uz, hu, hv, h, x0, mi):
+        """Small raised block: centre c=(y, z), radial dir (uy, uz), half sizes hu (radial) hv (tangential), x0..x0+h."""
+        ty, tz = -uz, uy
+        vs = []
+        for dx in (x0, x0 + h):
+            for p in (-hu, hu):
+                for q in (-hv, hv):
+                    vs.append(bm.verts.new((dx * xs, c[0] + p * uy + q * ty, c[1] + p * uz + q * tz)))
+        for fq in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
+            f = [vs[i] for i in fq]
+            bm.faces.new(f if xs > 0 else f[::-1]).material_index = mi
+
     if V["kind"] == "steel":
-        lip = [(xf, rr + 0.004), (xf + 0.003, rr - 0.006), (xf - 0.004, rr - 0.016)]
-        dish = [(xf - 0.040, rr - 0.030), (xf - 0.043, 0.115), (xf - 0.030, 0.105), (xf - 0.030, 0.0)]
-        revolve(bm, lip + dish, seg, 0.0, 0.0, 1, xs)
-        # pressed ribs: five short raised bars on the dish
-        for q in range(5):
-            th = 2 * math.pi * q / 5
-            cy, cz = 0.135 * math.cos(th), 0.135 * math.sin(th)
-            hu, hv = 0.032, 0.008
+        # chrome trim ring on the lip, pressed steel dish with ventilation slots, domed hubcap with ribs and a badge
+        revolve(bm, [(xf + 0.002, rr + 0.004), (xf + 0.006, rr - 0.004), (xf + 0.006, rr - 0.014), (xf - 0.002, rr - 0.024)],
+                seg, 0.0, 0.0, 2, xs)
+        revolve(bm, [(xf - 0.002, rr - 0.024), (xf - 0.022, rr - 0.034), (xf - 0.040, 0.150), (xf - 0.042, 0.112),
+                     (xf - 0.030, 0.100), (xf - 0.030, 0.0)], seg, 0.0, 0.0, 1, xs)
+        for q in range(8):
+            th = 2 * math.pi * (q + 0.5) / 8
+            flat([(-0.015, 0.0), (-0.010, 0.0075), (0.010, 0.0075), (0.015, 0.0), (0.010, -0.0075), (-0.010, -0.0075)],
+                 0.131 * math.cos(th), 0.131 * math.sin(th), th, xf - 0.0398, 3)
+        cap = [(xf - 0.030, 0.106), (xf - 0.020, 0.103), (xf - 0.008, 0.094), (xf + 0.002, 0.080), (xf + 0.005, 0.078),
+               (xf + 0.009, 0.074), (xf + 0.012, 0.062), (xf + 0.017, 0.040), (xf + 0.020, 0.018), (xf + 0.0205, 0.0)]
+        revolve(bm, cap, 36, 0.0, 0.0, 2, xs)
+        for q in range(12):  # radial ribs on the dome
+            th = 2 * math.pi * q / 12
             uy, uz = math.cos(th), math.sin(th)
-            ty, tz = -uz, uy
-            vs = []
-            for dx in (xf - 0.044, xf - 0.036):
-                for a in (-hu, hu):
-                    for b in (-hv, hv):
-                        vs.append(bm.verts.new((dx * xs, cy + a * uy + b * ty, cz + a * uz + b * tz)))
-            for fq in ((0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)):
-                f = [vs[i] for i in fq]
-                bm.faces.new(f if xs > 0 else f[::-1]).material_index = 1
-        # chrome hubcap: ring + dome
-        cap = [(xf - 0.022, 0.118), (xf - 0.012, 0.112), (xf - 0.004, 0.092), (xf + 0.004, 0.066), (xf + 0.010, 0.030), (xf + 0.012, 0.0)]
-        revolve(bm, cap, 28, 0.0, 0.0, 2, xs)
-        # lug nuts
-        for q in range(4):
-            th = 2 * math.pi * q / 4 + math.pi / 4
-            revolve(bm, [(xf - 0.026, 0.0), (xf - 0.019, 0.016), (xf - 0.016, 0.0)], 6, 0.0 + 0.052 * math.cos(th),
-                    0.052 * math.sin(th), 2, xs)
+            box_at((0.051 * uy, 0.051 * uz), uy, uz, 0.012, 0.0026, 0.004, xf + 0.0128, 2)
+        revolve(bm, [(xf + 0.0215, 0.022), (xf + 0.0215, 0.0)], 20, 0.0, 0.0, 3, xs)  # dark centre badge
     else:
-        lip = [(xf + 0.002, rr + 0.004), (xf + 0.004, rr - 0.010), (xf - 0.010, rr - 0.012)]
-        revolve(bm, lip + [(xf - 0.030, rr - 0.024), (xf - 0.034, rr - 0.040)], seg, 0.0, 0.0, 1, xs)
-        # five tapered concave spokes
-        hub_r, tip_r = 0.050, rr - 0.030
+        # polished lip, stepped inner face, deep dark dish, five chunky concave spokes, bolted hub
+        revolve(bm, [(xf + 0.003, rr + 0.004), (xf + 0.007, rr - 0.004), (xf + 0.006, rr - 0.016), (xf - 0.004, rr - 0.024)],
+                seg, 0.0, 0.0, 2, xs)
+        revolve(bm, [(xf - 0.004, rr - 0.024), (xf - 0.016, rr - 0.032), (xf - 0.030, rr - 0.040)], seg, 0.0, 0.0, 1, xs)
+        revolve(bm, [(xf - 0.030, rr - 0.040), (xf - 0.062, rr - 0.046), (xf - 0.084, rr - 0.050), (xf - 0.084, 0.0)],
+                seg, 0.0, 0.0, 3, xs)
+        hub_r, tip_r = 0.062, rr - 0.034
         for q in range(5):
             th0 = 2 * math.pi * q / 5 + 0.2
-            ns = 9
+            ns = 10
             rows = []
+            uy, uz = math.cos(th0), math.sin(th0)
+            ty, tz = -uz, uy
             for i in range(ns + 1):
                 t = i / ns
                 r = hub_r + (tip_r - hub_r) * t
-                half_w = 0.034 - 0.006 * t + 0.008 * math.sin(math.pi * t)  # half width in metres
-                x_face = xf - 0.052 + 0.040 * t ** 1.6  # concave: hub deep, tip at the lip
-                ang = th0
-                uy, uz = math.cos(ang), math.sin(ang)
-                ty, tz = -uz, uy
-                c = (r * uy, r * uz)
+                half_w = 0.028 + 0.010 * t + 0.006 * math.sin(math.pi * t)
+                x_face = xf - 0.052 + 0.038 * t ** 1.5  # concave: hub deep, tip at the lip
                 row = []
-                for xx, b in ((x_face, -half_w), (x_face, half_w), (x_face - 0.022, half_w * 0.8), (x_face - 0.022, -half_w * 0.8)):
-                    row.append(bm.verts.new((xx * xs, c[0] + b * ty, c[1] + b * tz)))
+                for xx, b in ((x_face, -half_w * 0.74), (x_face, half_w * 0.74), (x_face - 0.034, half_w), (x_face - 0.034, -half_w)):
+                    row.append(bm.verts.new((xx * xs, r * uy + b * ty, r * uz + b * tz)))
                 rows.append(row)
             for i in range(ns):
-                a, b = rows[i], rows[i + 1]
+                a2, b2 = rows[i], rows[i + 1]
                 for k in range(4):
                     k1 = (k + 1) % 4
-                    f = [a[k], a[k1], b[k1], b[k]]
+                    f = [a2[k], a2[k1], b2[k1], b2[k]]
                     bm.faces.new(f if xs > 0 else f[::-1]).material_index = 1
             for row, rev in ((rows[0], False), (rows[-1], True)):
                 f = row[::-1] if rev else row
                 bm.faces.new(f if xs > 0 else f[::-1]).material_index = 1
-        # hub and centre cap
-        revolve(bm, [(xf - 0.050, 0.075), (xf - 0.040, 0.062), (xf - 0.030, 0.045), (xf - 0.028, 0.0)], 20, 0.0, 0.0, 1, xs)
-        revolve(bm, [(xf - 0.030, 0.034), (xf - 0.024, 0.030), (xf - 0.020, 0.0)], 16, 0.0, 0.0, 2, xs)
+        revolve(bm, [(xf - 0.056, 0.090), (xf - 0.044, 0.076), (xf - 0.030, 0.056), (xf - 0.024, 0.0)], 24, 0.0, 0.0, 1, xs)
+        for q in range(5):  # chrome wheel bolts
+            th = 2 * math.pi * q / 5 + 0.2 + math.pi / 5
+            revolve(bm, [(xf - 0.032, 0.0), (xf - 0.024, 0.0085), (xf - 0.019, 0.0075), (xf - 0.019, 0.0)], 6,
+                    0.044 * math.cos(th), 0.044 * math.sin(th), 2, xs)
+        revolve(bm, [(xf - 0.026, 0.028), (xf - 0.018, 0.024), (xf - 0.014, 0.0)], 20, 0.0, 0.0, 2, xs)  # centre cap
     return bm
 
 
@@ -620,81 +698,259 @@ def sweep_strip(bm, path, z0, z1, th, mi=0):
         bm.faces.new([lo[e], hi[e], hi_i[e], lo_i[e]]).material_index = mi
 
 
-def bumper_path(y_edge, sgn):
+# ------------------------------------------------------------------ cut details: shut lines, louvres, lamp pockets
+def surf_hit(ob, origin, direction):
+    ok, loc, nrm, _ = ob.ray_cast(Vector(origin), Vector(direction))
+    return (loc.copy(), nrm.copy()) if ok else None
+
+
+def surf_path(ob, samples):
+    """samples: [(origin, direction)] -> surface points and smoothed normals (misses are dropped)."""
+    pts, nrm = [], []
+    for o, d in samples:
+        h = surf_hit(ob, o, d)
+        if h:
+            pts.append(h[0])
+            nrm.append(h[1])
+    sm = []
+    for i in range(len(nrm)):
+        a = nrm[max(i - 1, 0)] + nrm[i] + nrm[min(i + 1, len(nrm) - 1)]
+        sm.append(a.normalized())
+    return pts, sm
+
+
+def groove_sweep(bm, pts, nrms, hw=0.0028, depth=0.007):
+    """Rectangular prism swept along surface points: the cutter of a shut line (self-overlap allowed)."""
+    n = len(pts)
+    if n < 2:
+        return
+    rings = []
+    for i in range(n):
+        t = (pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]).normalized()
+        sd = t.cross(nrms[i]).normalized()
+        top, bot = pts[i] + nrms[i] * 0.012, pts[i] - nrms[i] * depth
+        rings.append([bm.verts.new(top - sd * hw), bm.verts.new(top + sd * hw),
+                      bm.verts.new(bot + sd * hw), bm.verts.new(bot - sd * hw)])
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(4):
+            bm.faces.new([r0[k], r0[(k + 1) % 4], r1[(k + 1) % 4], r1[k]])
+    bm.faces.new(rings[0][::-1])
+    bm.faces.new(rings[-1])
+
+
+def line_xy(p0, p1, step=0.08):
+    n = max(2, int(math.hypot(p1[0] - p0[0], p1[1] - p0[1]) / step))
+    return [(p0[0] + (p1[0] - p0[0]) * i / n, p0[1] + (p1[1] - p0[1]) * i / n) for i in range(n + 1)]
+
+
+def top_samples(pts_xy):
+    return [((x, y, 3.0), (0.0, 0.0, -1.0)) for x, y in pts_xy]
+
+
+def side_samples(y, zs, sx):
+    return [((sx * 3.0, y, z), (-sx, 0.0, 0.0)) for z in zs]
+
+
+SEAMS = (-0.76, 0.075, 0.80)  # front door front edge, B pillar, rear door rear edge
+
+
+def pocket_specs():
+    """Lamp, grille and plate openings: dict name -> (outline [(x, z)], y of the end face, outward sign, depth)."""
+    dz = V["dz"]
+    R = lambda poly, r=0.008: round_closed(poly, r, 2)  # noqa: E731
+    sp = {}
+    for sx in (1, -1):
+        lamp = [(0.365, 0.605), (0.425, 0.655), (0.665, 0.655), (0.665, 0.500), (0.365, 0.500)]
+        ind = [(0.365, 0.443), (0.665, 0.443), (0.665, 0.480), (0.365, 0.480)]
+        tail = [(0.30, 0.555), (0.675, 0.555), (0.650, 0.775), (0.30, 0.775)]
+        sp["lamp%d" % sx] = ([(sx * x, z + dz) for x, z in R(lamp)], Y_NOSE, -1, 0.05)
+        sp["ind%d" % sx] = ([(sx * x, z + dz) for x, z in R(ind, 0.006)], Y_NOSE, -1, 0.05)
+        sp["tail%d" % sx] = ([(sx * x, z + dz) for x, z in R(tail, 0.012)], Y_TAIL, 1, 0.05)
+    sp["grille"] = ([(x, z + dz) for x, z in R([(-0.31, 0.500), (0.31, 0.500), (0.31, 0.660), (-0.31, 0.660)], 0.010)],
+                    Y_NOSE, -1, 0.05)
+    sp["slot"] = ([(x, z + dz) for x, z in R([(-0.30, 0.375), (0.30, 0.375), (0.30, 0.425), (-0.30, 0.425)], 0.008)],
+                  Y_NOSE, -1, 0.05)
+    sp["plate"] = ([(x, z + dz) for x, z in R([(-0.245, 0.340), (0.245, 0.340), (0.245, 0.460), (-0.245, 0.460)], 0.010)],
+                   Y_TAIL, 1, 0.05)
+    return sp
+
+
+def pocket_cutter_bm():
+    bm = bmesh.new()
+    for name, (poly, y, sg, depth) in pocket_specs().items():
+        outer = [(x, y + sg * 0.05, z) for x, z in poly]
+        inner = [(x, y - sg * depth, z) for x, z in poly]
+        extrude_poly_between(bm, outer, inner, None)
+    return bm
+
+
+def body_cut_details(low):
+    """Shut lines (bonnet, boot, three door seams per side) and the lamp / grille / plate pockets, one boolean."""
+    dz = V["dz"]
+    bm = pocket_cutter_bm()
+    xs = 0.64
+    for (a, b) in (((-xs, -1.90), (xs, -1.90)), ((-xs, -0.86), (xs, -0.86)), ((-xs, -1.90), (-xs, -0.86)),
+                   ((xs, -1.90), (xs, -0.86)), ((-xs, 1.40), (xs, 1.40)), ((-xs, 2.11), (xs, 2.11)),
+                   ((-xs, 1.40), (-xs, 2.11)), ((xs, 1.40), (xs, 2.11))):
+        p, n = surf_path(low, top_samples(line_xy(a, b)))
+        groove_sweep(bm, p, n)
+    zc = ZC + dz
+    for sx in (1, -1):
+        for y in SEAMS:
+            zt = tbl(ZT_T, y) + dz - 0.04
+            zs = sorted(set([0.27 + dz + 0.04 * i for i in range(int((zt - 0.27 - dz) / 0.04) + 1)] + [zc, zt]))
+            p, n = surf_path(low, side_samples(y, zs, sx))
+            groove_sweep(bm, p, n)
+    cut = new_obj("detail_cut", bm, [MATS["M_Trim"]])
+    boolean_diff(low, cut, True, use_self=True)
+    bpy.data.objects.remove(cut, do_unlink=True)
+
+
+def cabin_cut_details(cab):
+    dz = V["dz"]
+    bm = bmesh.new()
+    for sx in (1, -1):
+        for y in SEAMS[1:]:
+            p, n = surf_path(cab, side_samples(y, [0.905 + dz + 0.01 * i for i in range(5)], sx))
+            groove_sweep(bm, p, n)
+        for z in (1.03, 1.065, 1.10):  # sail louvres
+            zz = z + dz
+            y1 = min(1.04, 0.95 + (ROOF_Z + dz - zz) / SLOPE_R - 0.05)
+            p, n = surf_path(cab, [((sx * 3.0, 0.86 + (y1 - 0.86) * i / 6, zz), (-sx, 0.0, 0.0)) for i in range(7)])
+            groove_sweep(bm, p, n, 0.0065, 0.010)
+    cut = new_obj("detail_cut2", bm, [MATS["M_Trim"]])
+    boolean_diff(cab, cut, True, use_self=True)
+    bpy.data.objects.remove(cut, do_unlink=True)
+
+
+# ------------------------------------------------------------------ trim helpers
+def pts3(poly, y):
+    return [(x, y, z) for x, z in poly]
+
+
+def ring_faces(bm, inner, outer, mi):
+    n = len(inner)
+    vi = [bm.verts.new(p) for p in inner]
+    vo = [bm.verts.new(p) for p in outer]
+    for i in range(n):
+        j = (i + 1) % n
+        bm.faces.new([vi[i], vi[j], vo[j], vo[i]]).material_index = mi
+
+
+def flat_ring(bm, poly, y, sg, w, mi):
+    """Raised flat surround on the end face around an opening."""
+    outer = offset_poly(poly, w)
+    ring_faces(bm, pts3(poly, y + sg * 0.002), pts3(outer, y + sg * 0.003), mi)
+
+
+def bezel(bm, poly, y, sg, inset, depth, mi):
+    """Sloped bezel going from the opening edge down to a smaller outline `depth` inside."""
+    inner = offset_poly(poly, -inset)
+    ring_faces(bm, pts3(poly, y + sg * 0.0005), pts3(inner, y - sg * depth), mi)
+    return inner
+
+
+def lens_slab(bm, poly, y, sg, recess, thick, mi):
+    pts = pts3(poly, y - sg * recess)
+    extrude_poly(bm, pts, (0.0, -sg * thick, 0.0), mi)
+
+
+def sweep_prof(bm, path, section, out=1, mi=0):
+    """Sweep a closed section [(o, z)] along a plan path; o is the offset toward the outside (out = +-1)."""
+    P = [Vector(p) for p in path]
+    n = len(P)
+    rings = []
+    for i in range(n):
+        d = (P[min(i + 1, n - 1)] - P[max(i - 1, 0)]).normalized()
+        nn = Vector((d.y, -d.x)) * out
+        rings.append([bm.verts.new((P[i].x + nn.x * o, P[i].y + nn.y * o, z)) for o, z in section])
+    m = len(section)
+    for r0, r1 in zip(rings, rings[1:]):
+        for k in range(m):
+            bm.faces.new([r0[k], r0[(k + 1) % m], r1[(k + 1) % m], r1[k]]).material_index = mi
+    bm.faces.new(rings[0][::-1]).material_index = mi
+    bm.faces.new(rings[-1]).material_index = mi
+
+
+def bumper_path(yc, sgn):
     """Plan path of a wrap-around bumper bar, front (sgn -1) or rear (sgn +1)."""
-    yc = y_edge - sgn * 0.0  # centre line of the bar
-    pts = [(-0.700, sgn * 1.80), (-0.690, sgn * 1.93), (-0.610, yc), (0.610, yc), (0.690, sgn * 1.93), (0.700, sgn * 1.80)]
-    if sgn > 0:
+    if sgn < 0:
+        pts = [(-0.700, -1.80), (-0.690, -1.93), (-0.610, yc), (0.610, yc), (0.690, -1.93), (0.700, -1.80)]
+    else:
         pts = [(-0.700, 1.96), (-0.690, 2.09), (-0.610, yc), (0.610, yc), (0.690, 2.09), (0.700, 1.96)]
     return round_poly(pts, [0, 0.10, 0.12, 0.12, 0.10, 0], 4)
 
 
+def bumpers(bm, bmp, dz):
+    for sgn, yc in ((-1, Y_NOSE - 0.0125), (1, Y_TAIL + 0.0125)):
+        out = 1 if sgn < 0 else -1  # left-hand path normal points -Y: outward at the front, inward at the rear
+        path = bumper_path(yc, sgn)
+        mid = [i for i, p in enumerate(path) if abs(p[0]) < 0.58]
+        central, left, right = path[mid[0] - 1:mid[-1] + 2], path[:mid[0] + 1], path[mid[-1]:]
+        bar = round_closed([(-0.0375, 0.200 + dz), (0.0375, 0.200 + dz), (0.0375, 0.335 + dz), (-0.0375, 0.335 + dz)], 0.012, 2)
+        cap = round_closed([(-0.0385, 0.200 + dz), (0.0385, 0.200 + dz), (0.0385, 0.335 + dz), (-0.0385, 0.335 + dz)], 0.014, 2)
+        strip = [(-0.020, 0.250 + dz), (0.0425, 0.250 + dz), (0.0425, 0.286 + dz), (-0.020, 0.286 + dz)]
+        sweep_prof(bm, central, bar, out, bmp)
+        sweep_prof(bm, left, cap, out, 0)
+        sweep_prof(bm, right, cap, out, 0)
+        sweep_prof(bm, central, strip, out, 0)  # rubber strip, proud of the bar
+
+
 def trim_parts():
-    """Everything small: returns dict of objects name -> object (trim, lights_front, lights_rear, plate_rear, ...)."""
+    """Everything small: returns (bm, materials) for the trim object."""
     dz = V["dz"]
     black = V["black_trim"]
-    bm_trim = bmesh.new()  # slots: 0 M_Trim, 1 M_Chrome, 2 M_Paint, 3 M_Interior
+    bm = bmesh.new()  # slots: 0 M_Trim, 1 M_Chrome, 2 M_Paint, 3 M_Interior
     TR = [MATS["M_Trim"], MATS["M_Chrome"], MATS["M_Paint"], MATS["M_Interior"]]
-    bmp = 0 if black else 1  # bumper bar slot
-    ytop_n = lambda z: z  # noqa: E731
-    # bumpers
-    sweep_strip(bm_trim, bumper_path(-2.025, -1), 0.20 + dz, 0.335 + dz, 0.05, bmp)
-    sweep_strip(bm_trim, bumper_path(2.225, 1), 0.20 + dz, 0.335 + dz, 0.05, bmp)
-    # front: grille band, slats, frame, lower slot
-    yn = Y_NOSE - 0.002
-    box(bm_trim, (0, yn - 0.006, 0.58 + dz), 0.74, 0.012, 0.17, 0)  # grille band
-    box(bm_trim, (0, yn - 0.012, 0.664 + dz), 0.76, 0.012, 0.012, 1)  # frame top
-    box(bm_trim, (0, yn - 0.012, 0.496 + dz), 0.76, 0.012, 0.012, 1)  # frame bottom
-    for sx in (-1, 1):
-        box(bm_trim, (sx * 0.376, yn - 0.012, 0.58 + dz), 0.012, 0.012, 0.18, 1)
-    for i in range(8):
-        box(bm_trim, (-0.30 + i * 0.6 / 7, yn - 0.014, 0.58 + dz), 0.014, 0.012, 0.15, 1)  # eight vertical slats
-    box(bm_trim, (0, yn - 0.006, 0.40 + dz), 0.60, 0.012, 0.06, 0)  # lower intake slot
-    box(bm_trim, (0, yn - 0.010, 0.455 + dz), 0.20, 0.010, 0.014, 1)  # BOSFOR bar
-    # lamp bezels (chrome stock, black modified)
+    bmp = 0 if black else 1  # chrome bright-work slot
+    bumpers(bm, bmp, dz)
+    sp = pocket_specs()
+    # front: lamp bezels, indicator surrounds, grille with eight chrome slats, lower intake
     for sx in (1, -1):
-        box(bm_trim, (sx * 0.535, yn - 0.003, 0.585 + dz), 0.34, 0.008, 0.185, bmp)
-    # rear: garnish bar, plate frame, lock
-    yt = Y_TAIL + 0.002
-    box(bm_trim, (0, yt + 0.006, 0.665 + dz), 0.62, 0.012, 0.022, 1)
-    box(bm_trim, (0, yt + 0.006, 0.40 + dz), 0.60, 0.012, 0.15, 0)  # plate recess frame
-    box(bm_trim, (0.0, yt + 0.012, 0.54 + dz), 0.05, 0.012, 0.025, 1)  # boot lock
-    # door handles and belt chrome
-    for y in (-0.40, 0.50):
+        for nm, ins, dep in (("lamp", 0.010, 0.014), ("ind", 0.006, 0.010)):
+            poly, y, sg, _ = sp["%s%d" % (nm, sx)]
+            flat_ring(bm, poly, y, sg, 0.009, bmp)
+            bezel(bm, poly, y, sg, ins, dep, bmp)
+    poly, y, sg, _ = sp["grille"]
+    flat_ring(bm, poly, y, sg, 0.013, bmp)
+    for i in range(8):  # slats stand inside the pocket, in front of its dark floor
+        box(bm, (-0.2635 + i * 0.527 / 7, Y_NOSE + 0.010, 0.58 + dz), 0.016, 0.026, 0.135, 1)
+    box(bm, (0, Y_NOSE + 0.004, 0.58 + dz), 0.60, 0.010, 0.010, 1)  # centre rail
+    poly, y, sg, _ = sp["slot"]
+    flat_ring(bm, poly, y, sg, 0.007, 0)
+    box(bm, (0, Y_NOSE - 0.004, 0.462 + dz), 0.22, 0.010, 0.014, 1)  # BOSFOR bar
+    # rear: chrome surrounds, plate frame, chrome strip, lock
+    for sx in (1, -1):
+        poly, y, sg, _ = sp["tail%d" % sx]
+        flat_ring(bm, poly, y, sg, 0.011, bmp)
+    poly, y, sg, _ = sp["plate"]
+    flat_ring(bm, poly, y, sg, 0.009, 0)
+    box(bm, (0, Y_TAIL + 0.003, 0.503 + dz), 1.30, 0.008, 0.012, 1)
+    box(bm, (0.0, Y_TAIL + 0.008, 0.545 + dz), 0.05, 0.012, 0.025, 1)  # boot lock
+    # door handles
+    for y in (-0.36, 0.50):
         for sx in (1, -1):
-            box(bm_trim, (sx * (lb_side_x(y, 0.80 + dz) + 0.010), y, 0.80 + dz), 0.024, 0.14, 0.030, 0 if black else 1)
-    # B pillar and sail louvres and belt chrome, mirrors
+            box(bm, (sx * (lb_side_x(y, 0.80 + dz) + 0.010), y, 0.80 + dz), 0.024, 0.14, 0.030, 0 if black else 1)
     for sx in (1, -1):
-        for y0, y1 in ((0.01, 0.20),):
-            z0, z1 = 0.985 + dz, 1.335 + dz
-            pts = [(sx * (xs_side(z0) + 0.003), (y0 + y1) / 2, z0), (sx * (xs_side(z1) + 0.003), (y0 + y1) / 2, z1)]
-            ribbon(bm_trim, pts, (0, y1 - y0, 0), 0)
-        for z in (1.03, 1.065, 1.10):
-            zz = z + dz
-            y1 = 0.99 - (zz - dz - 1.03) * 0.8
-            pts = [(sx * (xs_side(zz) + 0.003), 0.88 + (z - 1.03) * 0.3, zz), (sx * (xs_side(zz) + 0.003), y1 + 0.10, zz)]
-            ribbon(bm_trim, pts, (0, 0, 0.014), 0)
-        # belt strip
-        zb = 0.972 + dz
+        # slim black B pillar between the glass panes
+        z0, z1 = WB + dz, WT + dz
+        pts = [(sx * (xs_side(z0) + 0.003), (WIN_SIDE0 + WIN_SIDE1) / 2, z0), (sx * (xs_side(z1) + 0.003), (WIN_SIDE0 + WIN_SIDE1) / 2, z1)]
+        ribbon(bm, pts, (0, WIN_SIDE1 - WIN_SIDE0 - 0.002, 0), 0)
+        # belt strip under the glass, drip rail above it
+        zb = WB + dz - 0.026
         yA = Y_ROOF0 + (zb - dz - ROOF_Z) / SLOPE_F
-        ribbon(bm_trim, [(sx * (xs_side(zb) + 0.003), yA + 0.02, zb), (sx * (xs_side(zb) + 0.003), 1.25, zb)], (0, 0, 0.012),
-               0 if black else 1)
+        ribbon(bm, [(sx * (xs_side(zb) + 0.003), yA + 0.03, zb), (sx * (xs_side(zb) + 0.003), 1.24, zb)], (0, 0, 0.011), bmp)
+        zr = ROOF_Z + dz - 0.052
+        ribbon(bm, [(sx * (xs_side(zr) + 0.003), -0.12, zr), (sx * (xs_side(zr) + 0.003), 0.96, zr)], (0, 0, 0.010), bmp)
         # mirror
-        box(bm_trim, (sx * 0.735, -0.60, 0.985 + dz), 0.10, 0.03, 0.03, 0)  # stalk
-        box(bm_trim, (sx * 0.785, -0.60, 1.02 + dz), 0.075, 0.08, 0.10, 0)  # head
-    # door seams, lower body, right and left
-    for sx in (1, -1):
-        for y in (-0.78, 0.09, 0.84):
-            zlo = 0.66 + dz if y > 0.80 else 0.26 + dz
-            zs = [zlo, ZC + dz, tbl(ZT_T, y) + dz - 0.01]
-            pts = [(sx * (lb_side_x(y, z) + 0.002), y, z) for z in zs]
-            ribbon(bm_trim, pts, (0.007, 0, 0), 0)
-    # underside shows nothing here; taxi/mod extras
+        box(bm, (sx * 0.735, -0.60, 0.985 + dz), 0.10, 0.03, 0.03, 0)  # stalk
+        box(bm, (sx * 0.785, -0.60, 1.02 + dz), 0.075, 0.08, 0.10, 0)  # head
+    window_rings(bm, bmp)
     if V["flares"]:
         for sx in (1, -1):  # side skirts, front lip
-            box(bm_trim, (sx * 0.785, -0.02, 0.150), 0.05, 1.50, 0.08, 0)
-        box(bm_trim, (0, -2.010, 0.130), 1.30, 0.08, 0.05, 0)  # front lip, hangs under the bumper bar
-    return bm_trim, TR
+            box(bm, (sx * 0.785, -0.02, 0.150), 0.05, 1.50, 0.08, 0)
+        box(bm, (0, -2.010, 0.130), 1.30, 0.08, 0.05, 0)  # front lip, hangs under the bumper bar
+    return bm, TR
 
 
 def build_trim_obj():
@@ -704,39 +960,30 @@ def build_trim_obj():
 
 
 def lamps_front():
-    dz = V["dz"]
     bm = bmesh.new()
-    yn = Y_NOSE - 0.004
+    sp = pocket_specs()
     for sx in (1, -1):
-        # cut-corner lamp: rectangle with the upper inner corner chamfered (its own shape)
-        poly = [(0.375, 0.500), (0.695, 0.500), (0.695, 0.660), (0.455, 0.660), (0.375, 0.600)]
-        pts = [(sx * x, yn, z + dz) for x, z in poly]
-        if sx < 0:
-            pts = pts[::-1]
-        extrude_poly(bm, pts, (0, -0.014, 0), 0)
-        ind = [(0.395, 0.462), (0.695, 0.462), (0.695, 0.486), (0.395, 0.486)]
-        pts = [(sx * x, yn, z + dz) for x, z in ind]
-        if sx < 0:
-            pts = pts[::-1]
-        extrude_poly(bm, pts, (0, -0.012, 0), 1)
+        for nm, mi, ins, rec in (("lamp", 0, 0.010, 0.014), ("ind", 1, 0.006, 0.010)):
+            poly, y, sg, _ = sp["%s%d" % (nm, sx)]
+            lens_slab(bm, offset_poly(poly, -ins), y, sg, rec, 0.006, mi)
     return new_obj("lights_front", bm, [MATS["M_LightFront"], MATS["M_Indicator"]])
 
 
 def lamps_rear_plate():
     dz = V["dz"]
     bm = bmesh.new()
-    yt = Y_TAIL + 0.004
+    sp = pocket_specs()
     for sx in (1, -1):
-        bars = [(0.30, 0.66, 0.700, 0.800, 0), (0.30, 0.66, 0.655, 0.695, 1), (0.30, 0.52, 0.610, 0.650, 2)]
-        for x0, x1, z0, z1, mi in bars:
-            poly = [(x0, z0), (x1, z0), (x1, z1), (x0, z1)]
-            pts = [(sx * x, yt, z + dz) for x, z in poly]
-            if sx > 0:
-                pts = pts[::-1]
-            extrude_poly(bm, pts, (0, 0.014, 0), mi)
+        poly, y, sg, _ = sp["tail%d" % sx]
+        # three stacked bars (red, amber, white reverse) separated by dark gaps, inside the chrome-framed pocket
+        for x0, x1, z0, z1, mi in ((0.312, 0.668, 0.672, 0.763, 0), (0.312, 0.664, 0.617, 0.664, 1), (0.312, 0.560, 0.566, 0.610, 2)):
+            if mi == 0:
+                x1 = 0.640  # follows the tapering top of the pocket
+            bar = round_closed([(sx * x0, z0 + dz), (sx * x1, z0 + dz), (sx * x1, z1 + dz), (sx * x0, z1 + dz)], 0.005, 2)
+            lens_slab(bm, bar, y, sg, 0.010, 0.006, mi)
     lr = new_obj("lights_rear", bm, [MATS["M_LightRear"], MATS["M_Indicator"], MATS["M_Reverse"]])
     pm = bmesh.new()
-    box(pm, (0, Y_TAIL + 0.016, 0.40 + dz), 0.46, 0.008, 0.105, 0)
+    box(pm, (0, Y_TAIL - 0.012, 0.40 + dz), 0.44, 0.008, 0.100, 0)
     plate = new_obj("plate_rear", pm, [MATS["M_Plate"], MATS["M_Trim"]])
     return lr, plate
 
@@ -763,12 +1010,12 @@ def interior_obj():
     dz = V["dz"]
     bm = bmesh.new()
     for sx in (-1, 1):
-        box(bm, (sx * 0.30, -0.02, 1.10 + dz), 0.46, 0.13, 0.38, 0)  # front seat back
-        box(bm, (sx * 0.30, -0.02, 1.31 + dz), 0.20, 0.10, 0.13, 0)  # headrest
-    box(bm, (0.0, 1.02, 1.10 + dz), 1.10, 0.12, 0.30, 0)  # rear seat back
-    box(bm, (0.0, 0.95, 0.99 + dz), 1.10, 0.12, 0.06, 1)  # rear shelf side
-    box(bm, (0.0, -0.64, 0.96 + dz), 1.20, 0.26, 0.10, 1)  # dash top
-    box(bm, (-0.30, -0.50, 0.90 + dz), 0.18, 0.30, 0.10, 1)  # instrument hood
+        box(bm, (sx * 0.30, -0.02, 1.04 + dz), 0.46, 0.13, 0.38, 0)  # front seat back
+        box(bm, (sx * 0.30, -0.02, 1.24 + dz), 0.20, 0.10, 0.13, 0)  # headrest
+    box(bm, (0.0, 1.02, 1.04 + dz), 1.10, 0.12, 0.30, 0)  # rear seat back
+    box(bm, (0.0, 0.95, 0.94 + dz), 1.10, 0.12, 0.06, 1)  # rear shelf side
+    box(bm, (0.0, -0.50, 0.89 + dz), 1.20, 0.26, 0.08, 1)  # dash top
+    box(bm, (-0.30, -0.44, 0.93 + dz), 0.18, 0.26, 0.08, 1)  # instrument hood
     ob = new_obj("interior", bm, [MATS["M_Interior"], MATS["M_Trim"]])
     bevel(ob, 0.02, 2, 40)
     sw = text_mesh("O", (-0.30, -0.46, 1.01 + dz), (math.radians(60), 0, 0), 0.34, MATS["M_Trim"], "swheel", 0.02)
@@ -791,7 +1038,7 @@ def underbody_obj():
 
 def col_obj():
     bm = bmesh.new()
-    box(bm, (0, 0.10, 0.80), 1.64, 4.20, 1.26, 0)
+    box(bm, (0, 0.10, 0.77), 1.64, 4.20, 1.20, 0)
     ob = new_obj("col_body", bm, [MATS["M_Trim"]])
     ob["collision_only"] = 1
     return ob
@@ -875,18 +1122,22 @@ def build_variant(name):
     glass_mat = MATS["GLASS"]
     # --- paint shell
     low = lower_body()
-    smooth(low, 22)
+    smooth(low, 12)
+    arch = arch_cutter()
+    boolean_diff(low, arch)
+    bpy.data.objects.remove(arch, do_unlink=True)
+    bevel(low, 0.012, 2, 55)
+    body_cut_details(low)  # shut lines and lamp pockets, after the bevel so the grooves keep their walls
+    smooth(low, 12)
+    weighted(low)
     cab = cabin()
     cut_bm, glass_bm = window_geometry()
     cutter = new_obj("win_cut", cut_bm, [MATS["M_Interior"]])
     boolean_diff(cab, cutter)
     bpy.data.objects.remove(cutter, do_unlink=True)
-    smooth(cab, 22)
-    arch = arch_cutter()
-    boolean_diff(low, arch)
-    bpy.data.objects.remove(arch, do_unlink=True)
-    bevel(low, 0.012, 2, 55)
-    smooth(low, 30)
+    cabin_cut_details(cab)
+    smooth(cab, 25)
+    weighted(cab)
     parts = [low, cab]
     if V["flares"]:
         fl = flares()
@@ -905,7 +1156,7 @@ def build_variant(name):
     lf = lamps_front()
     lr, plate = lamps_rear_plate()
     # plate text and badge go into the plate / trim meshes
-    ptxt = text_mesh("BOSFOR", (0, Y_TAIL + 0.021, 0.40 + V["dz"]), (math.radians(90), 0, math.radians(180)), 0.055,
+    ptxt = text_mesh("BOSFOR", (0, Y_TAIL - 0.0075, 0.40 + V["dz"]), (math.radians(90), 0, math.radians(180)), 0.055,
                      MATS["M_Trim"], "plate_text", 0.002)
     badge = text_mesh("ATMACA", (0, Y_TAIL + 0.012, 0.715 + V["dz"]), (math.radians(90), 0, math.radians(180)), 0.040,
                       MATS["M_Chrome"], "badge_text", 0.003)
@@ -936,7 +1187,7 @@ def build_variant(name):
 
 
 # ------------------------------------------------------------------ LODs and export
-BUDGET = {0: 45000, 1: 15000, 2: 5000}
+BUDGET = {0: 45000, 1: 12000, 2: 5000}
 
 
 def visible(objs):
@@ -997,12 +1248,35 @@ def make_lod(objs, level):
             b = mid
     for m in decs.values():
         m.ratio = best
+    removed = 0
     for n, c in copies.items():
         if n in decs:
             apply_mod(c, decs[n])
+            removed += clean_mesh(c)
+    print("LOD%d degenerate faces removed: %d" % (level, removed))
     tot = sum(tri_count(c) for n, c in copies.items() if n != "col_body")
     print("LOD%d ratio %.3f tris %d (budget %d)" % (level, best, tot, BUDGET[level]))
     return copies, tot
+
+
+def clean_mesh(ob):
+    """Remove what decimation leaves behind: zero-area faces, collapsed edges, loose vertices. Returns faces removed."""
+    me = ob.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    n0 = len(bm.faces)
+    bmesh.ops.dissolve_degenerate(bm, dist=1e-5, edges=bm.edges[:])
+    bad = [f for f in bm.faces if f.calc_area() < 1e-9]
+    if bad:
+        bmesh.ops.delete(bm, geom=bad, context="FACES")
+    loose = [v for v in bm.verts if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
+    bmesh.ops.triangulate(bm, faces=bm.faces[:])
+    bm.to_mesh(me)
+    bm.free()
+    me.update()
+    return n0 - len(me.polygons)
 
 
 def drop_lod(copies, objs):
@@ -1039,6 +1313,8 @@ def main():
     for o in list(objs.values()):
         # triangulate-free: keep quads; counts come from loop triangles
         pass
+    fixed = sum(clean_mesh(o) for k, o in objs.items() if k != "col_body")
+    print("LOD0 degenerate faces removed:", fixed)
     t0 = total_tris(objs)
     print("LOD0 tris", t0, {k: tri_count(o) for k, o in objs.items()})
     bb = [objs[k] for k in objs if k not in ("col_body",)]
