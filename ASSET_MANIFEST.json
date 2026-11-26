@@ -8236,6 +8236,57 @@
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "Arden Bruiser LOD LOD2, shipped by tools/ship_bruiser.py"
+    },
+    {
+      "id": "noctra_vela_lod0",
+      "kind": "model",
+      "path": "game/assets/vehicles/noctra_vela/noctra_vela_lod0.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 67029,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 6483824,
+      "sha256": "8252f13961eb3a11ebb4fde4d682bb0968fcb6c67d0d9612898749c73a284483",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "Noctra Vela hot hatch LOD0, built by assets_src/vehicles/noctra_vela/build_car.py"
+    },
+    {
+      "id": "noctra_vela_lod1",
+      "kind": "model",
+      "path": "game/assets/vehicles/noctra_vela/noctra_vela_lod1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 21499,
+      "texture_sizes": {},
+      "material_count": 15,
+      "bytes": 4527316,
+      "sha256": "61fb4ad97f64373a2d629babfb9588e78a1bd0322ff15d7eba520089d9b4ed34",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "Noctra Vela hot hatch LOD1, built by assets_src/vehicles/noctra_vela/build_car.py"
+    },
+    {
+      "id": "noctra_vela_lod2",
+      "kind": "model",
+      "path": "game/assets/vehicles/noctra_vela/noctra_vela_lod2.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 5892,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 3555080,
+      "sha256": "968a2157a9afb21f24ff437113ae0dca1e00ab1c045703742d56f1e5f5c4256b",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "Noctra Vela hot hatch LOD2, built by assets_src/vehicles/noctra_vela/build_car.py"
     }
   ]
 }
