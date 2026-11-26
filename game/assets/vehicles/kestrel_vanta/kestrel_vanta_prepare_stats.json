@@ -1,8 +1,8 @@
 {
  "car_id": "kestrel_vanta",
- "source": "C:/Users/berk/car race/.claude/worktrees/cars2/assets_src/third_party/vinish_cars/mid-engine-supercar.glb",
+ "source": "assets_src/third_party/vinish_cars/mid-engine-supercar.glb",
  "lod0": {
-  "tris": 87547,
+  "tris": 87545,
   "tris_by_node": {
    "body": 24703,
    "brake_FL": 2277,
@@ -17,11 +17,11 @@
    "lights_rear": 808,
    "plate_rear": 2,
    "trim": 17451,
-   "underbody": 1751,
+   "underbody": 1750,
    "wheel_FL": 4383,
    "wheel_FR": 4383,
    "wheel_RL": 4346,
-   "wheel_RR": 4346
+   "wheel_RR": 4345
   },
   "slots_by_node": {
    "body": [
@@ -108,7 +108,7 @@
   "material_count": 14
  },
  "lod1": {
-  "tris": 23147,
+  "tris": 23148,
   "tris_by_node": {
    "body": 6173,
    "col_body": 90,
@@ -116,9 +116,9 @@
    "interior": 3894,
    "lights_front": 482,
    "lights_rear": 404,
-   "trim": 7807,
-   "wheel_FL": 876,
-   "wheel_FR": 875,
+   "trim": 7808,
+   "wheel_FL": 875,
+   "wheel_FR": 876,
    "wheel_RL": 869,
    "wheel_RR": 869
   },
@@ -173,7 +173,7 @@
   "material_count": 8
  },
  "lod2": {
-  "tris": 6452,
+  "tris": 6453,
   "tris_by_node": {
    "body": 2434,
    "col_body": 90,
@@ -183,7 +183,7 @@
    "wheel_FL": 415,
    "wheel_FR": 414,
    "wheel_RL": 412,
-   "wheel_RR": 411
+   "wheel_RR": 412
   },
   "slots_by_node": {
    "body": [

@@ -1,8 +1,8 @@
 {
  "car_id": "arden_havoc",
- "source": "C:/Users/berk/car race/.claude/worktrees/cars2/assets_src/third_party/vinish_cars/muscle-coupe.glb",
+ "source": "assets_src/third_party/vinish_cars/muscle-coupe.glb",
  "lod0": {
-  "tris": 88578,
+  "tris": 88579,
   "tris_by_node": {
    "body": 28446,
    "brake_FL": 2275,
@@ -16,7 +16,7 @@
    "lights_front": 2400,
    "lights_rear": 2120,
    "plate_rear": 2,
-   "trim": 13873,
+   "trim": 13874,
    "underbody": 1631,
    "wheel_FL": 3980,
    "wheel_FR": 3980,
@@ -106,7 +106,7 @@
   "material_count": 13
  },
  "lod1": {
-  "tris": 27294,
+  "tris": 27293,
   "tris_by_node": {
    "body": 7899,
    "col_body": 90,
@@ -114,7 +114,7 @@
    "interior": 4926,
    "lights_front": 1200,
    "lights_rear": 1060,
-   "trim": 8165,
+   "trim": 8164,
    "wheel_FL": 796,
    "wheel_FR": 796,
    "wheel_RL": 794,
@@ -171,16 +171,16 @@
   "material_count": 8
  },
  "lod2": {
-  "tris": 6677,
+  "tris": 6679,
   "tris_by_node": {
-   "body": 2708,
+   "body": 2712,
    "col_body": 90,
    "glass": 386,
    "lights_rear": 246,
-   "trim": 1749,
+   "trim": 1748,
    "wheel_FL": 374,
    "wheel_FR": 375,
-   "wheel_RL": 375,
+   "wheel_RL": 374,
    "wheel_RR": 374
   },
   "slots_by_node": {

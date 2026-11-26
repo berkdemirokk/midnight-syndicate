@@ -10,6 +10,7 @@ is -Y, Z is up, wheel origins are the wheel centres, wheels touch Z = 0, and the
 The vinish sources match this already (metres, scale 1), so only the axle midpoint is moved to Y = 0.
 """
 import bmesh
+import math
 import bpy
 import json
 import os
@@ -202,7 +203,8 @@ def build_lod(src, cfg, level, out_dir, stats):
                     b["map"][key] = len(b["verts"])
                     b["verts"].append(me.vertices[vi].co.copy())
                 idx.append(b["map"][key])
-            b["faces"].append((idx, target, f.use_smooth))
+            # corner normals of the source: they carry the hard panel gaps and creases (lost otherwise: soft, wrinkled flanks)
+            b["faces"].append((idx, target, f.use_smooth, [me.corner_normals[li].vector.copy() for li in f.loop_indices]))
             mats_used[target] = mats_used.get(target, 0) + 1
 
     for mname in mats_used:
@@ -219,17 +221,23 @@ def build_lod(src, cfg, level, out_dir, stats):
         bm = bmesh.new()
         bverts = [bm.verts.new(v - origin) for v in b["verts"]]
         slot_of, slot_mats = {}, []
-        for mname in sorted(set(t for _, t, _ in b["faces"])):
+        for mname in sorted(set(t for _, t, _, _ in b["faces"])):
             slot_of[mname] = len(slot_mats)
             slot_mats.append(materials[mname])
-        for idx, target, smooth in b["faces"]:
+        loop_normals = []
+        for idx, target, smooth, norms in b["faces"]:
             try:
                 f = bm.faces.new([bverts[i] for i in idx])
             except ValueError:
                 continue  # degenerate or duplicate after merging
             f.material_index = slot_of[target]
-            f.smooth = smooth
+            f.smooth = True
+            loop_normals.extend(norms)
         bm.to_mesh(me)
+        if len(loop_normals) == len(me.loops):
+            me.normals_split_custom_set(loop_normals)
+        else:
+            print("WARN %s: %d source normals for %d loops, normals left to Blender" % (name, len(loop_normals), len(me.loops)))
         bm.free()
         if name == "plate_rear":
             plate_uv(me)
@@ -255,6 +263,10 @@ def build_lod(src, cfg, level, out_dir, stats):
             mod.use_symmetry = not ob.name.startswith(("wheel_", "brake_"))  # symmetry collapse left wheel_RL invalid
             mod.symmetry_axis = "X"
             bpy.ops.object.modifier_apply(modifier=mod.name)
+            # Decimation scrambles the carried normals: smooth shading with hard edges above 35 degrees instead.
+            for poly in ob.data.polygons:
+                poly.use_smooth = True
+            ob.data.set_sharp_from_angle(angle=math.radians(35.0))
 
     make_col_body(["body", "trim", "underbody"])
 

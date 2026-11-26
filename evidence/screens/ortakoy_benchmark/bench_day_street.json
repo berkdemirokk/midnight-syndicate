@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.996,
-  "luma_min": 0.027,
+  "luma_max": 0.986,
+  "luma_min": 0.018,
   "name": "bench_day_street",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 274,
-    "draw_calls_min": 274,
+    "draw_calls": 271,
+    "draw_calls_min": 271,
     "driver": "vulkan",
-    "fps": 642.316,
-    "frame_ms_avg": 1.557,
-    "frame_ms_p95": 2.718,
-    "frame_ms_p99": 2.99,
+    "fps": 538.537,
+    "frame_ms_avg": 1.857,
+    "frame_ms_p95": 3.359,
+    "frame_ms_p99": 4.3,
     "frames": 60,
-    "objects": 274,
+    "objects": 271,
     "os": "Windows",
-    "primitives": 274608,
+    "primitives": 289580,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 599.047,
+    "video_mem_mb": 597.055,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/cars2/evidence/screens/ortakoy_benchmark/bench_day_street.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_day_street.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

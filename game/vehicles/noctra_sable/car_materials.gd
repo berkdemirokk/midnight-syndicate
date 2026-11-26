@@ -126,7 +126,7 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.normal_scale = TRIM_GRAIN_SCALE
 		"M_Rim":
 			m.albedo_color = DEFAULT_RIM
-			m.metallic = 1.0
+			m.metallic = 0.8  # full metal mirrored the day sky: rims read bright blue
 			m.roughness = RIM_ROUGHNESS
 			m.roughness_texture = _tex_file("car_brushed_roughness.png")
 			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
