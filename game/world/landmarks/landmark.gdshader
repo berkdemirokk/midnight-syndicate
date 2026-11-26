@@ -9,7 +9,7 @@ uniform float metallic : hint_range(0.0, 1.0) = 0.0;
 uniform vec4 glow_color : source_color = vec4(1.0, 0.72, 0.42, 1.0);
 uniform float glow : hint_range(0.0, 20.0) = 0.0;
 uniform float flood : hint_range(0.0, 4.0) = 0.0;
-uniform float flood_height_m : hint_range(1.0, 40.0) = 9.0;
+uniform float flood_height_m : hint_range(1.0, 40.0) = 16.0;
 uniform float night : hint_range(0.0, 1.0) = 1.0;
 // Photo-based stone, projected from three sides in model space (the kit has no UVs). tex_mix 0 = flat colour.
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;

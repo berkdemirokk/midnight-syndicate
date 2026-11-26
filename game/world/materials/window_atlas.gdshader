@@ -152,9 +152,17 @@ void fragment() {
 			}
 		}
 		if (glass_reflect > 0.0) {
-			vec3 r = reflect(view, nw);
+			// Every pane sits a little out of true, so neighbouring panes do not show one continuous sky gradient.
+			vec3 pane = floor(world_pos / vec3(1.1, 1.4, 1.1));
+			vec3 tilt = (vec3(hash13(pane), hash13(pane + 3.1), hash13(pane + 7.7)) - 0.5) * 0.09;
+			vec3 r = reflect(view, normalize(nw + tilt));
 			vec3 sky = mix(sky_horizon, sky_zenith, smoothstep(0.0, 0.65, r.y));
-			sky = mix(sky_horizon * 0.35, sky, smoothstep(-0.25, 0.02, r.y));  // below the horizon: the dim street
+			// The far side of the street in the glass: a broken roofline of dim buildings instead of sky down to the horizon.
+			float ang = atan(r.z, r.x);
+			float roofline = 0.10 + 0.22 * hash13(vec3(floor(ang * 5.0), 1.0, 2.0)) + 0.05 * hash13(vec3(floor(ang * 23.0), 4.0, 6.0));
+			vec3 street = sky_horizon * mix(0.22, 0.42, hash13(vec3(floor(ang * 5.0), 9.0, 3.0)));
+			sky = mix(street, sky, smoothstep(roofline - 0.01, roofline + 0.01, r.y));
+			sky = mix(vec3(dot(sky, vec3(0.333))), sky, 0.5) * 0.8;  // glass greys the sky: pure sky blue read as blue paint
 			sky += sun_colour * pow(max(dot(r, normalize(sun_dir)), 0.0), 180.0) * 6.0;
 			float amount = mix(0.3, 1.0, fres) * glass_reflect;
 			ALBEDO *= 1.0 - 0.6 * clamp(amount, 0.0, 1.0);

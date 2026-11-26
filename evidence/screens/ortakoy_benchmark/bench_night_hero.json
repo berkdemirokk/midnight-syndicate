@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.996,
+  "luma_max": 1.0,
   "luma_min": 0.0,
   "name": "bench_night_hero",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 371,
     "draw_calls_min": 294,
     "driver": "vulkan",
-    "fps": 268.148,
-    "frame_ms_avg": 3.729,
-    "frame_ms_p95": 6.18,
-    "frame_ms_p99": 7.9,
+    "fps": 415.772,
+    "frame_ms_avg": 2.405,
+    "frame_ms_p95": 4.265,
+    "frame_ms_p99": 4.779,
     "frames": 60,
     "objects": 371,
     "os": "Windows",
     "primitives": 430799,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 638.338,
+    "video_mem_mb": 620.588,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/ao1/evidence/screens/ortakoy_benchmark/bench_night_hero.png",
+  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_night_hero.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

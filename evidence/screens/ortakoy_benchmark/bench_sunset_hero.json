@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.995,
+  "luma_max": 0.993,
   "luma_min": 0.0,
   "name": "bench_sunset_hero",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 312,
     "draw_calls_min": 312,
     "driver": "vulkan",
-    "fps": 225.894,
-    "frame_ms_avg": 4.427,
-    "frame_ms_p95": 6.177,
-    "frame_ms_p99": 7.934,
+    "fps": 427.442,
+    "frame_ms_avg": 2.34,
+    "frame_ms_p95": 4.255,
+    "frame_ms_p99": 4.559,
     "frames": 60,
     "objects": 312,
     "os": "Windows",
-    "primitives": 338891,
+    "primitives": 358689,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 617.564,
+    "video_mem_mb": 629.116,
     "viewport_size": [
       1920,
       1061

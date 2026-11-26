@@ -147,7 +147,7 @@ func _make_day() -> void:
 	skyline_brighten = 2.6
 	pane_albedo_scale = 4.0
 	pane_reflect = -0.2
-	glass_sky_reflect = 0.95
+	glass_sky_reflect = 0.75
 	crown_scale = 0.0
 	impostor_desat = 0.5
 	impostor_scale = 0.8
