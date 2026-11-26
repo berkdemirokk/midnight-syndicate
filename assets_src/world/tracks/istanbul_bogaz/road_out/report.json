@@ -55,7 +55,7 @@
   "markings": 9086,
   "road": 30940,
   "sidewalk": 5466,
-  "structure": 8466,
+  "structure": 21726,
   "wall": 8840,
   "water": 694
  },
@@ -65,11 +65,11 @@
   "markings": 15,
   "road": 19,
   "sidewalk": 19,
-  "structure": 6,
+  "structure": 19,
   "wall": 19,
   "water": 1
  },
- "triangles_total": 83452,
+ "triangles_total": 96712,
  "decals_placed": {
   "manholes": 24,
   "grates": 16
@@ -91,5 +91,5 @@
  "tube_samples": 0,
  "cut_samples": 0,
  "water_samples": 347,
- "runtime_s": 4.5
+ "runtime_s": 5.2
 }

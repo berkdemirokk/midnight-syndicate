@@ -560,6 +560,23 @@ def build_collider_walls():
                  lambda kk, s=s: s * uo(kk, s), cz(0.15 + 3.0), -float(s), 0.0, 0, True)])
 
 
+def build_edge_barriers():
+    """Low concrete kerb wall just outside the kerb on both sides (config road.edge_barrier = height in m): the
+    promenade / sidewalk beside the road is at road height, so without it AI cars and players drive onto it.
+    Not in the tube or in trenches (those have their own walls)."""
+    h = float(RCFG.get("edge_barrier") or 0.0)
+    if h <= 0.0:
+        return
+    for i in range(NS):
+        if TUBE[i] or CUT[i]:
+            continue
+        k = CH[i]
+        for s in (1, -1):
+            extrude(bld("structure", k), [i], rect(
+                lambda kk, s=s: s * (WID[kk] / 2.0 + KERB_OUT + 0.25), lambda kk: 0.25,
+                cz(0.15), cz(0.15 + h), 0, "RTL", flip=(s < 0)))
+
+
 # ----------------------------------------------------------------- structures
 def build_structures():
     """Overpass fill walls, parapets, soffit, underpass tube, trench retaining walls."""
@@ -956,6 +973,7 @@ def build_all():
     build_road_surface()
     build_kerbs_and_sidewalks()
     build_collider_walls()
+    build_edge_barriers()
     build_structures()
     build_portals()
     build_markings()

@@ -93,6 +93,7 @@
     ],
     "helper": null,
     "road_w": 14.0,
+    "edge_barrier": 0.55,
     "narrow_w": 10.0,
     "narrow_cp": [
       7,
