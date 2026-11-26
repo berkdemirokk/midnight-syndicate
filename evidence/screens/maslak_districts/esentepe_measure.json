@@ -1,0 +1,26 @@
+{
+  "name": "esentepe_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 219,
+    "draw_calls_min": 219,
+    "driver": "vulkan",
+    "fps": 740.669,
+    "frame_ms_avg": 1.35,
+    "frame_ms_p95": 1.737,
+    "frame_ms_p99": 1.96,
+    "frames": 300,
+    "objects": 219,
+    "os": "Windows",
+    "primitives": 132657,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 494.958,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "maslak_districts"
+}

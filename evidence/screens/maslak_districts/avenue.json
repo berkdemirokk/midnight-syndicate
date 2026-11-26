@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "avenue",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 182,
+    "draw_calls_min": 182,
+    "driver": "vulkan",
+    "fps": 443.069,
+    "frame_ms_avg": 2.257,
+    "frame_ms_p95": 4.205,
+    "frame_ms_p99": 4.665,
+    "frames": 60,
+    "objects": 182,
+    "os": "Windows",
+    "primitives": 104350,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 494.958,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-1/evidence/screens/maslak_districts/avenue.png",
+  "preset": "high",
+  "scenario": "maslak_districts"
+}

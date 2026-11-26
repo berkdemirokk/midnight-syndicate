@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "pier",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 231,
+    "draw_calls_min": 231,
+    "driver": "vulkan",
+    "fps": 1011.924,
+    "frame_ms_avg": 0.988,
+    "frame_ms_p95": 1.367,
+    "frame_ms_p99": 1.465,
+    "frames": 60,
+    "objects": 231,
+    "os": "Windows",
+    "primitives": 159943,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-3/evidence/screens/bogaz_districts/pier.png",
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}

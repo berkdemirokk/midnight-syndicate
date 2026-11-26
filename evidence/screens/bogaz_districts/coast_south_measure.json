@@ -1,0 +1,26 @@
+{
+  "name": "coast_south_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 176,
+    "draw_calls_min": 176,
+    "driver": "vulkan",
+    "fps": 966.542,
+    "frame_ms_avg": 1.035,
+    "frame_ms_p95": 1.466,
+    "frame_ms_p99": 1.588,
+    "frames": 300,
+    "objects": 176,
+    "os": "Windows",
+    "primitives": 166410,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}

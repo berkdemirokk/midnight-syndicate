@@ -1,0 +1,258 @@
+{
+ "coords": "godot_y_up",
+ "generator": "build_istanbul.py",
+ "materials": {
+  "M_Plaster_Butter": {
+   "base_color": "#E9CF8E",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#CDB57A",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/beige_wall_001/normal.jpg",
+    "roughness": "game/assets/textures/cc0/beige_wall_001/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "source": "cc0 set beige_wall_001"
+  },
+  "M_Plaster_Rose": {
+   "base_color": "#D6948E",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#B87F7A",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/beige_wall_001/normal.jpg",
+    "roughness": "game/assets/textures/cc0/beige_wall_001/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "source": "cc0 set beige_wall_001"
+  },
+  "M_Plaster_Sky": {
+   "base_color": "#93B3C9",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#7C98AB",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/beige_wall_001/normal.jpg",
+    "roughness": "game/assets/textures/cc0/beige_wall_001/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "source": "cc0 set beige_wall_001"
+  },
+  "M_Plaster_Sage": {
+   "base_color": "#A9BE98",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#8CA07C",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/beige_wall_001/normal.jpg",
+    "roughness": "game/assets/textures/cc0/beige_wall_001/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "source": "cc0 set beige_wall_001"
+  },
+  "M_Plaster_Ochre": {
+   "base_color": "#C99A52",
+   "roughness": 0.85,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#A98245",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/clay_plaster/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/clay_plaster/normal.jpg",
+    "roughness": "game/assets/textures/cc0/clay_plaster/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "source": "cc0 set clay_plaster"
+  },
+  "M_Plaster_Cream": {
+   "base_color": "#E8DDC2",
+   "roughness": 0.75,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#C9BEA4",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/beige_wall_001/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/beige_wall_001/normal.jpg",
+    "roughness": "game/assets/textures/cc0/beige_wall_001/roughness.jpg"
+   },
+   "uv_tile_m": 2.0,
+   "source": "cc0 set beige_wall_001"
+  },
+  "M_Wood_Yali_Dark": {
+   "base_color": "#D9B48E",
+   "roughness": 0.7,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#6A4A34",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/dark_wooden_planks/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/dark_wooden_planks/normal.jpg",
+    "roughness": "game/assets/textures/cc0/dark_wooden_planks/roughness.jpg"
+   },
+   "uv_tile_m": 1.5,
+   "source": "cc0 set dark_wooden_planks"
+  },
+  "M_Wood_Oxblood": {
+   "base_color": "#C46A52",
+   "roughness": 0.7,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#7A3A2C",
+   "licence": "CC0-1.0",
+   "textures": {
+    "basecolor": "game/assets/textures/cc0/dark_wooden_planks/basecolor.jpg",
+    "normal": "game/assets/textures/cc0/dark_wooden_planks/normal.jpg",
+    "roughness": "game/assets/textures/cc0/dark_wooden_planks/roughness.jpg"
+   },
+   "uv_tile_m": 1.5,
+   "source": "cc0 set dark_wooden_planks"
+  },
+  "M_Paint_Shutter_Green": {
+   "base_color": "#2F5B4A",
+   "roughness": 0.6,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#2F5B4A",
+   "licence": "project-owned"
+  },
+  "M_Paint_Door_Blue": {
+   "base_color": "#2E4A6B",
+   "roughness": 0.6,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#2E4A6B",
+   "licence": "project-owned"
+  },
+  "M_Roof_Tile": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#7A3A22",
+   "licence": "project-owned",
+   "textures": {
+    "basecolor": "game/assets/world/kits/istanbul/textures/roof_tile_basecolor.png"
+   },
+   "uv_tile_m": 1.2,
+   "source": "generated, project-owned"
+  },
+  "M_Cobble": {
+   "base_color": "#FFFFFF",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#585553",
+   "licence": "project-owned",
+   "textures": {
+    "basecolor": "game/assets/world/kits/istanbul/textures/cobble_basecolor.png",
+    "normal": "game/assets/world/kits/istanbul/textures/cobble_normal.png",
+    "roughness": "game/assets/world/kits/istanbul/textures/cobble_roughness.png"
+   },
+   "uv_tile_m": 1.0,
+   "source": "generated, project-owned"
+  },
+  "M_Cart_Teal": {
+   "base_color": "#0F4D57",
+   "roughness": 0.55,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#0F4D57",
+   "licence": "project-owned"
+  },
+  "M_Simit_Dough": {
+   "base_color": "#9E5718",
+   "roughness": 0.75,
+   "metallic": 0.0,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#9E5718",
+   "licence": "project-owned"
+  },
+  "M_Fish_Silver": {
+   "base_color": "#B8C2CC",
+   "roughness": 0.35,
+   "metallic": 0.6,
+   "emission_color": "#000000",
+   "emission_strength": 0.0,
+   "uv": "metres, tiled every uv_tile_m",
+   "tint_for_impostor": "#B8C2CC",
+   "licence": "project-owned"
+  },
+  "M_Skyline_Asia": {
+   "base_color": "#808080",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#FFFFFF",
+   "emission_strength": 1.6,
+   "uv": "card: u along the arc, v up",
+   "texture_file": "game/assets/world/kits/istanbul/textures/skyline_asia.png",
+   "licence": "project-owned",
+   "note": "ShaderMaterial built by IstanbulMaterials (window_atlas shader, skyline_towers 0)"
+  },
+  "M_Skyline_Bridge": {
+   "base_color": "#808080",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#FFFFFF",
+   "emission_strength": 1.6,
+   "uv": "card: u along the arc, v up",
+   "texture_file": "game/assets/world/kits/istanbul/textures/skyline_bridge.png",
+   "licence": "project-owned",
+   "note": "ShaderMaterial built by IstanbulMaterials (window_atlas shader, skyline_towers 0)"
+  },
+  "M_Skyline_Domes": {
+   "base_color": "#808080",
+   "roughness": 0.9,
+   "metallic": 0.0,
+   "emission_color": "#FFFFFF",
+   "emission_strength": 1.6,
+   "uv": "card: u along the arc, v up",
+   "texture_file": "game/assets/world/kits/istanbul/textures/skyline_domes.png",
+   "licence": "project-owned",
+   "note": "ShaderMaterial built by IstanbulMaterials (window_atlas shader, skyline_towers 0)"
+  }
+ },
+ "notes": "New names only. Existing M_ names (M_WindowAtlas, M_ShopInterior, M_Plaster_*, M_Lamp_*, ...) come from the other three materials.json files."
+}

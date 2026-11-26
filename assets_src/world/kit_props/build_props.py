@@ -884,7 +884,7 @@ def open24_sign(pid):
                 notes="Open / 24H sign")
 
 
-def billboard_sign(pid):
+def billboard_sign(pid, text="ZENITH TOWER", neon="M_Neon_Cyan"):
     panel = box((12.0, 0.18, 5.0), (0, -0.6, 6.5), "M_SignBox")
     g = Geo()
     g.merge(box((12.4, 0.2, 0.2), (0, 0.4, 4.0), "M_Metal_Grey"))
@@ -903,7 +903,7 @@ def billboard_sign(pid):
     for x in (-5.8, -2.9, 0.0, 2.9, 5.8):
         cat.merge(box((0.08, 0.08, 0.7), (x, -1.1, 4.25), "M_Metal_Grey"))
     cat.merge(tube([(-6.0, -1.6, 4.6), (6.0, -1.6, 4.6)], 0.03, "M_Metal_Grey", sides=6))
-    txt = neon_lines([("ZENITH TOWER", "M_Neon_Cyan")], 11.2, 1.5, 0.05,
+    txt = neon_lines([(text, neon)], 11.2, 1.5, 0.05,
                      (-5.6, -0.71, 7.25), (1, 0, 0), (0, 0, 1), (0, -1, 0))
     return dict(category="sign", mount="roof", budget=(400, 3000), emissive=True,
                 parts=[part(pid + "_panel", panel, 0.02), part(pid + "_neon", txt),

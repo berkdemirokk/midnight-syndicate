@@ -74,7 +74,7 @@ def _copy_and_register(pairs, manifest):
         kind = _kind(name)
         argv = ["--manifest", manifest, "register", "--id", _id_for(rel_repo[len("game/assets/"):]),
                 "--kind", kind, "--path", rel_repo, "--source", "generated:blender",
-                "--license", "project-owned", "--notes", "city_01 world kit, shipped by tools/ship_world.py"]
+                "--license", "project-owned", "--notes", "world kit and tracks, shipped by tools/ship_world.py"]
         if kind == "model":
             argv += ["--materials", "0"]
         rc = asset_factory.main(["--root", REPO] + argv)
@@ -84,8 +84,30 @@ def _copy_and_register(pairs, manifest):
     return count
 
 
+def track_files(track_id):
+    """Road, centreline, layout and the per-track props of a generic track (assets_src/world/tracks/<id>)."""
+    base = os.path.join(SRC, "tracks", track_id)
+    pairs = [(os.path.join(base, "road_out", track_id + "_road.glb"), track_id),
+             (os.path.join(base, "road_out", track_id + "_centerline.json"), track_id),
+             (os.path.join(base, "road_out", "materials.json"), track_id + "/road"),
+             (os.path.join(base, "road_out", "report.json"), track_id + "/road"),
+             (os.path.join(base, "layout_out", track_id + "_layout.json"), track_id)]
+    props = os.path.join(base, "props_out")
+    if os.path.isdir(props):  # new props join the shared prop kit folder: the builder resolves props by file name
+        for name in sorted(os.listdir(props)):
+            if name.endswith(".glb"):
+                pairs.append((os.path.join(props, name), "kits/props"))
+            elif name == "catalog.json":
+                pairs.append((os.path.join(props, name), track_id))
+    return pairs
+
+
 def main() -> int:
     manifest = os.path.join(REPO, "ASSET_MANIFEST.json")
+    if len(sys.argv) > 2 and sys.argv[1] == "--track":
+        n = _copy_and_register(track_files(sys.argv[2]), manifest)
+        print("ship_world: track %s, %d files copied and registered" % (sys.argv[2], n))
+        return 0
     pairs = [(src, dst_rel) for src, dst_rel in CITY_FILES]
     pairs += _kit_files(os.path.join(SRC, "kit_buildings", "out"), "kits/buildings")
     pairs += _kit_files(os.path.join(SRC, "kit_props", "out"), "kits/props")

@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "drift",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 286,
+    "draw_calls_min": 182,
+    "driver": "vulkan",
+    "fps": 168.213,
+    "frame_ms_avg": 5.945,
+    "frame_ms_p95": 6.532,
+    "frame_ms_p99": 85.294,
+    "frames": 60,
+    "objects": 13907,
+    "os": "Windows",
+    "primitives": 341268,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 566.868,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2cdb5f71-dea-3/evidence/screens/race_bogaz/drift.png",
+  "preset": "high",
+  "scenario": "race_bogaz"
+}

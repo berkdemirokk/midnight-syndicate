@@ -10,6 +10,7 @@ const MATERIAL_JSON: Array[String] = [
 	"res://assets/world/city_01/road/materials.json",
 	"res://assets/world/kits/buildings/materials.json",
 	"res://assets/world/kits/props/materials.json",
+	"res://assets/world/kits/istanbul/materials.json",
 ]
 const CC0_ROOT: String = "res://assets/textures/cc0/"
 const BUILDING_TEX: String = "res://assets/world/kits/buildings/textures/"
@@ -179,6 +180,8 @@ static func _colour(v: Variant) -> Color:
 
 
 static func _build(mat_name: String) -> Material:
+	if IstanbulMaterials.handles(mat_name):
+		return IstanbulMaterials.build(mat_name)
 	var r: Dictionary = _recipes[mat_name]
 	if mat_name == "M_Asphalt":
 		return _asphalt()

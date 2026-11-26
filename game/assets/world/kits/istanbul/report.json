@@ -1,0 +1,192 @@
+{
+ "buildings": {
+  "bld_yali_a": {
+   "lod0": 4460,
+   "lod1": 396,
+   "lod2": 16,
+   "lod1_ratio": 0.089,
+   "lod1_ok": true,
+   "lod0_in_budget": true
+  },
+  "bld_yali_b": {
+   "lod0": 3814,
+   "lod1": 318,
+   "lod2": 16,
+   "lod1_ratio": 0.083,
+   "lod1_ok": true,
+   "lod0_in_budget": true
+  },
+  "bld_yali_c": {
+   "lod0": 4238,
+   "lod1": 334,
+   "lod2": 16,
+   "lod1_ratio": 0.079,
+   "lod1_ok": true,
+   "lod0_in_budget": true
+  },
+  "bld_ahsap_row_a": {
+   "lod0": 3968,
+   "lod1": 488,
+   "lod2": 36,
+   "lod1_ratio": 0.123,
+   "lod1_ok": true,
+   "lod0_in_budget": true
+  },
+  "bld_ahsap_row_b": {
+   "lod0": 4218,
+   "lod1": 550,
+   "lod2": 48,
+   "lod1_ratio": 0.13,
+   "lod1_ok": true,
+   "lod0_in_budget": true
+  },
+  "bld_ahsap_row_c": {
+   "lod0": 6484,
+   "lod1": 648,
+   "lod2": 36,
+   "lod1_ratio": 0.1,
+   "lod1_ok": true,
+   "lod0_in_budget": true
+  }
+ },
+ "props": {
+  "tram_rail_segment": {
+   "tris": 1476,
+   "lod1": 442,
+   "size": [
+    12.007,
+    6.68,
+    4.32
+   ],
+   "budget": [
+    1200,
+    4000
+   ],
+   "in_budget": true
+  },
+  "cobble_strip": {
+   "tris": 1764,
+   "lod1": 528,
+   "size": [
+    12.009,
+    0.182,
+    1.82
+   ],
+   "budget": [
+    800,
+    3000
+   ],
+   "in_budget": true
+  },
+  "seaside_railing": {
+   "tris": 1636,
+   "lod1": 489,
+   "size": [
+    6.17,
+    1.405,
+    0.36
+   ],
+   "budget": [
+    600,
+    2500
+   ],
+   "in_budget": true
+  },
+  "promenade_lamp": {
+   "tris": 928,
+   "lod1": 278,
+   "size": [
+    1.847,
+    4.93,
+    0.56
+   ],
+   "budget": [
+    500,
+    2000
+   ],
+   "in_budget": true
+  },
+  "simit_cart": {
+   "tris": 1924,
+   "lod1": 636,
+   "size": [
+    2.354,
+    1.665,
+    1.498
+   ],
+   "budget": [
+    800,
+    2500
+   ],
+   "in_budget": true
+  },
+  "fish_cart": {
+   "tris": 1388,
+   "lod1": 452,
+   "size": [
+    2.8,
+    2.18,
+    1.15
+   ],
+   "budget": [
+    800,
+    3000
+   ],
+   "in_budget": true
+  },
+  "ferry_pier_light": {
+   "tris": 732,
+   "lod1": null,
+   "size": [
+    1.54,
+    5.305,
+    0.571
+   ],
+   "budget": [
+    400,
+    2000
+   ],
+   "in_budget": true
+  },
+  "skyline_asia_hills": {
+   "tris": 602,
+   "lod1": null,
+   "size": [
+    551.01,
+    57.597,
+    43.205
+   ],
+   "budget": null,
+   "in_budget": true
+  },
+  "skyline_bridge": {
+   "tris": 454,
+   "lod1": null,
+   "size": [
+    512.797,
+    107.0,
+    37.295
+   ],
+   "budget": null,
+   "in_budget": true
+  },
+  "skyline_domes": {
+   "tris": 750,
+   "lod1": null,
+   "size": [
+    416.199,
+    90.199,
+    24.389
+   ],
+   "budget": null,
+   "in_budget": true
+  }
+ },
+ "summary": {
+  "buildings": 6,
+  "items": 10,
+  "all_lod1_ok": true,
+  "all_lod0_in_budget": true,
+  "all_props_in_budget": true
+ }
+}

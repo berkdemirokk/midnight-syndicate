@@ -8,11 +8,9 @@ extends Track
 
 const FAR_LOD_UPDATE_MS: int = 100
 const FAR_LOD_CHUNKS: int = 3  ## prop chunks per LOD2 batch
-const LAYOUT_PATH: String = "res://assets/world/city_01/city_01_layout.json"
-const ROAD_GLB: String = "res://assets/world/city_01/city_01_road.glb"
 const BUILDING_DIR: String = "res://assets/world/kits/buildings/"
 const PROP_DIR: String = "res://assets/world/kits/props/"
-const CATALOG_PATH: String = "res://assets/world/kits/buildings/catalog.json"
+const ISTANBUL_DIR: String = "res://assets/world/kits/istanbul/"  
 const VEHICLE_LAYER_BIT: int = 1 << 1
 const NIGHT_SKY: Shader = preload("res://world/materials/night_sky.gdshader")
 const TRIGGER_LAYER_BIT: int = 1 << 2
@@ -22,7 +20,6 @@ const ACCENT_SPOT_ANGLE_DEG: float = 35.0
 const GRID_REST_M: float = 0.47  ## car origin height above the road, as in the vehicle tests
 const FALL_FLOOR_Y_M: float = -30.0
 const FALL_FLOOR_SIZE_M: float = 6000.0
-const CENTRE_PATH: String = "res://assets/world/city_01/city_01_centerline.json"
 const CORRIDOR_MARGIN_M: float = 0.5  ## corridor = kerb line + this, per centreline sample
 const CORRIDOR_SEARCH: int = 40  ## centreline samples either side of a building's lap offset searched for its nearest sample
 const CORRIDOR_NEAR_M: float = 12.0  ## footprint points further than this from every sample are not in the corridor
@@ -47,6 +44,19 @@ const DRESS_FREE_STEP_M: float = 0.25  ## step of the walking-lane scan outward 
 const DRESS_SLACK_M: float = 0.1  ## kerb-side props sit this much inside the clearance line, not on it
 const DRESS_OFFSETS: Array = [0.0, 2.0, -2.0, 4.0, -4.0, 6.0, -6.0, 8.0, -8.0, 10.0, -10.0, 12.0, -12.0, 14.0, -14.0, 16.0, -16.0, 18.0, -18.0, 20.0, -20.0]  ## along-road search order, 2 m steps: finds the gaps between buildings
 
+@export_group("Track data (defaults = City 01)")
+@export var layout_path: String = "res://assets/world/city_01/city_01_layout.json"
+@export var road_glb: String = "res://assets/world/city_01/city_01_road.glb"
+@export var catalog_path: String = "res://assets/world/kits/buildings/catalog.json"
+@export var centre_path: String = "res://assets/world/city_01/city_01_centerline.json"
+@export_group("Glass look (alpha 0 = kit default)")
+@export var pane_glow_tint: Color = Color(0.0, 0.0, 0.0, 0.0)  ## lit window colour of M_WindowAtlas and M_ImpostorAtlas: cool white for a glass district
+@export var pane_albedo_tint: Color = Color(0.0, 0.0, 0.0, 0.0)  ## multiplies the pane albedo: blue-green glass
+@export_group("LED crowns")
+@export var crown_color: Color = Color(0.0, 0.0, 0.0, 0.0)  ## emissive LED band on the roof edge of tall first-row buildings, alpha 0 = none
+@export var crown_min_height_m: float = 60.0
+@export var crown_energy: float = 3.0
+@export_group("General")
 @export var lod0_end_m: float = 70.0  ## first-row building LOD0 up to here, LOD1 to lod1_end_m, LOD2 beyond
 @export var lod1_end_m: float = 180.0
 @export var lod_fade_m: float = 4.0  ## dithered cross-fade band on every LOD and category switch
@@ -153,14 +163,16 @@ var _dress_obs: Array[Dictionary] = []  ## {pos: Vector2, r: float}: street furn
 var _dress_recs: Array[Dictionary] = []  ## placed dressing props: kit, footprint, transform and log fields
 var _far_groups: Dictionary = {}  ## "asset|chunk" -> {asset, chunk, xfs, mm, centres, active}: first-row LOD2 batches
 var _far_next_ms: int = 0
+var _crown_xfs: Array[Transform3D] = []  ## LED crown strips (scaled unit boxes) of the tall first-row buildings
+var _tint_cache: Dictionary = {}  ## "material|owner" -> tinted copy of a window material
 var _dress_lights: Array = []  ## lights of the dressing props, in the layout's light format
 
 
 func _ready() -> void:
 	var t0: int = Time.get_ticks_usec()
-	var layout: Variant = JSON.parse_string(FileAccess.get_file_as_string(LAYOUT_PATH))
+	var layout: Variant = JSON.parse_string(FileAccess.get_file_as_string(layout_path))
 	if not layout is Dictionary:
-		push_error("CityBuilder: cannot parse " + LAYOUT_PATH)
+		push_error("CityBuilder: cannot parse " + layout_path)
 		return
 	var d: Dictionary = layout
 	_geo = get_node("Geometry") as Node3D
@@ -245,7 +257,7 @@ func _build_checkpoints(start: Dictionary, gates: Array) -> void:
 # --- road and buildings ---------------------------------------------------------------------
 
 func _build_road() -> void:
-	var road: Node3D = _scene(ROAD_GLB).instantiate() as Node3D
+	var road: Node3D = _scene(road_glb).instantiate() as Node3D
 	road.name = "Road"
 	stats["road_surfaces"] = MaterialLibrary.apply(road)
 	# The "ground" plane collider sits at about -0.3 m, above the underpass approach where the road drops below it,
@@ -282,7 +294,7 @@ func _add_fall_floor() -> void:
 
 
 func _build_buildings(inst: Array, lap: float) -> void:
-	var catalog: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(CATALOG_PATH))
+	var catalog: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(catalog_path))
 	var colliders: Dictionary = {}
 	for b: Variant in catalog["buildings"]:
 		var bd: Dictionary = b
@@ -309,10 +321,11 @@ func _build_buildings(inst: Array, lap: float) -> void:
 			continue
 		if kind != "building":
 			continue
-		var root: Node3D = _scene(BUILDING_DIR + asset + ".glb").instantiate() as Node3D
+		var root: Node3D = _scene(_bld_path(asset)).instantiate() as Node3D
 		root.name = "%s_%03d" % [asset, int(stats["first_row"])]
 		root.transform = xf
 		MaterialLibrary.apply(root, asset)
+		_retint(root, asset)
 		_set_lod_ranges(root)
 		_collect_far_lod(root, asset, d, xf, lap)
 		if colliders.has(asset):
@@ -322,13 +335,15 @@ func _build_buildings(inst: Array, lap: float) -> void:
 			var box_centre: Vector3 = _collider_centre(d, xf, colliders[asset]["center"] as Vector3)
 			_solid.append(_box_entry(_rel_xf(root, self) * Transform3D(Basis(), box_centre), colliders[asset]["size"] as Vector3))
 		stats["first_row"] = int(stats["first_row"]) + 1
+		_collect_crown(d, xf)
 	_emit_far_lod(first)
+	_emit_crowns(first)
 	for asset: String in lod2_xfs.keys():
 		var arr: Array = lod2_xfs[asset]
 		if colliders.has(asset):
 			for xf_v: Variant in arr:
 				_solid.append(_box_entry((xf_v as Transform3D) * Transform3D(Basis(), colliders[asset]["center"] as Vector3), colliders[asset]["size"] as Vector3))
-		var lod2: Dictionary = _find_mesh(_prototype(BUILDING_DIR + asset + ".glb", asset), "LOD2")
+		var lod2: Dictionary = _find_mesh(_prototype(_bld_path(asset), asset), "LOD2")
 		if lod2.is_empty():
 			push_warning("CityBuilder: no LOD2 in " + asset)
 			continue
@@ -379,7 +394,7 @@ func _emit_far_lod(first: Node3D) -> void:
 	for key: String in _far_groups.keys():
 		var g: Dictionary = _far_groups[key]
 		var asset: String = String(g["asset"])
-		var lod2: Dictionary = _find_mesh(_prototype(BUILDING_DIR + asset + ".glb", asset), "LOD2")
+		var lod2: Dictionary = _find_mesh(_prototype(_bld_path(asset), asset), "LOD2")
 		if lod2.is_empty():
 			continue
 		var xfs: Array = g["xfs"]
@@ -485,9 +500,9 @@ func _set_lod_ranges(n: Node) -> void:
 
 ## Reads the centreline file: per sample position, right vector and corridor half width (kerb line + margin).
 func _load_corridor() -> void:
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(CENTRE_PATH))
+	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(centre_path))
 	if not data is Dictionary:
-		push_error("CityBuilder: cannot parse " + CENTRE_PATH)
+		push_error("CityBuilder: cannot parse " + centre_path)
 		return
 	var samples: Array = (data as Dictionary)["samples"]
 	var edges: Array = (data as Dictionary)["edges"]
@@ -607,7 +622,7 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 			stats["signs_dropped_overlap"] = int(stats.get("signs_dropped_overlap", 0)) + 1
 			continue
 		var file: String = String(d["file"]).get_file()
-		if not ResourceLoader.exists(PROP_DIR + file):
+		if not ResourceLoader.exists(_prop_path(file)):
 			stats["missing_props"] = int(stats["missing_props"]) + 1
 			push_warning("CityBuilder: missing prop " + file)
 			continue
@@ -634,11 +649,11 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 ## Mesh children of one prop group (one file, chunk and category): a near MultiMesh per mesh and a far LOD1 band
 ## when the kit ships a _lod1 file. Returns the prototype; the caller turns its shapes into colliders.
 func _emit_prop_meshes(parent: Node3D, file: String, chunk: int, cat: String, xfs: Array) -> Dictionary:
-	var path: String = PROP_DIR + file
+	var path: String = _prop_path(file)
 	var end_m: float = prop_far_end_m
 	if cat == "furniture":
 		end_m = prop_furniture_end_m
-	elif cat == "bay":
+	elif cat == "bay" or cat == "skyline":
 		end_m = 0.0
 	var near: Dictionary = _prototype(path, "")
 	var lod1_path: String = path.replace(".glb", "_lod1.glb")
@@ -765,8 +780,87 @@ func _library_mesh(src: Mesh, owner_id: String) -> Mesh:
 	for s: int in m.get_surface_count():
 		var src_mat: Material = m.surface_get_material(s)
 		var mat_name: String = src_mat.resource_name if src_mat != null else ""
-		m.surface_set_material(s, MaterialLibrary.get_material(mat_name, owner_id))
+		m.surface_set_material(s, _track_material(mat_name, owner_id))
 	return m
+
+
+## Library material, or a tinted copy of a window material when the track sets pane_glow_tint / pane_albedo_tint.
+## The shared library instance is never touched, so City 01 keeps its look when both tracks load in one process.
+func _track_material(mat_name: String, owner_id: String) -> Material:
+	var base: Material = MaterialLibrary.get_material(mat_name, owner_id)
+	if pane_glow_tint.a <= 0.0 and pane_albedo_tint.a <= 0.0:
+		return base
+	if mat_name != "M_WindowAtlas" and mat_name != "M_ImpostorAtlas":
+		return base
+	var key: String = "%s|%s|%s|%s" % [mat_name, owner_id, pane_glow_tint.to_html(), pane_albedo_tint.to_html()]
+	if not _tint_cache.has(key):
+		var m: ShaderMaterial = (base as ShaderMaterial).duplicate() as ShaderMaterial
+		if pane_glow_tint.a > 0.0:
+			var g := Vector3(pane_glow_tint.r, pane_glow_tint.g, pane_glow_tint.b)
+			m.set_shader_parameter("glow_tint", g)
+			m.set_shader_parameter("glow_tint_cool", g)
+		if pane_albedo_tint.a > 0.0:
+			var t: Color = m.get_shader_parameter("tint")
+			m.set_shader_parameter("tint", Color(t.r * pane_albedo_tint.r, t.g * pane_albedo_tint.g, t.b * pane_albedo_tint.b))
+		_tint_cache[key] = m
+	return _tint_cache[key]
+
+
+## Swaps the window surfaces of a first-row building for the track's tinted copies (no-op without a tint).
+func _retint(root: Node3D, asset: String) -> void:
+	if pane_glow_tint.a <= 0.0 and pane_albedo_tint.a <= 0.0:
+		return
+	for n: Node in _all_nodes(root):
+		if not n is MeshInstance3D:
+			continue
+		var mi: MeshInstance3D = n
+		if mi.mesh == null:
+			continue
+		for s: int in mi.mesh.get_surface_count():
+			var ov: Material = mi.get_surface_override_material(s)
+			if ov != null and (ov.resource_name == "M_WindowAtlas" or ov.resource_name == "M_ImpostorAtlas"):
+				mi.set_surface_override_material(s, _track_material(ov.resource_name, asset))
+
+
+## LED crown: three thin strips (front and both sides, facing the street) on the roof edge of a tall first-row building.
+func _collect_crown(d: Dictionary, xf: Transform3D) -> void:
+	if crown_color.a <= 0.0:
+		return
+	var h: float = float(d.get("height_m", 0.0))
+	if h < crown_min_height_m:
+		return
+	var w: float = float(d.get("width_m", 0.0))
+	var dep: float = float(d.get("depth_m", 0.0))
+	var t: float = 0.35
+	var y: float = h + t * 0.5
+	_crown_xfs.append(xf * Transform3D(Basis.from_scale(Vector3(w, t, t)), Vector3(0.0, y, -t * 0.5)))
+	_crown_xfs.append(xf * Transform3D(Basis.from_scale(Vector3(t, t, dep)), Vector3(-w * 0.5 + t * 0.5, y, -dep * 0.5)))
+	_crown_xfs.append(xf * Transform3D(Basis.from_scale(Vector3(t, t, dep)), Vector3(w * 0.5 - t * 0.5, y, -dep * 0.5)))
+
+
+func _emit_crowns(parent: Node3D) -> void:
+	if _crown_xfs.is_empty():
+		return
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color.BLACK
+	mat.emission_enabled = true
+	mat.emission = Color(crown_color.r, crown_color.g, crown_color.b)
+	mat.emission_energy_multiplier = crown_energy
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	var box := BoxMesh.new()
+	box.size = Vector3.ONE
+	box.material = mat
+	mm.mesh = box
+	mm.instance_count = _crown_xfs.size()
+	for i: int in _crown_xfs.size():
+		mm.set_instance_transform(i, _crown_xfs[i])
+	var mmi := MultiMeshInstance3D.new()
+	mmi.name = "LedCrowns"
+	mmi.multimesh = mm
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	parent.add_child(mmi)
+	stats["crown_strips"] = _crown_xfs.size()
 
 
 # --- street dressing ------------------------------------------------------------------------
@@ -1467,6 +1561,16 @@ func _build_environment() -> void:
 
 
 # --- helpers --------------------------------------------------------------------------------
+
+static func _bld_path(asset: String) -> String:
+	var p: String = BUILDING_DIR + asset + ".glb"
+	return p if ResourceLoader.exists(p) else ISTANBUL_DIR + asset + ".glb"
+
+
+static func _prop_path(file: String) -> String:
+	var p: String = PROP_DIR + file
+	return p if ResourceLoader.exists(p) else ISTANBUL_DIR + file
+
 
 func _scene(path: String) -> PackedScene:
 	if not _packed.has(path):

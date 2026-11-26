@@ -1,0 +1,499 @@
+{
+  "id": "istanbul_bogaz",
+  "name": "Bogaz Sahil Yolu - Bebek to Arnavutkoy night coast road",
+  "road": {
+    "out_dir": "assets_src/world/tracks/istanbul_bogaz/road_out",
+    "render_dir": "assets_src/world/tracks/istanbul_bogaz/road_renders",
+    "cp": [
+      [
+        162.0,
+        391.0,
+        0
+      ],
+      [
+        291.6,
+        356.4,
+        0
+      ],
+      [
+        306.7,
+        237.6,
+        0
+      ],
+      [
+        324.0,
+        108.0,
+        0
+      ],
+      [
+        324.0,
+        -43.2,
+        0
+      ],
+      [
+        304.6,
+        -172.8,
+        0
+      ],
+      [
+        250.6,
+        -270.0,
+        0
+      ],
+      [
+        140.4,
+        -324.0,
+        0.4
+      ],
+      [
+        21.6,
+        -326.2,
+        1.8
+      ],
+      [
+        -86.4,
+        -293.8,
+        3.6
+      ],
+      [
+        -183.6,
+        -229.0,
+        3.6
+      ],
+      [
+        -250.6,
+        -129.6,
+        1.6
+      ],
+      [
+        -270.0,
+        10.8,
+        0.2
+      ],
+      [
+        -259.2,
+        162.0,
+        0
+      ],
+      [
+        -205.2,
+        291.6,
+        0
+      ],
+      [
+        -97.2,
+        367.2,
+        0
+      ],
+      [
+        32.4,
+        391.0,
+        0
+      ]
+    ],
+    "helper": null,
+    "road_w": 14.0,
+    "narrow_w": 10.0,
+    "narrow_cp": [
+      7,
+      12
+    ],
+    "cobble_cp": [
+      7,
+      12
+    ],
+    "wide_cp": null,
+    "prom_cp": [
+      1,
+      6
+    ],
+    "bank_cp": null,
+    "tube_cp": null,
+    "piers": [
+      {
+        "cp": 3,
+        "s": 15.0,
+        "len": 38.0,
+        "w": 7.0
+      },
+      {
+        "cp": 5,
+        "s": -30.0,
+        "len": 30.0,
+        "w": 6.0
+      }
+    ],
+    "dist_names": [
+      "Bebek Sahil",
+      "Arnavutkoy Sahil",
+      "Kalyoncu Sokak",
+      "Yokus Tepe",
+      "Cengelkoy Donus"
+    ],
+    "dist_of_pt": [
+      4,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "start_cp": 2,
+    "gate_cps": [
+      4,
+      7,
+      11,
+      15
+    ],
+    "arrow_cp": 3,
+    "arrow_lanes": [
+      -5.25,
+      -1.75,
+      1.75,
+      5.25
+    ],
+    "zebra": [
+      [
+        3,
+        55.0
+      ],
+      [
+        14,
+        25.0
+      ]
+    ],
+    "hairpin_cp": null,
+    "lane_lines": [
+      -3.5,
+      0.0,
+      3.5
+    ],
+    "lap_range": [
+      2000.0,
+      2500.0
+    ],
+    "rmin_m": 28.0,
+    "qa": {
+      "district_labels": [],
+      "start_label": [
+        200.0,
+        220.0
+      ],
+      "top_center": [
+        20.0,
+        30.0
+      ],
+      "top_scale": 1000.0,
+      "views": []
+    }
+  },
+  "layout": {
+    "out_dir": "assets_src/world/tracks/istanbul_bogaz/layout_out",
+    "seed": 20261127,
+    "lap_range": [
+      2000.0,
+      2500.0
+    ],
+    "min_cl_m": 8.0,
+    "canopy_min_m": 6.5,
+    "min_storeys": {},
+    "tunnel_district": null,
+    "districts": {
+      "0": "bebek",
+      "1": "arnavutkoy",
+      "2": "kalyoncu",
+      "3": "yokus",
+      "4": "cengelkoy"
+    },
+    "district_names": {
+      "0": "Bebek Sahil",
+      "1": "Arnavutkoy Sahil",
+      "2": "Kalyoncu Sokak",
+      "3": "Yokus Tepe",
+      "4": "Cengelkoy Donus"
+    },
+    "extra_building_catalogs": [
+      "assets_src/world/kit_istanbul/out/catalog.json"
+    ],
+    "extra_prop_catalogs": [
+      "assets_src/world/kit_istanbul/out/catalog.json",
+      "assets_src/world/tracks/istanbul_maslak/props_out/catalog.json",
+      "assets_src/world/tracks/istanbul_bogaz/props_out/catalog.json"
+    ],
+    "bld_pool": {
+      "0": [
+        "bld_yali_a",
+        "bld_yali_b",
+        "bld_yali_c",
+        "bld_ahsap_row_a",
+        "bld_yali_a"
+      ],
+      "1": [
+        "bld_yali_c",
+        "bld_ahsap_row_a",
+        "bld_yali_b",
+        "bld_ahsap_row_b",
+        "bld_ahsap_row_c"
+      ],
+      "2": [
+        "bld_ahsap_row_b",
+        "bld_ahsap_row_c",
+        "bld_ahsap_row_a"
+      ],
+      "3": [
+        "bld_ahsap_row_a",
+        "bld_ahsap_row_b",
+        "bld_ahsap_row_c"
+      ],
+      "4": [
+        "bld_ahsap_row_c",
+        "bld_ahsap_row_b",
+        "bld_ahsap_row_a",
+        "bld_yali_b"
+      ]
+    },
+    "sign_box": {
+      "0": [
+        "sign_box_iskele_kahvesi_8m",
+        "sign_box_kayik_balik_8m",
+        "sign_box_mavi_deniz_4m"
+      ],
+      "1": [
+        "sign_box_kandil_lokanta_8m",
+        "sign_box_kayik_balik_8m",
+        "sign_box_nar_evi_4m",
+        "sign_box_bogaz_balik_8m"
+      ],
+      "2": [
+        "sign_box_gece_kahvesi_8m",
+        "sign_box_nar_evi_4m",
+        "sign_box_ay_isigi_4m"
+      ],
+      "3": [
+        "sign_box_lale_pasaji_8m",
+        "sign_box_mavi_deniz_4m"
+      ],
+      "4": [
+        "sign_box_gece_kahvesi_8m",
+        "sign_box_iskele_kahvesi_8m",
+        "sign_box_yildiz_sinema_4m",
+        "sign_box_kule_kitap_4m"
+      ]
+    },
+    "sign_blade": [
+      "sign_blade_cinar_cay_evi",
+      "sign_blade_simit_firini",
+      "sign_blade_nar_meyhane",
+      "sign_blade_marti_kafe",
+      "sign_blade_deniz_kafe"
+    ],
+    "sign_p": {
+      "0": 0.7,
+      "1": 0.8,
+      "2": 0.9,
+      "3": 0.8,
+      "4": 0.8
+    },
+    "furniture": [
+      [
+        "bench",
+        0.03,
+        2.0
+      ],
+      [
+        "litter_bin",
+        0.05,
+        1.8
+      ],
+      [
+        "planter_shrub",
+        0.05,
+        2.0
+      ],
+      [
+        "newspaper_box",
+        0.01,
+        2.2
+      ],
+      [
+        "fire_hydrant",
+        0.015,
+        3.0
+      ]
+    ],
+    "lamp_asset": {},
+    "lamp_default": "promenade_lamp",
+    "lamp_skip_districts": [],
+    "lamp_step_m": [
+      30.0,
+      34.0
+    ],
+    "lamp_on_deck": true,
+    "second_row": [
+      [
+        30.0,
+        [
+          0,
+          1
+        ],
+        0.9
+      ],
+      [
+        30.0,
+        [
+          2,
+          3,
+          4
+        ],
+        0.85
+      ],
+      [
+        60.0,
+        [
+          0,
+          1,
+          3
+        ],
+        0.7
+      ]
+    ],
+    "second_row_districts": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "sign_districts": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "tall_districts": [],
+    "billboard": [
+      "sign_billboard_lale_plaza_12x5"
+    ],
+    "billboard_count": 0,
+    "accent_count": 0,
+    "bus_district": null,
+    "bus_fracs": [],
+    "string_district": null,
+    "market_district": null,
+    "cable_district": null,
+    "guardrails": false,
+    "corner_barriers": false,
+    "apex_guess": [],
+    "no_build": [],
+    "quay": {
+      "railing": "seaside_railing",
+      "railing_step": 3,
+      "railing_k": 0.3,
+      "lamp": "promenade_lamp",
+      "lamp_step_m": [
+        22.0,
+        25.0
+      ],
+      "lamp_k": 1.7,
+      "furniture": [
+        [
+          "bench",
+          0.02,
+          3.2
+        ],
+        [
+          "litter_bin",
+          0.02,
+          2.8
+        ]
+      ]
+    },
+    "tram": {
+      "asset": "tram_rail_segment",
+      "cps": [
+        7,
+        12
+      ],
+      "u": 2.3,
+      "step_m": 12.0
+    },
+    "pier_lights": {
+      "asset": "ferry_pier_light"
+    },
+    "plaza": [
+      {
+        "cp": 2,
+        "s": 60,
+        "side": "left",
+        "off": 11.6,
+        "asset": "simit_cart",
+        "y": 0.15,
+        "face": "road"
+      },
+      {
+        "cp": 4,
+        "s": 30,
+        "side": "left",
+        "off": 11.4,
+        "asset": "fish_cart",
+        "y": 0.15,
+        "face": "road"
+      },
+      {
+        "cp": 5,
+        "s": 60,
+        "side": "left",
+        "off": 11.8,
+        "asset": "simit_cart",
+        "y": 0.15,
+        "face": "road"
+      }
+    ],
+    "skylines": [
+      {
+        "cp": 1,
+        "s": 60,
+        "side": "left",
+        "off": 360.0,
+        "district": 0,
+        "asset": "skyline_asia_hills"
+      },
+      {
+        "cp": 3,
+        "s": 20,
+        "side": "left",
+        "off": 335.0,
+        "district": 0,
+        "asset": "skyline_asia_hills"
+      },
+      {
+        "cp": 5,
+        "s": 20,
+        "side": "left",
+        "off": 385.0,
+        "district": 1,
+        "asset": "skyline_bridge"
+      },
+      {
+        "cp": 4,
+        "s": 0,
+        "side": "left",
+        "off": 398.0,
+        "district": 0,
+        "asset": "skyline_domes"
+      }
+    ]
+  }
+}

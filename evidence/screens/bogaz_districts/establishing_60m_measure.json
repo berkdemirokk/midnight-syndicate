@@ -1,0 +1,26 @@
+{
+  "name": "establishing_60m_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 247,
+    "draw_calls_min": 247,
+    "driver": "vulkan",
+    "fps": 1185.082,
+    "frame_ms_avg": 0.844,
+    "frame_ms_p95": 1.209,
+    "frame_ms_p99": 1.528,
+    "frames": 300,
+    "objects": 247,
+    "os": "Windows",
+    "primitives": 110139,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 516.089,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "bogaz_districts"
+}
