@@ -58,6 +58,14 @@ var _compression: PackedFloat32Array = PackedFloat32Array()  ## spring compressi
 var _spring: PackedFloat32Array = PackedFloat32Array()  ## spring normal force in N after clamps
 var _drift_exit_t: float = 0.0
 var _gear_dip_t: float = 0.0
+var _shift_t: float = 0.0
+var _since_shift: float = 10.0
+var _rpm_raw: float = 0.0
+var _rpm_disp: float = 0.0
+var _brake_applied: float = 0.0
+var _rear_scale: float = 1.0  ## smoothed rear grip multiplier for drift entry, throttle control and exit
+var _static_load_f: float = 1.0
+var _static_load_r: float = 1.0
 
 
 func _ready() -> void:
@@ -65,8 +73,12 @@ func _ready() -> void:
 		spec = CarSpec.new()
 	if spec.engine_force_curve == null:
 		spec.engine_force_curve = CarSpec.make_default_force_curve()
+	if spec.torque_curve == null:
+		spec.torque_curve = CarSpec.make_default_torque_curve()
 	_gravity = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
 	mass = spec.mass_kg
+	_static_load_f = maxf(mass * _gravity * spec.weight_front * 0.5, MIN_DIVISOR)
+	_static_load_r = maxf(mass * _gravity * (1.0 - spec.weight_front) * 0.5, MIN_DIVISOR)
 	can_sleep = false
 	linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
 	linear_damp = 0.0
@@ -225,11 +237,15 @@ func _physics_process(delta: float) -> void:
 		over = clampf((absf(slip) - spec.drift_max_angle_deg * spec.counter_steer_start)
 			/ maxf(spec.drift_max_angle_deg * (1.0 - spec.counter_steer_start), MIN_DIVISOR), 0.0, 1.0)
 	var t_speed: float = clampf(absf(v_long) / top_ms, 0.0, 1.0)
-	var max_steer: float = deg_to_rad(lerpf(spec.steer_angle_low_deg, spec.steer_angle_high_deg, t_speed))
+	var max_steer: float = deg_to_rad(lerpf(spec.steer_angle_low_deg, spec.steer_angle_high_deg, pow(t_speed, spec.steer_speed_exponent)))
 	var steer_cmd: float = steer_in
 	if over > 0.0:
 		steer_cmd = lerpf(steer_in, -signf(slip), over * spec.counter_steer_assist)
-	steer_angle_rad = lerpf(steer_angle_rad, steer_cmd * max_steer, clampf(spec.steer_speed * delta, 0.0, 1.0))
+	var steer_target: float = steer_cmd * max_steer
+	var steer_rate: float = spec.steer_speed
+	if spec.steer_return_speed > 0.0 and absf(steer_target) < absf(steer_angle_rad):
+		steer_rate = spec.steer_return_speed  # centring is quicker than turn-in
+	steer_angle_rad = lerpf(steer_angle_rad, steer_target, clampf(steer_rate * delta, 0.0, 1.0))
 
 	# 5. Nitro: start on key with enough charge, drain while active, refill otherwise.
 	var nitro_go: bool = nitro_key and nitro_amount > 0.0 and (nitro_active or nitro_amount >= spec.nitro_min_to_start)
@@ -252,19 +268,36 @@ func _physics_process(delta: float) -> void:
 		var cap_ms: float = top_ms * (spec.nitro_top_speed_mult if nitro_active else 1.0)
 		if v_long < cap_ms:
 			var ratio: float = clampf(v_long / top_ms, 0.0, 1.0)
-			eng = spec.engine_force * spec.engine_force_curve.sample(ratio) * throttle
+			if _geared():
+				eng = _gear_drive_force() * throttle
+			else:
+				eng = spec.engine_force * spec.engine_force_curve.sample(ratio) * throttle
 			if nitro_active:
 				eng *= spec.nitro_force_mult
 	elif brake > 0.0 and v_long < spec.reverse_engage_ms:
 		if -v_long < spec.reverse_speed_kmh / KMH_PER_MS:
 			eng = -spec.engine_force * spec.reverse_force_share * brake
+	var ramp: float = spec.brake_ramp_rate * (1.0 if brake > _brake_applied else 2.0) * delta
+	_brake_applied = move_toward(_brake_applied, brake, ramp)
 	if brake > 0.0 and v_long >= spec.reverse_engage_ms:
-		brake_total = spec.brake_force * brake
+		brake_total = spec.brake_force * _brake_applied
 	var eb_total: float = spec.engine_brake if (throttle <= 0.0 and brake <= 0.0) else 0.0
 
 	# 7. Tyre forces per wheel: lateral grip with a friction circle, then longitudinal forces.
 	var mw: float = mass / WHEEL_COUNT
-	var rear_mult: float = spec.drift_rear_grip_mult if (is_drifting or handbrake) else 1.0
+	var rear_target: float = 1.0
+	if is_drifting or handbrake:
+		var lift_mult: float = spec.drift_lift_grip_mult if spec.drift_lift_grip_mult > 0.0 else spec.drift_rear_grip_mult
+		rear_target = lerpf(lift_mult, spec.drift_rear_grip_mult, 1.0 if handbrake else throttle)
+		if spec.drift_straighten_steer > 0.0 and not handbrake:
+			# wheel straightened: the player lets the drift go, so rear grip returns (smoothly, see below)
+			rear_target = lerpf(1.0, rear_target, clampf(absf(steer_in) / spec.drift_straighten_steer, 0.0, 1.0))
+	# grip drops at once, comes back at drift_grip_recover so a drift exit is a ramp, not a snap
+	if rear_target < _rear_scale:
+		_rear_scale = rear_target
+	else:
+		_rear_scale = lerpf(_rear_scale, rear_target, clampf(spec.drift_grip_recover * delta, 0.0, 1.0))
+	var rear_mult: float = _rear_scale
 	var roll_each: float = spec.rolling_resistance / WHEEL_COUNT
 	var sat_peak: float = tan(deg_to_rad(spec.peak_slip_deg))
 	for i: int in WHEEL_COUNT:
@@ -283,9 +316,12 @@ func _physics_process(delta: float) -> void:
 		var vl: float = vc.dot(fwd_w)
 		var vs: float = vc.dot(side)
 		var mu: float = spec.grip_front if front else spec.grip_rear * rear_mult
+		if spec.load_sensitivity > 0.0:
+			var rel: float = clampf(load_n / (_static_load_f if front else _static_load_r), 0.25, 3.0)
+			mu *= pow(rel, -spec.load_sensitivity)  # load moved onto a tyre buys less grip than it takes from the other
 		var fmax: float = mu * load_n
 		var sat: float = maxf(maxf(spec.lateral_stiffness, absf(vl) * sat_peak), DIV_EPS)
-		var f_lat: float = -fmax * clampf(vs / sat, -1.0, 1.0)
+		var f_lat: float = -fmax * (_tyre_curve(vs / sat) if spec.tyre_falloff_ratio < 1.0 else clampf(vs / sat, -1.0, 1.0))
 		var cap_long: float = sqrt(maxf(0.0, fmax * fmax - f_lat * f_lat))
 		if not front and is_drifting and throttle > 0.0:
 			cap_long = maxf(cap_long, load_n * spec.drift_throttle_grip)
@@ -310,6 +346,10 @@ func _physics_process(delta: float) -> void:
 	if grounded == 0:
 		apply_central_force(Vector3.DOWN * (mass * _gravity * (spec.airborne_gravity_mult - 1.0)))
 		apply_torque(up * (-steer_in * spec.air_control_torque))
+		if spec.air_pitch_align > 0.0 and speed_ms > 5.0:
+			var pitch_err: float = atan2(v.y, Vector2(v.x, v.z).length()) - asin(clampf(fwd_car.y, -1.0, 1.0))
+			apply_torque(b.x * (pitch_err * spec.air_pitch_align))
+		apply_torque(-w * spec.air_ang_damp)
 
 	# 9. Read-outs for camera, HUD, VFX, audio and AI.
 	speed_kmh = kmh
@@ -352,6 +392,10 @@ func reset_to(xf: Transform3D, refill_nitro: bool = true) -> void:
 		nitro_amount = 1.0
 	steer_angle_rad = 0.0
 	_gear_dip_t = 0.0
+	_shift_t = 0.0
+	_brake_applied = 0.0
+	_rear_scale = 1.0
+	gear = 1
 
 
 ## While frozen the car holds its place on the grid and ignores input (engine may still rev).
@@ -371,7 +415,66 @@ func get_wheel_local_position(index: int) -> Vector3:
 	return Vector3(m.x, m.y - _distance[index] + radius, m.z)
 
 
+func _geared() -> bool:
+	return spec.gear_ratios.size() > 0
+
+
+func _total_ratio(g: int) -> float:
+	return spec.gear_ratios[clampi(g, 1, spec.gear_ratios.size()) - 1] * spec.final_drive
+
+
+## Wheel drive force from engine torque, current gear and rpm. Zero during a shift cut and at the limiter.
+func _gear_drive_force() -> float:
+	if _shift_t > 0.0 or _rpm_raw >= spec.redline_rpm:
+		return 0.0
+	var rpm_eff: float = maxf(_rpm_raw, spec.launch_rpm)
+	var torque: float = spec.peak_torque_nm * spec.torque_curve.sample(clampf(rpm_eff / spec.redline_rpm, 0.0, 1.0))
+	return torque * _total_ratio(maxi(gear, 1)) * spec.drivetrain_efficiency / maxf(spec.wheel_radius_rear, MIN_DIVISOR)
+
+
+## Slip-angle tyre curve, x = slip / peak slip: smooth rise to the peak, then a fall to the sliding grip.
+func _tyre_curve(x: float) -> float:
+	var a: float = absf(x)
+	var f: float
+	if a <= 1.0:
+		f = sin(a * PI * 0.5)
+	else:
+		var t: float = clampf((a - 1.0) / maxf(spec.tyre_falloff_slip_mult - 1.0, MIN_DIVISOR), 0.0, 1.0)
+		f = lerpf(1.0, spec.tyre_falloff_ratio, t * t * (3.0 - 2.0 * t))
+	return signf(x) * f
+
+
+func _update_gearbox(v_long: float, delta: float) -> void:
+	var n: int = spec.gear_ratios.size()
+	_shift_t = maxf(0.0, _shift_t - delta)
+	_since_shift += delta
+	if v_long < -spec.reverse_engage_ms:
+		gear = 0
+		rpm_norm = clampf(-v_long / maxf(spec.reverse_speed_kmh / KMH_PER_MS, MIN_DIVISOR), 0.0, 1.0)
+		_rpm_raw = 0.0
+		_rpm_disp = spec.idle_rpm
+		return
+	if gear < 1:
+		gear = 1
+	var r: float = maxf(spec.wheel_radius_rear, MIN_DIVISOR)
+	_rpm_raw = maxf(v_long, 0.0) / r * _total_ratio(gear) * 60.0 / TAU
+	if _shift_t <= 0.0 and _since_shift >= spec.min_shift_gap_s:
+		if _rpm_raw >= spec.upshift_rpm_norm * spec.redline_rpm and gear < n:
+			gear += 1
+			_shift_t = spec.shift_time_s
+			_since_shift = 0.0
+		elif _rpm_raw < spec.downshift_rpm_norm * spec.redline_rpm and gear > 1:
+			gear -= 1
+			_since_shift = 0.0
+	var shown: float = maxf(_rpm_raw, spec.launch_rpm if (input.throttle > 0.0 and not _frozen) else spec.idle_rpm)
+	_rpm_disp = lerpf(_rpm_disp, shown, clampf(20.0 * delta, 0.0, 1.0))
+	rpm_norm = clampf((_rpm_disp - spec.idle_rpm) / maxf(spec.redline_rpm - spec.idle_rpm, MIN_DIVISOR), 0.0, 1.0)
+
+
 func _update_gear_and_rpm(kmh: float, v_long: float, delta: float) -> void:
+	if _geared():
+		_update_gearbox(v_long, delta)
+		return
 	_gear_dip_t = maxf(0.0, _gear_dip_t - delta)
 	if v_long < -spec.reverse_engage_ms:
 		gear = 0

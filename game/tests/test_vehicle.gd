@@ -575,23 +575,24 @@ func test_gear_rpm() -> void:
 	add(ground)
 	var car: ArcadeCar = _spawn(_origin(0.0, 0.0))
 	car.input.throttle = 1.0
-	var band: float = spec.top_speed_kmh / float(spec.gear_count)
-	var dip_frames: int = int(ceilf(spec.gear_dip_s * HZ))
 	var last_gear: int = car.gear
 	var upshifts: int = 0
-	var ticks_since_up: int = 1000
-	var dip_checks: int = 0
-	var dip_bad: int = 0
-	var rpm_bad: int = 0
 	var max_gear: int = 0
+	var rpm_bad: int = 0
+	var rpm_before: float = 0.0
+	var ticks_since_up: int = 1000
+	var drop_checks: int = 0
+	var drop_bad: int = 0
 	var guard: int = 0
 	while car.speed_kmh < 150.0 and guard < 60 * 30:
+		var prev_rpm: float = car.rpm_norm
 		await frames(1)
 		guard += 1
 		var g: int = car.gear
 		if g > last_gear:
 			upshifts += 1
 			ticks_since_up = 0
+			rpm_before = prev_rpm
 		else:
 			ticks_since_up += 1
 		last_gear = g
@@ -599,23 +600,19 @@ func test_gear_rpm() -> void:
 		var rpm: float = car.rpm_norm
 		if is_nan(rpm) or rpm < 0.0 or rpm > 1.0:
 			rpm_bad += 1
-		var expected: float = clampf((car.speed_kmh - float(g - 1) * band) / band, 0.0, 1.0)
-		if ticks_since_up < dip_frames - 1:
-			dip_checks += 1
-			if absf(rpm - expected * spec.gear_dip_mult) > 1e-4:
-				dip_bad += 1
-		elif ticks_since_up > dip_frames + 1:
-			if absf(rpm - expected) > 1e-4:
-				dip_bad += 1
+		if ticks_since_up == 12:  # gearbox model: rpm falls after the shift (no cosmetic dip)
+			drop_checks += 1
+			if rpm > rpm_before - 0.05:
+				drop_bad += 1
 	metric("gear_upshifts_to_150", upshifts)
 	metric("gear_max_at_150", max_gear)
-	metric("gear_dip_checks", dip_checks)
-	metric("gear_dip_mismatch", dip_bad)
+	metric("gear_rpm_drop_checks", drop_checks)
+	metric("gear_rpm_drop_bad", drop_bad)
 	check(upshifts >= 2, "gear: only %d upshifts reaching 150 km/h" % upshifts)
-	check(max_gear >= 4, "gear: reached only gear %d at 150 km/h" % max_gear)
-	check(dip_checks >= 10, "gear: only %d dip ticks were checked" % dip_checks)
-	check(dip_bad == 0, "gear: %d rpm_norm values off the dip rule" % dip_bad)
+	check(max_gear >= 3, "gear: reached only gear %d at 150 km/h" % max_gear)
+	check(drop_checks >= 1 and drop_bad == 0, "gear: rpm did not fall after %d of %d upshifts" % [drop_bad, drop_checks])
 	check(rpm_bad == 0, "gear: rpm_norm left 0..1 on %d ticks" % rpm_bad)
+	check(spec.gear_ratios.size() == spec.gear_count, "gear_ratios count != gear_count")
 	await cleanup([car, ground])
 
 

@@ -68,3 +68,35 @@ Tuning guards that were code constants are now spec fields: reverse engage speed
 - The nitro top-speed test keeps the tank full by writing `nitro_amount` each tick. The car itself does not cheat.
 - Test 7 keeps throttle on during the steering release, so the drift end is measured with throttle held.
 - Not measured: performance cost. A Jolt "job system exceeded the maximum number of jobs" warning appeared once in an earlier run and did not recur in three later runs. Cause not investigated.
+
+## Handling pass (arcade-sim hybrid)
+
+New spec fields are all backwards compatible: with the defaults (empty `gear_ratios`, `tyre_falloff_ratio` 1.0, `load_sensitivity` 0, `drift_lift_grip_mult` 0, `steer_return_speed` 0, `drift_straighten_steer` 0, `air_*` 0) a spec behaves as before. The Sable opts in.
+
+- **Tyre**: lateral force follows slip angle: `sin` rise to the peak slip (8 deg), then a smooth fall to `tyre_falloff_ratio` (0.88) of peak at `tyre_falloff_slip_mult` (3x) the peak slip. Past the peak the car pushes (understeer) instead of gripping harder. The friction circle is unchanged: lateral has priority, so a braking car can still steer (the ABS-like feel).
+- **Load transfer**: comes from the rigid body (CoG 0.32 m, springs, anti-roll): braking loads the front, acceleration the rear, cornering the outside. It feeds grip because friction is `mu * spring load`. `load_sensitivity` (0.08) makes `mu` fall as `(load / static)^-s`, so transferred load costs total grip. `test_handling` asserts front load under braking, rear under acceleration, outside under cornering.
+- **Drivetrain**: a real gearbox. Torque = `peak_torque_nm` (520) x `torque_curve(rpm / redline)` x gear x final drive (3.2) x 0.9 / rear wheel radius. 6 gears (2.4, 2.0, 1.69, 1.39, 1.14, 0.934), idle 1000, redline 7500, clutch-slip floor `launch_rpm` 3300, 0.16 s torque cut per upshift, upshift at 97 % redline, downshift below 42 %. `rpm_norm` = (rpm - idle) / (redline - idle), smoothed. `gear` is the real gear. The limiter cuts drive at redline; the nitro speed cap (top x 1.16) is reached at the top-gear redline. `top_speed_kmh` is still a drag equilibrium (torque x ratio vs drag), so retune torque or ratios together with drag.
+- **Brakes**: pedal pressure builds at `brake_ramp_rate` (7/s) and releases twice as fast. `brake_force` 16.5 kN (was 21 kN) for a believable 100-0.
+- **Steering**: lock follows `lerp(32, 6.5, t^0.8)` with t = speed / top. Centring runs at `steer_return_speed` (11/s), turn-in at `steer_speed` (5.5/s).
+- **Drift**: the rear grip multiplier is throttle-modulated: `drift_rear_grip_mult` (0.48) at full throttle, `drift_lift_grip_mult` (0.85) off throttle, so more throttle widens the angle and lifting tightens it. It drops at once and returns at `drift_grip_recover` (3/s), so the exit is a ramp. A straightened wheel (`|steer| < drift_straighten_steer` 0.1) lets grip return and ends the drift. Counter-steer assist and yaw damping are unchanged.
+- **Air**: `air_pitch_align` (5 kN m/rad) points the nose along the flight path, `air_ang_damp` (1.2 kN m s/rad) kills spin. A landing from a 25 deg nose-down, 12 deg rolled jump ends upright (dot 1.000) and grounded.
+
+### Measured, before and after (headless, 60 Hz, Windows 11 / RTX 5060 Ti host, `test_handling`)
+
+| Metric | Before | After |
+|---|---|---|
+| 0-100 km/h | 3.10 s | 4.03 s |
+| 0-200 km/h (`test_vehicle`) | 8.55 s | 11.7 s (limit 12) |
+| Top speed | 284.9 km/h | 286.0 km/h |
+| Braking 100-0 / 200-0 | 25.2 m / 94.4 m | 32.1 m / 120.6 m |
+| Braking load transfer, front / rear compression | 0.42 / 0.26 | 0.40 / 0.28 |
+| Acceleration load transfer, front / rear | 0.22 / 0.44 | 0.24 / 0.42 |
+| Skidpad lateral g at 70 / 110 / 160 km/h | 1.20 / 1.30 / 1.43 | 1.16 / 1.25 / 1.38 |
+| Circle radius at 60 km/h, full lock | 29.0 m | 29.8 m (limit 30) |
+| Steering lock at 200 km/h | 15.4 deg | 13.3 deg |
+| Steering centring to 10 % | 0.40 s | 0.20 s |
+| Drift hold (4 s test, slip 12-50 deg) | 4.0 s, max 41 deg | 4.0 s, max 40 deg |
+| Drift exit to < 6 deg after lift | 2.98 s | 1.12 s, max 0.83 deg per tick |
+| Drift end after steering release, throttle held (`test_vehicle`) | 1.40 s | 1.07 s |
+
+Limits: `test_gear_rpm` in `test_vehicle.gd` was rewritten for the real gearbox (rpm falls after an upshift instead of a cosmetic dip). Circle radius (29.8 of 30) and 0-200 (11.7 of 12) have little room. There is no wheel-spin model and no ABS pulse: the brake is limited by the friction circle, not a slip-ratio controller. Numbers are desktop headless physics, not iPhone.
