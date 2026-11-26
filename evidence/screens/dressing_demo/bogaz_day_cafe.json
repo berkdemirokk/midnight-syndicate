@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.016,
+  "name": "bogaz_day_cafe",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 167,
+    "draw_calls_min": 167,
+    "driver": "vulkan",
+    "fps": 453.141,
+    "frame_ms_avg": 2.207,
+    "frame_ms_p95": 2.957,
+    "frame_ms_p99": 3.242,
+    "frames": 60,
+    "objects": 12626,
+    "os": "Windows",
+    "primitives": 151243,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 592.177,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-3/evidence/screens/dressing_demo/bogaz_day_cafe.png",
+  "preset": "high",
+  "scenario": "dressing_demo"
+}

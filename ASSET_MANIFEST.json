@@ -9384,6 +9384,240 @@
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "Waterfront mosque kit, original design, LOD2"
+    },
+    {
+      "id": "event_banner_atlas",
+      "kind": "texture",
+      "path": "game/assets/world/kits/event/banner_atlas.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "banner_atlas.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 285920,
+      "sha256": "b9d5822a9401f651360027dfd1c1592435a0bc67c4ce0a1dbfaf3a0f262e22ec",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "event kit texture, assets_src/world/kit_event/gen_event_textures.py"
+    },
+    {
+      "id": "event_crowd_atlas",
+      "kind": "texture",
+      "path": "game/assets/world/kits/event/crowd_atlas.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "crowd_atlas.png": [
+          512,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 7322,
+      "sha256": "3fdcde9e42610519b3b5fec0c3acf78aafacf8da24c1ac51899e140791855795",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "event kit texture, assets_src/world/kit_event/gen_event_textures.py"
+    },
+    {
+      "id": "event_flag_tr",
+      "kind": "texture",
+      "path": "game/assets/world/kits/event/flag_tr.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "flag_tr.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 13217,
+      "sha256": "17731b4bdf020dd419246108c3c94248c56e94f1944ea23bfbce34006df8cd82",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "event kit texture, assets_src/world/kit_event/gen_event_textures.py"
+    },
+    {
+      "id": "event_awning_atlas",
+      "kind": "texture",
+      "path": "game/assets/world/kits/event/awning_atlas.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "awning_atlas.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 1858,
+      "sha256": "f918d1c7bfe8939538ea3638b5e3fbd260382b2025ca51c1cff5ad7e4ef28246",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "event kit texture, assets_src/world/kit_event/gen_event_textures.py"
+    },
+    {
+      "id": "event_awning_glow",
+      "kind": "texture",
+      "path": "game/assets/world/kits/event/awning_glow.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "awning_glow.png": [
+          512,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 1820,
+      "sha256": "d87d4234cf91f0bf9f7127894e87a384a56ab1c35ccceab8761f248a8340a488",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "event kit texture, assets_src/world/kit_event/gen_event_textures.py"
+    },
+    {
+      "id": "event_light_pool",
+      "kind": "texture",
+      "path": "game/assets/world/kits/event/light_pool.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "light_pool.png": [
+          256,
+          256
+        ]
+      },
+      "material_count": 0,
+      "bytes": 9091,
+      "sha256": "bb1f4f53b60fcb9e08815849641a3b6b5b7ed6e5a066729faef58008ed307031",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "event kit texture, assets_src/world/kit_event/gen_event_textures.py"
+    },
+    {
+      "id": "event_barrier_0",
+      "kind": "model",
+      "path": "game/assets/world/kits/event/event_barrier_0.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 10,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 1792,
+      "sha256": "2774c456ebddcae186dadcfd416ef0911427662429d2e0790f62b9f1da1a27a4",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "race barrier, banner row 0 (dressing_demo, event_dressing.gd)"
+    },
+    {
+      "id": "event_barrier_1",
+      "kind": "model",
+      "path": "game/assets/world/kits/event/event_barrier_1.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 10,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 1792,
+      "sha256": "ae875633b3820f46458e3b7fee5ddedd9176ff2510f773e3a7f0657dec258585",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "race barrier, banner row 1"
+    },
+    {
+      "id": "event_barrier_2",
+      "kind": "model",
+      "path": "game/assets/world/kits/event/event_barrier_2.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 10,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 1792,
+      "sha256": "c5023dc780f75ea41b04298bfd83aefdd901d3cae44ebee4f710d593778e19dc",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "race barrier, banner row 2"
+    },
+    {
+      "id": "event_flag",
+      "kind": "model",
+      "path": "game/assets/world/kits/event/event_flag.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 124,
+      "texture_sizes": {},
+      "material_count": 2,
+      "bytes": 11108,
+      "sha256": "82118e97528c3b480762a84f5fb02c07fca791be00cc339489cddb8ad43aa53a",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "race flag on pole, 2 surfaces (pole, cloth), flag_wave.gdshader"
+    },
+    {
+      "id": "event_awning",
+      "kind": "model",
+      "path": "game/assets/world/kits/event/event_awning.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 40,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 3760,
+      "sha256": "585bcad96d3bba8f6dd482a9cc4dae8ce73174005fd7b6e6dd438c84a6740874",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "cafe awning, awning_atlas.png and awning_glow.png"
+    },
+    {
+      "id": "event_cafe_set",
+      "kind": "model",
+      "path": "game/assets/world/kits/event/event_cafe_set.glb",
+      "source": "generated:blender",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 228,
+      "texture_sizes": {},
+      "material_count": 1,
+      "bytes": 19128,
+      "sha256": "1f7f24316b6d5a024e6bd1f4dfd026f17823b81d1297d1e837d9f260408e713e",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "cafe table and two chairs"
     }
   ]
 }

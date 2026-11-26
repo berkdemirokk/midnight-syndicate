@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.974,
+  "luma_min": 0.0,
+  "name": "bogaz_night_wide_noevent",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 115,
+    "draw_calls_min": 92,
+    "driver": "vulkan",
+    "fps": 245.945,
+    "frame_ms_avg": 4.066,
+    "frame_ms_p95": 5.956,
+    "frame_ms_p99": 6.779,
+    "frames": 60,
+    "objects": 12574,
+    "os": "Windows",
+    "primitives": 155926,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 570.674,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-3/evidence/screens/dressing_demo/bogaz_night_wide_noevent.png",
+  "preset": "high",
+  "scenario": "dressing_demo"
+}

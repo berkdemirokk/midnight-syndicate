@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.035,
+  "name": "bogaz_day_roadside",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 149,
+    "draw_calls_min": 149,
+    "driver": "vulkan",
+    "fps": 271.309,
+    "frame_ms_avg": 3.686,
+    "frame_ms_p95": 5.054,
+    "frame_ms_p99": 7.165,
+    "frames": 60,
+    "objects": 12608,
+    "os": "Windows",
+    "primitives": 126054,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 588.177,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_e6f9104d-5ed-3/evidence/screens/dressing_demo/bogaz_day_roadside.png",
+  "preset": "high",
+  "scenario": "dressing_demo"
+}
