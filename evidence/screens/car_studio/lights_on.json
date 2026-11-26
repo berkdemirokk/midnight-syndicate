@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.965,
+  "luma_max": 0.959,
   "luma_min": 0.0,
   "name": "lights_on",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 57,
     "draw_calls_min": 57,
     "driver": "vulkan",
-    "fps": 859.328,
-    "frame_ms_avg": 1.164,
-    "frame_ms_p95": 1.292,
-    "frame_ms_p99": 1.903,
+    "fps": 423.206,
+    "frame_ms_avg": 2.363,
+    "frame_ms_p95": 4.059,
+    "frame_ms_p99": 5.64,
     "frames": 60,
     "objects": 57,
     "os": "Windows",
-    "primitives": 115148,
+    "primitives": 113524,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 474.563,
+    "video_mem_mb": 478.092,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_74ca9b41-d2d-3/evidence/screens/car_studio/lights_on.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_74ca9b41-d2d-4/evidence/screens/car_studio/lights_on.png",
   "preset": "high",
   "scenario": "car_studio"
 }

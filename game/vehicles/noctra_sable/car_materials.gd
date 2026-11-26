@@ -12,14 +12,28 @@ const KNOWN: PackedStringArray = [
 ]
 const DEFAULT_PAINT: Color = Color(0.557, 0.059, 0.118)  ## #8E0F1E candy red from the brief
 const DEFAULT_RIM: Color = Color(0.314, 0.333, 0.369)  ## gunmetal, the GLB source albedo (was 0.08: read as black)
-const GLASS_TINT: Color = Color(0.02, 0.03, 0.04, 0.85)  ## near-black smoked glass, alpha = opacity (0.62 read light grey; 0.42 brighter)
+const GLASS_TINT: Color = Color(0.035, 0.05, 0.06, 0.8)  ## smoked glass, a little lighter than the old near-black slab; alpha = opacity
 const GLASS_SPECULAR: float = 0.08  ## was 0.25; grazing Fresnel dominates, so the grey comes mostly from alpha (see WORLD_MATERIALS.md)
-const PAINT_METALLIC: float = 0.85
-const PAINT_ROUGHNESS: float = 0.32
+const GLASS_RIM: float = 0.9  ## rim light on the edges of the glass: the Fresnel edge that hints the interior (0.45 was barely visible)
+const FINISH_SOLID: int = 0
+const FINISH_METALLIC: int = 1
+const FINISH_PEARL: int = 2
+const DEFAULT_FINISH: int = FINISH_METALLIC
+const PAINT_METALLIC: float = 0.85  ## metallic finish; solid uses 0.0, pearl PAINT_PEARL_METALLIC
+const PAINT_PEARL_METALLIC: float = 0.6
+const PAINT_PEARL_RIM: float = 0.35  ## pearl sheen at grazing angles (no iridescence in StandardMaterial3D on Godot 4.7)
+const PAINT_ROUGHNESS: float = 0.42  ## base; the flake roughness map (0.67..1.0 red) gives 0.28..0.42
 const PAINT_CLEAR: float = 1.0
 const PAINT_CLEAR_ROUGHNESS: float = 0.04
-const PAINT_FLAKE_SCALE: float = 0.12  ## flake normal strength, low on purpose
-const PAINT_FLAKE_TILING: float = 4.0  ## fine tiling of the 512 px flake normal
+const PAINT_FLAKE_SCALE: float = 0.08  ## flake normal strength, low on purpose (0.12 read as sandpaper on the wheel close-up)
+const PAINT_PEEL_SCALE: float = 0.04  ## solid paint: orange peel only, no sparkle
+const PAINT_FLAKE_TILING: float = 6.0  ## fine tiling of the 512 px flake normal
+const RIM_ROUGHNESS: float = 0.34  ## times the brushed map (0.55..1.0): streaked satin metal
+const RIM_ANISOTROPY: float = 0.75  ## stretched highlight across the brushing
+const TIRE_ROUGHNESS: float = 0.92  ## rubber: matte, with sidewall variation from the map
+const TRIM_ROUGHNESS: float = 0.42  ## satin black plastic
+const TRIM_GRAIN_SCALE: float = 0.25  ## fine grain normal on trim
+const CHROME_ROUGHNESS: float = 0.08
 const GLASS_ROUGHNESS: float = 0.1  ## base; the streak map scales it to 0.06..0.1 so reflections break into streaks
 const GLASS_STREAK_SCALE: Vector3 = Vector3(1.5, 1.0, 1.5)  ## triplanar repeats per metre of the streak map (about 2 cm columns)
 const LENS_ALPHA: float = 0.25
@@ -33,10 +47,12 @@ const SHADOW_CASTERS: PackedStringArray = [
 
 static var _shared: Dictionary = {}
 static var _glass_streaks: ImageTexture
+static var _tex: Dictionary = {}
 
 
 ## Gives every known surface its engine material and sets shadow casting by node name. Call once per car.
-static func apply(car: Node, paint: Color = DEFAULT_PAINT) -> void:
+## finish is FINISH_SOLID, FINISH_METALLIC (flake, default) or FINISH_PEARL (flake plus iridescence).
+static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT_FINISH) -> void:
 	var per_car: Dictionary = {}
 	for mi: MeshInstance3D in _mesh_instances(car):
 		if mi.mesh == null:
@@ -51,11 +67,11 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT) -> void:
 			var mat: StandardMaterial3D
 			if PER_CAR.has(nm):
 				if not per_car.has(nm):
-					per_car[nm] = _build(nm, src, paint)
+					per_car[nm] = _build(nm, src, paint, finish)
 				mat = per_car[nm]
 			else:
 				if not _shared.has(nm):
-					_shared[nm] = _build(nm, src, paint)
+					_shared[nm] = _build(nm, src, paint, finish)
 				mat = _shared[nm]
 			mi.set_surface_override_material(s, mat)
 
@@ -73,28 +89,49 @@ static func set_brake_lights(car: Node, on: bool) -> void:
 	_each_material(car, "M_LightRear", func(m: StandardMaterial3D) -> void: m.emission_energy_multiplier = level)
 
 
-static func _build(nm: String, src: StandardMaterial3D, paint: Color) -> StandardMaterial3D:
+static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: int) -> StandardMaterial3D:
 	var m: StandardMaterial3D = src.duplicate() as StandardMaterial3D
 	m.resource_name = nm
 	match nm:
 		"M_Paint":
 			m.albedo_color = paint
-			m.metallic = PAINT_METALLIC
+			m.metallic = 0.0 if finish == FINISH_SOLID else (PAINT_PEARL_METALLIC if finish == FINISH_PEARL else PAINT_METALLIC)
 			m.roughness = PAINT_ROUGHNESS
+			m.roughness_texture = _tex_file("car_flake_roughness.png")
+			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
 			m.clearcoat_enabled = true
 			m.clearcoat = PAINT_CLEAR
 			m.clearcoat_roughness = PAINT_CLEAR_ROUGHNESS
 			m.normal_enabled = true
-			m.normal_scale = PAINT_FLAKE_SCALE
+			m.normal_texture = _tex_file("car_flake_normal.png")  # orange peel + flake, one map
+			m.normal_scale = PAINT_PEEL_SCALE if finish == FINISH_SOLID else PAINT_FLAKE_SCALE
 			m.uv1_scale = Vector3(PAINT_FLAKE_TILING, PAINT_FLAKE_TILING, 1.0)
+			m.rim_enabled = finish == FINISH_PEARL  ## pearl: grazing sheen on the body
+			m.rim = PAINT_PEARL_RIM
 		"M_Pillar":
 			m.clearcoat_enabled = true
 			m.clearcoat = PAINT_CLEAR
 			m.clearcoat_roughness = PAINT_CLEAR_ROUGHNESS
+		"M_Chrome":
+			m.metallic = 1.0
+			m.roughness = CHROME_ROUGHNESS
+		"M_Tire":
+			m.roughness = TIRE_ROUGHNESS
+			m.roughness_texture = _tex_file("car_rubber_roughness.png")
+			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+		"M_Trim":
+			m.roughness = TRIM_ROUGHNESS
+			m.normal_enabled = true
+			m.normal_texture = _tex_file("car_grain_normal.png")
+			m.normal_scale = TRIM_GRAIN_SCALE
 		"M_Rim":
 			m.albedo_color = DEFAULT_RIM
 			m.metallic = 1.0
-			m.roughness = 0.28
+			m.roughness = RIM_ROUGHNESS
+			m.roughness_texture = _tex_file("car_brushed_roughness.png")
+			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+			m.anisotropy_enabled = true
+			m.anisotropy = RIM_ANISOTROPY
 		"M_Glass":
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			m.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY  ## no depth write: the interior behind shows through
@@ -109,11 +146,16 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color) -> Standar
 			m.uv1_triplanar = true
 			m.uv1_world_triplanar = true
 			m.uv1_scale = GLASS_STREAK_SCALE
+			m.rim_enabled = true  ## Fresnel-like edge sheen: the glass reads as glass, not a black plate
+			m.rim = GLASS_RIM
+			m.rim_tint = 0.4
 			m.render_priority = 1  ## draw after opaque, so the glass sits over the interior
 		"M_Lens":
 			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			m.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY
 			m.albedo_color = Color(1.0, 1.0, 1.0, LENS_ALPHA)
+			m.roughness = 0.05  ## clear glass by day: crisp reflections, not a frosted lens
+			m.metallic_specular = 0.9
 			m.render_priority = 1
 		"M_LightRear":
 			m.emission_enabled = true
@@ -126,6 +168,13 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color) -> Standar
 			m.clearcoat = CARBON_CLEAR
 			m.clearcoat_roughness = CARBON_CLEAR_ROUGHNESS
 	return m
+
+
+## Procedural maps from tools/gen_car_textures.py (original, project-owned). Loaded once, shared by every car.
+static func _tex_file(file: String) -> Texture2D:
+	if not _tex.has(file):
+		_tex[file] = load("res://assets/vehicles/shared/" + file) as Texture2D
+	return _tex[file]
 
 
 ## Vertical streak map for glass roughness: constant down each column, random across. Red channel 0.6..1.0.
