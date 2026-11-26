@@ -18,6 +18,16 @@ const MIRROR_SKIP_BIT: int = 1 << 4  ## props layer: the planar mirror leaves it
 ## mirror-only copy of LOD1: only the planar mirror's cull mask includes it. Not CarLod's bit 3: the car fill and rim
 ## lights see bit 3 (race_scene CAR_LIGHT_MASK), so a copy on bit 3 would be lit like a car.
 const MIRROR_ONLY_BIT: int = 1 << 5
+## Photo walls: a straight-on picture of one hall wall on a quad just in front of each of the four hall walls (and its
+## night picture as glow map), when the picture is shipped. See docs/art/PHOTO_TEXTURE_PIPELINE.md.
+const PHOTO_WALL: String = "res://assets/world/kits/photo_fronts/mosque_wall_01.jpg"
+const PHOTO_WALL_NIGHT: String = "res://assets/world/kits/photo_fronts/mosque_wall_01_night.jpg"
+const PHOTO_SHADER: Shader = preload("res://world/street_fronts/photo_facade.gdshader")
+const HALL_HALF_M: float = 10.0
+const WALL_TOP_M: float = 15.0
+const PHOTO_OFF_M: float = 0.62  ## in front of the window surrounds (0.54 m proud of the glass)
+const PHOTO_END_M: float = 320.0  ## to the end of LOD1
+const PHOTO_GLOW: float = 1.3
 const HALL_CENTRE_LOCAL: Vector3 = Vector3(0.0, 8.0, -18.0)  ## local (Godot) centre of the prayer hall, at the walls' mid-height
 const WARM: Color = Color(1.0, 0.64, 0.3)  ## sodium floodlight gold (0.74, 0.46 read as cold white on pale stone)
 
@@ -35,6 +45,7 @@ var placed_s: float = PLACE_S_M
 var _night: float = 1.0
 var _materials: Dictionary = {}  ## surface name -> ShaderMaterial, one set per Landmarks
 var _lights: Array[OmniLight3D] = []
+var _photo: ShaderMaterial = null
 
 
 func setup(track: Track) -> void:
@@ -49,6 +60,7 @@ func setup(track: Track) -> void:
 		add_child(root)
 		for mi: Node in root.find_children("*", "MeshInstance3D", true, false):
 			_style(mi as MeshInstance3D, i)
+	_add_photo_walls()
 	_add_collider()
 	_add_lights()
 	set_night(_night)
@@ -66,9 +78,33 @@ func set_night(amount: float) -> void:
 	_night = clampf(amount, 0.0, 1.0)
 	for m: Variant in _materials.values():
 		(m as ShaderMaterial).set_shader_parameter("night", _night)
+	if _photo != null:
+		_photo.set_shader_parameter("night", _night * PHOTO_GLOW)
+		_photo.set_shader_parameter("tint", Vector3(0.9, 0.78, 0.6).lerp(Vector3(0.6, 0.55, 0.5), _night))  # by day: the sandstone of the towers
 	for l: OmniLight3D in _lights:
 		l.visible = _night > 0.0
 		l.light_energy = _light_energy(l.name)
+
+
+func _add_photo_walls() -> void:
+	if not ResourceLoader.exists(PHOTO_WALL):
+		return
+	_photo = ShaderMaterial.new()
+	_photo.shader = PHOTO_SHADER
+	_photo.set_shader_parameter("albedo_tex", load(PHOTO_WALL))
+	if ResourceLoader.exists(PHOTO_WALL_NIGHT):
+		_photo.set_shader_parameter("night_tex", load(PHOTO_WALL_NIGHT))
+	var quad := QuadMesh.new()
+	quad.size = Vector2(HALL_HALF_M * 2.0, WALL_TOP_M)
+	quad.material = _photo
+	for k: int in 4:  # road side, right, sea side, left
+		var basis := Basis(Vector3.UP, float(k) * PI / 2.0)
+		var wall := MeshInstance3D.new()
+		wall.name = "PhotoWall%d" % k
+		wall.mesh = quad
+		wall.visibility_range_end = PHOTO_END_M
+		add_child(wall)
+		wall.transform = Transform3D(basis, Vector3(HALL_CENTRE_LOCAL.x, WALL_TOP_M / 2.0, HALL_CENTRE_LOCAL.z) + basis.z * (HALL_HALF_M + PHOTO_OFF_M))
 
 
 ## World position of the prayer hall centre (for cameras and tests).
