@@ -86,6 +86,9 @@ PIER_LIGHTS = LC.get("pier_lights")
 PROBE_STEP = int(LC.get("probe_step", 30))
 
 
+STREET = LC.get("street")                       # None switches the whole street-detail block off
+
+
 def cp_index(e):
     """Sample index of an entry given as {"i":} or {"cp":, "s":} (metres after control point cp)."""
     if "i" in e:
@@ -108,6 +111,10 @@ def load_inputs():
         ex = json.load(open(os.path.join(REPO, rel), encoding="utf-8"))
         for p in ex["items"]:
             p["_dir"] = os.path.dirname(rel).replace("\\", "/") + "/"
+            props[p["id"]] = p
+    if LC.get("street"):   # kit_street (side lanes, facade and sidewalk detail): same catalog format as kit_props
+        for p in json.load(open(os.path.join(HERE, "..", "kit_street", "out", "catalog.json"), encoding="utf-8"))["items"]:
+            p["_dir"] = "assets_src/world/kit_street/out/"
             props[p["id"]] = p
     return cl, {b["id"]: b for b in bcat["buildings"]}, props
 
@@ -313,7 +320,11 @@ def pack_side(side):
         PLACED.append(rec)
         placed_here += 1
         last = rec["bid"]
-        if RNG.random() < 0.12:
+        lane_gw = lane_due(side, s + BCAT[rec["bid"]]["width"], dist)
+        if lane_gw:   # a side lane: the next building starts one lane width further on
+            LANES.append({"side": side, "idx": len(PLACED), "dist": dist})
+            gap = lane_gw
+        elif RNG.random() < 0.12:
             gap = RNG.uniform(4.0, 6.0)
             if MARKET_D is not None and dist == MARKET_D:
                 ALLEY_MARKS.append((side, (s + BCAT[rec["bid"]]["width"] + gap / 2) / SP))
@@ -964,6 +975,269 @@ def budget():
     return res, worst
 
 
+# ------------------------------------------------------------------ street detail (kit_street): side lanes, facade and sidewalk props
+STREET_CAT = os.path.join(HERE, "..", "kit_street", "out", "catalog.json")
+STREET_DIR = "assets_src/world/kit_street/out/"
+LANES = []                                      # lane gaps made while packing: {side, s0, gw, idx, dist}
+LANE_RNG = random.Random(SEED + int((STREET or {}).get("lane_seed", 77)))   # own stream: street choices never move the building RNG
+_next_lane = {}
+SR = random.Random(SEED + 99)                   # facade / sidewalk / lane dressing choices
+
+
+def lane_due(side, s_end, dist):
+    """Width of a side-lane gap to leave after the building that ends at arc s_end, or 0."""
+    cfg = (STREET or {}).get("lanes")
+    if not cfg or dist not in cfg.get("districts", list(DISTRICTS)):
+        return 0.0
+    nxt = _next_lane.setdefault(side, LANE_RNG.uniform(0.25, 0.9) * cfg["step_m"][1])
+    if s_end < nxt or s_end + 80.0 > L:
+        return 0.0
+    gw = LANE_RNG.uniform(*cfg["width_m"])
+    i0, i1 = int(s_end / SP), int((s_end + gw) / SP) + 1
+    for i in range(i0 - 8, i1 + 10):
+        j = i % N
+        if skip_index(j, side) or abs(Y[j]) > 0.8 or int(DIST[j]) != dist:
+            return 0.0
+    if any(abs(z["offset_m"] - (s_end + gw / 2.0)) < 16.0 for z in CL["zebra_positions"]):
+        return 0.0
+    _next_lane[side] = s_end + LANE_RNG.uniform(*cfg["step_m"])
+    return gw
+
+
+def build_lanes():
+    """Turn the lane gaps into lanes: measure the real gap between the two neighbours, close the lane end with an
+    LOD2 building, and keep the result in ST_LANES for lane_props()."""
+    cfg = STREET["lanes"]
+    out = []
+    for ln in LANES:
+        idx, side = ln["idx"], ln["side"]
+        if idx < 1 or idx >= len(PLACED):
+            continue
+        prev, nxt = PLACED[idx - 1], PLACED[idx]
+        if prev["side"] != side or nxt["side"] != side or prev["second_row"] or nxt["second_row"]:
+            continue
+        u = np.array([prev["f"][1], -prev["f"][0]])
+        sgn = 1.0 if float(u @ (T2[int(round(prev["sf"])) % N] / np.linalg.norm(T2[int(round(prev["sf"])) % N]))) > 0 else -1.0
+        e0 = prev["F"] + u * sgn * prev["w"] / 2.0
+        un = np.array([nxt["f"][1], -nxt["f"][0]])
+        e1 = nxt["F"] - un * sgn * nxt["w"] / 2.0
+        f = unit(prev["f"] + nxt["f"])
+        u = np.array([f[1], -f[0]]) * sgn          # lx axis, runs along the direction of travel
+        gw = float((e1 - e0) @ u)
+        if gw < 6.5 or gw > 16.0:
+            continue
+        Fc = (e0 + e1) / 2.0
+        depth = min(prev["d"], nxt["d"])
+        base_y = prev["base"][1]
+        dist = ln["dist"]
+        pool = BLD_POOL.get(dist, [])
+        wide = sorted([b for b in pool if BCAT[b]["width"] >= gw + 1.5], key=lambda b: BCAT[b]["width"])
+        bid = (wide or sorted(pool, key=lambda b: -BCAT[b]["width"]))[0] if pool else None
+        if bid is None:
+            continue
+        b = BCAT[bid]
+        length = max(10.0, min(float(cfg.get("max_len_m", 36.0)), depth - 1.5))
+        placed = None
+        while length >= 10.0 and placed is None:
+            F2 = Fc - f * length
+            cand = box_corners(F2, f, b["width"], b["depth"], expand=MARGIN)
+            clash = any(p is not prev and p is not nxt and np.linalg.norm(p["F"] - F2) < (b["width"] + b["depth"]) + 40.0
+                        and sat_overlap(cand, p["corners"]) for p in PLACED)
+            if not clash:
+                placed = F2
+            else:
+                length -= 4.0
+        if placed is None:
+            continue
+        rec = {"F": placed, "f": f, "w": b["width"], "d": b["depth"], "bid": bid, "base": [float(placed[0]), base_y, float(placed[1])],
+               "yaw": yaw_from_front(f), "corners": box_corners(placed, f, b["width"], b["depth"]), "sf": prev["sf"],
+               "district": dist, "side": side, "second_row": True, "row_back": length, "height": b["height"]}
+        PLACED.append(rec)
+        add_instance("building_lod2_only", bid, "assets_src/world/kit_buildings/out/%s.glb" % bid, rec["base"], rec["yaw"], dist, side,
+                     prev["sf"], {"lod_policy": "LOD2_only", "tris_lod2": b["tris"]["LOD2"], "width_m": b["width"],
+                                  "depth_m": b["depth"], "height_m": b["height"], "row_back_m": length, "lane_end": True})
+        out.append({"side": side, "F": Fc, "f": f, "u": u, "gw": gw, "len": length, "y": base_y,
+                    "dist": dist, "sc": ((prev["sf"] + nxt["sf"]) / 2.0), "h": min(prev["height"], nxt["height"]),
+                    "end_w": b["width"]})
+    return out
+
+
+def sprop(asset, ln, lx, lz, yoff, front, cat="street", extra=None):
+    """Street prop at lane coordinates: lx across (along travel), lz along the lane (negative = into the block);
+    front = plan vector the prop's local +Z should face."""
+    pos = ln["F"] + ln["u"] * lx + ln["f"] * lz
+    ex = {"category": cat, "street": True}
+    if extra:
+        ex.update(extra)
+    return prop(asset, [float(pos[0]), ln["y"] + yoff, float(pos[1])], yaw_from_front(front), ln["dist"], ln["side"], ln["sc"],
+                lights_on=False, extra=ex)
+
+
+def lane_props(ln, k):
+    cfg = STREET["lanes"]
+    gw, ln_len, h = ln["gw"], ln["len"], ln["h"]
+    half = gw / 2.0
+    u, f = ln["u"], ln["f"]
+    a_sgn = SR.choice([-1.0, 1.0])          # wall A takes the heavy dressing, wall B the light
+    wallA, wallB = a_sgn * half, -a_sgn * half
+    fa, fb = -a_sgn * u, a_sgn * u          # facing out of each wall into the lane
+    n = 0
+    sprop("street_alley_floor", ln, 0.0, 0.25, -0.02, f, "street_far"); n += 1
+    # wall lamps with their light pools
+    for lz, wall, fr in ((-4.5, wallA, fa), (-(ln_len - 4.0), wallB, fb)):
+        if ln_len < 13.0 and lz < -6.0:
+            continue
+        sprop("street_alley_lamp", ln, wall, lz, 3.7, fr, "street"); n += 1
+        sprop("street_glow_wall", ln, wall - math.copysign(0.04, wall), lz, 3.0, fr, "street_far"); n += 1   # light wash on the brick below the lamp
+    for lz in sorted(set([-2.0, -4.5 - 4.0] + [-(ln_len - 4.0) + 3.0 * j for j in (0, 1)] + [-ln_len * 0.5])):
+        if -lz < ln_len - 0.5:
+            sprop("street_glow_pool", ln, SR.uniform(-0.8, 0.8), lz, 0.0, f, "street_far"); n += 1
+    # hanging cables across the lane (14 m span, left anchor 7 m up)
+    for lz in (-3.0, -ln_len * 0.55):
+        if SR.random() < cfg.get("cables_p", 0.75) and h > 9.0:
+            pos = ln["F"] + u * (-7.0) + f * lz
+            prop("street_cables_hang", [float(pos[0]), ln["y"], float(pos[1])], math.atan2(-u[1], u[0]), ln["dist"], ln["side"], ln["sc"],
+                 lights_on=False, extra={"category": "street_far", "street": True}); n += 1
+    # wall A: fire escape, AC units
+    if h >= 13.0 and ln_len >= 14.0 and SR.random() < cfg.get("fire_escape_p", 0.5):
+        sprop("street_fire_escape", ln, wallA, -min(10.0, ln_len * 0.45) - 1.5, 0.4, fa, "street_wall"); n += 1
+    for lz in (-2.0, -ln_len * 0.75):
+        if SR.random() < 0.6 and h > 7.0:
+            sprop("street_ac_unit", ln, wallA, lz, SR.uniform(4.6, min(9.0, h - 2.0)), fa, "street_wall"); n += 1
+    if SR.random() < 0.7 and h > 9.0:
+        sprop("street_ac_cluster", ln, wallB, -ln_len * 0.5, SR.uniform(5.0, min(8.0, h - 3.0)), fb, "street_wall"); n += 1
+    if SR.random() < 0.45 and h > 8.0:
+        sprop("street_ac_unit", ln, wallB, -3.0, SR.uniform(4.6, min(8.0, h - 2.0)), fb, "street_wall"); n += 1
+    # floor clutter against wall A
+    sprop("street_dumpster", ln, wallA - a_sgn * 0.65, -6.5, 0.0, fa); n += 1
+    sprop("street_trash_bags", ln, wallA - a_sgn * 0.6, -8.7, 0.0, fa); n += 1
+    if SR.random() < 0.8:
+        sprop("street_crate_stack", ln, wallA - a_sgn * 0.5, -11.5, 0.0, fa); n += 1
+    if SR.random() < 0.5 and ln_len >= 14.0:
+        sprop("street_alley_gate", ln, wallB, -ln_len * 0.35, 0.0, fb); n += 1
+    # floor of wall B: kiosk or scooters
+    if gw >= 9.0 and SR.random() < cfg.get("kiosk_p", 0.4):
+        sprop("street_kiosk", ln, wallB + a_sgn * 1.7, -6.0, 0.0, f); n += 1
+    else:
+        for lz in (-3.5, -5.2):
+            if SR.random() < 0.7:
+                sprop(SR.choice(["street_scooter_a", "street_scooter_b"]), ln, wallB + a_sgn * 0.7, lz, 0.0, f * SR.choice([1.0, -1.0])); n += 1
+    # lane floor: manhole, puddles, steam
+    sprop("street_manhole", ln, SR.uniform(-1.0, 1.0), -ln_len * 0.4, 0.0, f); n += 1
+    for nm in ("street_puddle_a", "street_puddle_b", "street_puddle_c"):
+        if SR.random() < 0.7:
+            sprop(nm, ln, SR.uniform(-half + 1.8, half - 1.8), -SR.uniform(2.5, ln_len - 2.0), 0.0, np.array([math.sin(SR.uniform(0, 6.28)), math.cos(SR.uniform(0, 6.28))])); n += 1
+    if SR.random() < cfg.get("steam_p", 0.5):
+        sprop("street_steam_vent", ln, SR.uniform(-1.2, 1.2), -ln_len * 0.62, 0.0, f); n += 1
+    # mouth: barrier, bollards
+    if SR.random() < cfg.get("barrier_p", 0.25):
+        for lx in (-gw / 4.0, gw / 4.0):
+            sprop("street_roadwork_barrier", ln, lx, -0.8, 0.0, f); n += 1
+    for lx in (-half + 0.7, half - 0.7):
+        sprop(SR.choice(["street_bollard_stone", "street_bollard_flex"]), ln, lx, 1.1, 0.0, f); n += 1
+    return n
+
+
+def signal_pair(ln, i, phase):
+    """Traffic signals at a lane mouth: a mast at the lane's near corner and one on the opposite kerb at the same s."""
+    n = 0
+    side = ln["side"]
+    opp = "left" if side == "right" else "right"
+    p1 = ln["F"] + ln["u"] * SR.choice([-1.0, 1.0]) * (ln["gw"] / 2.0 - 0.9) + ln["f"] * 2.3
+    pts = [(p1, side), (point_on(opp, i, 2.3)[[0, 2]], opp)]
+    for pt, sd in pts:
+        xd = unit(P2[i] - pt)
+        prop("street_signal", [float(pt[0]), float(Y[i]) + 0.15, float(pt[1])], math.atan2(-xd[1], xd[0]), int(DIST[i]), sd, i,
+             lights_on=False, extra={"category": "signal_" + phase, "street": True})
+        n += 1
+    return n
+
+
+def place_street_props(lanes):
+    """Lane dressing, junction signals, facade props and sidewalk clutter. Returns the counts."""
+    cnt = {"lanes": 0, "lane_props": 0, "facade": 0, "sidewalk": 0, "signals": 0}
+    cfg = STREET
+    lamp_idx = set(int(x["s_offset_m"] / SP) for x in INST if x["asset"].startswith("lamp") or x["asset"].endswith("lamp"))
+    for k, ln in enumerate(lanes):
+        cnt["lanes"] += 1
+        cnt["lane_props"] += lane_props(ln, k)
+        i = int(round(ln["sc"])) % N
+        if cfg["lanes"].get("signal_every", 0) and k % int(cfg["lanes"]["signal_every"]) == 0:
+            cnt["signals"] += signal_pair(ln, i, "a" if (k // int(cfg["lanes"]["signal_every"])) % 2 == 0 else "b")
+    fc = cfg.get("facade")
+    if fc:
+        for rec in PLACED:
+            if rec["second_row"] or rec["district"] not in fc.get("districts", list(DISTRICTS)):
+                continue
+            b = BCAT[rec["bid"]]
+            w, h, f = rec["w"], rec["height"], rec["f"]
+            u = np.array([f[1], -f[0]])
+            anchors = [(a["position"][0], a["position"][1]) for a in b.get("anchors", [])]   # (lx, height)
+            used = []
+
+            def spot(zlo, zhi, half_w, extra_gap=1.0):
+                for _ in range(6):
+                    lx = SR.uniform(-w / 2 + half_w + 0.6, w / 2 - half_w - 0.6) if w > 2 * half_w + 1.2 else 0.0
+                    z = SR.uniform(zlo, max(zlo, zhi))
+                    if any(abs(lx - ax) < half_w + 1.4 and az - 3.5 < z < az + 2.5 for ax, az in anchors):
+                        continue
+                    if any(abs(lx - ux_) < half_w + hw_ + extra_gap and abs(z - uz_) < 2.2 for ux_, uz_, hw_ in used):
+                        continue
+                    used.append((lx, z, half_w))
+                    return lx, z
+                return None
+            def put_wall(asset, lx, z):
+                pos = np.array([rec["F"][0], rec["F"][1]]) + u * lx + f * 0.03
+                prop(asset, [float(pos[0]), rec["base"][1] + z, float(pos[1])], rec["yaw"], rec["district"], rec["side"], rec["sf"],
+                     lights_on=False, extra={"category": "street_wall", "street": True})
+                cnt["facade"] += 1
+            if h > 12.0 and fc.get("fire_escape", 0) and SR.random() < fc["fire_escape"] and b.get("storeys", 0) >= 5:
+                s_ = spot(0.5, 0.5, 1.5, 0.5)
+                if s_:
+                    put_wall("street_fire_escape", s_[0], 0.5)
+            if h > 9.0:
+                for _ in range(int(fc.get("ac_max", 2))):
+                    if SR.random() < fc.get("ac", 0.6):
+                        s_ = spot(4.8, min(h - 3.0, fc.get("ac_zmax", 26.0)), 0.45)
+                        if s_:
+                            put_wall("street_ac_unit", s_[0], s_[1])
+                if SR.random() < fc.get("cluster", 0.1):
+                    s_ = spot(6.0, min(h - 3.5, fc.get("ac_zmax", 26.0)), 1.4)
+                    if s_:
+                        put_wall("street_ac_cluster", s_[0], s_[1])
+    sc = cfg.get("sidewalk")
+    if sc:
+        lane_s = [ln["sc"] for ln in lanes]
+        for side in SIDES:
+            for i in range(2, N, int(sc.get("step", 4))):
+                if skip_index(i, side) or abs(Y[i]) > 0.8:
+                    continue
+                if any(abs(i - j) <= 4 for j in lamp_idx) or any(abs(i - s_) < 9.0 for s_ in lane_s):
+                    continue
+                d = int(DIST[i])
+                if d not in sc.get("districts", list(DISTRICTS)):
+                    continue
+                t = unit(T2[i])
+                f = unit(-INW[side][i])
+                roll = SR.random()
+                pick = None
+                acc = 0.0
+                for name, p, kk, mode in sc["items"]:
+                    acc += p
+                    if roll < acc:
+                        pick = (name, kk, mode)
+                        break
+                if not pick:
+                    continue
+                name, kk, mode = pick
+                pt = point_on(side, i, sidewalk_k(i, kk))
+                front = f if mode == "face" else (t * SR.choice([1.0, -1.0]) if mode == "along" else np.array([math.sin(SR.uniform(0, 6.28)), math.cos(SR.uniform(0, 6.28))]))
+                prop(name, [pt[0], Y[i] + 0.15, pt[2]], yaw_from_front(front), d, side, i, lights_on=False,
+                     extra={"category": "street", "street": True})
+                cnt["sidewalk"] += 1
+    return cnt
+
+
 def main():
     random.seed(SEED)
     np.random.seed(SEED)
@@ -971,6 +1245,7 @@ def main():
     rows["left_first_row"] = pack_side("left")
     rows["right_first_row"] = pack_side("right")
     add_building_instances()
+    lanes = build_lanes() if STREET and STREET.get("lanes") else []
     rows["second_row_lod2"] = second_row()
     cov = coverage()
     counts_lamps = place_lamps()
@@ -988,6 +1263,7 @@ def main():
     counts_plaza = place_plaza()
     counts_tram = place_tram()
     counts_pier = place_pier_lights()
+    counts_street = place_street_props(lanes) if STREET else {}
     signs = place_signs_and_roofs()
     n_neon = add_neon_fills(signs)
     n_acc = add_accents()
@@ -1032,6 +1308,7 @@ def main():
             "neon_fill_lights": n_neon,
             "accent_spots": n_acc,
             "alley_gaps_market": len(ALLEY_MARKS),
+            "street_detail": counts_street if STREET else None,
             "buildings_first_row": len([r for r in PLACED if not r["second_row"]]),
             "buildings_second_row_lod2": rows["second_row_lod2"],
         },
@@ -1053,7 +1330,7 @@ def main():
     print("barriers", counts_barr, "guardrails", counts_guard, "chevrons/cones", counts_chev, "apexes", apexes)
     print("zebra", counts_zeb, "bus", counts_bus, "string/cable", counts_str, "stalls", counts_stall,
           "quay", counts_quay, "bay", counts_bay, "plaza", counts_plaza, "signs", len(signs), "neon fills", n_neon, "accents", n_acc)
-    print("tram", counts_tram, "pier lights", counts_pier)
+    print("tram", counts_tram, "pier lights", counts_pier, "street", counts_street, "lane gaps", len(LANES), "lanes built", len(lanes))
     print("max lights within 60 m", max60, "at offset", max60_at)
     print("racing line max shift", round(max_shift, 3), "points", len(line_pts))
     print("worst3", worst)

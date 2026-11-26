@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.995,
+  "luma_min": 0.0,
+  "name": "bogaz_lane_2_road",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 214,
+    "draw_calls_min": 214,
+    "driver": "vulkan",
+    "fps": 238.497,
+    "frame_ms_avg": 4.193,
+    "frame_ms_p95": 8.366,
+    "frame_ms_p99": 13.978,
+    "frames": 60,
+    "objects": 214,
+    "os": "Windows",
+    "primitives": 93841,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 531.529,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/street_detail/bogaz_lane_2_road.png",
+  "preset": "high",
+  "scenario": "street_detail"
+}

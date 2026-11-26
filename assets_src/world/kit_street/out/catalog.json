@@ -1,0 +1,647 @@
+{
+  "coords": "godot_y_up",
+  "source": "assets_src/world/kit_street/build_street.py",
+  "items": [
+    {
+      "id": "street_dumpster",
+      "category": "furniture",
+      "file": "prop_street_dumpster.glb",
+      "size": [
+        1.96,
+        1.23,
+        1.125
+      ],
+      "tris": 256,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Green",
+        "M_Metal_Dark",
+        "M_Rubber"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Skip dumpster 1.9 x 1.05 m, one lid propped open"
+    },
+    {
+      "id": "street_trash_bags",
+      "category": "furniture",
+      "file": "prop_street_trash_bags.glb",
+      "size": [
+        1.324,
+        0.883,
+        1.188
+      ],
+      "tris": 487,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Trash_Bag",
+        "M_Rubber"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Heap of black bin bags"
+    },
+    {
+      "id": "street_ac_unit",
+      "category": "furniture",
+      "file": "prop_street_ac_unit.glb",
+      "size": [
+        0.87,
+        0.85,
+        0.37
+      ],
+      "tris": 176,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Grey",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "wall",
+      "notes": "Split AC condenser on two brackets, wall face origin"
+    },
+    {
+      "id": "street_ac_cluster",
+      "category": "furniture",
+      "file": "prop_street_ac_cluster.glb",
+      "size": [
+        2.825,
+        1.47,
+        0.4
+      ],
+      "tris": 552,
+      "lod1_tris": 164,
+      "lod1_file": "prop_street_ac_cluster_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Grey",
+        "M_Metal_Dark",
+        "M_Concrete"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "wall",
+      "notes": "Three condensers on an angle-iron rack, wall face origin"
+    },
+    {
+      "id": "street_fire_escape",
+      "category": "furniture",
+      "file": "prop_street_fire_escape.glb",
+      "size": [
+        3.044,
+        10.772,
+        1.32
+      ],
+      "tris": 1104,
+      "lod1_tris": 330,
+      "lod1_file": "prop_street_fire_escape_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "wall",
+      "notes": "Three-landing iron fire escape 3 x 1.3 m, 10.8 m tall, wall face origin"
+    },
+    {
+      "id": "street_steam_vent",
+      "category": "furniture",
+      "file": "prop_street_steam_vent.glb",
+      "size": [
+        1.4,
+        3.425,
+        1.4
+      ],
+      "tris": 220,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Metal_Grey",
+        "M_Steam"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Street steam vent: grate, stack and two crossed soft steam cards (the builder swaps in the alpha shader)"
+    },
+    {
+      "id": "street_signal",
+      "category": "lamp",
+      "file": "prop_street_signal.glb",
+      "size": [
+        3.601,
+        6.2,
+        0.5
+      ],
+      "tris": 796,
+      "lod1_tris": 236,
+      "lod1_file": "prop_street_signal_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Concrete",
+        "M_Signal_Off",
+        "M_Bulb_Red",
+        "M_Bulb_Amber",
+        "M_Bulb_Green"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Signal mast with a 3.4 m arm along +X and two double-faced heads. Meshes signal_lens_red/amber/green are separate so the engine shows one at a time; signal_off holds the dark lens discs."
+    },
+    {
+      "id": "street_scooter_a",
+      "category": "furniture",
+      "file": "prop_street_scooter_a.glb",
+      "size": [
+        0.76,
+        1.24,
+        1.724
+      ],
+      "tris": 464,
+      "lod1_tris": 137,
+      "lod1_file": "prop_street_scooter_a_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Container_Blue",
+        "M_Rubber",
+        "M_Metal_Grey",
+        "M_Metal_Dark",
+        "M_Lamp_Cool"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Parked scooter, kick-stand pose, faces -Y"
+    },
+    {
+      "id": "street_scooter_b",
+      "category": "furniture",
+      "file": "prop_street_scooter_b.glb",
+      "size": [
+        0.76,
+        1.24,
+        1.724
+      ],
+      "tris": 464,
+      "lod1_tris": 137,
+      "lod1_file": "prop_street_scooter_b_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Red",
+        "M_Rubber",
+        "M_Metal_Grey",
+        "M_Metal_Dark",
+        "M_Lamp_Cool"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Parked scooter, kick-stand pose, faces -Y"
+    },
+    {
+      "id": "street_kiosk",
+      "category": "furniture",
+      "file": "prop_street_kiosk.glb",
+      "size": [
+        2.95,
+        2.81,
+        2.55
+      ],
+      "tris": 848,
+      "lod1_tris": 130,
+      "lod1_file": "prop_street_kiosk_lod1.glb",
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Green",
+        "M_Metal_Dark",
+        "M_Concrete",
+        "M_Wood_Dark",
+        "M_Awning_B",
+        "M_Metal_Red",
+        "M_Shutter",
+        "M_Awning_A",
+        "M_Window_Warm",
+        "M_SignBox",
+        "M_Neon_Amber"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Street kiosk (bufe): lit serving window, striped awning, amber sign. Front faces -Y"
+    },
+    {
+      "id": "street_newsstand",
+      "category": "furniture",
+      "file": "prop_street_newsstand.glb",
+      "size": [
+        1.9,
+        1.925,
+        0.875
+      ],
+      "tris": 128,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Awning_A",
+        "M_Poster_02",
+        "M_Poster_04",
+        "M_Poster_05",
+        "M_Poster_06"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Newspaper rack with four back-lit magazine covers (existing poster textures)"
+    },
+    {
+      "id": "street_bus_sign",
+      "category": "furniture",
+      "file": "prop_street_bus_sign.glb",
+      "size": [
+        0.56,
+        3.33,
+        0.4
+      ],
+      "tris": 188,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Grey",
+        "M_Concrete",
+        "M_Chevron_Red",
+        "M_Paint_Stripe",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Bus stop pole with a round sign and timetable plate"
+    },
+    {
+      "id": "street_hydrant",
+      "category": "furniture",
+      "file": "prop_street_hydrant.glb",
+      "size": [
+        0.5,
+        0.83,
+        0.37
+      ],
+      "tris": 336,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Hydrant_Red",
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Pillar hydrant with two side outlets and a front pumper port"
+    },
+    {
+      "id": "street_bollard_flex",
+      "category": "furniture",
+      "file": "prop_street_bollard_flex.glb",
+      "size": [
+        0.2,
+        0.95,
+        0.2
+      ],
+      "tris": 240,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Paint_Stripe",
+        "M_Metal_Dark",
+        "M_Chevron_Red"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Flexible white post with red bands"
+    },
+    {
+      "id": "street_bollard_stone",
+      "category": "furniture",
+      "file": "prop_street_bollard_stone.glb",
+      "size": [
+        0.34,
+        0.87,
+        0.34
+      ],
+      "tris": 220,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Concrete",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Stone ball bollard"
+    },
+    {
+      "id": "street_bollard_chain",
+      "category": "furniture",
+      "file": "prop_street_bollard_chain.glb",
+      "size": [
+        2.52,
+        0.94,
+        0.12
+      ],
+      "tris": 296,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Metal_Grey"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Two posts joined by a sagging chain, 2.4 m"
+    },
+    {
+      "id": "street_manhole",
+      "category": "decal",
+      "file": "prop_street_manhole.glb",
+      "size": [
+        1.06,
+        0.007,
+        1.044
+      ],
+      "tris": 72,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Manhole"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Manhole cover decal quads, 1.06 m ring"
+    },
+    {
+      "id": "street_puddle_a",
+      "category": "decal",
+      "file": "prop_street_puddle_a.glb",
+      "size": [
+        2.462,
+        0.0,
+        1.422
+      ],
+      "tris": 14,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Puddle"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Puddle decal, near-black mirror blob 2.2 x 1.4 m"
+    },
+    {
+      "id": "street_puddle_b",
+      "category": "decal",
+      "file": "prop_street_puddle_b.glb",
+      "size": [
+        1.613,
+        0.0,
+        2.676
+      ],
+      "tris": 14,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Puddle"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Puddle decal, near-black mirror blob 1.6 x 2.4 m"
+    },
+    {
+      "id": "street_puddle_c",
+      "category": "decal",
+      "file": "prop_street_puddle_c.glb",
+      "size": [
+        2.758,
+        0.0,
+        2.085
+      ],
+      "tris": 14,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Puddle"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Puddle decal, near-black mirror blob 3.0 x 1.8 m"
+    },
+    {
+      "id": "street_glow_pool",
+      "category": "decal",
+      "file": "prop_street_glow_pool.glb",
+      "size": [
+        6.4,
+        0.0,
+        6.4
+      ],
+      "tris": 16,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Glow_Pool"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "Warm light pool on the lane floor, radius 3.2 m (the builder swaps in the additive soft shader)"
+    },
+    {
+      "id": "street_glow_wall",
+      "category": "decal",
+      "file": "prop_street_glow_wall.glb",
+      "size": [
+        5.2,
+        5.2,
+        0.0
+      ],
+      "tris": 16,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Glow_Pool"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Warm light wash on a lane wall, vertical disc radius 2.6 m facing -Y, origin at its centre (the builder swaps in the additive soft shader)"
+    },
+    {
+      "id": "street_cables_hang",
+      "category": "overhead",
+      "file": "prop_street_cables_hang.glb",
+      "size": [
+        14.12,
+        1.738,
+        0.44
+      ],
+      "tris": 400,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "span",
+      "notes": "Four sagging cables across a lane, 14 m, origin at the left anchor 7 m up"
+    },
+    {
+      "id": "street_alley_gate",
+      "category": "furniture",
+      "file": "prop_street_alley_gate.glb",
+      "size": [
+        3.94,
+        2.76,
+        0.205
+      ],
+      "tris": 240,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Shutter"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Steel alley gate 4 m wide, bars and padlock"
+    },
+    {
+      "id": "street_roadwork_barrier",
+      "category": "furniture",
+      "file": "prop_street_roadwork_barrier.glb",
+      "size": [
+        2.0,
+        1.165,
+        0.484
+      ],
+      "tris": 280,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Chevron_Red",
+        "M_Paint_Stripe",
+        "M_Warn_Amber"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "ground",
+      "notes": "A-frame roadwork barrier 2 m wide, red and white boards, amber lamp"
+    },
+    {
+      "id": "street_alley_floor",
+      "category": "street_floor",
+      "file": "prop_street_alley_floor.glb",
+      "size": [
+        16.0,
+        0.12,
+        40.0
+      ],
+      "tris": 12,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Ground"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Lane floor 16 x 40 m, top at origin height, runs along +Y (into the block); the far end hides inside the end building"
+    },
+    {
+      "id": "street_alley_lamp",
+      "category": "furniture",
+      "file": "prop_street_alley_lamp.glb",
+      "size": [
+        0.34,
+        0.462,
+        0.69
+      ],
+      "tris": 116,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Metal_Dark",
+        "M_Lamp_Sodium"
+      ],
+      "lights": [],
+      "emissive": true,
+      "mount": "wall",
+      "notes": "Caged wall lamp for a side lane. Origin on the wall at lamp height"
+    },
+    {
+      "id": "street_crate_stack",
+      "category": "furniture",
+      "file": "prop_street_crate_stack.glb",
+      "size": [
+        1.24,
+        0.755,
+        0.55
+      ],
+      "tris": 60,
+      "lod1_tris": null,
+      "lod1_file": null,
+      "collider_tris": 0,
+      "materials": [
+        "M_Wood_Dark",
+        "M_Metal_Dark"
+      ],
+      "lights": [],
+      "emissive": false,
+      "mount": "ground",
+      "notes": "Three wooden crates"
+    }
+  ]
+}

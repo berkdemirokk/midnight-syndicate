@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.998,
+  "luma_min": 0.0,
+  "name": "maslak_signal",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 170,
+    "draw_calls_min": 170,
+    "driver": "vulkan",
+    "fps": 479.027,
+    "frame_ms_avg": 2.088,
+    "frame_ms_p95": 4.62,
+    "frame_ms_p99": 7.318,
+    "frames": 60,
+    "objects": 170,
+    "os": "Windows",
+    "primitives": 95976,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 502.76,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/street_detail/maslak_signal.png",
+  "preset": "high",
+  "scenario": "street_detail"
+}

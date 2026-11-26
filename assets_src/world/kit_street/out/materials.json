@@ -1,0 +1,147 @@
+{
+  "textures_relative_to": "out/",
+  "materials": {
+    "M_Bulb_Green": {
+      "base_color": [
+        0.1,
+        1.0,
+        0.45
+      ],
+      "roughness": 0.4,
+      "metallic": 0.0,
+      "emission_color": [
+        0.1,
+        1.0,
+        0.45
+      ],
+      "emission_strength": 12.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Glow_Pool": {
+      "base_color": [
+        1.0,
+        0.62,
+        0.3
+      ],
+      "roughness": 1.0,
+      "metallic": 0.0,
+      "emission_color": [
+        1.0,
+        0.62,
+        0.3
+      ],
+      "emission_strength": 1.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Paint_Stripe": {
+      "base_color": [
+        0.93,
+        0.93,
+        0.9
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emission_color": null,
+      "emission_strength": 0.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Puddle": {
+      "base_color": [
+        0.012,
+        0.016,
+        0.022
+      ],
+      "roughness": 0.04,
+      "metallic": 0.0,
+      "emission_color": null,
+      "emission_strength": 0.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Rubber": {
+      "base_color": [
+        0.02,
+        0.02,
+        0.022
+      ],
+      "roughness": 0.9,
+      "metallic": 0.0,
+      "emission_color": null,
+      "emission_strength": 0.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Steam": {
+      "base_color": [
+        0.78,
+        0.84,
+        0.92
+      ],
+      "roughness": 1.0,
+      "metallic": 0.0,
+      "emission_color": null,
+      "emission_strength": 0.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Trash_Bag": {
+      "base_color": [
+        0.025,
+        0.027,
+        0.032
+      ],
+      "roughness": 0.28,
+      "metallic": 0.0,
+      "emission_color": null,
+      "emission_strength": 0.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Warn_Amber": {
+      "base_color": [
+        0.9,
+        0.45,
+        0.05
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emission_color": [
+        1.0,
+        0.5,
+        0.08
+      ],
+      "emission_strength": 3.0,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    },
+    "M_Window_Warm": {
+      "base_color": [
+        0.9,
+        0.55,
+        0.25
+      ],
+      "roughness": 0.6,
+      "metallic": 0.0,
+      "emission_color": [
+        1.0,
+        0.62,
+        0.3
+      ],
+      "emission_strength": 2.2,
+      "texture": null,
+      "uv_tiling_m": 1.0,
+      "source": "flat colour"
+    }
+  }
+}

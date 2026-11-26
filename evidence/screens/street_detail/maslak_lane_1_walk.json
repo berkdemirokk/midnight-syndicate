@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.996,
+  "luma_min": 0.0,
+  "name": "maslak_lane_1_walk",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 43,
+    "draw_calls_min": 43,
+    "driver": "vulkan",
+    "fps": 443.443,
+    "frame_ms_avg": 2.255,
+    "frame_ms_p95": 6.336,
+    "frame_ms_p99": 9.32,
+    "frames": 60,
+    "objects": 43,
+    "os": "Windows",
+    "primitives": 39385,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 502.76,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/street_detail/maslak_lane_1_walk.png",
+  "preset": "high",
+  "scenario": "street_detail"
+}

@@ -109,6 +109,17 @@ const PARKED_LOD_END_M: Array[float] = [35.0, 90.0, 150.0]  ## LOD0 to 35 m, LOD
 @export var parked_cell_m: float = 40.0  ## parked cars are grouped in cells this size and culled per cell
 @export var parked_worst_limit_m: float = -0.4  ## every car corner must sit at least this far outside the corridor
 
+@export_group("Street detail (kit_street: lanes, facade and sidewalk props, signals)")
+@export var street_cell_m: float = 60.0  ## street props are grouped in cells this long (along the lap) so each MultiMesh is culled on its own
+@export var street_range_m: float = 70.0  ## sidewalk and lane clutter, High preset; the preset scales it (street_preset_scale)
+@export var street_wall_range_m: float = 85.0  ## facade AC units and fire escapes
+@export var street_far_range_m: float = 150.0  ## lane floors and cable spans: the long view down a side lane
+@export var signal_range_m: float = 120.0
+@export var street_lod1_m: float = 35.0  ## street props with a _lod1 file switch to it here
+@export var street_preset_scale: Dictionary = {"high": 1.0, "medium": 0.8, "low": 0.55}
+@export var signal_green_s: float = 7.0  ## traffic signal cycle: green, amber, red; phase b runs half a cycle behind phase a
+@export var signal_amber_s: float = 1.5
+@export var signal_red_s: float = 6.5
 @export_group("Street dressing")
 @export var dressing_enabled: bool = true
 @export var dress_clear_m: float = 0.3  ## free gap between a dressing prop and the race corridor edge
@@ -167,6 +178,9 @@ var _far_next_ms: int = 0
 var _crown_xfs: Array[Transform3D] = []  ## LED crown strips (scaled unit boxes) of the tall first-row buildings
 var _tint_cache: Dictionary = {}  ## "material|owner" -> tinted copy of a window material
 var _dress_lights: Array = []  ## lights of the dressing props, in the layout's light format
+var _signal_lens: Array[Dictionary] = []  ## {node, colour 0 red 1 amber 2 green, phase 0 a 1 b}: the lens MultiMeshes of the junction signals
+var _signal_state: Array[int] = [-1, -1]  ## colour currently shown per phase, -1 before the first update
+var _soft_mats: Dictionary = {}  ## "steam" / "glow" -> shared ShaderMaterial of the soft street cards
 
 
 func _ready() -> void:
@@ -426,6 +440,8 @@ func _emit_far_lod(first: Node3D) -> void:
 
 
 func _process(_delta: float) -> void:
+	if not _signal_lens.is_empty():
+		_update_signals()
 	var now: int = Time.get_ticks_msec()  # wall clock: the draw_breakdown freeze sets time_scale 0
 	if now < _far_next_ms:
 		return
@@ -633,6 +649,8 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 		if flip_signs and cat == "sign":
 			xf = xf * Transform3D(Basis(Vector3.UP, PI), Vector3.ZERO)
 		var chunk: int = _chunk_of(float(d.get("s_offset_m", 0.0)), lap, n_chunks)
+		if _is_street_cat(cat):
+			chunk = 1000 + int(float(d.get("s_offset_m", 0.0)) / street_cell_m)  # own cells: street props are small and short-ranged
 		var key: String = "%s|%d|%s" % [file, chunk, cat]
 		if not buckets.has(key):
 			buckets[key] = {"file": file, "chunk": chunk, "cat": cat, "xfs": []}
@@ -653,24 +671,97 @@ func _build_props(inst: Array, lap: float, n_chunks: int) -> void:
 func _emit_prop_meshes(parent: Node3D, file: String, chunk: int, cat: String, xfs: Array) -> Dictionary:
 	var path: String = _prop_path(file)
 	var end_m: float = prop_far_end_m
+	var lod1_at: float = prop_lod1_begin_m
+	var street: bool = _is_street_cat(cat)
 	if cat == "furniture":
 		end_m = prop_furniture_end_m
 	elif cat == "bay" or cat == "skyline":
 		end_m = 0.0
+	elif street:
+		end_m = _street_range(cat)
+		lod1_at = minf(street_lod1_m, end_m * 0.6)
 	var near: Dictionary = _prototype(path, "")
 	var lod1_path: String = path.replace(".glb", "_lod1.glb")
 	var has_lod1: bool = ResourceLoader.exists(lod1_path)
 	var base: String = "%s_%02d" % [file.get_basename(), chunk]
-	var near_end: float = prop_lod1_begin_m if has_lod1 else end_m
+	var near_end: float = lod1_at if has_lod1 else end_m
 	for m: Dictionary in near["meshes"]:
-		parent.add_child(_multimesh_node(m, xfs, base + "_" + String(m["name"]), 0.0, near_end))
+		var mmi: MultiMeshInstance3D = _multimesh_node(m, xfs, base + "_" + String(m["name"]), 0.0, near_end)
+		parent.add_child(mmi)
+		if street:
+			_street_hooks(mmi, String(m["name"]), cat)
 		stats["prop_multimeshes"] = int(stats["prop_multimeshes"]) + 1
 	if has_lod1:
 		var lod1: Dictionary = _prototype(lod1_path, "")
 		for m: Dictionary in lod1["meshes"]:
-			parent.add_child(_multimesh_node(m, xfs, base + "_far_" + String(m["name"]), prop_lod1_begin_m, end_m))
+			var mmi: MultiMeshInstance3D = _multimesh_node(m, xfs, base + "_far_" + String(m["name"]), lod1_at, end_m)
+			parent.add_child(mmi)
+			if street:
+				_street_hooks(mmi, String(m["name"]), cat)
 			stats["prop_multimeshes"] = int(stats["prop_multimeshes"]) + 1
 	return near
+
+
+static func _is_street_cat(cat: String) -> bool:
+	return cat.begins_with("street") or cat.begins_with("signal_")
+
+
+## View range of a street category, scaled by the graphics preset (Low keeps the lane floors and signals, trims the clutter).
+func _street_range(cat: String) -> float:
+	var scale: float = float(street_preset_scale.get(Settings.get_preset_id(), 1.0))
+	if cat.begins_with("signal_"):
+		return signal_range_m * maxf(scale, 0.8)
+	if cat == "street_far":
+		return street_far_range_m * maxf(scale, 0.75)
+	if cat == "street_wall":
+		return street_wall_range_m * scale
+	if cat == "street_decal":
+		return street_range_m * scale * 0.85
+	return street_range_m * scale
+
+
+## Soft steam and glow cards swap to their shaders; signal lens meshes register for the cycle.
+func _street_hooks(mmi: MultiMeshInstance3D, mesh_name: String, cat: String) -> void:
+	if mesh_name.begins_with("steam_card"):
+		mmi.material_override = _soft_material("steam")
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	elif mesh_name.begins_with("glowpool") or mesh_name.begins_with("glowwall"):
+		mmi.material_override = _soft_material("glow" if mesh_name.begins_with("glowpool") else "glow_wall")
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	elif cat.begins_with("signal_") and mesh_name.begins_with("signal_lens_"):
+		var colour: int = ["red", "amber", "green"].find(mesh_name.trim_prefix("signal_lens_"))
+		if colour >= 0:
+			_signal_lens.append({"node": mmi, "colour": colour, "phase": 0 if cat == "signal_a" else 1})
+			mmi.visible = false  # _update_signals shows the lit lens
+
+
+func _soft_material(kind: String) -> ShaderMaterial:
+	if not _soft_mats.has(kind):
+		var sm := ShaderMaterial.new()
+		sm.shader = load("res://shaders/steam_card.gdshader" if kind == "steam" else "res://shaders/glow_pool.gdshader") as Shader
+		if kind == "glow_wall":
+			sm.set_shader_parameter("vertical", true)
+			sm.set_shader_parameter("radius_m", 2.6)
+		_soft_mats[kind] = sm
+	return _soft_mats[kind]
+
+
+## Junction signals: one lens lit per phase, green then amber then red. Phase b is half a cycle behind phase a.
+func _update_signals() -> void:
+	var cycle: float = signal_green_s + signal_amber_s + signal_red_s
+	var t: float = Time.get_ticks_msec() * 0.001
+	var changed: bool = false
+	var state: Array[int] = [0, 0]
+	for ph: int in 2:
+		var x: float = fposmod(t + float(ph) * cycle * 0.5, cycle)
+		state[ph] = 2 if x < signal_green_s else (1 if x < signal_green_s + signal_amber_s else 0)
+		if state[ph] != _signal_state[ph]:
+			changed = true
+	if not changed:
+		return
+	_signal_state = state
+	for e: Dictionary in _signal_lens:
+		(e["node"] as MultiMeshInstance3D).visible = state[int(e["phase"])] == int(e["colour"])
 
 
 func _add_prop_colliders(shapes: Array, xfs: Array, chunk: int) -> void:

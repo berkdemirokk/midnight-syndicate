@@ -8,26 +8,26 @@
   "name": "establishing_60m",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 221,
-    "draw_calls_min": 221,
+    "draw_calls": 130,
+    "draw_calls_min": 130,
     "driver": "vulkan",
-    "fps": 962.047,
-    "frame_ms_avg": 1.039,
-    "frame_ms_p95": 1.153,
-    "frame_ms_p99": 1.287,
+    "fps": 294.372,
+    "frame_ms_avg": 3.397,
+    "frame_ms_p95": 5.053,
+    "frame_ms_p99": 5.333,
     "frames": 60,
-    "objects": 221,
+    "objects": 130,
     "os": "Windows",
-    "primitives": 122979,
+    "primitives": 105532,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 510.165,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 444.798,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/city_districts/establishing_60m.png",
-  "preset": "high",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/city_districts/establishing_60m.png",
+  "preset": "low",
   "scenario": "city_districts"
 }

@@ -1,0 +1,26 @@
+{
+  "name": "maslak_signal_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 170,
+    "draw_calls_min": 170,
+    "driver": "vulkan",
+    "fps": 480.102,
+    "frame_ms_avg": 2.083,
+    "frame_ms_p95": 4.957,
+    "frame_ms_p99": 10.412,
+    "frames": 120,
+    "objects": 170,
+    "os": "Windows",
+    "primitives": 95976,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 502.76,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "street_detail"
+}

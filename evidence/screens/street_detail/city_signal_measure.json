@@ -1,0 +1,26 @@
+{
+  "name": "city_signal_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 182,
+    "draw_calls_min": 182,
+    "driver": "vulkan",
+    "fps": 271.9,
+    "frame_ms_avg": 3.678,
+    "frame_ms_p95": 7.533,
+    "frame_ms_p99": 11.098,
+    "frames": 120,
+    "objects": 182,
+    "os": "Windows",
+    "primitives": 128085,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 506.539,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "street_detail"
+}

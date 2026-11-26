@@ -8,26 +8,26 @@
   "name": "grid",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 326,
-    "draw_calls_min": 233,
+    "draw_calls": 344,
+    "draw_calls_min": 247,
     "driver": "vulkan",
-    "fps": 146.29,
-    "frame_ms_avg": 6.836,
-    "frame_ms_p95": 9.485,
-    "frame_ms_p99": 15.941,
+    "fps": 120.631,
+    "frame_ms_avg": 8.29,
+    "frame_ms_p95": 11.68,
+    "frame_ms_p99": 13.026,
     "frames": 60,
-    "objects": 12785,
+    "objects": 12799,
     "os": "Windows",
-    "primitives": 255696,
+    "primitives": 254265,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 563.853,
+    "video_mem_mb": 569.95,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_bogaz/grid.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/race_bogaz/grid.png",
   "preset": "high",
   "scenario": "race_bogaz"
 }

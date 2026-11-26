@@ -8,26 +8,26 @@
   "name": "racing_nitro",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 363,
-    "draw_calls_min": 247,
+    "draw_calls": 447,
+    "draw_calls_min": 276,
     "driver": "vulkan",
-    "fps": 126.786,
-    "frame_ms_avg": 7.887,
-    "frame_ms_p95": 10.404,
-    "frame_ms_p99": 16.035,
+    "fps": 81.678,
+    "frame_ms_avg": 12.243,
+    "frame_ms_p95": 19.149,
+    "frame_ms_p99": 24.33,
     "frames": 60,
-    "objects": 14721,
+    "objects": 14935,
     "os": "Windows",
-    "primitives": 332407,
+    "primitives": 327395,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 563.833,
+    "video_mem_mb": 565.521,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_city/racing_nitro.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/race_city/racing_nitro.png",
   "preset": "high",
   "scenario": "race_city"
 }

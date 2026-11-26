@@ -92,8 +92,8 @@ func test_scene_builds_and_counts() -> void:
 	var s: Dictionary = city.stats
 	metric("load_time_ms", snappedf(city.load_time_ms, 0.1))
 	check(city.load_time_ms < LOAD_LIMIT_MS, "scene load took %.0f ms" % city.load_time_ms)
-	check(int(s["first_row"]) == 148, "first-row buildings %d, expected 148" % int(s["first_row"]))
-	check(int(s["second_row_instances"]) == 51, "second-row LOD2 boxes %d, expected 51" % int(s["second_row_instances"]))
+	check(int(s["first_row"]) == 140, "first-row buildings %d, expected 140" % int(s["first_row"]))
+	check(int(s["second_row_instances"]) == 56, "second-row LOD2 boxes %d, expected 56" % int(s["second_row_instances"]))
 	check(int(s["missing_props"]) == 0, "%d props missing from the kit" % int(s["missing_props"]))
 	check(int(s["probes"]) == 37, "reflection probes %d, expected 37" % int(s["probes"]))
 	check(int(s["occluders"]) == int(s["first_row"]), "occluders %d for %d first-row buildings" % [int(s["occluders"]), int(s["first_row"])])

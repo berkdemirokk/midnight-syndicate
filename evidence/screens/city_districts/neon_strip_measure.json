@@ -2,25 +2,25 @@
   "name": "neon_strip_measure",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 301,
-    "draw_calls_min": 301,
+    "draw_calls": 161,
+    "draw_calls_min": 161,
     "driver": "vulkan",
-    "fps": 826.569,
-    "frame_ms_avg": 1.21,
-    "frame_ms_p95": 1.682,
-    "frame_ms_p99": 2.674,
+    "fps": 525.188,
+    "frame_ms_avg": 1.904,
+    "frame_ms_p95": 4.561,
+    "frame_ms_p99": 6.276,
     "frames": 300,
-    "objects": 301,
+    "objects": 161,
     "os": "Windows",
-    "primitives": 213580,
+    "primitives": 130158,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 510.165,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 444.798,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "preset": "high",
+  "preset": "low",
   "scenario": "city_districts"
 }

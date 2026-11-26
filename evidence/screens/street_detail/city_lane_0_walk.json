@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.983,
+  "luma_min": 0.0,
+  "name": "city_lane_0_walk",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 61,
+    "draw_calls_min": 61,
+    "driver": "vulkan",
+    "fps": 586.923,
+    "frame_ms_avg": 1.704,
+    "frame_ms_p95": 3.028,
+    "frame_ms_p99": 3.193,
+    "frames": 60,
+    "objects": 61,
+    "os": "Windows",
+    "primitives": 52321,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 506.539,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/street_detail/city_lane_0_walk.png",
+  "preset": "high",
+  "scenario": "street_detail"
+}

@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 1.0,
+  "luma_max": 0.995,
   "luma_min": 0.0,
   "name": "grid",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 358,
-    "draw_calls_min": 229,
+    "draw_calls": 410,
+    "draw_calls_min": 241,
     "driver": "vulkan",
-    "fps": 153.193,
-    "frame_ms_avg": 6.528,
-    "frame_ms_p95": 9.551,
-    "frame_ms_p99": 10.296,
+    "fps": 88.533,
+    "frame_ms_avg": 11.295,
+    "frame_ms_p95": 17.051,
+    "frame_ms_p99": 20.062,
     "frames": 60,
-    "objects": 12727,
+    "objects": 12775,
     "os": "Windows",
-    "primitives": 336956,
+    "primitives": 337792,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 559.651,
+    "video_mem_mb": 565.339,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_city/grid.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/race_city/grid.png",
   "preset": "high",
   "scenario": "race_city"
 }

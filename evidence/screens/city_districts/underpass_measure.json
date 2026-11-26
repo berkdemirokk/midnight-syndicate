@@ -2,25 +2,25 @@
   "name": "underpass_measure",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 214,
-    "draw_calls_min": 214,
+    "draw_calls": 105,
+    "draw_calls_min": 105,
     "driver": "vulkan",
-    "fps": 423.711,
-    "frame_ms_avg": 2.36,
-    "frame_ms_p95": 4.993,
-    "frame_ms_p99": 5.081,
+    "fps": 838.79,
+    "frame_ms_avg": 1.192,
+    "frame_ms_p95": 2.684,
+    "frame_ms_p99": 3.028,
     "frames": 300,
-    "objects": 214,
+    "objects": 105,
     "os": "Windows",
-    "primitives": 125214,
+    "primitives": 80422,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 510.165,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 444.798,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "preset": "high",
+  "preset": "low",
   "scenario": "city_districts"
 }

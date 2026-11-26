@@ -2,25 +2,25 @@
   "name": "old_market_measure",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 180,
-    "draw_calls_min": 180,
+    "draw_calls": 102,
+    "draw_calls_min": 102,
     "driver": "vulkan",
-    "fps": 779.464,
-    "frame_ms_avg": 1.283,
-    "frame_ms_p95": 1.674,
-    "frame_ms_p99": 2.813,
+    "fps": 349.187,
+    "frame_ms_avg": 2.864,
+    "frame_ms_p95": 4.833,
+    "frame_ms_p99": 5.418,
     "frames": 300,
-    "objects": 180,
+    "objects": 102,
     "os": "Windows",
-    "primitives": 151888,
+    "primitives": 93453,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 510.165,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 444.798,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "preset": "high",
+  "preset": "low",
   "scenario": "city_districts"
 }

@@ -1,0 +1,26 @@
+{
+  "name": "maslak_lane_2_walk_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 127,
+    "draw_calls_min": 127,
+    "driver": "vulkan",
+    "fps": 161.489,
+    "frame_ms_avg": 6.192,
+    "frame_ms_p95": 12.503,
+    "frame_ms_p99": 16.974,
+    "frames": 120,
+    "objects": 127,
+    "os": "Windows",
+    "primitives": 76534,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 502.76,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "street_detail"
+}

@@ -9,6 +9,7 @@ licence project-owned). Re-runnable: files are overwritten and records are upser
 Import options: none set. Godot's default GLB import already turns "-col" and "-colonly" node
 suffixes into collision, and no .import file is written by this script.
 """
+import json
 import os
 import shutil
 import sys
@@ -84,6 +85,41 @@ def _copy_and_register(pairs, manifest):
     return count
 
 
+def street_files():
+    """Street-detail kit (assets_src/world/kit_street/out): its GLBs join the shared prop folder by new file names."""
+    out = os.path.join(SRC, "kit_street", "out")
+    if not os.path.isdir(out):
+        return []
+    return [(os.path.join(out, n), "kits/props") for n in sorted(os.listdir(out)) if n.endswith(".glb")]
+
+
+def merge_street(manifest):
+    """Upsert the street catalog items and its new materials into the shipped props catalog.json and materials.json
+    (both were just copied from kit_props), then register the merged files again."""
+    out = os.path.join(SRC, "kit_street", "out")
+    if not os.path.isfile(os.path.join(out, "catalog.json")):
+        return
+    dst = os.path.join(DST, "kits", "props")
+    cat_p, mat_p = os.path.join(dst, "catalog.json"), os.path.join(dst, "materials.json")
+    cat = json.load(open(cat_p, encoding="utf-8"))
+    street = json.load(open(os.path.join(out, "catalog.json"), encoding="utf-8"))
+    ids = {i["id"]: k for k, i in enumerate(cat["items"])}
+    for it in street["items"]:
+        if it["id"] in ids:
+            cat["items"][ids[it["id"]]] = it
+        else:
+            cat["items"].append(it)
+    json.dump(cat, open(cat_p, "w", encoding="utf-8"), indent=2)
+    mats = json.load(open(mat_p, encoding="utf-8"))
+    mats["materials"].update(json.load(open(os.path.join(out, "materials.json"), encoding="utf-8"))["materials"])
+    json.dump(mats, open(mat_p, "w", encoding="utf-8"), indent=2)
+    for p in (cat_p, mat_p):
+        rel = os.path.relpath(p, REPO).replace("\\", "/")
+        argv = ["--manifest", manifest, "register", "--id", _id_for(rel[len("game/assets/"):]), "--kind", _kind(p), "--path", rel,
+                "--source", "generated:blender", "--license", "project-owned", "--notes", "world kit and tracks, shipped by tools/ship_world.py"]
+        asset_factory.main(["--root", REPO] + argv)
+
+
 def track_files(track_id):
     """Road, centreline, layout and the per-track props of a generic track (assets_src/world/tracks/<id>)."""
     base = os.path.join(SRC, "tracks", track_id)
@@ -111,7 +147,9 @@ def main() -> int:
     pairs = [(src, dst_rel) for src, dst_rel in CITY_FILES]
     pairs += _kit_files(os.path.join(SRC, "kit_buildings", "out"), "kits/buildings")
     pairs += _kit_files(os.path.join(SRC, "kit_props", "out"), "kits/props")
+    pairs += street_files()
     n =_copy_and_register(pairs, manifest)
+    merge_street(manifest)
     print("ship_world: %d files copied and registered under %s" % (n, os.path.relpath(DST, REPO)))
     return 0
 

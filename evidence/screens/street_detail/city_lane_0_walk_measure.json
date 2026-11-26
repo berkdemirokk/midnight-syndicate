@@ -1,0 +1,26 @@
+{
+  "name": "city_lane_0_walk_measure",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 61,
+    "draw_calls_min": 61,
+    "driver": "vulkan",
+    "fps": 498.221,
+    "frame_ms_avg": 2.007,
+    "frame_ms_p95": 3.513,
+    "frame_ms_p99": 4.033,
+    "frames": 120,
+    "objects": 61,
+    "os": "Windows",
+    "primitives": 52321,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 506.539,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "preset": "high",
+  "scenario": "street_detail"
+}

@@ -2,25 +2,25 @@
   "name": "waterfront_harbour_measure",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 214,
-    "draw_calls_min": 214,
+    "draw_calls": 118,
+    "draw_calls_min": 118,
     "driver": "vulkan",
-    "fps": 1219.572,
-    "frame_ms_avg": 0.82,
-    "frame_ms_p95": 1.078,
-    "frame_ms_p99": 1.23,
+    "fps": 796.616,
+    "frame_ms_avg": 1.255,
+    "frame_ms_p95": 2.648,
+    "frame_ms_p99": 3.485,
     "frames": 300,
-    "objects": 214,
+    "objects": 118,
     "os": "Windows",
-    "primitives": 119150,
+    "primitives": 94860,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 510.165,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 444.798,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "preset": "high",
+  "preset": "low",
   "scenario": "city_districts"
 }

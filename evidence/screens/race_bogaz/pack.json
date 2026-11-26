@@ -8,26 +8,26 @@
   "name": "pack",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 382,
-    "draw_calls_min": 239,
+    "draw_calls": 357,
+    "draw_calls_min": 220,
     "driver": "vulkan",
-    "fps": 185.564,
-    "frame_ms_avg": 5.389,
-    "frame_ms_p95": 7.305,
-    "frame_ms_p99": 13.452,
+    "fps": 109.501,
+    "frame_ms_avg": 9.132,
+    "frame_ms_p95": 13.067,
+    "frame_ms_p99": 22.988,
     "frames": 60,
-    "objects": 14400,
+    "objects": 13813,
     "os": "Windows",
-    "primitives": 302619,
+    "primitives": 307011,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 567.979,
+    "video_mem_mb": 570.071,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_bogaz/pack.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/race_bogaz/pack.png",
   "preset": "high",
   "scenario": "race_bogaz"
 }

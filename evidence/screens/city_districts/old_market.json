@@ -8,26 +8,26 @@
   "name": "old_market",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 180,
-    "draw_calls_min": 180,
+    "draw_calls": 102,
+    "draw_calls_min": 102,
     "driver": "vulkan",
-    "fps": 859.119,
-    "frame_ms_avg": 1.164,
-    "frame_ms_p95": 1.455,
-    "frame_ms_p99": 2.009,
+    "fps": 270.532,
+    "frame_ms_avg": 3.696,
+    "frame_ms_p95": 5.673,
+    "frame_ms_p99": 5.957,
     "frames": 60,
-    "objects": 180,
+    "objects": 102,
     "os": "Windows",
-    "primitives": 151888,
+    "primitives": 93453,
     "renderer": "mobile",
-    "scaling_3d_scale": 1.0,
-    "video_mem_mb": 510.165,
+    "scaling_3d_scale": 0.67,
+    "video_mem_mb": 444.798,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/city_districts/old_market.png",
-  "preset": "high",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/city_districts/old_market.png",
+  "preset": "low",
   "scenario": "city_districts"
 }

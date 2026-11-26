@@ -358,6 +358,7 @@ def glyph(s, extrude=0.0, bevel=0.0, res=None, fill="BOTH"):
     return res
 
 
+LOD1_MIN_TRIS = 800   # props above this get a decimated _lod1 file (kit_street lowers it)
 NEON_RES = 3        # curve resolution: 1 turns O into a diamond
 TUBE_R = 0.011      # neon tube radius in metres (about 22 mm tube)
 BEVEL_RES = 0
@@ -513,7 +514,7 @@ def build_prop(pid, spec):
     lod1_tris = None
     lod_ratio = None
     lodgeo = {p["name"]: p["geo"].lod for p in spec["parts"] if getattr(p["geo"], "lod", None) is not None}
-    if tris0 > 800:
+    if tris0 > LOD1_MIN_TRIS:
         for ratio in (0.3, 0.22, 0.15, 0.1):
             lod = bpy.data.objects.new(pid + "_LOD1", None)
             sc.objects.link(lod)

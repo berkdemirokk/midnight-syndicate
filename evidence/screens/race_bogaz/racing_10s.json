@@ -8,26 +8,26 @@
   "name": "racing_10s",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 390,
-    "draw_calls_min": 243,
+    "draw_calls": 385,
+    "draw_calls_min": 229,
     "driver": "vulkan",
-    "fps": 145.336,
-    "frame_ms_avg": 6.881,
-    "frame_ms_p95": 9.438,
-    "frame_ms_p99": 11.146,
+    "fps": 122.65,
+    "frame_ms_avg": 8.153,
+    "frame_ms_p95": 10.628,
+    "frame_ms_p99": 19.193,
     "frames": 60,
-    "objects": 13548,
+    "objects": 14569,
     "os": "Windows",
-    "primitives": 328173,
+    "primitives": 321163,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 567.979,
+    "video_mem_mb": 570.071,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_bogaz/racing_10s.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/race_bogaz/racing_10s.png",
   "preset": "high",
   "scenario": "race_bogaz"
 }

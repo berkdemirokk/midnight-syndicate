@@ -8,26 +8,26 @@
   "name": "underpass",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 246,
-    "draw_calls_min": 172,
+    "draw_calls": 218,
+    "draw_calls_min": 174,
     "driver": "vulkan",
-    "fps": 138.117,
-    "frame_ms_avg": 7.24,
-    "frame_ms_p95": 9.209,
-    "frame_ms_p99": 20.135,
+    "fps": 214.668,
+    "frame_ms_avg": 4.658,
+    "frame_ms_p95": 6.664,
+    "frame_ms_p99": 7.351,
     "frames": 60,
-    "objects": 13745,
+    "objects": 13281,
     "os": "Windows",
-    "primitives": 244852,
+    "primitives": 230473,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 543.324,
+    "video_mem_mb": 545.8,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-5/evidence/screens/race_maslak/underpass.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-6/evidence/screens/race_maslak/underpass.png",
   "preset": "high",
   "scenario": "race_maslak"
 }
