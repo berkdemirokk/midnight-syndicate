@@ -54,6 +54,8 @@ var _rng := RandomNumberGenerator.new()
 var _probe := SphereShape3D.new()  ## trunk-and-crown-base clearance probe, radius in m
 
 
+## Leaf tint per species (multiplies the atlas). Judas: muted blossom, the raw magenta glowed under the lamps. Cypress: its needles are painted almost black.
+const LEAF_TINT: Dictionary = {"judas": Color(0.68, 0.56, 0.56), "cypress": Color(1.05, 1.2, 0.8)}
 static var _leaf_materials: Array[ShaderMaterial] = []  ## every cached leaf material, so the hour can retune them
 
 
@@ -270,9 +272,7 @@ static func _lod_mesh(species: String, lod: int) -> Mesh:
 	inst.free()
 	var leaf := ShaderMaterial.new()
 	leaf.shader = FOLIAGE_SHADER
-	leaf.set_shader_parameter("tint", Color(0.62, 0.70, 0.52))  # desaturated: the raw atlas green looked plastic next to the buildings
-	if species == "judas":
-		leaf.set_shader_parameter("tint", Color(0.50, 0.40, 0.46))  # muted blossom: the raw magenta glowed like a Christmas tree under the lamps
+	leaf.set_shader_parameter("tint", LEAF_TINT.get(species, Color(0.92, 1.02, 0.68)))  # the atlas paint is dark: lifted, a little yellow, so crowns read as sunlit leaves
 	if lod == 2:
 		leaf.set_shader_parameter("albedo_tex", load(SPECIES_DIR + "impostor_%s.png" % species))
 		mesh.surface_set_material(0, leaf)

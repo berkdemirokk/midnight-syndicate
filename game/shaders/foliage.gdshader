@@ -35,7 +35,7 @@ void fragment() {
 	if (t.a < alpha_cut) {
 		discard;
 	}
-	ALBEDO = t.rgb * COLOR.rgb * tint;
+	ALBEDO = t.rgb * mix(vec3(1.0), COLOR.rgb, 0.65) * tint;  // full baked AO on dark leaf paint left the crowns near black
 	ROUGHNESS = roughness_value;
 	EMISSION = ALBEDO * shade_fill;
 }
