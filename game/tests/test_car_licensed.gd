@@ -14,7 +14,7 @@ const CARS: Array[Dictionary] = [
 		"id": "arden_havoc", "scene": "res://vehicles/arden_havoc/arden_havoc.tscn",
 		"spec": "res://vehicles/specs/arden_havoc.tres", "name": "Arden Havoc",
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb
-		"axle": 1.345, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.69,
+		"axle": 1.395, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.79,
 	},
 ]
 const REQUIRED: PackedStringArray = [
@@ -91,7 +91,7 @@ func _done() -> void:
 
 
 func test_scene_has_three_lods_and_required_nodes() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
 		await frames(2)
 		for lod_name: String in ["LOD0", "LOD1", "LOD2"]:
@@ -108,7 +108,7 @@ func test_scene_has_three_lods_and_required_nodes() -> void:
 
 
 func test_lod0_bounding_box_matches_source() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
 		await frames(1)
 		var lod0: Node3D = car.get_node("LOD0") as Node3D
@@ -129,7 +129,7 @@ func test_lod0_bounding_box_matches_source() -> void:
 
 
 func test_wheel_origins_at_wheel_centres() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
 		await frames(1)
 		var lod0: Node3D = car.get_node("LOD0") as Node3D
@@ -148,7 +148,7 @@ func test_wheel_origins_at_wheel_centres() -> void:
 
 
 func test_budgets() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
 		await frames(1)
 		var t0: int = _tris(car.get_node("LOD0"))
@@ -176,7 +176,7 @@ func test_budgets() -> void:
 
 
 func test_paint_is_per_car_and_brake_lights_work() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var a: CarLod = _spawn(c["scene"])
 		var b: CarLod = _spawn(c["scene"])
 		await frames(1)
@@ -194,7 +194,7 @@ func test_paint_is_per_car_and_brake_lights_work() -> void:
 
 
 func test_lod_switching_and_wheel_sets() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
 		await frames(1)
 		var cam: Camera3D = add(Camera3D.new()) as Camera3D
@@ -218,7 +218,7 @@ func test_lod_switching_and_wheel_sets() -> void:
 
 func test_spec_is_a_real_car_and_matches_the_model() -> void:
 	var h: CarSpec = load(HERO_SPEC) as CarSpec
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var s: CarSpec = load(c["spec"]) as CarSpec
 		check(s != null, "%s spec did not load" % c["id"])
 		if s == null or h == null:
@@ -231,7 +231,7 @@ func test_spec_is_a_real_car_and_matches_the_model() -> void:
 
 
 func test_model_wheels_rest_on_the_suspension() -> void:
-	for c: Dictionary in _cars():
+	for c: Dictionary in CARS:
 		var spec: CarSpec = load(c["spec"]) as CarSpec
 		var car: ArcadeCar = CarFactory.create(c["scene"], spec, Color.RED)
 		var ground := StaticBody3D.new()
@@ -259,12 +259,3 @@ func test_model_wheels_rest_on_the_suspension() -> void:
 			check(absf(static_y - phys_y) < MAX_GAP_M, "%s %s wheel %.3f m off the suspension" % [c["id"], lod_name, static_y - phys_y])
 		await cleanup([car, ground])
 
-
-## TEMPORARY until both cars exist: the loop skips a car whose scene or spec is missing. Remove this helper when
-## arden_havoc is built, so a missing car fails the test instead of being skipped.
-func _cars() -> Array[Dictionary]:
-	var out: Array[Dictionary] = []
-	for c: Dictionary in CARS:
-		if ResourceLoader.exists(c["scene"]) and ResourceLoader.exists(c["spec"]):
-			out.append(c)
-	return out

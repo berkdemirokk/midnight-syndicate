@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.965,
+  "luma_min": 0.0,
+  "name": "cabin_closeup",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 50,
+    "draw_calls_min": 50,
+    "driver": "vulkan",
+    "fps": 651.028,
+    "frame_ms_avg": 1.536,
+    "frame_ms_p95": 1.578,
+    "frame_ms_p99": 1.614,
+    "frames": 60,
+    "objects": 50,
+    "os": "Windows",
+    "primitives": 167323,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 473.153,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/cars2/evidence/screens/car_studio_havoc/cabin_closeup.png",
+  "preset": "high",
+  "scenario": "car_studio_havoc"
+}

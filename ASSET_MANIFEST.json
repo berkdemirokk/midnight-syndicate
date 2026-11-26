@@ -9634,7 +9634,7 @@
       "sha256": "153bb0ff391dbcd816acb2f22cec30e212f65fffd6477ed903a20783cfbc2e3a",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped; sha256 153bb0ff391dbcd816acb2f22cec30e212f65fffd6477ed903a20783cfbc2e3a. Modified: materials merged, LODs, plate, renamed in game."
+      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped; sha256 153bb0ff391dbcd816acb2f22cec30e212f65fffd6477ed903a20783cfbc2e3a. Shipped as Kestrel Vanta (modified)."
     },
     {
       "id": "vinish_muscle_coupe",
@@ -9651,7 +9651,7 @@
       "sha256": "f3fc9864f2850c3cd62e9655f8529ce2a0641f1b863b9a9c1196dc4a9c9fc890",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped; sha256 f3fc9864f2850c3cd62e9655f8529ce2a0641f1b863b9a9c1196dc4a9c9fc890. Modified: materials merged, LODs, plate, renamed in game."
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped; sha256 f3fc9864f2850c3cd62e9655f8529ce2a0641f1b863b9a9c1196dc4a9c9fc890. Shipped as Arden Havoc (modified)."
     },
     {
       "id": "kestrel_vanta_lod0",
@@ -9703,6 +9703,57 @@
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
+    },
+    {
+      "id": "arden_havoc_lod0",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_havoc/arden_havoc_lod0.glb",
+      "source": "cc-by:vinish.dev",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "license": "CC-BY-4.0",
+      "author": "vinish.dev",
+      "tris": 88578,
+      "texture_sizes": {},
+      "material_count": 13,
+      "bytes": 2653636,
+      "sha256": "6daad2e4116a6914aadc6f9f4c8b24281b7d29ec2166b4b22b49965f7ef18fd1",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
+    },
+    {
+      "id": "arden_havoc_lod1",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_havoc/arden_havoc_lod1.glb",
+      "source": "cc-by:vinish.dev",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "license": "CC-BY-4.0",
+      "author": "vinish.dev",
+      "tris": 27294,
+      "texture_sizes": {},
+      "material_count": 8,
+      "bytes": 1010260,
+      "sha256": "4b7452099f1efcd8b082f340dad85513b08ee9f4f4f280de61de3993cd980407",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
+    },
+    {
+      "id": "arden_havoc_lod2",
+      "kind": "model",
+      "path": "game/assets/vehicles/arden_havoc/arden_havoc_lod2.glb",
+      "source": "cc-by:vinish.dev",
+      "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
+      "license": "CC-BY-4.0",
+      "author": "vinish.dev",
+      "tris": 6677,
+      "texture_sizes": {},
+      "material_count": 5,
+      "bytes": 338424,
+      "sha256": "c68f334becd6b2f4dc596a447453b9099fe405b5664adeb23dc86f0263fb0df5",
+      "test_result": "pass",
+      "added": "2026-11-26",
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
     }
   ]
 }

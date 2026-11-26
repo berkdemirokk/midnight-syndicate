@@ -1,0 +1,15 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://vehicles/noctra_sable/car_lod.gd" id="1_lod"]
+[ext_resource type="PackedScene" path="res://assets/vehicles/arden_havoc/arden_havoc_lod0.glb" id="2_lod0"]
+[ext_resource type="PackedScene" path="res://assets/vehicles/arden_havoc/arden_havoc_lod1.glb" id="3_lod1"]
+[ext_resource type="PackedScene" path="res://assets/vehicles/arden_havoc/arden_havoc_lod2.glb" id="4_lod2"]
+
+[node name="ArdenHavoc" type="Node3D"]
+script = ExtResource("1_lod")
+
+[node name="LOD0" parent="." instance=ExtResource("2_lod0")]
+
+[node name="LOD1" parent="." instance=ExtResource("3_lod1")]
+
+[node name="LOD2" parent="." instance=ExtResource("4_lod2")]

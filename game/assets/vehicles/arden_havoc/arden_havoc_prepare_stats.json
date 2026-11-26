@@ -1,0 +1,223 @@
+{
+ "car_id": "arden_havoc",
+ "source": "C:/Users/berk/car race/.claude/worktrees/cars2/assets_src/third_party/vinish_cars/muscle-coupe.glb",
+ "lod0": {
+  "tris": 88578,
+  "tris_by_node": {
+   "body": 28446,
+   "brake_FL": 2275,
+   "brake_FR": 2275,
+   "brake_RL": 2212,
+   "brake_RR": 2212,
+   "col_body": 90,
+   "exhaust": 3049,
+   "glass": 3872,
+   "interior": 8214,
+   "lights_front": 2400,
+   "lights_rear": 2120,
+   "plate_rear": 2,
+   "trim": 13873,
+   "underbody": 1631,
+   "wheel_FL": 3980,
+   "wheel_FR": 3980,
+   "wheel_RL": 3973,
+   "wheel_RR": 3974
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_Lens",
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 27,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Caliper",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 13
+ },
+ "lod1": {
+  "tris": 27294,
+  "tris_by_node": {
+   "body": 7899,
+   "col_body": 90,
+   "glass": 774,
+   "interior": 4926,
+   "lights_front": 1200,
+   "lights_rear": 1060,
+   "trim": 8165,
+   "wheel_FL": 796,
+   "wheel_FR": 796,
+   "wheel_RL": 794,
+   "wheel_RR": 794
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 14,
+  "materials": [
+   "M_Glass",
+   "M_Interior",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 8
+ },
+ "lod2": {
+  "tris": 6677,
+  "tris_by_node": {
+   "body": 2708,
+   "col_body": 90,
+   "glass": 386,
+   "lights_rear": 246,
+   "trim": 1749,
+   "wheel_FL": 374,
+   "wheel_FR": 375,
+   "wheel_RL": 375,
+   "wheel_RR": 374
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 8,
+  "materials": [
+   "M_Glass",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 5
+ }
+}
