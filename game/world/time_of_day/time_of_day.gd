@@ -177,16 +177,16 @@ func _make_sunset() -> void:
 	sun_energy = 1.1  # blue hour: the sun is almost down, the lamps carry the street (2.4 washed everything pink)
 	ambient_energy = 0.85
 	ambient_sky_mix = 0.3
-	ambient_color = Color(0.30, 0.38, 0.72)
+	ambient_color = Color(0.36, 0.40, 0.62)
 	reflection_energy = 1.0
 	sky_params = {
-		"zenith_colour": Color(0.05, 0.09, 0.30), "horizon_colour": Color(0.72, 0.46, 0.52),
+		"zenith_colour": Color(0.05, 0.09, 0.30), "horizon_colour": Color(0.66, 0.50, 0.52),
 		"ground_colour": Color(0.40, 0.25, 0.30), "sun_colour": Color(1.0, 0.62, 0.32),
 		"sun_disk_energy": 10.0, "halo_energy": 1.6, "halo_power": 10.0,
 		"band_colour": Color(1.0, 0.42, 0.22), "band_energy": 0.8, "band_height": 0.2, "band_spread": 1.6,
-		"cloud_cover": 0.42, "cloud_lit": Color(0.95, 0.60, 0.62), "cloud_shade": Color(0.22, 0.24, 0.46),
+		"cloud_cover": 0.42, "cloud_lit": Color(0.98, 0.66, 0.56), "cloud_shade": Color(0.22, 0.24, 0.46),
 	}
-	fog_color = Color(0.36, 0.38, 0.60)
+	fog_color = Color(0.40, 0.40, 0.56)
 	fog_begin_m = 240.0
 	fog_end_m = 1250.0
 	fog_sky_affect = 0.5
@@ -212,7 +212,7 @@ func _make_sunset() -> void:
 	road_wetness = 0.85
 	road_puddles = 0.7
 	wall_wet = 0.35
-	road_mirror = true  # the wet road mirrors the lamps and tail lights at dusk
+	road_mirror = false  # the planar mirror turned the whole road into a pink sky channel and broke the primitive budget
 	rain = false
 	headlights_on = true
 	car_fill_scale = 0.7
