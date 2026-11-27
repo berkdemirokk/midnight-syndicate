@@ -30,6 +30,8 @@ const PHOTO_END_M: float = 320.0  ## to the end of LOD1
 const PHOTO_GLOW: float = 1.3
 const HALL_CENTRE_LOCAL: Vector3 = Vector3(0.0, 8.0, -18.0)  ## local (Godot) centre of the prayer hall, at the walls' mid-height
 const WARM: Color = Color(1.0, 0.64, 0.3)  ## sodium floodlight gold (0.74, 0.46 read as cold white on pale stone)
+const DOME_MATERIAL: String = "M_Dome"  ## the lathe-built domes, turret caps, pencil caps and the rib prisms on the dome
+const CREASE_COS: float = 0.5  ## faces more than 60 degrees apart keep a hard edge (rib sides, the dome rim)
 
 ## Surface name (glTF material name from the kit) -> look. glow is emission at night in units of the shader.
 const MATERIALS: Dictionary = {
@@ -116,6 +118,7 @@ func hall_centre() -> Vector3:
 
 
 func _style(mi: MeshInstance3D, lod: int) -> void:
+	mi.mesh = smooth_dome_mesh(mi.mesh)  ## a new mesh for this instance only: the cached GLB stays as shipped
 	mi.visibility_range_begin = float(LOD_RANGES[lod][0])
 	mi.visibility_range_end = float(LOD_RANGES[lod][1])
 	if lod == 0:
@@ -135,6 +138,60 @@ func _style(mi: MeshInstance3D, lod: int) -> void:
 		mirror.visibility_range_end = float(LOD_RANGES[0][1])
 		mirror.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mi.get_parent().add_child(mirror)
+
+
+## The kit builds every triangle with its own vertices, so the dome's normals were the flat face normals (the facets
+## read as panels). Same vertices, indices, surfaces and materials: only ARRAY_NORMAL of the DOME_MATERIAL surfaces
+## changes, to the average of the faces that share the point and lie within CREASE_COS of this face.
+## shortcut: assumes each index is used by one triangle (true for the kit); a shared index would take its last corner's normal.
+static func smooth_dome_mesh(src: Mesh) -> ArrayMesh:
+	var out := ArrayMesh.new()
+	for i: int in src.get_surface_count():
+		var arrays: Array = src.surface_get_arrays(i)
+		var mat: Material = src.surface_get_material(i)
+		var kind: int = src.surface_get_primitive_type(i)
+		if mat != null and mat.resource_name == DOME_MATERIAL and kind == Mesh.PRIMITIVE_TRIANGLES:
+			arrays[Mesh.ARRAY_NORMAL] = _smooth_normals(arrays[Mesh.ARRAY_VERTEX], arrays[Mesh.ARRAY_INDEX])
+		out.add_surface_from_arrays(kind, arrays)
+		out.surface_set_material(i, mat)
+	return out
+
+
+static func _smooth_normals(verts: PackedVector3Array, index: Variant) -> PackedVector3Array:
+	var idx := PackedInt32Array()
+	if index == null:
+		idx.resize(verts.size())
+		for k: int in verts.size():
+			idx[k] = k
+	else:
+		idx = index
+	var tris: int = idx.size() / 3
+	var face_n := PackedVector3Array()  ## area-weighted face normals (cross product, length = twice the area)
+	face_n.resize(tris)
+	var touching: Dictionary = {}  ## welded position -> triangles that use it
+	for t: int in tris:
+		var a: Vector3 = verts[idx[3 * t]]
+		face_n[t] = (verts[idx[3 * t + 1]] - a).cross(verts[idx[3 * t + 2]] - a)
+		for k: int in 3:
+			var key: Vector3i = _weld_key(verts[idx[3 * t + k]])
+			if not touching.has(key):
+				touching[key] = []
+			(touching[key] as Array).append(t)
+	var normals := PackedVector3Array()
+	normals.resize(verts.size())
+	for t: int in tris:
+		var own: Vector3 = face_n[t].normalized()
+		for k: int in 3:
+			var sum := Vector3.ZERO
+			for f: int in touching[_weld_key(verts[idx[3 * t + k]])]:
+				if face_n[f].normalized().dot(own) >= CREASE_COS:
+					sum += face_n[f]
+			normals[idx[3 * t + k]] = sum.normalized() if not sum.is_zero_approx() else Vector3.UP
+	return normals
+
+
+static func _weld_key(p: Vector3) -> Vector3i:
+	return Vector3i(roundi(p.x * 10000.0), roundi(p.y * 10000.0), roundi(p.z * 10000.0))
 
 
 func _material(surface: String) -> ShaderMaterial:
