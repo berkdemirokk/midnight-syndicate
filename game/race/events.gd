@@ -1,6 +1,6 @@
 class_name EventCatalog
 extends RefCounted
-## Career ladder: six events on City 01 "Neon Wharf Loop", then four World Tour events in Istanbul (Maslak, Bogaz); each an id, text keys, a RaceConfig recipe, a reward
+## Career ladder: showcase, original Arden Bay/Istanbul ladder and extended tour; each an id, text keys, a RaceConfig recipe, a reward
 ## multiplier and the star rule. Position events: 1st = 3 stars, podium = 2, finish = 1 (GameState.REWARD_STARS).
 ## Time events carry star_times = [3 stars, 2 stars, 1 star] in seconds; any finish earns at least 1 star, so a slow
 ## first try still opens the next event.
@@ -26,6 +26,26 @@ const EVENTS: Array[Dictionary] = [
 	{"id": "bogaz_circuit", "tod": "sunset", "laps": 2, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 3.5, "track": TRACK_BOGAZ, "place": "bogaz"},
 	{"id": "maslak_night", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak"},
 	{"id": "bogaz_final", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz"},
+	# Extended tour: existing event ids and order remain unchanged.
+	{"id": "maslak_time_trial", "tod": "day", "laps": 1, "skills": [], "level": 2, "mult": 2, "place": "maslak", "star_times": [75, 90, 110], "track": TRACK_MASLAK},
+	{"id": "bogaz_duel", "tod": "day", "laps": 1, "skills": [0.93], "level": 3, "mult": 2.5, "place": "bogaz", "track": TRACK_BOGAZ},
+	{"id": "wharf_return", "tod": "day", "laps": 2, "skills": [0.91, 0.9, 0.88], "level": 3, "mult": 2.5},
+	{"id": "maslak_rush", "tod": "sunset", "laps": 2, "skills": [0.93, 0.92, 0.91], "level": 3, "mult": 3, "place": "maslak", "traffic": true, "track": TRACK_MASLAK},
+	{"id": "bogaz_time_trial", "tod": "sunset", "laps": 1, "skills": [], "level": 3, "mult": 3, "place": "bogaz", "star_times": [75, 90, 110], "track": TRACK_BOGAZ},
+	{"id": "wharf_duel", "tod": "night", "laps": 2, "skills": [0.96], "level": 3, "mult": 3.2},
+	{"id": "maslak_endurance", "tod": "day", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.9], "level": 3, "mult": 3.5, "place": "maslak", "track": TRACK_MASLAK},
+	{"id": "bogaz_rush", "tod": "day", "laps": 2, "skills": [0.94, 0.92, 0.9], "level": 3, "mult": 3.5, "place": "bogaz", "traffic": true, "track": TRACK_BOGAZ},
+	{"id": "wharf_time_trial", "tod": "sunset", "laps": 1, "skills": [], "level": 3, "mult": 3.5, "star_times": [68, 78, 95]},
+	{"id": "maslak_duel", "tod": "night", "laps": 2, "skills": [0.97], "level": 4, "mult": 4, "place": "maslak", "track": TRACK_MASLAK},
+	{"id": "bogaz_blue_hour", "tod": "sunset", "laps": 3, "skills": [0.95, 0.94, 0.93, 0.92, 0.91], "level": 4, "mult": 4, "place": "bogaz", "track": TRACK_BOGAZ},
+	{"id": "wharf_endurance", "tod": "night", "laps": 3, "skills": [0.96, 0.95, 0.94, 0.93, 0.92], "level": 4, "mult": 4.2},
+	{"id": "maslak_elite", "tod": "sunset", "laps": 2, "skills": [0.98, 0.97, 0.96, 0.95, 0.94], "level": 4, "mult": 4.3, "place": "maslak", "track": TRACK_MASLAK},
+	{"id": "bogaz_night_duel", "tod": "night", "laps": 2, "skills": [0.98], "level": 4, "mult": 4.5, "place": "bogaz", "track": TRACK_BOGAZ},
+	{"id": "wharf_elite", "tod": "day", "laps": 2, "skills": [0.98, 0.97, 0.96, 0.95, 0.94], "level": 4, "mult": 4.5},
+	{"id": "maslak_master", "tod": "night", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.7, "place": "maslak", "track": TRACK_MASLAK},
+	{"id": "bogaz_master", "tod": "day", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.8, "place": "bogaz", "track": TRACK_BOGAZ},
+	{"id": "wharf_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5},
+	{"id": "istanbul_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.5, "place": "bogaz", "track": TRACK_BOGAZ},
 ]
 
 
