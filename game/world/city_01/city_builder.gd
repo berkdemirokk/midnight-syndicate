@@ -553,6 +553,25 @@ func _load_corridor() -> void:
 		_c_dist.append(String(s.get("district_name", "")))
 
 
+## Kerb lines from the centreline file, relative to the racing line at offset: the racing line is not the road centre.
+func get_road_span(offset: float) -> Vector2:
+	if _c_pos.is_empty():
+		return super.get_road_span(offset)
+	var p: Vector3 = get_point_at(offset)
+	var q: Vector2 = Vector2(p.x, p.z)
+	var best: int = 0
+	var best_d2: float = INF
+	for i: int in _c_pos.size():  # shortcut: full scan (about 1100 samples), fine for a rare roadblock query
+		var d2: float = q.distance_squared_to(_c_pos[i])
+		if d2 < best_d2:
+			best_d2 = d2
+			best = i
+	var t: Vector3 = get_tangent_at(offset)
+	var centre_lat: float = (_c_pos[best] - q).dot(Vector2(-t.z, t.x))
+	var half: float = _c_half[best] - CORRIDOR_MARGIN_M
+	return Vector2(centre_lat - half, centre_lat + half)
+
+
 ## Signed margin of point q (x, z) inside the corridor: positive = inside kerb line + margin.
 ## Points further than CORRIDOR_NEAR_M from the centreline are reported as -INF (not in the corridor).
 func _corridor_margin(q: Vector2, hint: int) -> float:
