@@ -2,7 +2,7 @@ extends "res://devtools/capture_scenario.gd"
 ## Pursuit evidence on the city track: the real race scene, autopilot player, PursuitMode force-enabled for this run
 ## only (the kill switch is off in normal builds). Shots: pursuit_police_behind (a police car with its light bar
 ## on, alongside and just behind the player) and pursuit_roadblock (heat 3, barriers ahead, one lane open, from a
-## shot camera above and behind the player).
+## shot camera above and behind the player), then pursuit_roadblock_close (the same barriers from 7 m at eye height).
 
 const SCENE: String = "res://race/race_scene.tscn"
 const TRACK: String = "res://world/city_01/city_01.tscn"
@@ -20,6 +20,9 @@ const ROADBLOCK_NEAR_M: float = 30.0  ## the roadblock shot waits until the barr
 const SHOT_CAM_UP_M: float = 7.0  ## the roadblock shot camera: above and behind the player, so rivals do not hide the barriers
 const SHOT_CAM_BACK_M: float = 8.0
 const ROADBLOCK_NEAR_WAIT_S: float = 40.0
+const CLOSE_CAM_BACK_M: float = 7.0  ## the close-up camera: this far before the barriers, toward the traffic
+const CLOSE_CAM_UP_M: float = 1.4
+const CLOSE_CAM_SIDE_M: float = -2.0  ## left of the barrier line: the player car drives in the open lane on the right
 
 var _scene: RaceScene
 var _go_seen: bool = false
@@ -113,3 +116,9 @@ func run() -> void:
 		cap.fail("no roadblock barrier in the camera frame")
 		return
 	await cap.shot("pursuit_roadblock")
+	# Close-up from the traffic side at eye height: the barrier profile and its road face must read at this range too.
+	var rb_t: Vector3 = _scene.track.get_tangent_at(pm.roadblock.progress)
+	cam2.global_position = mid - rb_t * CLOSE_CAM_BACK_M + Vector3.UP * CLOSE_CAM_UP_M + Vector3(-rb_t.z, 0.0, rb_t.x) * CLOSE_CAM_SIDE_M
+	cam2.look_at(mid + Vector3.UP * 0.4, Vector3.UP)
+	await cap.wait_frames(2)
+	await cap.shot("pursuit_roadblock_close")

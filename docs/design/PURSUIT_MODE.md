@@ -34,7 +34,7 @@ Status: opt-in and disabled. `PursuitMode.ENABLED` is `false` in every build, an
 - Police drivers can still follow slower rivals (AIDriver sensing). They do not steer around the player.
 - Spawns are 75 to 88 m behind. On long straights a police car can still be in view if all candidate spots are visible. The hit rate of out-of-view spawns is not measured.
 - The BUSTED and ESCAPED outcomes stop the police and show a banner. The results screen does not change. Pursuit races are opt-in, and in them the roadblock barriers are solid, so they can block rival AIs and change race positions.
-- No real police livery. Barriers are plain props, not tuned models.
+- No real police livery. Barriers are the event kit jersey segments (`event_barrier_1/2.glb`, sponsor boards), scaled to 2 m and touching; no police-car blockers yet.
 - Not checked on a phone. Desktop numbers are not phone numbers.
 - The roadblock is a barrier line, not a navigation or AI avoidance problem. The AI is not tuned to avoid it.
 - `ENABLED` is a static var rather than a const, so tests and capture can flip it for one run. Normal builds leave it false.

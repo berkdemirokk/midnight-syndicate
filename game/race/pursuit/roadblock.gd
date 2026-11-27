@@ -6,7 +6,7 @@ extends Node3D
 
 const BARRIER_WIDTH_M: float = 2.0  ## across the road: the 4 m event kit barrier scaled to half its length on X
 const BARRIER_MODEL_M: float = 4.0  ## length of the event kit barrier as modelled
-const KIT_BARRIER: String = "res://assets/world/kits/event/event_barrier_%d.glb"  ## 0..2: three banner variants
+const KIT_BARRIER: String = "res://assets/world/kits/event/event_barrier_%d.glb"  ## 1 and 2 only: row 0 lies outside the board_sponsor band (renders as bare concrete)
 const BOARD_SHADER: Shader = preload("res://shaders/board_sponsor.gdshader")
 const BOARD_ATLAS: String = "res://assets/world/kits/event_photo/sponsor_boards_atlas.jpg"
 const BARRIER_DEPTH_M: float = 0.6
@@ -63,15 +63,13 @@ static func build(track: Track, s: float, car_positions: PackedVector3Array) -> 
 static func _barrier(orient: Basis, p: Vector3, k: int) -> StaticBody3D:
 	var body := StaticBody3D.new()
 	body.transform = Transform3D(orient, p)
-	var model: Node3D = (load(KIT_BARRIER % (k % 3)) as PackedScene).instantiate() as Node3D
+	var model: Node3D = (load(KIT_BARRIER % (1 + k % 2)) as PackedScene).instantiate() as Node3D
 	model.scale = Vector3(BARRIER_WIDTH_M / BARRIER_MODEL_M, 1.0, 1.0)
 	var board := ShaderMaterial.new()
 	board.shader = BOARD_SHADER
 	board.set_shader_parameter("boards", load(BOARD_ATLAS))
 	for n: Node in model.find_children("*", "MeshInstance3D", true, false):
-		var mi: MeshInstance3D = n as MeshInstance3D
-		for s: int in mi.mesh.get_surface_count():
-			mi.set_surface_override_material(s, board)
+		(n as MeshInstance3D).material_override = board
 	body.add_child(model)
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(BARRIER_WIDTH_M, BARRIER_HEIGHT_M, BARRIER_DEPTH_M)
