@@ -1,5 +1,5 @@
 {
-  "commit": "055bd6b",
+  "commit": "0b4a523",
   "engine": "Godot 4.7.2 stable, Mobile renderer, GDScript",
   "run_command": "Godot_v4.7.2-stable_win64_console.exe --audio-driver Dummy --path game --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark [--tod=day|sunset|night]",
   "captures": {
@@ -11,8 +11,8 @@
   "test_log": "evidence/test.log",
   "visual_review": "Lead review of real engine captures (not the concept image). Method change this night: straight-on pictures generated with ChatGPT image generation (text prompts, owner's account, no reference image, no text or logos) are mapped on simple geometry with the night picture as glow map. In the game now: Istanbul row houses with photo fronts on the whole Bosphorus lap, photo rows and towers on Maslak and Neon Wharf, mosque hall walls, far shore, street trees, sponsor boards, spectators and the garage. The street, the mosque at night and the city tracks at night read far closer to the owner's target than before. Still weak: the cars are licensed stylised models (real makes are not allowed), fronts carry relief maps derived from the pictures but are still flat geometry, day light has no global illumination, side walls of rows are plain, sea wall and kerb plain. Gate score by the lead about 88/100, target 90 not reached. The owner decides acceptance.",
   "device": "Desktop PC, Windows 11, NVIDIA GeForce RTX 5060 Ti 8 GB, 1920x1080, High preset. Not an iPhone measurement.",
-  "fps": 307.3,
-  "frame_time_ms": 3.254,
+  "fps": 188.2,
+  "frame_time_ms": 5.313,
   "ios_test": "not_run",
-  "perf_note": "Night gameplay (bench_night_gameplay.json): 307 fps, 3.25 ms avg, 4.16 ms p95, 399 draw calls, 391717 primitives. Bosphorus peak 399 draws / 418440 primitives; Maslak night 413 / 314157; Neon Wharf night 485 / 375555 (budget 500 / 450000). Uncapped desktop numbers, RTX 5060 Ti; they say nothing about iPhone."
+  "perf_note": "Night gameplay (bench_night_gameplay.json): 188 fps, 5.31 ms avg, 6.57 ms p95, 400 draw calls, 417103 primitives. Bosphorus peak 400 draws / 443146 primitives; Maslak night 418 / 314548; Neon Wharf night 499 / 378534 (budget 500 / 450000: both peaks are at the limit). Uncapped desktop numbers, RTX 5060 Ti, measured while other sessions used the GPU; they say nothing about iPhone. iOS: GitHub run ios-check-4 archived and exported a signed IPA (build only, no upload, no device test)."
 }

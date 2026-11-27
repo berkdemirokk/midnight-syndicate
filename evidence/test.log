@@ -88,7 +88,7 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_city_01.gd::test_scene_builds_and_counts {"count_instances":1573,"count_lights_built":163,"count_lights_dropped":3,"count_multimeshes":1105,"count_occluders":140,"count_probes":37,"count_prop_colliders":368,"count_unbound_materials":0,"light_budget_log":4,"light_worst_per_mesh_omni":8,"light_worst_per_mesh_spot":8,"load_time_ms":1055.8,"probe_worst_per_mesh":3}
+[PASS] test_city_01.gd::test_scene_builds_and_counts {"count_instances":1573,"count_lights_built":163,"count_lights_dropped":3,"count_multimeshes":1105,"count_occluders":140,"count_probes":37,"count_prop_colliders":368,"count_unbound_materials":0,"light_budget_log":4,"light_worst_per_mesh_omni":8,"light_worst_per_mesh_spot":8,"load_time_ms":1170.5,"probe_worst_per_mesh":3}
 CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
 CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
@@ -208,7 +208,7 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_city_race.gd::test_six_car_race_nitro_100 {"6car_nitro100_finish_events":1,"6car_nitro100_min_upright_y":0.9962,"6car_nitro100_race_time_s":73.73,"6car_nitro100_stuck_events":0,"6car_nitro100_stuck_worst_car":0,"6car_nitro100_wall_s":3.0}
+[PASS] test_city_race.gd::test_six_car_race_nitro_100 {"6car_nitro100_finish_events":1,"6car_nitro100_min_upright_y":0.9962,"6car_nitro100_race_time_s":73.73,"6car_nitro100_stuck_events":0,"6car_nitro100_stuck_worst_car":0,"6car_nitro100_wall_s":3.1}
 CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
 CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
@@ -228,7 +228,7 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_city_race.gd::test_eight_car_race_order_a_nitro_off {"8car_orderA_nitro0_finish_events":1,"8car_orderA_nitro0_min_upright_y":0.9964,"8car_orderA_nitro0_race_time_s":74.13,"8car_orderA_nitro0_stuck_events":0,"8car_orderA_nitro0_stuck_worst_car":0,"8car_orderA_nitro0_wall_s":4.6}
+[PASS] test_city_race.gd::test_eight_car_race_order_a_nitro_off {"8car_orderA_nitro0_finish_events":1,"8car_orderA_nitro0_min_upright_y":0.9964,"8car_orderA_nitro0_race_time_s":74.13,"8car_orderA_nitro0_stuck_events":0,"8car_orderA_nitro0_stuck_worst_car":0,"8car_orderA_nitro0_wall_s":4.7}
 CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
 CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
@@ -248,7 +248,7 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_city_race.gd::test_eight_car_race_order_a_nitro_140 {"8car_orderA_nitro140_finish_events":1,"8car_orderA_nitro140_min_upright_y":0.9963,"8car_orderA_nitro140_race_time_s":74.53,"8car_orderA_nitro140_stuck_events":0,"8car_orderA_nitro140_stuck_worst_car":0,"8car_orderA_nitro140_wall_s":4.4}
+[PASS] test_city_race.gd::test_eight_car_race_order_a_nitro_140 {"8car_orderA_nitro140_finish_events":1,"8car_orderA_nitro140_min_upright_y":0.9963,"8car_orderA_nitro140_race_time_s":74.53,"8car_orderA_nitro140_stuck_events":0,"8car_orderA_nitro140_stuck_worst_car":0,"8car_orderA_nitro140_wall_s":4.5}
 CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
 CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
@@ -268,7 +268,7 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_city_race.gd::test_eight_car_race_order_b_nitro_100 {"8car_orderB_nitro100_finish_events":1,"8car_orderB_nitro100_min_upright_y":0.9958,"8car_orderB_nitro100_race_time_s":81.72,"8car_orderB_nitro100_stuck_events":2,"8car_orderB_nitro100_stuck_worst_car":1,"8car_orderB_nitro100_wall_s":4.9}
+[PASS] test_city_race.gd::test_eight_car_race_order_b_nitro_100 {"8car_orderB_nitro100_finish_events":1,"8car_orderB_nitro100_min_upright_y":0.9958,"8car_orderB_nitro100_race_time_s":81.72,"8car_orderB_nitro100_stuck_events":2,"8car_orderB_nitro100_stuck_worst_car":1,"8car_orderB_nitro100_wall_s":5.1}
 CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
 CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
@@ -303,6 +303,27 @@ CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons {  }
 CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
 [PASS] test_crowd.gd::test_placement_is_deterministic {}
+[PASS] test_day_bounce.gd::test_faces_road_rule {}
+[PASS] test_day_bounce.gd::test_shade_gradient {}
+CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
+CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
+CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
+CityBuilder: corridor push bld_parking_01_a s=1189.7 by 5.50 m (clear)
+CityBuilder: corridor push bld_waterfront_01_a s=1231.6 by 0.50 m (clear)
+CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
+CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
+CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
+CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
+CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
+CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
+CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
+CityBuilder: corridor push bld_parking_01_a s=1189.7 by 5.50 m (clear)
+CityBuilder: corridor push bld_waterfront_01_a s=1231.6 by 0.50 m (clear)
+CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
+CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
+CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
+CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
+[PASS] test_day_bounce.gd::test_city_day_build {}
 [PASS] test_drift_fx.gd::test_smoke_emits_only_on_wheels_with_slip {}
 [PASS] test_drift_fx.gd::test_smoke_puff_count_follows_particle_amount_scale {}
 [PASS] test_drift_fx.gd::test_smoke_bursts_on_the_first_frame_of_a_slide {}
@@ -530,26 +551,26 @@ HANDLING landing_upright_dot = 1.000
 [PASS] test_handling.gd::test_landing {"landing_upright_dot":0.999993324279785}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons {  }
 CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
-[PASS] test_istanbul_bogaz.gd::test_scene_builds_with_real_content {"crown_strips":0,"first_row":158,"istanbul_sign_types":7,"lights_built":150,"lights_dropped":19,"load_ms":663.0,"prop_instances":991,"second_row":155,"track_length_m":2205.4}
+[PASS] test_istanbul_bogaz.gd::test_scene_builds_with_real_content {"crown_strips":0,"first_row":158,"istanbul_sign_types":7,"lights_built":150,"lights_dropped":19,"load_ms":741.0,"prop_instances":991,"second_row":155,"track_length_m":2205.4}
 [PASS] test_istanbul_bogaz.gd::test_track_data_matches_layout {"cobble_samples":306,"hill_samples_over_2m":157,"water_samples":347}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons {  }
 CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
 [PASS] test_istanbul_bogaz.gd::test_five_ai_cars_finish_one_lap {"min_upright_y":0.9989,"race_time_s":47.47,"stuck_total":0,"stuck_worst_car":0,"wall_s":1.6}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons {  }
 CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
-[PASS] test_istanbul_bogaz.gd::test_race_scene_runs_with_track_scene_config {"scene_min_upright_y":0.9892,"scene_stuck_total":4}
+[PASS] test_istanbul_bogaz.gd::test_race_scene_runs_with_track_scene_config {"scene_min_upright_y":0.9952,"scene_stuck_total":1}
 [PASS] test_istanbul_kit.gd::test_catalog_files_and_materials {}
 [PASS] test_istanbul_kit.gd::test_texture_paths_exist {}
 [PASS] test_istanbul_kit.gd::test_lod0_vertex_colours_are_baked_ao {}
 [PASS] test_istanbul_kit.gd::test_skyline_materials_build {}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons { "bollard:clash": 24, "bollard:walk": 5 }
 CityBuilder: parked cars 80 of 95 candidates, worst corridor margin -0.95 m
-[PASS] test_istanbul_maslak.gd::test_scene_builds_with_real_content {"crown_strips":171,"first_row":147,"istanbul_sign_types":12,"lights_built":138,"lights_dropped":0,"load_ms":743.0,"prop_instances":1252,"second_row":102,"track_length_m":2243.6}
+[PASS] test_istanbul_maslak.gd::test_scene_builds_with_real_content {"crown_strips":171,"first_row":147,"istanbul_sign_types":12,"lights_built":138,"lights_dropped":0,"load_ms":894.0,"prop_instances":1252,"second_row":102,"track_length_m":2243.6}
 [PASS] test_istanbul_maslak.gd::test_city_builder_defaults_are_city_01 {}
 [PASS] test_istanbul_maslak.gd::test_track_data_matches_layout {"elevated_samples":271,"tunnel_samples":129}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons { "bollard:clash": 24, "bollard:walk": 5 }
 CityBuilder: parked cars 80 of 95 candidates, worst corridor margin -0.95 m
-[PASS] test_istanbul_maslak.gd::test_five_ai_cars_finish_one_lap {"min_upright_y":0.9926,"race_time_s":63.15,"stuck_total":2,"stuck_worst_car":1,"wall_s":2.3}
+[PASS] test_istanbul_maslak.gd::test_five_ai_cars_finish_one_lap {"min_upright_y":0.9926,"race_time_s":62.93,"stuck_total":2,"stuck_worst_car":1,"wall_s":2.3}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons { "bollard:clash": 24, "bollard:walk": 5 }
 CityBuilder: parked cars 80 of 95 candidates, worst corridor margin -0.95 m
 [PASS] test_istanbul_maslak.gd::test_race_scene_runs_with_track_scene_config {"scene_min_upright_y":0.9922,"scene_stuck_total":3}
@@ -739,9 +760,9 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_traffic.gd::test_five_ai_race_with_traffic_finishes {"race_traffic_grid_min_m":119.9,"race_traffic_hits":23,"race_traffic_min_upright_y":0.9956,"race_traffic_respawns":675,"race_traffic_stuck_total":5,"race_traffic_stuck_worst_car":2,"race_traffic_time_s":84.67}
+[PASS] test_traffic.gd::test_five_ai_race_with_traffic_finishes {"race_traffic_grid_min_m":119.9,"race_traffic_hits":16,"race_traffic_min_upright_y":0.9964,"race_traffic_respawns":563,"race_traffic_stuck_total":1,"race_traffic_stuck_worst_car":1,"race_traffic_time_s":77.4}
 [PASS] test_ui.gd::test_scenes_instantiate {"scenes_instantiated":5}
-[PASS] test_ui.gd::test_main_menu_focus_and_backdrop {"main_menu_focus":"@Button@20480"}
+[PASS] test_ui.gd::test_main_menu_focus_and_backdrop {"main_menu_focus":"@Button@21356"}
 [PASS] test_ui.gd::test_language_switch_refreshes_text {}
 [PASS] test_ui.gd::test_hud_readout_follows_car_and_race {"countdown_sequence":"3,2,1,GO","speed_text":"187","timer_text":"01:23.45"}
 [PASS] test_ui.gd::test_results_rewards_and_signals {}
@@ -790,11 +811,11 @@ CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
 [PASS] test_world_materials.gd::test_shared_instances_across_buildings {}
 [PASS] test_world_materials.gd::test_textures_referenced_exist {"textures_referenced":117}
 [PASS] test_world_materials.gd::test_apply_leaves_no_blank_surface {"roots":30,"surfaces_bound":448}
-== 330 tests, 0 failed ==
+== 333 tests, 0 failed ==
 ERROR: 1 RID allocations of type 'P10JoltBody3D' were leaked at exit.
 WARNING: 1 RID of type "CanvasItem" was leaked.
    at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2733)
-WARNING: 17 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+WARNING: 15 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)
-ERROR: 6 resources still in use at exit (run with --verbose for details).
+ERROR: 5 resources still in use at exit (run with --verbose for details).
    at: clear (core/io/resource.cpp:822)
