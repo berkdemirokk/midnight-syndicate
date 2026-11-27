@@ -108,6 +108,7 @@ def main():
     checks["joins_2"] = len(re.findall(r"\[net\] join pid", srv)) == 2
     checks["ready_2"] = len(re.findall(r"\[net\] ready pid \d+: true", srv)) >= 2
     checks["start_2_racers"] = "[net] start: 2 racers" in srv
+    checks["track_bogaz"] = "[net] track: res://world/istanbul_bogaz/istanbul_bogaz.tscn" in srv  ## no dev circuit fallback
     checks["server_go"] = "[net] GO, server race clock starts" in srv
     checks["server_results"] = "[net] results:" in srv
     line_res = next((ln for ln in srv.splitlines() if ln.startswith("[net] results:")), "")
@@ -124,6 +125,8 @@ def main():
         checks[n + "_results"] = ("[smoke] %s results:" % n) in cl[n]
         checks[n + "_exit_0"] = procs[n].returncode == 0
         checks[n + "_snapshots"] = snaps[n] > 0
+        orders = re.search(r"orders seen (\d+)", cl[n])
+        checks[n + "_orders"] = orders is not None and int(orders.group(1)) > 0  ## live standings arrived
     acc = re.search(r"accepted states per pid: (\{[^}]*\})", srv)
     summary = {
         "run": a.run,

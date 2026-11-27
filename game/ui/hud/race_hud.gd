@@ -96,6 +96,7 @@ var _race: RaceManager = null
 var _track: Node3D = null
 var _cars: Array[ArcadeCar] = []  ## every car in the race, player included
 var _rivals: Array[ArcadeCar] = []
+var _online_rows: Array = []  ## online race: the server's live order, rows of {car, name, place, distance}; empty offline
 var _connections: Array = []  ## [Signal, Callable] pairs made by bind()
 var _shown: Dictionary = {}
 var _pulse_t: float = 0.0
@@ -420,6 +421,8 @@ func _track_length() -> float:
 
 ## Race standings in place order. Without a set-up race, the cars ordered by lap progress.
 func _standings() -> Array:
+	if not _online_rows.is_empty():
+		return _online_rows
 	var rows: Array = []
 	if _race == null:
 		return rows
@@ -516,7 +519,7 @@ func _refresh_race() -> void:
 		_set_text("pct", _pct, I18n.t("hud.percent") % pct)
 	if _int_changed("time", _centis(_race.race_time)):
 		_set_text("time", _clock, fmt_time(_race.race_time))
-	var total: int = _race.get_car_count()
+	var total: int = _online_rows.size() if not _online_rows.is_empty() else _race.get_car_count()
 	if _int_changed("car_count", total):
 		_set_text("position_total", _pos_total, I18n.t("hud.of") % total)
 	_refresh_position()
@@ -524,9 +527,22 @@ func _refresh_race() -> void:
 
 
 func _refresh_position() -> void:
-	var pos: int = _race.get_position(_car)
+	var pos: int = _online_place() if not _online_rows.is_empty() else _race.get_position(_car)
 	if _int_changed("position", pos):
 		_set_text("position", _pos_num, str(pos))
+
+
+## Place of the player in the online order (the race only knows the local car online).
+func _online_place() -> int:
+	for row: Dictionary in _online_rows:
+		if row["car"] == _car:
+			return int(row["place"])
+	return _race.get_position(_car)
+
+
+## Online race: the server's live order replaces the race's own standings, which hold only the local car.
+func set_online_rows(rows: Array) -> void:
+	_online_rows = rows
 
 
 ## Four rows around the player: the window starts one place above the player, or at the top of the order.

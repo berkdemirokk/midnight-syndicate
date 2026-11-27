@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.96,
+  "luma_max": 0.994,
   "luma_min": 0.0,
   "name": "net_grid",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 98,
-    "draw_calls_min": 98,
+    "draw_calls": 196,
+    "draw_calls_min": 128,
     "driver": "vulkan",
-    "fps": 630.491,
-    "frame_ms_avg": 1.586,
-    "frame_ms_p95": 1.989,
-    "frame_ms_p99": 2.135,
+    "fps": 286.165,
+    "frame_ms_avg": 3.494,
+    "frame_ms_p95": 6.551,
+    "frame_ms_p99": 6.923,
     "frames": 60,
-    "objects": 12974,
+    "objects": 17141,
     "os": "Windows",
-    "primitives": 181094,
+    "primitives": 322535,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 256.403,
+    "video_mem_mb": 744.86,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/fable-graphics-visual-quality-105c41/evidence/screens/net_client/net_grid.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-netpolish/evidence/screens/net_client/net_grid.png",
   "preset": "high",
   "scenario": "net_client"
 }

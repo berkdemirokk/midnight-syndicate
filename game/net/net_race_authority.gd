@@ -138,10 +138,7 @@ func all_over() -> bool:
 
 ## Finished cars by finish order, then running cars by distance, then DNF. Position is 1-based.
 func results() -> Array[Dictionary]:
-	var order: Array[NetDriver] = []
-	for pid: int in _drivers:
-		order.append(_drivers[pid])
-	order.sort_custom(_rank)
+	var order: Array[NetDriver] = _ranked()
 	var out: Array[Dictionary] = []
 	for i: int in order.size():
 		var d: NetDriver = order[i]
@@ -156,6 +153,27 @@ func results() -> Array[Dictionary]:
 			"progress_jumps": d.progress_jumps,
 		})
 	return out
+
+
+## Live order for the standings: place, lap and metres of every driver, ranked as in results(). Rows: {pid, place, lap, dist}.
+func order_rows() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var order: Array[NetDriver] = _ranked()
+	for i: int in order.size():
+		var d: NetDriver = order[i]
+		var lap: int = clampi(int(floorf(d.distance / _track.length)), 0, total_laps)
+		if d.finished:
+			lap = total_laps
+		out.append({"pid": d.pid, "place": i + 1, "lap": lap, "dist": d.distance})
+	return out
+
+
+func _ranked() -> Array[NetDriver]:
+	var order: Array[NetDriver] = []
+	for pid: int in _drivers:
+		order.append(_drivers[pid])
+	order.sort_custom(_rank)
+	return order
 
 
 ## Too many bad projections in one race means the car cannot be placed honestly: DNF, with the reason in the results.

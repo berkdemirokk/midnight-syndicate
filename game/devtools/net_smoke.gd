@@ -129,7 +129,10 @@ func _on_lost(reason: String) -> void:
 func _on_start(info: Dictionary) -> void:
 	var grid: Dictionary = info["grid"]
 	var slot: int = int(grid[_session.my_pid])
-	_track = DevTrack.build()
+	# the server's track (its racing line and collision), else the development circuit when it does not load
+	_track = NetTrack.instance(str(info.get("track", "")))
+	if _track == null:
+		_track = DevTrack.build()
 	root.add_child(_track)
 	var spec: CarSpec = load(SPEC_PATH) as CarSpec
 	_car = CarFactory.create(CAR_SCENE, spec, PAINT)
@@ -151,6 +154,7 @@ func _on_results(rows: Array) -> void:
 	var snaps: int = int(_session.stats["snapshots_seen"])
 	var secs: float = maxf(_elapsed - _started_at, 0.001)
 	print("[smoke] %s results: %s" % [_name, str(rows)])
+	print("[smoke] %s orders seen %d" % [_name, int(_session.stats["orders_seen"])])
 	print("[smoke] %s sent %d states (%.1f Hz), received %d snapshots (%.1f Hz), rejected %d, rtt_ms last %.2f min %.2f avg %.2f" % [
 		_name, _sent, float(_sent) / secs, snaps, float(snaps) / secs, int(_session.stats["rejected"]),
 		_session.rtt_last_ms, _session.rtt_min_ms, _session.rtt_avg_ms()])

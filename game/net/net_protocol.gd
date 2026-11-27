@@ -16,6 +16,31 @@ const MSG_RESULTS: String = "results"
 const MSG_BYE: String = "bye"
 const MSG_PING: String = "ping"
 const MSG_PONG: String = "pong"
+const MSG_ORDER: String = "order"
+
+
+## Live order rows from the server, validated on the client: integer pid, place 1..MAX_PLAYERS, lap 0..laps and
+## finite metres. Bad rows are skipped, never trusted. Each row: {pid, place, lap, dist}.
+static func clean_order(raw: Variant, laps: int) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if not raw is Array:
+		return out
+	for v: Variant in raw:
+		if not v is Dictionary:
+			continue
+		var d: Dictionary = v
+		var pid: Variant = d.get("pid")
+		var place: Variant = d.get("place")
+		var lap: Variant = d.get("lap")
+		var dist: Variant = d.get("dist")
+		if not (pid is int and place is int and lap is int and dist is float):
+			continue
+		if int(place) < 1 or int(place) > NetConfig.MAX_PLAYERS or int(lap) < 0 or int(lap) > laps:
+			continue
+		if not is_finite(float(dist)):
+			continue
+		out.append({"pid": int(pid), "place": int(place), "lap": int(lap), "dist": float(dist)})
+	return out
 
 
 ## "" when the hello is accepted, else the reason sent back to the client.

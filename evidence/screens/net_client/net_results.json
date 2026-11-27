@@ -8,26 +8,26 @@
   "name": "net_results",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 67,
-    "draw_calls_min": 67,
+    "draw_calls": 240,
+    "draw_calls_min": 146,
     "driver": "vulkan",
-    "fps": 519.242,
-    "frame_ms_avg": 1.926,
-    "frame_ms_p95": 2.776,
-    "frame_ms_p99": 2.904,
+    "fps": 447.644,
+    "frame_ms_avg": 2.234,
+    "frame_ms_p95": 2.594,
+    "frame_ms_p99": 2.705,
     "frames": 60,
-    "objects": 705,
+    "objects": 864,
     "os": "Windows",
-    "primitives": 122358,
+    "primitives": 236761,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 259.422,
+    "video_mem_mb": 747.879,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/fable-graphics-visual-quality-105c41/evidence/screens/net_client/net_results.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-netpolish/evidence/screens/net_client/net_results.png",
   "preset": "high",
   "scenario": "net_client"
 }
