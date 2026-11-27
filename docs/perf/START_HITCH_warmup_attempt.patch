@@ -1,0 +1,177 @@
+diff --git a/game/race/race_scene.gd b/game/race/race_scene.gd
+index 9e527ba..90e87a6 100644
+--- a/game/race/race_scene.gd
++++ b/game/race/race_scene.gd
+@@ -96,6 +96,7 @@ var _overlay: CanvasLayer = null
+ var _watermark: Label = null
+ var _touch: Node = null
+ var _grid_t: float = 0.0
++var _shaders_warmed: bool = false  ## the FX pipelines compile once per grid, during the grid beat
+ var _last_s: float = -1.0
+ var _names: PackedStringArray = PackedStringArray()
+ var _default_nitro_gap: float = 0.0
+@@ -138,6 +139,8 @@ func _process(delta: float) -> void:
+ 	if player != null and Engine.get_process_frames() % 20 == 0:
+ 		WheelSpray.update_nearest(cars, player)
+ 	if race.state == RaceManager.State.GRID:
++		if not _shaders_warmed:
++			_warm_shaders()
+ 		_grid_t += delta
+ 		if _grid_t >= GRID_BEAT_S and not config_used.net_hold_grid:
+ 			race.start_countdown()
+@@ -235,6 +238,7 @@ func _build_chrome() -> void:
+ 
+ func _build_race() -> void:
+ 	_grid_t = 0.0
++	_shaders_warmed = false
+ 	_last_s = -1.0
+ 	wrong_way = false
+ 	_nitro_forced = false
+@@ -731,6 +735,13 @@ func start_net_countdown() -> void:
+ 	_start_grid_intro()
+ 
+ 
++## Draws the player car's FX once during the grid beat, so their pipelines compile before GO (see ShaderWarmup).
++func _warm_shaders() -> void:
++	_shaders_warmed = true
++	var srcs: Array[Node] = [player]
++	ShaderWarmup.start(self, get_viewport().get_camera_3d(), srcs)
++
++
+ ## Countdown camera: from high behind the pack, down over the cars to the chase pose at GO (see ChaseCamera).
+ func _start_grid_intro() -> void:
+ 	var c: Vector3 = Vector3.ZERO
+diff --git a/game/race/shader_warmup.gd b/game/race/shader_warmup.gd
+new file mode 100644
+index 0000000..c20c8a8
+--- /dev/null
++++ b/game/race/shader_warmup.gd
+@@ -0,0 +1,78 @@
++class_name ShaderWarmup
++extends Node3D
++## Draws a copy of each car FX draw node once, for WARM_FRAMES frames, a few metres in front of the camera during
++## the grid beat. The render pipelines those nodes need then compile while the player waits, not on the first
++## frames after GO. The copies are scaled to nothing and freed after the last frame; the originals are not touched.
++## shortcut: warms only nodes that are hidden or particle systems under the given sources (the player car and the
++## speed FX), not every material of the scene; a pipeline first drawn later still compiles then.
++
++const WARM_FRAMES: int = 3
++const WARM_DISTANCE_M: float = 4.0
++const WARM_SCALE: float = 0.001
++
++
++var _frames_left: int = WARM_FRAMES
++
++
++## Starts the warm-up under host (a Node3D) for the sources' FX nodes. Returns the node, or null when nothing needs it.
++static func start(host: Node3D, camera: Camera3D, sources: Array[Node]) -> ShaderWarmup:
++	if host == null or camera == null:
++		return null
++	var copies: Array[GeometryInstance3D] = []
++	for src: Node in sources:
++		if src == null:
++			continue
++		for n: Node in src.find_children("*", "GeometryInstance3D", true, false):
++			var g: GeometryInstance3D = n as GeometryInstance3D
++			if g == null or (g.is_visible_in_tree() and not g is GPUParticles3D):
++				continue
++			var copy: GeometryInstance3D = _copy_of(g)
++			if copy != null:
++				copies.append(copy)
++	if copies.is_empty():
++		return null
++	var warm := ShaderWarmup.new()
++	warm.name = "ShaderWarmup"
++	host.add_child(warm)
++	warm.global_transform = camera.global_transform * Transform3D(Basis.IDENTITY, Vector3(0.0, 0.0, -WARM_DISTANCE_M))
++	for c: GeometryInstance3D in copies:
++		c.transform = Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * WARM_SCALE), Vector3.ZERO)
++		warm.add_child(c)
++	return warm
++
++
++func _process(_delta: float) -> void:
++	_frames_left -= 1
++	if _frames_left <= 0:
++		queue_free()
++
++
++## A copy that shares the source's mesh, materials and particle process, so it needs the same pipelines.
++static func _copy_of(g: GeometryInstance3D) -> GeometryInstance3D:
++	if g is GPUParticles3D:
++		var p: GPUParticles3D = g as GPUParticles3D
++		var pc := GPUParticles3D.new()
++		pc.process_material = p.process_material
++		pc.draw_passes = p.draw_passes
++		for i: int in p.draw_passes:
++			pc.set_draw_pass_mesh(i, p.get_draw_pass_mesh(i))
++		pc.draw_order = p.draw_order
++		pc.local_coords = p.local_coords
++		pc.amount = 1
++		pc.lifetime = 0.05
++		pc.one_shot = true
++		pc.explosiveness = 1.0
++		pc.emitting = true
++		pc.visibility_aabb = AABB(Vector3(-1, -1, -1), Vector3(2, 2, 2))
++		return pc
++	if g is MeshInstance3D:
++		var m: MeshInstance3D = g as MeshInstance3D
++		if m.mesh == null:
++			return null
++		var mc := MeshInstance3D.new()
++		mc.mesh = m.mesh
++		mc.material_override = m.material_override
++		for i: int in m.get_surface_override_material_count():
++			mc.set_surface_override_material(i, m.get_surface_override_material(i))
++		return mc
++	return null
+diff --git a/game/tests/test_shader_warmup.gd b/game/tests/test_shader_warmup.gd
+new file mode 100644
+index 0000000..d7fc964
+--- /dev/null
++++ b/game/tests/test_shader_warmup.gd
+@@ -0,0 +1,44 @@
++extends "res://tests/test_case.gd"
++## ShaderWarmup: copies of the hidden FX draw nodes are drawn for WARM_FRAMES frames in front of the camera, then freed.
++## The originals stay as they were, and a source with nothing hidden or emitting makes no warm-up at all.
++
++
++func test_warmup_copies_hidden_fx_and_frees_itself() -> void:
++	var cam := Camera3D.new()
++	add(cam)
++	var host := Node3D.new()
++	add(host)
++	var src := Node3D.new()
++	host.add_child(src)
++	var hidden := MeshInstance3D.new()
++	hidden.mesh = BoxMesh.new()
++	hidden.visible = false
++	src.add_child(hidden)
++	var shown := MeshInstance3D.new()
++	shown.mesh = BoxMesh.new()
++	src.add_child(shown)
++	var particles := GPUParticles3D.new()
++	src.add_child(particles)
++	var srcs: Array[Node] = [src]
++	var warm: ShaderWarmup = ShaderWarmup.start(host, cam, srcs)
++	check(warm != null, "warm-up starts when hidden FX exist")
++	if warm == null:
++		await cleanup([cam, host])
++		return
++	check(warm.get_parent() == host, "warm-up node sits under the host")
++	check(warm.get_child_count() == 2, "one copy for the hidden mesh and one for the particles, not the shown mesh (got %d)" % warm.get_child_count())
++	var kinds: Array[String] = []
++	for c: Node in warm.get_children():
++		kinds.append(c.get_class())
++	check(kinds.has("MeshInstance3D") and kinds.has("GPUParticles3D"), "copy types (got %s)" % str(kinds))
++	check(not hidden.visible and shown.visible, "originals keep their visibility")
++	check(warm.global_position.distance_to(cam.global_position) > 1.0, "warm-up sits in front of the camera, not on it")
++	for i: int in ShaderWarmup.WARM_FRAMES - 1:
++		warm._process(0.0)
++	check(not warm.is_queued_for_deletion(), "warm-up lives for WARM_FRAMES frames")
++	warm._process(0.0)
++	check(warm.is_queued_for_deletion(), "warm-up frees itself after WARM_FRAMES frames")
++	var nothing: Array[Node] = [shown]
++	check(ShaderWarmup.start(host, cam, nothing) == null, "only a visible mesh: no warm-up")
++	check(ShaderWarmup.start(host, null, srcs) == null, "no camera: no warm-up")
++	await cleanup([cam, host])
