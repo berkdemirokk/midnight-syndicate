@@ -104,15 +104,18 @@ static func set_wet(car: Node, wet: bool) -> void:
 
 ## Mirrors a street panorama in the paint (second pass, res://shaders/car_reflection.gdshader); null removes it.
 static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5) -> void:
-	_each_material(car, "M_Paint", func(m: StandardMaterial3D) -> void:
-		if pano == null:
-			m.next_pass = null
-			return
-		var mirror := ShaderMaterial.new()
-		mirror.shader = load("res://shaders/car_reflection.gdshader")
-		mirror.set_shader_parameter("pano", pano)
-		mirror.set_shader_parameter("strength", strength)
-		m.next_pass = mirror)
+	# paint only: a glass pass was tried on 2026-11-27, it was barely visible and took the Bosphorus night over the primitive budget
+	for spec: Array in [["M_Paint", strength, 2.5]]:
+		_each_material(car, spec[0], func(m: StandardMaterial3D) -> void:
+			if pano == null:
+				m.next_pass = null
+				return
+			var mirror := ShaderMaterial.new()
+			mirror.shader = load("res://shaders/car_reflection.gdshader")
+			mirror.set_shader_parameter("pano", pano)
+			mirror.set_shader_parameter("strength", spec[1])
+			mirror.set_shader_parameter("blur", spec[2])
+			m.next_pass = mirror)
 
 
 static func set_brake_lights(car: Node, on: bool) -> void:
