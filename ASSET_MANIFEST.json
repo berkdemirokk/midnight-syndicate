@@ -12242,6 +12242,116 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "car_tyre_face",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/car_tyre_face.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "car_tyre_face.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 291055,
+      "sha256": "068df3fa736cd4738dfd64bee4acbb1d48ec8b2cb449d6999abb29f0186fc5ed",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Tyre sidewall and tread picture, projected on every tyre along the axle (wheel-local triplanar). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/tyre_face.png."
+    },
+    {
+      "id": "car_tyre_face_normal",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/car_tyre_face_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "car_tyre_face_normal.png": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 1359251,
+      "sha256": "2db8b906ba54d3aa02f374fff0ec23473328a0082ff8fcf4e80f49b73fbff0f0",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief map derived from car_tyre_face.jpg by a height-from-luminance filter (2026-11-27)."
+    },
+    {
+      "id": "car_street_pano_istanbul_maslak_night",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/street_pano_istanbul_maslak_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "street_pano_istanbul_maslak_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 568132,
+      "sha256": "156f334546f2002256e8ea0d0201824f1913a37ce05f4cb6c77bc3cfc1d9f542",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night street panorama (business district of glass towers) mirrored in the car paint on that track. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/street_pano_istanbul_maslak_night.png."
+    },
+    {
+      "id": "car_street_pano_city_01_night",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/street_pano_city_01_night.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "street_pano_city_01_night.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 670365,
+      "sha256": "002be44c3d67045b0dbf6758a28b9906704fe8537372b5929d758c790a3058d9",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Night street panorama (neon harbour district) mirrored in the car paint on that track. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/street_pano_city_01_night.png."
+    },
+    {
+      "id": "car_interior_quilt",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/car_interior_quilt.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "car_interior_quilt.jpg": [
+          1024,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 354304,
+      "sha256": "0bef6146db39c00f48cabcc3e01cf1475f7aecf51eff0433599bde59b13da8cb",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Quilted upholstery picture, triplanar on every car interior. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/interior_quilt.png."
     }
   ]
 }

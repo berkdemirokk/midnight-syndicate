@@ -407,6 +407,10 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	if lod != null and tod.rain:
 		CarMaterials.set_wet(lod, true)  # rain beads on the clear coat
 	var pano_path: String = STREET_PANO if (tod.is_night() or config_used.time_of_day == "sunset") else STREET_PANO_DAY
+	# a district has its own night street in the paint when its picture exists (street_pano_<track>_night.jpg)
+	var district_pano: String = "res://assets/vehicles/shared/street_pano_%s_night.jpg" % config_used.track_scene.get_file().get_basename()
+	if pano_path == STREET_PANO and ResourceLoader.exists(district_pano):
+		pano_path = district_pano
 	if lod != null and Settings.get_preset_id() != "low" and ResourceLoader.exists(pano_path):
 		CarMaterials.set_reflection(lod, load(pano_path) as Texture2D, 0.55 if tod.is_night() else (0.3 if config_used.time_of_day == "sunset" else 0.16))  # the street in the paint
 	# Engine, tyres, nitro and impacts; rivals get the cheaper, quieter positional set.

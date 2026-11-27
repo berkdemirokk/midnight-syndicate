@@ -28,7 +28,7 @@ const PAINT_CLEAR_ROUGHNESS: float = 0.04
 const PAINT_FLAKE_SCALE: float = 0.035  ## flake normal strength, low on purpose (0.12 read as sandpaper on the wheel close-up)
 const PAINT_PEEL_SCALE: float = 0.04  ## solid paint: orange peel only, no sparkle
 const PAINT_FLAKE_TILING: float = 48.0  ## fine tiling of the 512 px flake normal: at race distance it averages out, no sandpaper
-const RAIN_BEAD_SCALE: float = 0.4  ## bead normal strength on wet paint
+const RAIN_BEAD_SCALE: float = 0.2  ## bead normal strength on wet paint (0.4 glittered like sand in the race view)
 const RAIN_BEAD_TILING: float = 1.5  ## repeats per metre: beads of 5 to 20 mm (2.4 read as sand)
 const RAIN_PAINT_ROUGHNESS: float = 0.16  ## a wet clear coat is glossier than a dry one
 const RIM_ROUGHNESS: float = 0.34  ## times the brushed map (0.55..1.0): streaked satin metal
@@ -68,7 +68,13 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT
 				continue
 			var nm: String = src.resource_name
 			var mat: StandardMaterial3D
-			if PER_CAR.has(nm):
+			if nm == "M_Tire" and String(mi.name).begins_with("wheel"):
+				# per wheel size: the tyre picture is projected along the axle and must span one tyre diameter
+				var key: String = "M_Tire:%.2f" % mi.mesh.get_aabb().size.y
+				if not _shared.has(key):
+					_shared[key] = _tyre_photo(_build(nm, src, paint, finish), mi.mesh.get_aabb().size.y)
+				mat = _shared[key]
+			elif PER_CAR.has(nm):
 				if not per_car.has(nm):
 					per_car[nm] = _build(nm, src, paint, finish)
 				mat = per_car[nm]
@@ -160,7 +166,7 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.normal_scale = TRIM_GRAIN_SCALE
 		"M_Rim":
 			m.albedo_color = DEFAULT_RIM
-			m.metallic = 0.8  # full metal mirrored the day sky: rims read bright blue
+			m.metallic = 0.5  # full metal mirrored the day sky: rims read bright blue (0.8 still did, day capture 2026-11-27)
 			m.roughness = RIM_ROUGHNESS
 			m.roughness_texture = _tex_file("car_brushed_roughness.png")
 			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
@@ -197,10 +203,33 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.emission_energy_multiplier = REAR_REST
 		"M_LightFront":
 			m.emission_enabled = true
+		"M_Interior":
+			# quilted upholstery, object-space triplanar (most interiors have no UVs)
+			m.albedo_color = Color(0.85, 0.85, 0.85)
+			m.albedo_texture = _tex_file("car_interior_quilt.jpg")
+			m.roughness = 0.7
+			m.uv1_triplanar = true
+			m.uv1_scale = Vector3(3.0, 3.0, 3.0)  # one tile = 33 cm, a diamond about 4 cm
 		"M_Carbon":
 			m.clearcoat_enabled = true
 			m.clearcoat = CARBON_CLEAR
 			m.clearcoat_roughness = CARBON_CLEAR_ROUGHNESS
+	return m
+
+
+## Tyre picture (sidewall ring, tread in the middle) projected in wheel-local space: it turns with the wheel and needs
+## no UVs, so every car model gets it. Only for meshes whose origin is the wheel centre (nodes named wheel_*).
+static func _tyre_photo(m: StandardMaterial3D, diameter: float) -> StandardMaterial3D:
+	m.albedo_color = Color(0.55, 0.55, 0.55)  # the picture alone read as tan rubber under warm night lamps
+	m.albedo_texture = _tex_file("car_tyre_face.jpg")
+	m.normal_enabled = true
+	m.normal_texture = _tex_file("car_tyre_face_normal.png")
+	m.normal_scale = 1.0
+	m.uv1_triplanar = true
+	m.uv1_triplanar_sharpness = 8.0  # hard switch between sidewall and tread projections
+	var k: float = 1.0 / maxf(diameter, 0.1)
+	m.uv1_scale = Vector3(k, k, k)
+	m.uv1_offset = Vector3(0.5, 0.5, 0.5)
 	return m
 
 
