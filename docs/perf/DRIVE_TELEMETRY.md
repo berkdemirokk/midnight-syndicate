@@ -106,3 +106,81 @@ The top-speed numbers are spec values from the catalog. They say nothing about h
 - The rendered hitch was only one run, measured with vsync.
 - Rival data for races: only the 2-lap matrix and the first race. No per-race rival finish data was compared with the config picks.
 - The full suite (358 tests, 0 failed) printed "Parse JSON failed" messages to the log. These were not investigated in this package.
+
+## After: AI churn (package ai, 2026-11-28)
+
+Code: `game/ai/ai_driver.gd`. Tests: `game/tests/test_ai_churn.gd` (2 tests). Same matrix, same sim (`--fixed-fps 60`, headless, `--part=matrix`, bogaz and city01, 3 cars x grid 4 and 8 each). Before = the commit before this package (168c27a). The matrix is deterministic for a fixed code state: the before numbers reproduced the table above, and the final after run reproduced the candidate run exactly.
+
+### Causes found (stuck events)
+Detector: `stuck_time` 2.0 s without 2 m of forward progress. Debug prints of each stuck event (speed, yaw, lateral, traffic) on city01 and bogaz showed three things:
+1. Queued cars were counted as stuck. A car held behind a car that is stopped (the follow cap, or the start of a pack) makes no progress, but it is not wedged. Each stopped car in a queue made the cars behind it count stuck. Fix: time spent held by the car ahead (`cap < want`) does not count.
+2. The recovery could never free a car. `_tick_reverse` drove the car back along the line (reverse brake), then required 2 m of *forward* progress to count as free, so every recovery fell through to the teleport. Fix: free means the car moved 2 m along the line in either direction, and its heading is within `reset_yaw_deg`.
+3. Pack contacts were the main source of spins. Contacts came from a car closing on the car ahead with only the speed-matching brake (`brake_gain` 0.2 per m/s), which is too weak once the bumper gap is small. Most stuck events in those logs had yaw 90 to 180 deg and speed near 0. The contact log showed rear-end and side touches with the bumper gap near 0 and closing speeds of about 4 m/s or more. Fix: a kinematic follow brake, closing speed squared over (2 x bumper gap x `follow_decel`), so the car brakes for the closing speed (no throttle while doing so). `follow_decel` = 4.0 m/s^2 (not the 6.0 tried first; 3.0 was worse).
+
+### Before and after (same runs, 6 races per track, 3 cars each)
+Totals over the 12 races:
+
+| metric | bogaz before | bogaz after | city01 before | city01 after |
+|---|---|---|---|---|
+| stuck recoveries | 70 | 43 | 44 | 23 |
+| teleports (jumps over 5 m) | 47 | 19 | 29 | 11 |
+| contact events (all cars) | 673 | 556 | 361 | 205 |
+| unfinished cars at race end | 4 | 0 | 7 | 2 |
+| mean AI best lap, s (all AI cars with a best lap) | 55.55 | 54.89 | 76.65 | 75.04 |
+
+Per grid (same runs):
+
+| track | grid | metric | before | after |
+|---|---|---|---|---|
+| bogaz | 4 | stuck recoveries (3 races) | 25 | 10 |
+| bogaz | 4 | teleports (3 races) | 16 | 6 |
+| bogaz | 4 | contacts per lap, mean of 3 races | 31.5 | 31.3 |
+| bogaz | 4 | unfinished cars at race end (sum) | 0 | 0 |
+| bogaz | 4 | mean AI best lap s | 54.25 | 53.87 |
+| bogaz | 4 | player position, 3 cars | 3/2/4 | 4/2/4 |
+| bogaz | 4 | player total time s, 3 cars | 112.8/117.4/139.4 | 116.8/101.2/132.0 |
+| bogaz | 8 | stuck recoveries (3 races) | 45 | 33 |
+| bogaz | 8 | teleports (3 races) | 31 | 13 |
+| bogaz | 8 | contacts per lap, mean of 3 races | 80.7 | 61.3 |
+| bogaz | 8 | unfinished cars at race end (sum) | 4 | 0 |
+| bogaz | 8 | mean AI best lap s | 56.10 | 55.33 |
+| bogaz | 8 | player position, 3 cars | 4/4/2 | 7/4/6 |
+| bogaz | 8 | player total time s, 3 cars | 109.3/131.1/112.7 | 120.0/117.8/129.7 |
+| city01 | 4 | stuck recoveries (3 races) | 8 | 11 |
+| city01 | 4 | teleports (3 races) | 3 | 5 |
+| city01 | 4 | contacts per lap, mean of 3 races | 15.0 | 12.2 |
+| city01 | 4 | unfinished cars at race end (sum) | 1 | 2 |
+| city01 | 4 | mean AI best lap s | 74.89 | 76.05 |
+| city01 | 4 | player position, 3 cars | 1/1/2 | 1/1/1 |
+| city01 | 4 | player total time s, 3 cars | 139.4/141.4/154.2 | 139.7/148.5/143.1 |
+| city01 | 8 | stuck recoveries (3 races) | 36 | 12 |
+| city01 | 8 | teleports (3 races) | 26 | 6 |
+| city01 | 8 | contacts per lap, mean of 3 races | 45.2 | 22.0 |
+| city01 | 8 | unfinished cars at race end (sum) | 6 | 0 |
+| city01 | 8 | mean AI best lap s | 77.40 | 74.60 |
+| city01 | 8 | player position, 3 cars | 1/4/1 | 3/1/4 |
+| city01 | 8 | player total time s, 3 cars | 143.9/162.8/143.3 | 144.8/147.2/155.3 |
+
+Matched AI cars (same race, same slot, two laps in both runs, n = 47): mean best lap 63.40 s before and 63.44 s after (+0.07 %). Single cars move a lot between runs (the worst one, bogaz grid 8 bosfor slot 2, 52.6 to 67.1 s, is in the table above only as part of its mean; it is a traffic effect, see open items). Lap times are 2-lap samples and noisy.
+
+### Tuning and rejected variants (same matrix)
+| variant | bogaz stuck / teleports / contacts | city01 stuck / teleports / contacts | note |
+|---|---|---|---|
+| held rule + free by distance (no follow brake) | 44 / 22 / 550 | 41 / 26 / 370 | first step |
+| + follow brake, follow_decel 6.0 | 53 / 27 / 565 | 33 / 25 / 283 | |
+| + follow brake, follow_decel 4.0 (shipped) | 43 / 19 / 557 | 23 / 11 / 205 | |
+| + follow brake, follow_decel 3.0 | 53 / 31 / 604 | 28 / 13 / 234 | |
+| shipped + no reverse into a car behind (reset instead) | 49 / 24 / 516 | 23 / 11 / 191 | rejected: more stuck and teleports on bogaz |
+
+### Tests
+- `test_ai_churn`: queued car behind two stopped side blockers, not stuck (0; fails with 3 without the held rule) and stops short of the car ahead. Closing car at 25 m/s from 40 m, no contact. The closing test passes with or without the follow brake, so it guards against contact regressions only; it does not prove the follow brake.
+- `test_ai_race` 10 of 10 and `test_city_race` 10 of 10 pass unchanged (city 8-car stuck counts: order A 1/0/0, order B 2/4/1 at nitro 0/100/140).
+- Full suite: 382 tests, 0 failed (380 before plus the 2 new ones).
+
+### Not done or risky
+- Stuck events left: most are cars that stopped after a spin or a kerb hit. The recovery still resets (teleports) after a reverse that does not free the car; a steering-aware reverse was not built.
+- City01 grid 4: stuck 8 to 11 and unfinished 1 to 2 (bosfor race): this one got worse. Noise level for a single race, not separated.
+- Contacts are impulse counts (`ArcadeCar.hit`), not verified collisions.
+- The follow brake slows a car that is closing on a slower car in its lane, so one car can get a slower lap (the 27 % car above). Pace on average is unchanged.
+- Sim runs only (Windows dev PC, headless, `--fixed-fps 60`). The rendered run was not repeated.
+- The autopilot is a stand-in for a player. Nothing here says anything about a newcomer.
