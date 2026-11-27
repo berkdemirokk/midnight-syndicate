@@ -11,6 +11,16 @@ Brief: `docs/status/OVERNIGHT_MASTER.md`. Lead: Opus 5.5. Release candidate bran
 - Graphics audit (6 Opus auditors, each checked by an Opus verifier): digest kept outside the repo; the corrected
   proposals are what the work packages implement.
 
+## Done since 00:30 (all on release/rc-2026-11-28, pushed)
+- Lead lighting pass: 41d7e47, 5220b50, 80ecdcc (day/sunset look, fog, asphalt/kerb specular, patchy wet road,
+  mirror 5 taps, rims/tyres, sea). Captures in evidence/screens/ortakoy_benchmark/.
+- Merged after Haiku review + Opus lead review: wp/drive (telemetry report docs/perf/DRIVE_TELEMETRY.md),
+  wp/perf (mirror diet, probes off on Low, shadow filter per preset, Medium FXAA; docs/perf/GPU_PASS_2026-11-28.md),
+  wp/arch (textured party walls, roofs, eaves, glass gloss, bridge day colours), wp/online (LAN race, off by default).
+  Full suite after the merges: 380 tests, 0 failed.
+- Online in-game path verified (9d11983): tools/net_ingame_check.py, rendered client + headless client + server on
+  127.0.0.1; fixed two real bugs (remote cars were static walls; clients stopped sending at the local finish -> DNF).
+
 ## In progress
 - Lead: day/sunset lighting (ACES white 6, real depth fog, hazy sky, street-dark ground half, warm car fill/rim,
   day fill direction bug), dry asphalt and kerb specular per hour, mirror blur 9 -> 5 taps, sea colours per hour,

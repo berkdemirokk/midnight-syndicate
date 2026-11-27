@@ -35,7 +35,10 @@ void fragment() {
 			NORMAL_MAP = vec3(0.5, 0.5, 1.0);
 		} else {
 			float grime = mix(0.6, 1.0, smoothstep(0.0, 2.5, wall_height));  // grime and shade at the foot of a wall
-			plain = COLOR.rgb * texture(wall_tex, UV).rgb * 2.2 * grime;
+			// the CC0 clay plaster is ochre: keep its grain, take most of its hue out so the vertex colour sets the paint
+			vec3 wt = texture(wall_tex, UV).rgb;
+			wt = mix(vec3(dot(wt, vec3(0.2126, 0.7152, 0.0722))), wt, 0.3);
+			plain = COLOR.rgb * wt * 2.6 * grime;
 			NORMAL_MAP = texture(wall_nrm, UV).rgb;
 			NORMAL_MAP_DEPTH = 0.8;
 		}

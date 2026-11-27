@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.997,
+  "luma_max": 1.0,
   "luma_min": 0.0,
   "name": "bench_night_gameplay",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 403,
     "draw_calls_min": 316,
     "driver": "vulkan",
-    "fps": 331.461,
-    "frame_ms_avg": 3.017,
-    "frame_ms_p95": 3.743,
-    "frame_ms_p99": 4.236,
+    "fps": 333.908,
+    "frame_ms_avg": 2.995,
+    "frame_ms_p95": 3.672,
+    "frame_ms_p99": 5.016,
     "frames": 60,
-    "objects": 18563,
+    "objects": 18598,
     "os": "Windows",
-    "primitives": 446973,
+    "primitives": 447141,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 781.504,
+    "video_mem_mb": 777.151,
     "viewport_size": [
       1920,
       1061
