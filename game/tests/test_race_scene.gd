@@ -370,3 +370,31 @@ func test_mirror_layers_results_and_retry() -> void:
 	Settings.set_preset(prev_preset)
 	Settings.autosave = prev_autosave
 	await cleanup([scene])
+
+
+func test_owned_player_upgrades_do_not_tune_rivals() -> void:
+	var original_path: String = GameState.save_path
+	var original_profile: Dictionary = GameState.profile.duplicate(true)
+	var path: String = "user://test_race_upgrades.json"
+	GameState.open_profile(path)
+	GameState.reset_profile()
+	var id: String = CarCatalog.STARTER
+	GameState.profile["car_setups"][id]["upgrades"] = {"engine": 2, "tires": 1, "nitro": 1, "weight": 1}
+	var cfg: RaceConfig = _cfg(false, 1, 1)
+	cfg.car_scene = CarCatalog.scene_path(id)
+	cfg.car_spec_path = CarCatalog.spec_path(id)
+	var base_spec: CarSpec = load(cfg.car_spec_path) as CarSpec
+	var base_torque: float = base_spec.peak_torque_nm
+	var scene: RaceScene = _make_scene(cfg)
+	await frames(2)
+	check(scene.player.spec != base_spec, "player has a private spec")
+	check(is_equal_approx(scene.player.spec.peak_torque_nm, base_torque * 1.10), "player receives purchased engine upgrade")
+	check(is_equal_approx(scene.player.spec.mass_kg, base_spec.mass_kg * 0.98), "player receives weight upgrade")
+	check(is_equal_approx(scene.cars[0].spec.peak_torque_nm, base_torque), "rival engine remains stock")
+	check(is_equal_approx(base_spec.peak_torque_nm, base_torque), "loaded resource remains stock")
+	await cleanup([scene])
+	GameState.open_profile(original_path)
+	GameState.profile = original_profile
+	for suffix: String in ["", ".bak", ".tmp"]:
+		if FileAccess.file_exists(path + suffix):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(path + suffix))

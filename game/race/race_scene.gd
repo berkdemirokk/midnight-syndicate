@@ -378,8 +378,17 @@ func _spawn_cars() -> void:
 		var car: ArcadeCar = CarFactory.create(r_scene, r_spec, config_used.opponent_paint(i))
 		_add_car(car, true)
 		_names.append(_opponent_name(i))
-	player = CarFactory.create(config_used.car_scene, spec, _player_paint())
+	# Apply purchased upgrades only to the actual selected, owned player car, never to rivals or dev mules.
+	var selected: String = GameState.get_selected_car()
+	var use_setup: bool = config_used.use_garage_paint and GameState.has_car(selected) and config_used.car_scene == CarCatalog.scene_path(selected) and config_used.car_spec_path == CarCatalog.spec_path(selected)
+	var player_spec: CarSpec = spec
+	if use_setup and spec != null:
+		player_spec = GarageStats.tuned_spec(spec, GameState.get_setup(selected)["upgrades"])
+	player = CarFactory.create(config_used.car_scene, player_spec, _player_paint())
 	_add_car(player)
+	if use_setup:
+		var setup: Dictionary = GameState.get_setup(selected)
+		CarMaterials.set_rim_color(player, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
 	_names.append(config_used.player_name)
 	dev_car_used = bool(player.get_meta("dev_car", false))
 
