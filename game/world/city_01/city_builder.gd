@@ -222,7 +222,8 @@ func _ready() -> void:
 	_dress_districts(inst, lap, n_chunks)
 	_build_parked_cars(lap)
 	_build_lights(d["lights"], inst)
-	_build_probes(d["reflection_probes"])
+	if Settings.get_preset().reflection_probes_enabled:
+		_build_probes(d["reflection_probes"])
 	_build_environment()
 	_apply_time_of_day()
 	load_time_ms = float(Time.get_ticks_usec() - t0) / 1000.0

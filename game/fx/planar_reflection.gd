@@ -30,6 +30,9 @@ func _ready() -> void:
 	_vp.transparent_bg = false
 	_vp.handle_input_locally = false
 	_vp.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	# No shadowed omni/spot light exists (headlights cast no shadow), so the mirror needs no shadow atlas.
+	_vp.positional_shadow_atlas_size = 0
+	_vp.msaa_3d = Viewport.MSAA_DISABLED
 	add_child(_vp)
 	_cam = Camera3D.new()
 	_cam.cull_mask = 0xFFFFF & ~excluded_layers
@@ -112,4 +115,8 @@ func _make_far_environment() -> void:
 	var env: Environment = world.environment.duplicate() as Environment
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = env.fog_light_color if env.fog_enabled else world.environment.background_color
+	# The main pass blooms and tonemaps the reflected neon again: a second glow and ACES here only flatten it.
+	env.glow_enabled = false
+	env.tonemap_mode = Environment.TONE_MAPPER_LINEAR
+	env.tonemap_exposure = 1.0
 	_cam.environment = env
