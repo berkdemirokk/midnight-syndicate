@@ -6,6 +6,8 @@ Writes PNG files into game/assets/vehicles/shared/ for car_materials.gd:
   car_rubber_roughness.png 256 px tyre sidewall roughness variation, red channel
   car_brushed_roughness.png 512 px brushed-metal streaks for rims, red channel
   car_grain_normal.png     256 px fine grain normal for satin black plastic trim
+  car_carbon_weave.png     256 px carbon fibre, 2x2 twill, 16 tows across (albedo)
+  car_carbon_normal.png    256 px normal map of the same weave
 
 Run: py -3.10 tools/gen_car_textures.py
 Deterministic: the same seed gives the same bytes, so the manifest sha256 stays stable.
@@ -154,6 +156,47 @@ def grain_normal(rng, size=256):
     return normal_rows(h, size, strength=0.35)
 
 
+def carbon_height(size=256, tow=16):
+    """2x2 twill: every tow passes over two and under two, one step on per column. Returns (height, warp), flat lists:
+    the height 0..1 of the tow on top (a rounded band with a hump along its float) and 1.0 where that tow runs along y."""
+    h = [0.0] * (size * size)
+    warp = [0.0] * (size * size)
+    for y in range(size):
+        j, fy = divmod(y, tow)
+        for x in range(size):
+            i, fx = divmod(x, tow)
+            k = (i + j) % 4
+            if k < 2:  # warp on top: fibres along y, the float covers two cells along y
+                across = (fx + 0.5) / tow
+                along = (k + (fy + 0.5) / tow) / 2.0
+                warp[y * size + x] = 1.0
+            else:  # weft on top: fibres along x
+                across = (fy + 0.5) / tow
+                along = (k - 2 + (fx + 0.5) / tow) / 2.0
+            h[y * size + x] = (math.sin(math.pi * across) ** 0.6) * (0.55 + 0.45 * math.sin(math.pi * along))
+    return h, warp
+
+
+def carbon_weave(rng, size=256):
+    # Carbon is near black; the weave reads because the two fibre directions catch the light differently. Without
+    # anisotropy in the material that is painted in: warp tows lighter than weft tows, and fine fibre lines along each.
+    h, warp = carbon_height(size)
+    line_x = [rng.random() for _ in range(size)]
+    line_y = [rng.random() for _ in range(size)]
+    out = []
+    for y in range(size):
+        for x in range(size):
+            i = y * size + x
+            base = 0.30 if warp[i] else 0.20
+            fibre = line_x[x] if warp[i] else line_y[y]
+            out.append(base * (0.55 + 0.45 * h[i]) * (0.88 + 0.24 * fibre))
+    return gray_rows(out, size)
+
+
+def carbon_normal(size=256):
+    return normal_rows(carbon_height(size)[0], size, strength=1.5)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     jobs = [
@@ -162,6 +205,8 @@ def main():
         ("car_rubber_roughness.png", 256, lambda r: rubber_roughness(r, 256), 103),
         ("car_brushed_roughness.png", 512, lambda r: brushed_roughness(r, 512), 104),
         ("car_grain_normal.png", 256, lambda r: grain_normal(r, 256), 105),
+        ("car_carbon_weave.png", 256, lambda r: carbon_weave(r, 256), 106),
+        ("car_carbon_normal.png", 256, lambda r: carbon_normal(256), 107),
     ]
     for name, size, fn, seed in jobs:
         rows = fn(random.Random(seed))

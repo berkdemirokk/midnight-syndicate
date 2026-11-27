@@ -107,9 +107,6 @@
     "Tread_Car": "M_Tire",
     "Glass_Dark": "M_Glass"
   },
-  "texture_from": {
-    "M_Carbon": "Carbon"
-  },
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",
@@ -283,5 +280,17 @@
   },
   "tail_cell": 1,
   "front_plate_material": "M_Trim",
-  "out_dir": "game/assets/vehicles/bosfor_atmaca"
+  "out_dir": "game/assets/vehicles/bosfor_atmaca",
+  "tail_pipes": [
+    [
+      0.52,
+      0.355,
+      -2.53
+    ],
+    [
+      -0.52,
+      0.355,
+      -2.53
+    ]
+  ]
 }

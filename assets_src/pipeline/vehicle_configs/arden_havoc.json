@@ -72,7 +72,6 @@
     "Belt_Red": "M_Interior",
     "Pedal": "M_Interior"
   },
-  "texture_from": {},
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",
@@ -199,5 +198,17 @@
       "default": 0.12
     }
   },
-  "tail_cell": 3
+  "tail_cell": 3,
+  "tail_pipes": [
+    [
+      0.465,
+      0.33,
+      -2.46
+    ],
+    [
+      -0.465,
+      0.33,
+      -2.46
+    ]
+  ]
 }

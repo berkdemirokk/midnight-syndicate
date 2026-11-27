@@ -9,6 +9,7 @@ const LEN_MIN: float = 0.6  ## metres at ignition
 const LEN_MAX: float = 1.6  ## metres at full strength
 const CORE_RADIUS: float = 0.06  ## base radius: 0.12 m wide
 const HALO_RADIUS: float = 0.16
+const HALO_ROOT: float = 0.4  ## the halo starts at pipe width and swells: a 32 cm root hid the number plate over centre pipes
 const HALO_LEN: float = 0.8  ## the halo is shorter than the core
 const RINGS: int = 4
 const SIDES: int = 12
@@ -172,7 +173,7 @@ func _cone_mesh(radius: float, core: bool) -> ArrayMesh:
 
 
 func _put(st: SurfaceTool, radius: float, t: float, angle: float, core: bool) -> void:
-	var rr: float = radius * (1.0 - t)
+	var rr: float = radius * (1.0 - t) * (HALO_ROOT if t == 0.0 and not core else 1.0)
 	st.set_color(_ramp(t, core))
 	st.add_vertex(Vector3(cos(angle) * rr, t, sin(angle) * rr))
 

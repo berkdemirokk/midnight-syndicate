@@ -100,16 +100,13 @@
     "Lamp_Red": "M_LightRear",
     "Lamp_Chrome": "M_Chrome",
     "Reflector_Chrome": "M_Chrome",
-    "Lamp_Glass": "M_Lens",
+    "Lamp_Glass": "M_LightFront",
     "Seat_Cloth": "M_Interior",
     "Seat_Red": "M_Interior",
     "Skin_Tan": "M_Interior",
     "Tread_Car": "M_Tire",
     "Glass_Dark": "M_Glass",
     "Paint_Oxblood": "M_Paint"
-  },
-  "texture_from": {
-    "M_Carbon": "Carbon"
   },
   "nodes": {
     "Under": "underbody",
@@ -184,8 +181,7 @@
     "Caliper_Grey": "drop",
     "Caliper_Lime": "drop",
     "Lamp_Chrome": "trim",
-    "Reflector_Chrome": "trim",
-    "Lamp_Glass": "drop"
+    "Reflector_Chrome": "trim"
   },
   "by_object_material_lod1": {
     "Body|Exhaust": "trim",

@@ -1,7 +1,8 @@
 extends "res://tests/test_case.gd"
 ## CC BY 4.0 cars from vinish.dev: scene contract, source size within 5 %, wheel origins, budgets, LOD switching,
-## paint and brake lights, part colours, spec character, and that the model rests on the suspension. All eleven
-## player cars: the first six, and the five that replaced the project-made models on 2026-11-27.
+## paint and brake lights (also through CarVisual in a built car), part colours, head lamps, the tail-light atlas,
+## far LODs inside the LOD0 box, nitro flames at the tail pipes, spec character, and that the model rests on the
+## suspension. All eleven player cars: the first six, and the five that replaced the project-made models on 2026-11-27.
 
 const CARS: Array[Dictionary] = [
 	{
@@ -86,6 +87,12 @@ const MAX_GAP_M: float = 0.06
 const PAINT_TEST: Color = Color(0.0, 0.0, 1.0)
 const HERO_SPEC: String = "res://vehicles/specs/noctra_sable.tres"
 const PLAIN_CAR: String = "res://vehicles/bosfor_atmaca/atmaca_stock.tscn"  ## a project-made model: no vertex colours
+const LOD_BOX_MARGIN_M: float = 0.1  ## a far LOD may reach this far beyond the LOD0 box
+const NO_TAIL_ATLAS: PackedStringArray = ["noctra_vela", "kestrel_gtr"]  ## no tail_cell in their config: plain red glow
+## No pipe markers: the Kestrel GT is an electric car, and the Bruiser's side pipes are hidden from the chase camera.
+const NO_TAIL_PIPES: PackedStringArray = ["kestrel_gtr", "arden_bruiser"]
+const FLAME_MAX_HEIGHT_M: float = 0.6  ## above the road; the plate and the lamps sit higher
+const FX_SCENE: String = "res://fx/car_fx.tscn"
 
 var _spawned: Array[Node] = []
 
@@ -145,6 +152,19 @@ func _done() -> void:
 	_spawned.clear()
 
 
+## Box of one LOD's drawn meshes in the car's space.
+func _box(car: Node3D, lod_name: String) -> AABB:
+	var box: AABB = AABB()
+	var first: bool = true
+	for mi: MeshInstance3D in _meshes(car.get_node(lod_name)):
+		if mi.name == "col_body" or mi.mesh == null:
+			continue
+		var b: AABB = _to_root(mi, car) * mi.mesh.get_aabb()
+		box = b if first else box.merge(b)
+		first = false
+	return box
+
+
 func test_scene_has_three_lods_and_required_nodes() -> void:
 	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
@@ -166,16 +186,7 @@ func test_lod0_bounding_box_matches_source() -> void:
 	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
 		await frames(1)
-		var lod0: Node3D = car.get_node("LOD0") as Node3D
-		var box: AABB = AABB()
-		var first: bool = true
-		for mi: MeshInstance3D in _meshes(lod0):
-			if mi.name == "col_body" or not mi.visible or mi.mesh == null:
-				continue
-			var b: AABB = _to_root(mi, car) * mi.mesh.get_aabb()
-			box = b if first else box.merge(b)
-			first = false
-		var sz: Vector3 = box.size
+		var sz: Vector3 = _box(car, "LOD0").size
 		metric("%s_bbox_size_m" % c["id"], [snappedf(sz.x, 0.001), snappedf(sz.y, 0.001), snappedf(sz.z, 0.001)])
 		check_range(sz.z, float(c["len"]) * (1.0 - SIZE_TOL), float(c["len"]) * (1.0 + SIZE_TOL), "%s length (Z)" % c["id"])
 		check_range(sz.x, float(c["width"]) * (1.0 - SIZE_TOL), float(c["width"]) * (1.0 + SIZE_TOL), "%s width (X)" % c["id"])
@@ -353,3 +364,117 @@ func test_model_wheels_rest_on_the_suspension() -> void:
 			check(absf(static_y - phys_y) < MAX_GAP_M, "%s %s wheel %.3f m off the suspension" % [c["id"], lod_name, static_y - phys_y])
 		await cleanup([car, ground])
 
+
+## The collapse of a far LOD must not throw geometry off the car: a 1 m spike out of a flank and fins under the road
+## were in four LOD2 files, and LOD2 is also the sun-shadow caster and the road-mirror copy of every car.
+func test_far_lods_stay_inside_the_lod0_box() -> void:
+	for c: Dictionary in CARS:
+		var car: CarLod = _spawn(c["scene"])
+		await frames(1)
+		var box0: AABB = _box(car, "LOD0").grow(LOD_BOX_MARGIN_M)
+		for lod_name: String in ["LOD1", "LOD2"]:
+			var b: AABB = _box(car, lod_name)
+			check(box0.encloses(b), "%s %s box %s leaves the LOD0 box %s" % [c["id"], lod_name, b, box0])
+		await _done()
+
+
+## Every car shows lit head lamps up close and at LOD1 distance (the Bruiser had no emitter in any LOD: its lamp
+## face was mapped to the clear lens).
+func test_head_lamps_glow_at_lod0_and_lod1() -> void:
+	for c: Dictionary in CARS:
+		var car: CarLod = _spawn(c["scene"])
+		await frames(1)
+		for lod_name: String in ["LOD0", "LOD1"]:
+			var m: StandardMaterial3D = _material(car.get_node(lod_name), "M_LightFront")
+			check(m != null and m.emission_enabled and m.emission.get_luminance() * m.emission_energy_multiplier > 1.0,
+				"%s %s has no glowing head lamp surface" % [c["id"], lod_name])
+		await _done()
+
+
+## Rear lamps: a car whose lamp faces carry atlas UVs gets the two shared pictures (the day picture as albedo, the lit
+## picture times the red as the glow); a car without them keeps the plain red glow. A picture that does not load
+## would leave white lamps by day and no glow at night.
+func test_tail_lamps_use_the_shared_atlas_only_with_uvs() -> void:
+	for c: Dictionary in CARS:
+		var car: CarLod = _spawn(c["scene"])
+		await frames(1)
+		var lamps: int = 0
+		for mi: MeshInstance3D in _meshes(car):
+			var am: ArrayMesh = mi.mesh as ArrayMesh
+			for s: int in (am.get_surface_count() if am != null else 0):
+				var m: StandardMaterial3D = mi.get_active_material(s) as StandardMaterial3D
+				if m == null or m.resource_name != "M_LightRear":
+					continue
+				lamps += 1
+				var has_uv: bool = (am.surface_get_format(s) & Mesh.ARRAY_FORMAT_TEX_UV) != 0
+				check(has_uv != NO_TAIL_ATLAS.has(c["id"]), "%s %s: rear lamp UVs are %s" % [c["id"], mi.get_parent().name, has_uv])
+				check(m.emission_enabled, "%s rear lamp does not glow" % c["id"])
+				if has_uv:
+					check(m.albedo_texture != null and m.albedo_texture.resource_path.ends_with("tail_atlas_day.jpg"), "%s rear lamp has no day picture" % c["id"])
+					check(m.emission_texture != null and m.emission_texture.resource_path.ends_with("tail_atlas_lit.jpg"), "%s rear lamp has no lit picture" % c["id"])
+					check(m.emission_operator == BaseMaterial3D.EMISSION_OP_MULTIPLY, "%s lit picture is not multiplied by the lamp colour" % c["id"])
+				else:
+					check(m.albedo_texture == null and m.emission_texture == null, "%s rear lamp without UVs carries a picture" % c["id"])
+		check(lamps >= 3, "%s: rear lamps in %d of 3 LODs" % [c["id"], lamps])
+		await _done()
+
+
+## In a built car (CarFactory, as the race makes it) CarVisual drives the materials the meshes really use. CarLod
+## replaces them in its _ready, and CarVisual kept the copies it made before that: no brake light ever lit in a race.
+func test_brake_lights_reach_the_meshes_of_a_built_car() -> void:
+	for c: Dictionary in CARS:
+		var car: ArcadeCar = CarFactory.create(c["scene"], load(c["spec"]) as CarSpec, Color.RED)
+		car.freeze = true
+		add(car)
+		_spawned.append(car)
+		await frames(2)
+		var lamp: StandardMaterial3D = _material(car, "M_LightRear")
+		car.input.brake = 1.0
+		for i: int in 40:
+			await tree.process_frame
+		check(lamp != null and lamp.emission_energy_multiplier > (CarMaterials.REAR_REST + CarMaterials.REAR_BRAKE) * 0.5,
+			"%s: braking leaves the rear lamps at %.2f" % [c["id"], lamp.emission_energy_multiplier if lamp else -1.0])
+		car.input.brake = 0.0
+		for i: int in 40:
+			await tree.process_frame
+		check(lamp != null and absf(lamp.emission_energy_multiplier - CarMaterials.REAR_REST) < 0.3,
+			"%s: rear lamps rest at %.2f, the running-light level is %.2f" % [c["id"], lamp.emission_energy_multiplier if lamp else -1.0, CarMaterials.REAR_REST])
+		(car.get_node(CarFactory.CAR_VISUAL_NAME) as CarVisual).set_paint(PAINT_TEST)
+		var paint: StandardMaterial3D = _material(car, "M_Paint")
+		check(paint != null and paint.albedo_color.is_equal_approx(PAINT_TEST), "%s: CarVisual.set_paint does not reach the body" % c["id"])
+		await _done()
+
+
+## Nitro flames start at the tail pipes: the pipeline marks each outlet with an empty node and CarFx reads them.
+## Before, every car used the pipe position of a model that is no longer in the game: 0.8 m above the road, over the
+## number plate. A car without pipes gets two flames low at its tail.
+func test_nitro_flames_start_at_the_tail_pipes() -> void:
+	for c: Dictionary in CARS:
+		var spec: CarSpec = load(c["spec"]) as CarSpec
+		var car: ArcadeCar = CarFactory.create(c["scene"], spec, Color.RED)
+		car.freeze = true
+		add(car)
+		_spawned.append(car)
+		var fx: CarFx = (load(FX_SCENE) as PackedScene).instantiate() as CarFx
+		car.add_child(fx)
+		await frames(2)
+		var to_car: Transform3D = car.global_transform.affine_inverse()
+		var tips: Array[Node] = car.find_children(CarFx.TIP_NODES, "Node3D", true, false)
+		check((tips.size() == 0) == NO_TAIL_PIPES.has(c["id"]), "%s has %d tail pipe markers" % [c["id"], tips.size()])
+		var points: PackedVector3Array = fx.flame_points()
+		check(points.size() == 2, "%s: %d flame points" % [c["id"], points.size()])
+		# road level in car space with the car at rest (a frozen car hangs its wheels at full droop, so not from the wheel)
+		var road_y: float = spec.mount_height - spec.suspension_rest + CarVisual.STATIC_SAG_M
+		var model: Node3D = car.get_node(CarFactory.VISUAL_NAME).get_child(0) as Node3D
+		var box: AABB = (to_car * model.global_transform) * _box(model, "LOD0")
+		for i: int in points.size():
+			var p: Vector3 = points[i]
+			if i < tips.size():
+				var tip: Vector3 = to_car * (tips[i] as Node3D).global_position
+				check(p.distance_to(tip) < 0.01, "%s flame %d at %s, its pipe marker at %s" % [c["id"], i, p, tip])
+			check(p.z > box.end.z - 0.6, "%s flame %d is not at the tail (z %.2f, the car ends at %.2f)" % [c["id"], i, p.z, box.end.z])
+			check_range(p.y - road_y, 0.1, FLAME_MAX_HEIGHT_M, "%s flame %d height above the road" % [c["id"], i])
+			check(box.grow(0.15).has_point(p), "%s flame %d at %s is off the car %s" % [c["id"], i, p, box])
+			var holder: Node3D = fx.flames.get_child(i) as Node3D
+			check(holder != null and holder.position.is_equal_approx(p), "%s flame %d is not at its point" % [c["id"], i])
+		await _done()

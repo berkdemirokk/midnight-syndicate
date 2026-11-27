@@ -5,7 +5,9 @@ models are no longer in the game for the player's cars: all eleven cars of the s
 (see the last two sections). The scene contract, the node names and `car_lod.gd` / `car_materials.gd` are unchanged.
 
 Owner: car_godot agent. Code: `game/vehicles/noctra_sable/`, `game/tests/test_car_asset.gd`, `game/devtools/scenarios/car_studio.gd`.
-Re-ship after every car build: `py -3.10 tools/ship_assets.py` (copies the three LOD GLBs, checks sha256, registers them in ASSET_MANIFEST.json with tris and material counts read from the GLB).
+Rebuild the cars with `py -3.10 assets_src/pipeline/rebuild_vehicles.py`. The old ship scripts (`tools/ship_assets.py`,
+`tools/ship_bruiser.py`, `assets_src/vehicles/kestrel_gtr/ship.py`) are retired and only print why: they copied the
+project-made GLBs over what are licensed models now. Where the sections below say "ship", that is history.
 
 ## Import facts (Godot 4.7.2 glTF importer, probe on the shipped LOD GLBs, final ship sha 0e60.. / 2a82.. / 8bf6..)
 - KHR_materials_emissive_strength: imported. M_LightFront emission 6.0, M_LightRear 4.0.
@@ -125,7 +127,7 @@ and saves, new GLBs under the same paths. Sources (CC BY 4.0, vinish.dev, about 
 - Triangles (LOD0 / LOD1 / LOD2): Sable 89185 / 23479 / 6627, Strix S 86997 / 26952 / 6585, Vela 87685 / 27371 / 6444,
   Bruiser 88630 / 24033 / 5271, Kestrel GT 85455 / 24454 / 6716 (caps 90000 / 28000 / 7000, per-car decimate ratios in
   the configs; far-LOD body and trim are at the floor of the collapse).
-- Rivals: every car of the shop has `"rival": true` now, so a grid mixes eleven models instead of six.
+- Rivals: corrected the same evening, see the next section (nine of the eleven race as rivals).
 - Tail lamps: the GLBs no longer embed the tail-light atlas. `car_materials.gd` sets the two shared pictures
   (`shared/tail_atlas_day.jpg`, `tail_atlas_lit.jpg`) on an M_LightRear surface that has UVs and COLOR_0 (`#atlas`
   variant). Before, Godot extracted the atlas 18 times (55 MB of PNG, one texture pair per car and LOD in memory).
@@ -139,3 +141,53 @@ and saves, new GLBs under the same paths. Sources (CC BY 4.0, vinish.dev, about 
   `car_studio_vela` are copies of `car_studio_tayfun` with their own car.
 - Still project-made: the traffic sedans (atmaca_stock, atmaca_taxi) and the Arden Civic. Their Blender sources and
   the old ones of the five replaced cars stay under `assets_src/vehicles/` (not shipped).
+
+## Fixes after the review of the eleven-car commit (2026-11-27, late evening)
+Two independent reviewers measured commit cfa70d7 and reported eleven findings. Ten are fixed here; the eleventh is
+an owner decision (the Sable R, the Vanta and the Fulmen are one body: their three sources match within 2 mm).
+- Head lamps: the Bruiser had no emitter in any LOD (its lamp face, `Lamp_Glass`, was the clear lens). It is
+  M_LightFront now and stays at LOD1. The Vela's four auxiliary lamp glasses share the head lamp lens material, which
+  glows from LOD1 on, so the lamps switched on at 22 m: `"drop_ahead_lod1": {"Lens": 2.1}` leaves out the faces of
+  that material further forward than 2.1 m from the axle midpoint.
+- Vela stripes: a third of the blue stripes was under the paint at LOD1 (the body under them moves by up to 6 mm in
+  the collapse). `"lift_mm_lod1": {"Paint_Rally_Blue": 8}` moves the stripe faces out along their vertex normals:
+  0 % buried, measured. At LOD2 the stripes are dropped (the collapse left nothing of them).
+- Stray vertices: the collapse (with symmetry) threw a vertex 1.08 m out of the Sable's flank at LOD2 and fins 16 cm
+  under the road on the Bruiser; the same in two older files. After the collapse every vertex further than 4 cm from
+  the part's surface before the collapse is put back onto it (`STRAY_TOL_M`). Deleting the faces was tried first: four
+  body vertices cost 60 faces. Per car and LOD the count is in `<car_id>_prepare_stats.json` (`stray_verts_moved`:
+  2 to 10 body and 21 to 49 trim vertices at LOD2, none at LOD0 and LOD1). The run fails when a far LOD reaches more
+  than 10 cm beyond the LOD0 box (`box` in the stats), and `test_far_lods_stay_inside_the_lod0_box` checks the same
+  in the engine. LOD2 up close: studio shots `lod2_close` and `lod2_close_front`.
+- Carbon: the carbon parts carry no UVs, so the embedded carbon textures drew as one texel (flat dark grey). They
+  are no longer embedded (`texture_from` is gone from the configs and from the script; 28 extracted files left the
+  repo). `car_materials.gd` gives an M_Carbon surface without UVs a 2x2 twill weave by three-way projection
+  (`car_carbon_weave.png`, `car_carbon_normal.png`, 256 px, from `tools/gen_car_textures.py`; one tow is 6 mm, twice
+  life size so it reads at 3 m). LOD1 and LOD2 keep carbon as M_Trim in the source's mean colour (0.022 linear; the
+  weave's mean is 0.037).
+- Rivals: `"rival": true` left the Strix S (170 km/h) and the Vela (232 km/h). A rival drives its own spec and the AI
+  never aims above the spec's top speed, so a rival below the cap of the track speed profile (252 km/h) falls off the
+  back of every grid; the Strix S sat in the grid of the final. `test_rivals_reach_the_speed_profile_cap` holds it.
+  A grid holds at most five consecutive entries of the nine-car pool.
+- Tail-light atlas: `test_tail_lamps_use_the_shared_atlas_only_with_uvs` (nine cars carry the two pictures, the Vela
+  and the Kestrel GT the plain glow).
+- `rebuild_vehicles.py` writes the manifest through `Manifest` of `tools/asset_factory.py` (lock, atomic replace) and
+  names `validate` and `licenses` as the steps after it.
+- The three old ship scripts are retired (see the top of this file).
+
+Found on the way and fixed:
+- Brake lights never lit in a race. `CarFactory` lets `CarVisual` copy the M_Paint and M_LightRear materials before
+  the car is in the tree; `CarLod._ready` then replaces them with its own, and `CarVisual` kept driving the copies no
+  mesh used. `CarVisual._ready` (it runs after the model's) now takes the materials that are on the meshes, and its
+  rest and brake levels are `CarMaterials.REAR_REST` / `REAR_BRAKE` (1.8 / 5.0) instead of its own 0.6 / 4.0, which
+  would have put the running lights under the glow threshold. Test: `test_brake_lights_reach_the_meshes_of_a_built_car`.
+- Nitro flames sat 0.8 m above the road, over the number plate: `car_fx.gd` used the pipe position of the old
+  project-made Sable for every car. The pipeline now writes one empty node per tail pipe outlet into LOD0
+  (`exhaust_tip_0`, `exhaust_tip_1`; `"tail_pipes": [[x, up, z], ...]` in the config, source glTF axes, measured from
+  the source: the outlets are 252-vertex cylinders in `Chrome` or `Alloy_Black` at the tail) and `CarFx.flame_points()`
+  reads them. A car without markers gets two flames low at its tail from the spec: the electric Kestrel GT, and the
+  Bruiser, whose side pipes sit ahead of the rear wheels. Flames at those side pipes were tried straight back and 35
+  and 55 degrees outwards: the rear fenders hide them from the chase camera. The halo of a flame starts at pipe
+  width now (`HALO_ROOT`); its 32 cm root covered the plate over centre pipes. Test:
+  `test_nitro_flames_start_at_the_tail_pipes`. Looks: `ortakoy_benchmark -- --tod=night --car=<id>` (alone on the
+  track, nitro forced; shots `bench_night_gameplay_<id>.png`).

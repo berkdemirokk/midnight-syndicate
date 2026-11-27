@@ -7,13 +7,14 @@ extends RefCounted
 const STARTER: String = "noctra_tayfun"
 const DEFAULT_CARS: Array[Dictionary] = [
 	# All eleven are CC BY 4.0 models, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival
-	# grid: every one of them since 2026-11-27, when licensed models replaced the last five project-made cars.
+	# grid: all but the Strix S (170 km/h) and the Vela (232 km/h). A rival drives its own spec, and a car slower than
+	# the track speed profile (Track.max_speed, 252 km/h) falls off the back of every grid, the final included.
 	{"id": "noctra_tayfun", "class": "street", "price": 0, "rep": 0, "rival": true},
 	{"id": "noctra_sable", "class": "street", "price": 2500, "rep": 0, "rival": true},
 	# The cheap tuner sedan. Its stock and taxi variants (project-made models) run in traffic only.
-	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0, "rival": true,
+	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0,
 		"scene": "res://vehicles/bosfor_atmaca/atmaca_modified.tscn", "spec": "res://vehicles/specs/atmaca_modified.tres"},
-	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0, "rival": true},
+	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
 	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300, "rival": true},
 	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800, "rival": true},
 	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200, "rival": true},

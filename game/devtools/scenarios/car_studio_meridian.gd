@@ -97,6 +97,12 @@ func run() -> void:
 	_aim(EYE_LOD2)
 	await cap.wait_frames(SHOT_SETTLE_FRAMES)
 	await cap.shot("lod2")
+	_aim(EYE_REAR34)  # LOD2 up close: it is the road-mirror copy from 10 m and the sun-shadow caster, so a stray triangle shows
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("lod2_close")
+	_aim(EYE_FRONT34)
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("lod2_close_front")
 	_car.set_forced(-1)
 	_car.queue_free()
 	_set.contact_shadow.visible = false

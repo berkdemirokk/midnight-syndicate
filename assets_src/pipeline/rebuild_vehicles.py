@@ -6,7 +6,9 @@ Run from the repo root:
 For each config it runs prepare_vehicle.py in Blender (LOD0, LOD1, LOD2 and <car_id>_prepare_stats.json) and then
 refreshes the car's three records in ASSET_MANIFEST.json (bytes, sha256, tris, material_count). Afterwards run
   godot --headless --audio-driver Dummy --path game --import
-and the tests. Config keys this script reads: source_file (default: assets_src/third_party/vinish_cars/<source_title
+  py -3.10 tools/asset_factory.py validate
+  py -3.10 tools/asset_factory.py licenses      (THIRD_PARTY_LICENSES.md carries the sha256 of every car file)
+and the tests. A car whose LOD1 or LOD2 reaches beyond its LOD0 box fails the run. Config keys this script reads: source_file (default: assets_src/third_party/vinish_cars/<source_title
 in lower case with dashes>.glb) and out_dir (default: game/assets/vehicles/<car_id>).
 Blender: the BLENDER environment variable, else the default install path of Blender 5.3 on Windows.
 """
@@ -19,6 +21,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from asset_factory import Manifest  # noqa: E402  the lock and the atomic write of every manifest writer
 BLENDER = os.environ.get("BLENDER", r"C:\Program Files\Blender Foundation\Blender 5.3\blender.exe")
 
 
@@ -45,34 +49,32 @@ def build(car_id):
     summary = " | ".join(ln for ln in lines if ln.startswith("LOD"))
     problems = [ln for ln in lines if "Traceback" in ln or "Error" in ln or "unmapped" in ln or ln.startswith("WARN LOD")]
     print("%s exit %d %s" % (car_id, run.returncode, summary))
+    if run.returncode != 0 and lines:
+        problems.append(lines[-1])  # the SystemExit message of prepare_vehicle.py
     for ln in problems[:8]:
         print("   " + ln)
     return run.returncode == 0 and not any("Traceback" in ln or "unmapped" in ln for ln in problems)
 
 
 def refresh_manifest(car_ids):
-    path = os.path.join(ROOT, "ASSET_MANIFEST.json")
-    with open(path, encoding="utf-8") as fh:
-        man = json.load(fh)
-    by_id = {r["id"]: r for r in man["records"]}
     done = 0
-    for car_id in car_ids:
-        cfg = load_config(car_id)
-        _src, out = paths(cfg)
-        with open(os.path.join(ROOT, out, car_id + "_prepare_stats.json"), encoding="utf-8") as fh:
-            stats = json.load(fh)
-        for lod in cfg.get("lods", [0, 1, 2]):
-            rec = by_id.get("%s_lod%d" % (car_id, lod))
-            if rec is None:
-                print("   no manifest record %s_lod%d: register it with tools/asset_factory.py" % (car_id, lod))
-                continue
-            with open(os.path.join(ROOT, rec["path"]), "rb") as fh:
-                data = fh.read()
-            rec.update(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(), tris=stats["lod%d" % lod]["tris"],
-                       material_count=stats["lod%d" % lod]["material_count"])
-            done += 1
-    with open(path, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(json.dumps(man, indent=2, ensure_ascii=False) + "\n")
+    with Manifest(os.path.join(ROOT, "ASSET_MANIFEST.json")) as man:
+        by_id = {r["id"]: r for r in man.data["records"]}
+        for car_id in car_ids:
+            cfg = load_config(car_id)
+            _src, out = paths(cfg)
+            with open(os.path.join(ROOT, out, car_id + "_prepare_stats.json"), encoding="utf-8") as fh:
+                stats = json.load(fh)
+            for lod in cfg.get("lods", [0, 1, 2]):
+                rec = by_id.get("%s_lod%d" % (car_id, lod))
+                if rec is None:
+                    print("   no manifest record %s_lod%d: register it with tools/asset_factory.py" % (car_id, lod))
+                    continue
+                with open(os.path.join(ROOT, rec["path"]), "rb") as fh:
+                    data = fh.read()
+                rec.update(bytes=len(data), sha256=hashlib.sha256(data).hexdigest(), tris=stats["lod%d" % lod]["tris"],
+                           material_count=stats["lod%d" % lod]["material_count"])
+                done += 1
     print("manifest: %d records refreshed" % done)
 
 

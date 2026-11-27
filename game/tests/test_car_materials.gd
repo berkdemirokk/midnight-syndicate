@@ -5,7 +5,7 @@ extends "res://tests/test_case.gd"
 const SCENE: String = "res://vehicles/noctra_sable/noctra_sable.tscn"
 const MAPS: PackedStringArray = [
 	"car_flake_normal.png", "car_flake_roughness.png", "car_rubber_roughness.png",
-	"car_brushed_roughness.png", "car_grain_normal.png",
+	"car_brushed_roughness.png", "car_grain_normal.png", "car_carbon_weave.png", "car_carbon_normal.png",
 ]
 const PROPS: PackedStringArray = [
 	"anisotropy_enabled", "anisotropy", "rim_enabled", "rim", "rim_tint", "normal_texture", "roughness_texture",

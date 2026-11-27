@@ -44,6 +44,8 @@ const GLASS_STREAK_SCALE: Vector3 = Vector3(1.5, 1.0, 1.5)  ## triplanar repeats
 const LENS_ALPHA: float = 0.1  ## clear cover: at 0.25 it laid a white veil over the lamp and hid the ring and the projector
 const CARBON_CLEAR: float = 0.6
 const CARBON_CLEAR_ROUGHNESS: float = 0.2
+const CARBON_TILING: float = 10.0  ## repeats per metre of the 16-tow weave: a tow of 6 mm, twice life size so it reads at 3 m
+const CARBON_WEAVE_SCALE: float = 0.6  ## weave normal strength under the clear coat
 const REAR_REST: float = 1.8  ## rear lamp emission multiplier at rest: above the glow threshold (1.3), so running lights bloom at night
 const REAR_BRAKE: float = 5.0  ## rear lamp emission multiplier while braking
 ## Surfaces of these materials use the mesh's vertex colours when it has them: the licensed cars carry every part's
@@ -88,6 +90,11 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT
 				if not _shared.has(key):
 					_shared[key] = _tyre_photo(_build(nm, src, paint, finish), mi.mesh.get_aabb().size.y)
 				mat = _shared[key]
+			elif nm == "M_Carbon" and am != null and (am.surface_get_format(s) & Mesh.ARRAY_FORMAT_TEX_UV) == 0:
+				# carbon parts without UVs (the licensed cars): the weave by projection, as the tyre picture
+				if not _shared.has("M_Carbon#weave"):
+					_shared["M_Carbon#weave"] = _carbon_weave(_build(nm, src, paint, finish))
+				mat = _shared["M_Carbon#weave"]
 			elif PER_CAR.has(nm):
 				if not per_car.has(slot):
 					per_car[slot] = _build(nm, src, paint, finish, vc, tail_atlas)
@@ -273,6 +280,19 @@ static func _tyre_photo(m: StandardMaterial3D, diameter: float) -> StandardMater
 	var k: float = 1.0 / maxf(diameter, 0.1)
 	m.uv1_scale = Vector3(k, k, k)
 	m.uv1_offset = Vector3(0.5, 0.5, 0.5)
+	return m
+
+
+## 2x2 twill weave in object space (three-way projection): for carbon surfaces that carry no UVs.
+static func _carbon_weave(m: StandardMaterial3D) -> StandardMaterial3D:
+	m.albedo_color = Color.WHITE
+	m.albedo_texture = _tex_file("car_carbon_weave.png")
+	m.normal_enabled = true
+	m.normal_texture = _tex_file("car_carbon_normal.png")
+	m.normal_scale = CARBON_WEAVE_SCALE
+	m.uv1_triplanar = true
+	m.uv1_triplanar_sharpness = 4.0  # a narrow blend: two weaves on top of each other read as noise
+	m.uv1_scale = Vector3(CARBON_TILING, CARBON_TILING, CARBON_TILING)
 	return m
 
 

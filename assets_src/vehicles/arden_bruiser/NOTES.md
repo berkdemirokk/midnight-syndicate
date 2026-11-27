@@ -1,7 +1,7 @@
 # Arden Bruiser build notes
 
 Brief: docs/art/CAR_BRUISER_BRIEF.md. Pipeline: `blender --background --factory-startup --python build_car.py` (about 12 s),
-then `validate_car.py`, `render_car.py -- cycles renders <views>`, then `py -3.10 tools/ship_bruiser.py`.
+then `validate_car.py`, `render_car.py -- cycles renders <views>`, then (until 2026-11-27) `py -3.10 tools/ship_bruiser.py`. That script is retired: the game's Bruiser is a licensed model now.
 
 - body.py: the hero's surface engine with new curve data (long bonnet, power bulge function `bulge`, cabin set back,
   fastback, constant 585 mm roof edge so the side-glass cut is a straight x plane, length 4.80 + nose cap + tail ring).

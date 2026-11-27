@@ -54,7 +54,7 @@
     "M_Interior"
    ],
    "lights_front": [
-    "M_Lens"
+    "M_LightFront"
    ],
    "lights_rear": [
     "M_LightRear"
@@ -92,7 +92,7 @@
    "M_Chrome",
    "M_Glass",
    "M_Interior",
-   "M_Lens",
+   "M_LightFront",
    "M_LightRear",
    "M_Paint",
    "M_Plate",
@@ -100,15 +100,30 @@
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 12
+  "material_count": 12,
+  "box": [
+   [
+    -1.0180277824401855,
+    -2.3877692222595215,
+    0.00022074580192565918
+   ],
+   [
+    1.0180277824401855,
+    2.5799906253814697,
+    1.3815838098526
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
  },
  "lod1": {
-  "tris": 24033,
+  "tris": 24193,
   "tris_by_node": {
    "body": 7776,
    "col_body": 90,
    "glass": 776,
    "interior": 4768,
+   "lights_front": 160,
    "lights_rear": 114,
    "trim": 7330,
    "wheel_FL": 796,
@@ -126,6 +141,9 @@
    ],
    "interior": [
     "M_Interior"
+   ],
+   "lights_front": [
+    "M_LightFront"
    ],
    "lights_rear": [
     "M_LightRear"
@@ -150,17 +168,32 @@
     "M_Tire"
    ]
   },
-  "surfaces": 13,
+  "surfaces": 14,
   "materials": [
    "M_Glass",
    "M_Interior",
+   "M_LightFront",
    "M_LightRear",
    "M_Paint",
    "M_Rim",
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 7
+  "material_count": 8,
+  "box": [
+   [
+    -1.0174028873443604,
+    -2.3877692222595215,
+    -0.004021793603897095
+   ],
+   [
+    1.0174028873443604,
+    2.5799906253814697,
+    1.3807423114776611
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
  },
  "lod2": {
   "tris": 5271,
@@ -210,6 +243,23 @@
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 5
+  "material_count": 5,
+  "box": [
+   [
+    -0.9755285382270813,
+    -2.3814899921417236,
+    -0.004021793603897095
+   ],
+   [
+    0.9733296632766724,
+    2.5575404167175293,
+    1.359063744544983
+   ]
+  ],
+  "stray_verts_moved": {
+   "body": 8,
+   "trim": 21
+  },
+  "tail_pipes": 0
  }
 }

@@ -3090,8 +3090,8 @@
       "tris": 89185,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3546600,
-      "sha256": "559e1437ce235ec1751486a3e74c0e897814679b3e1062e15bd05115daeba639",
+      "bytes": 3525500,
+      "sha256": "12edb15659d04f13373561d916e2212aa90028af7872ab8b61b6777aff835885",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Track Day Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Noctra Sable R). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -3124,8 +3124,8 @@
       "tris": 6627,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 401756,
-      "sha256": "7b24ae4ffec66fa26b5e6046c422db85b01745f86e959ded1e55e92d626d4d61",
+      "bytes": 401820,
+      "sha256": "a63fa23eec4e4188404bf2fd918be49dd4d223f28aacab574bcd4bccbcbec1b5",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Track Day Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Noctra Sable R). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8622,8 +8622,8 @@
       "tris": 86997,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3431416,
-      "sha256": "e48748b2d4fc21f1b067d42ff27f939dedf080575951b7caee30507de14cc545",
+      "bytes": 3410320,
+      "sha256": "026448f6494e2063b520cde76e42272117a382e5bd3b32b72a82b2d62cbdddc5",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Drift Sedan\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Velmar Strix S). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8656,8 +8656,8 @@
       "tris": 6585,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 396544,
-      "sha256": "a493b44e4d2b72d8cd6f72ec4f322c2a52d80a79492ee8f063ddd45aab78f94f",
+      "bytes": 396164,
+      "sha256": "93592fe66e45c1fa18fb0979971f926d1363160ba66839f14312b3275a529e3f",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Drift Sedan\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Velmar Strix S). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8724,8 +8724,8 @@
       "tris": 85455,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3390120,
-      "sha256": "c59564103c3b502614524a7fc1ec6f7996f7b4427973142380f602b8f4a0baf1",
+      "bytes": 3368816,
+      "sha256": "02ea93e47660f03095392e7b036542732d5c1139c716250b0599283a085d9c4a",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Electric Super GT\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Kestrel GT). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8758,8 +8758,8 @@
       "tris": 6716,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 401548,
-      "sha256": "d26aa18d78990ef807f3678be2e22e2326c071b22582946af0c370481a72f9c5",
+      "bytes": 401480,
+      "sha256": "6253f44d6535c33255b1e771de97c6f4894d08440c585a73b2f6da0327127bcc",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Electric Super GT\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Kestrel GT). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8775,8 +8775,8 @@
       "tris": 88630,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 3294604,
-      "sha256": "c47fc8582bb9125c2f4c9403d58b66be07e22e8d2d994c0e6de451821ac8aab5",
+      "bytes": 3294736,
+      "sha256": "a72ace458f4ad111616998ec79a03a86421a0dc222419bc08c51bd24f7d737b1",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Supercharged Street Machine\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Arden Bruiser). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8789,11 +8789,11 @@
       "source_url": "https://vinish.dev/free-3d-models/muscle-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 24033,
+      "tris": 24193,
       "texture_sizes": {},
-      "material_count": 7,
-      "bytes": 1166416,
-      "sha256": "3d52cb00b776eed7db6f2046b23fa8a7e701a430b0a169c22317687799336d5d",
+      "material_count": 8,
+      "bytes": 1172156,
+      "sha256": "f7495f89eb06fd4ed7be44edea7bc47ea32a9fedd0cd58183565d04b7a05b97b",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Supercharged Street Machine\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Arden Bruiser). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8809,8 +8809,8 @@
       "tris": 5271,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 294576,
-      "sha256": "1f0dc48f889478e73fdd3421ced1277a529b5d94176a5a5ef1103efddee4bbdb",
+      "bytes": 294492,
+      "sha256": "70c46afe3dfa127a888f851900d02e0253e6d8d04031be960d9ac7afba66d973",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Supercharged Street Machine\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Arden Bruiser). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8826,8 +8826,8 @@
       "tris": 87685,
       "texture_sizes": {},
       "material_count": 13,
-      "bytes": 3456684,
-      "sha256": "8e3ef4c9199486bd85ed4ac0e84afd24763b3a87f2738d3eabcb767dd9d36ab7",
+      "bytes": 3456888,
+      "sha256": "1d4589b5411c4425601a0d3f57f0dffbde6211b29e153d6ca1cf74bca4e407ba",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Rally Hatchback\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Noctra Vela). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8840,11 +8840,11 @@
       "source_url": "https://vinish.dev/free-3d-models/sports-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 27371,
+      "tris": 27092,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 1369608,
-      "sha256": "3c0fff7333f31c71af9168c50c9b4b8703a0fee7b2dfdcdcf6f2e0071fe8e102",
+      "bytes": 1359456,
+      "sha256": "d8edb67ba157913f262cfe3c7c9dbf63b0b91917407c5b018026d78c21358e00",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Rally Hatchback\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Noctra Vela). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -8857,11 +8857,11 @@
       "source_url": "https://vinish.dev/free-3d-models/sports-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 6444,
+      "tris": 6504,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 386656,
-      "sha256": "aad8ade842765ad909e5af8de31f372caed82b3d442297aed9164ceb0cd94bbe",
+      "bytes": 387208,
+      "sha256": "e801d9a054bf014db9b87e5526454221db3c40633ded6fd6538680b56014d2ac",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "\"Rally Hatchback\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, repainted and renamed in game (Noctra Vela). Downloaded 2026-11-27; it replaced the project-made model of that car."
@@ -9664,8 +9664,8 @@
       "tris": 87595,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3488748,
-      "sha256": "ad7f141d8be8a714992903ba6a5368d3564d0ff27cb213fd85a5542fc2b004f0",
+      "bytes": 3467652,
+      "sha256": "cb33130978ccd41197e3b34bb039935c0b9ecaab09a210a33487c0908874e394",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
@@ -9698,8 +9698,8 @@
       "tris": 6453,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 399184,
-      "sha256": "72523604d95c80f03751477a7e53eb2a0da1bd61e9b155ca587d1867c84fc450",
+      "bytes": 399376,
+      "sha256": "12d8f3abb2285c42274b7b7330d64db1cb1a0d18d0c84d6c56e55330dd8ee671",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
@@ -9715,8 +9715,8 @@
       "tris": 88132,
       "texture_sizes": {},
       "material_count": 13,
-      "bytes": 3297248,
-      "sha256": "0aef54f1bbc66b6a33454e4c9a90f015b472abfa127a04dca8040a0500db1c82",
+      "bytes": 3297452,
+      "sha256": "7ec47f38ddd6d4557d317b80c3bb91692c6c647f103846176b54c6dc2a2a3ea9",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
@@ -9749,8 +9749,8 @@
       "tris": 6679,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 399108,
-      "sha256": "ddb28ba8acadf9908f4448b914a6e7c26e9a9b5c7233a6449914b5546cb4f47b",
+      "bytes": 398368,
+      "sha256": "04d78c6bebf43f5432fc2324ebd6a9871f98516331ccd00b6cfd60c70746d46d",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
@@ -9783,8 +9783,8 @@
       "tris": 89764,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3504552,
-      "sha256": "51c16783cf17bee3b6e48eaf2c7af59a05fa3026090a3261f4d23b7da63d7b1e",
+      "bytes": 3483452,
+      "sha256": "b82d79749cd297bced6515ec6e4ef0f0fd262485565a54f150cd4402520730e4",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
@@ -9817,8 +9817,8 @@
       "tris": 6053,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 371300,
-      "sha256": "0825b9fa8d655aafd908d737112ad547abb7e15984da3efa0a8e343fb5c5a718",
+      "bytes": 371360,
+      "sha256": "eb50909fa0bdd91ac87169e7d65df14c7e1bc07cbe3c5efabc6de183bddf645f",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
@@ -9851,8 +9851,8 @@
       "tris": 89532,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3514352,
-      "sha256": "5fc521a57323b9138d549728291701e3a519a276bbf0847ae99b4b63894b634f",
+      "bytes": 3493256,
+      "sha256": "da2316ddaa7590bef0d2c020cfb6d1f09f6d2d19cc9e60ca862234347c9b1442",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
@@ -9885,8 +9885,8 @@
       "tris": 6696,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 387108,
-      "sha256": "4190284d449d5fbf87035875fffbcddd6260f8ec38507d8789f4543425116768",
+      "bytes": 387156,
+      "sha256": "eb67664e5ccb55464971813909353f5b1a027ab7d5f7473f4387b6e8598e1d25",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
@@ -9919,8 +9919,8 @@
       "tris": 89515,
       "texture_sizes": {},
       "material_count": 13,
-      "bytes": 3493756,
-      "sha256": "e29d108e5c5976a86251664b970cfd020243893321291652bb7aca9387c70261",
+      "bytes": 3493960,
+      "sha256": "1ca25e052b6163e4836a0563134d0bcecb79b0c96b669f6cac842e6336b6fba4",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
@@ -9954,7 +9954,7 @@
       "texture_sizes": {},
       "material_count": 5,
       "bytes": 331140,
-      "sha256": "02260b3e09de75854991e97837380c7c3993b4fff2ba173e05d88bf0b39cd6c4",
+      "sha256": "e7eefd8312bbe6a0374f8f952a5f69e484f9018136b8e0ec341ecf54644d7caf",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
@@ -9987,8 +9987,8 @@
       "tris": 89123,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 3543432,
-      "sha256": "cfbb05108e18abaa49b2ecc85ef340a2c78a1cc186ec2c4e44ab9c9e5d0cfd70",
+      "bytes": 3522336,
+      "sha256": "226af3f7c7c930569cb48de827e7e0a0e495c70fa9238c1d292b009dd986af59",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
@@ -10021,8 +10021,8 @@
       "tris": 6614,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 404940,
-      "sha256": "bd491a787e744560b0e9746c6e8a831eefdf52ace495b814d227663c351cdabd",
+      "bytes": 405196,
+      "sha256": "61af0daf2f3a04df6845fe1999dec1b6069344df4d5d4fd4c94ae22c88dbe115",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
@@ -12418,6 +12418,50 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Tail-light atlas, lit picture (emission): six tail-light units in 2 x 3 cells, shared by every licensed car (one cell a car, set by tail_cell in its vehicle config). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/tail_atlas_lit.png."
+    },
+    {
+      "id": "car_carbon_weave",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/car_carbon_weave.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "car_carbon_weave.png": [
+          256,
+          256
+        ]
+      },
+      "material_count": 0,
+      "bytes": 21020,
+      "sha256": "8df35bc4fef353f8a5844812fe4868a52102208ad7c3d912d3e55c544725905e",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Carbon fibre 2x2 twill albedo, M_Carbon by projection (the licensed cars' carbon parts have no UVs). Built by tools/gen_car_textures.py"
+    },
+    {
+      "id": "car_carbon_normal",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/car_carbon_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "car_carbon_normal.png": [
+          256,
+          256
+        ]
+      },
+      "material_count": 0,
+      "bytes": 4222,
+      "sha256": "d10f4510dfc4d49c32cc8510f2ce7c1cdb955ca617b801c3bdbe9c8898cc847c",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Carbon fibre 2x2 twill normal map, M_Carbon by projection. Built by tools/gen_car_textures.py"
     }
   ]
 }

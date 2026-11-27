@@ -102,18 +102,32 @@
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 13
+  "material_count": 13,
+  "box": [
+   [
+    -1.0488554239273071,
+    -2.2200000286102295,
+    0.00022113323211669922
+   ],
+   [
+    1.0488554239273071,
+    2.1166880130767822,
+    1.5230426788330078
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 2
  },
  "lod1": {
-  "tris": 27371,
+  "tris": 27092,
   "tris_by_node": {
    "body": 6990,
    "col_body": 90,
    "glass": 900,
    "interior": 6774,
-   "lights_front": 1012,
+   "lights_front": 732,
    "lights_rear": 1008,
-   "trim": 7346,
+   "trim": 7347,
    "wheel_FL": 813,
    "wheel_FR": 813,
    "wheel_RL": 813,
@@ -167,16 +181,30 @@
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 8
+  "material_count": 8,
+  "box": [
+   [
+    -1.0462955236434937,
+    -2.2160000801086426,
+    -0.0008164346218109131
+   ],
+   [
+    1.0462955236434937,
+    2.1166880130767822,
+    1.5230426788330078
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
  },
  "lod2": {
-  "tris": 6444,
+  "tris": 6504,
   "tris_by_node": {
    "body": 2701,
    "col_body": 90,
    "glass": 315,
    "lights_rear": 160,
-   "trim": 2027,
+   "trim": 2087,
    "wheel_FL": 288,
    "wheel_FR": 288,
    "wheel_RL": 288,
@@ -217,6 +245,23 @@
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 5
+  "material_count": 5,
+  "box": [
+   [
+    -1.057648777961731,
+    -2.2100000381469727,
+    -0.00957036018371582
+   ],
+   [
+    1.057648777961731,
+    2.116346836090088,
+    1.5305490493774414
+   ]
+  ],
+  "stray_verts_moved": {
+   "body": 2,
+   "trim": 38
+  },
+  "tail_pipes": 0
  }
 }

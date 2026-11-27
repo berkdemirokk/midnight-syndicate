@@ -222,7 +222,10 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - Tests: per-car tests point at the new models; the five joined `test_car_licensed.gd`. 335 tests, 0 failed.
 - Evidence (dev PC, RTX 5060 Ti, High; not iPhone numbers): Bosphorus peak 408 draw calls / 443576 primitives, Maslak
   night 349 / 373584, Neon Wharf night 423 / 410342, garage and shop up to 304 / 390966 (budget 500 / 450000).
-  Studio shots of all eleven cars, garage, shop and all track captures re-taken. Manifest 655 records, 0 failing.
+  Studio shots of all eleven cars, garage, shop, the Ortakoy benchmark and four of the 43 tod_tracks shots (Maslak
+  and Neon Wharf, day and night, High) re-taken. Not re-taken in that session: the other 39 tod_tracks shots (every
+  Bosphorus one, every Low and Medium one) and race_bogaz / race_maslak / race_city / race_replay / race_kestrel,
+  which still showed the replaced models. Manifest 655 records, 0 failing. (Sentence corrected after the review.)
 - Owner's new bar the same evening: "Asphalt 4.7 almış App Store'da, hedef onu geçmek" and the Asphalt Ferrari key
   art as the quality reference. Said plainly to the owner: out-producing those studios is not possible here; the
   plan in ROADMAP.md goes for the rating instead. The ChatGPT work chat was deleted at the owner's request.

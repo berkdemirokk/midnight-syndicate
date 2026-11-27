@@ -3,7 +3,8 @@ extends "res://devtools/capture_scenario.gd"
 ## night. The day shots are the honest ones: no darkness, bloom or haze to hide the geometry.
 ## Shots (bench_<tod>_<view>.png): hero (low chase view, no HUD), car34 (car close-up, no HUD), street (eye level
 ## along the land side, no HUD), mosque (the landmark from the road, no HUD) and gameplay (HUD on, 3 s after GO).
-## Options: --tod=day|night (default both).
+## Options: --tod=day|night (default both); --car=<catalog id> drives that car instead of the Vanta and adds the id
+## to the shot names (a look at one car's nitro flames and lamps in a race; the plain names stay the benchmark).
 
 const SCENE: String = "res://race/race_scene.tscn"
 const CAR_SCENE: String = "res://vehicles/kestrel_vanta/kestrel_vanta.tscn"
@@ -13,12 +14,16 @@ const SETTLE_FRAMES: int = 40
 const GAMEPLAY_S: float = 3.0
 const WAIT_MAX_S: float = 20.0
 
+var _car_id: String = ""
+
 
 func run() -> void:
 	var only: String = ""
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--tod="):
 			only = a.trim_prefix("--tod=")
+		if a.begins_with("--car="):
+			_car_id = a.trim_prefix("--car=")
 	var tods: PackedStringArray = PackedStringArray(["day", "night"]) if only == "" else PackedStringArray([only])
 	tree.auto_accept_quit = false
 	for tod: String in tods:
@@ -30,11 +35,11 @@ func _one(tod: String) -> void:
 	cfg.use_garage_paint = false
 	cfg.autopilot = true
 	cfg.laps = 2
-	cfg.opponent_count = 3
+	cfg.opponent_count = 3 if _car_id == "" else 0  # alone: the autopilot holds its nitro behind a slower car
 	cfg.rival_mix = true  # rivals from the licensed pool (CarCatalog.rival_models)
 	cfg.track_scene = TRACK
-	cfg.car_scene = CAR_SCENE
-	cfg.car_spec_path = CAR_SPEC
+	cfg.car_scene = CAR_SCENE if _car_id == "" else CarCatalog.scene_path(_car_id)
+	cfg.car_spec_path = CAR_SPEC if _car_id == "" else CarCatalog.spec_path(_car_id)
 	cfg.time_of_day = tod
 	var race: RaceScene = (load(SCENE) as PackedScene).instantiate() as RaceScene
 	race.config = cfg
@@ -68,7 +73,7 @@ func _one(tod: String) -> void:
 		cam.global_transform = Transform3D(Basis.looking_at((v[1] as Vector3) - (v[0] as Vector3), Vector3.UP), v[0] as Vector3)
 		cam.make_current()
 		await cap.wait_frames(4)
-		await cap.shot("bench_%s_%s" % [tod, view])
+		await cap.shot("bench_%s_%s%s" % [tod, view, "" if _car_id == "" else "_" + _car_id])
 		cam.queue_free()
 		await cap.wait_frames(2)
 	race.hud.visible = true
@@ -76,7 +81,9 @@ func _one(tod: String) -> void:
 	while race.race.state != RaceManager.State.RACING and waited < WAIT_MAX_S:
 		await cap.wait_seconds(0.1)
 		waited += 0.1
+	if _car_id != "":
+		race.force_player_nitro(true)  # the look at one car wants its flames in the frame
 	await cap.wait_seconds(GAMEPLAY_S)
-	await cap.shot("bench_%s_gameplay" % tod)
+	await cap.shot("bench_%s_gameplay%s" % [tod, "" if _car_id == "" else "_" + _car_id])
 	race.queue_free()
 	await cap.wait_frames(5)

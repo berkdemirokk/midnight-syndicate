@@ -8,9 +8,10 @@ const RL: int = 2  ## rear-left index in ArcadeCar.wheel_slip
 const RR: int = 3
 const NITRO_FULL_KMH: float = 250.0
 
-## Local to the car (forward is -Z). Measured from noctra_sable_lod0.glb: the two exhaust pipe tips sit at
-## x = +-0.045, y = 0.33, z = 2.19 (rear), and the flames start just behind them.
-@export var exhaust_points: PackedVector3Array = PackedVector3Array([Vector3(-0.045, 0.33, 2.2), Vector3(0.045, 0.33, 2.2)])
+const TIP_NODES: String = "exhaust_tip_*"  ## empty nodes at the tail pipe outlets of a car model (prepare_vehicle.py, LOD0)
+const NO_PIPE_HALF_GAP_M: float = 0.25  ## a model without pipes: two flames this far either side of the centre line
+const NO_PIPE_HEIGHT_M: float = 0.32  ## and this high above the road
+const NO_PIPE_INSET_M: float = 0.05  ## in from the tail end of the body box
 ## Approximate rear contact points: wheelbase 2.66 m, rear track 1.64 m (check against the spec).
 @export var rear_wheel_offsets: PackedVector3Array = PackedVector3Array([Vector3(-0.82, -0.2, 1.33), Vector3(0.82, -0.2, 1.33)])
 ## Rear slip angle above which tyre smoke starts, and the angle range over which it reaches full amount.
@@ -73,12 +74,32 @@ func _ready() -> void:
 	if speed_lines_on:
 		speed_lines = SpeedLines.new()
 		add_child(speed_lines)
-	flames.set_exhaust_points(exhaust_points)
+	flames.set_exhaust_points(flame_points())
 	flames.set_active(false)
 	headlights.set_on(headlights_on)
 	car.nitro_started.connect(_on_nitro_started)
 	car.nitro_ended.connect(_on_nitro_ended)
 	car.hit.connect(_on_hit)
+
+
+## Car-space points (forward is -Z) where the nitro flames start: the tail pipe markers of the car's model. A model
+## without them (the electric Kestrel GT, the Bruiser with its side pipes, the dev mule) gets two points low at its
+## tail, from the spec.
+func flame_points() -> PackedVector3Array:
+	var out := PackedVector3Array()
+	for n: Node in car.find_children(TIP_NODES, "Node3D", true, false):
+		var xf: Transform3D = Transform3D.IDENTITY
+		var up: Node = n
+		while up != null and up != car and up is Node3D:
+			xf = (up as Node3D).transform * xf
+			up = up.get_parent()
+		out.append(xf.origin)
+	if out.is_empty():
+		var sp: CarSpec = car.spec if car.spec != null else CarSpec.new()  # a CarFx that enters the tree with its car is ready first
+		var y: float = sp.mount_height - sp.suspension_rest + CarVisual.STATIC_SAG_M + NO_PIPE_HEIGHT_M  # road level at rest, car space
+		var z: float = sp.body_size.z * 0.5 - NO_PIPE_INSET_M
+		out = PackedVector3Array([Vector3(-NO_PIPE_HALF_GAP_M, y, z), Vector3(NO_PIPE_HALF_GAP_M, y, z)])
+	return out
 
 
 func _exit_tree() -> void:

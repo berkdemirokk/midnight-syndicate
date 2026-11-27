@@ -17,8 +17,8 @@ const STATIC_SAG_M: float = 0.05  ## the car's own weight compresses the springs
 @export var tilt_per_accel: float = 0.0025  ## rad per m/s^2 of acceleration
 @export var tilt_per_compression: float = 0.12  ## rad per unit of suspension compression difference
 @export var tilt_smooth_hz: float = 6.0  ## 1/s, how fast the body follows the target tilt
-@export var light_rest: float = 0.6  ## rear light emission multiplier at rest
-@export var light_brake: float = 4.0  ## rear light emission multiplier while braking
+@export var light_rest: float = CarMaterials.REAR_REST  ## rear light emission multiplier at rest
+@export var light_brake: float = CarMaterials.REAR_BRAKE  ## rear light emission multiplier while braking
 @export var light_smooth_hz: float = 12.0
 @export var brake_input_min: float = 0.05  ## brake input below this does not light the rear lamps
 
@@ -49,6 +49,16 @@ var _warned: bool = false
 
 func _init() -> void:
 	process_physics_priority = 1  ## after the car (priority 0) has stepped this tick
+
+
+## A CarLod model builds its per-car engine materials in its own _ready, which runs before this one (the model is an
+## earlier child of the car) and replaces the copies setup() made. Take those: before this, brake lights and paint
+## changes in a race went to materials no mesh used.
+func _ready() -> void:
+	if _model is CarLod:
+		_paint_mats.clear()
+		_light_mats.clear()
+		_collect_materials(_model, false)
 
 
 ## Binds to a car and its model. The model must be a descendant of the car. Call once, after the car is built.
@@ -209,8 +219,9 @@ func _find(node_name: String) -> Node3D:
 	return n as Node3D
 
 
-## Gives every M_Paint and M_LightRear surface its own duplicate, so cars built from one scene stay independent.
-func _collect_materials(root: Node) -> void:
+## Collects the M_Paint and M_LightRear materials. own = true gives every such surface its own duplicate first, so
+## cars built from one scene stay independent; false takes the materials as they are (CarLod's are per car already).
+func _collect_materials(root: Node, own: bool = true) -> void:
 	for n: Node in root.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = n as MeshInstance3D
 		if mi.mesh == null:
@@ -228,10 +239,12 @@ func _collect_materials(root: Node) -> void:
 			var mat_name: String = mat.resource_name
 			if mat_name != MAT_PAINT and mat_name != MAT_LIGHT_REAR:
 				continue
-			var dup: StandardMaterial3D = (mat as StandardMaterial3D).duplicate() as StandardMaterial3D
-			mi.set_surface_override_material(s, dup)
-			if mat_name == MAT_PAINT:
-				_paint_mats.append(dup)
-			else:
+			var dup: StandardMaterial3D = mat as StandardMaterial3D
+			if own:
+				dup = dup.duplicate() as StandardMaterial3D
+				mi.set_surface_override_material(s, dup)
+			var into: Array[StandardMaterial3D] = _paint_mats if mat_name == MAT_PAINT else _light_mats
+			if not into.has(dup):  # one material serves all three LODs of a CarLod
+				into.append(dup)
+			if mat_name == MAT_LIGHT_REAR:
 				dup.emission_enabled = true
-				_light_mats.append(dup)

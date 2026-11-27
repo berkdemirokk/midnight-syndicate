@@ -83,9 +83,6 @@
     "Mesh_Chrome": "M_Chrome",
     "Paint_Maroon": "M_Paint"
   },
-  "texture_from": {
-    "M_Carbon": "Carbon"
-  },
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",
@@ -234,5 +231,17 @@
     }
   },
   "front_plate_material": "M_Trim",
-  "tail_cell": 4
+  "tail_cell": 4,
+  "tail_pipes": [
+    [
+      0.46,
+      0.33,
+      -2.41
+    ],
+    [
+      -0.46,
+      0.33,
+      -2.41
+    ]
+  ]
 }

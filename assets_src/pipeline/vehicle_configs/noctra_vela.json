@@ -109,9 +109,6 @@
     "Paint_White": "M_Paint",
     "Paint_Rally_Blue": "M_Trim"
   },
-  "texture_from": {
-    "M_Carbon": "Carbon"
-  },
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",
@@ -247,7 +244,8 @@
     "Seat_Red": "drop",
     "Skin_Tan": "drop",
     "Cage": "drop",
-    "Strap_Red": "drop"
+    "Strap_Red": "drop",
+    "Paint_Rally_Blue": "drop"
   },
   "materials_lod2": {
     "Carbon": "M_Trim"
@@ -282,5 +280,23 @@
       "default": 0.08
     }
   },
-  "front_plate_material": "M_Trim"
+  "front_plate_material": "M_Trim",
+  "tail_pipes": [
+    [
+      0.43,
+      0.33,
+      -2.03
+    ],
+    [
+      -0.43,
+      0.33,
+      -2.03
+    ]
+  ],
+  "drop_ahead_lod1": {
+    "Lens": 2.1
+  },
+  "lift_mm_lod1": {
+    "Paint_Rally_Blue": 8
+  }
 }

@@ -157,3 +157,19 @@ func test_rival_pool_prefers_flagged_cars() -> void:
 	_restore(old)
 	for r: Dictionary in CarCatalog.rival_models(12, 5):
 		check(bool(CarCatalog.info(str(r["id"])).get("rival", false)), "real rival grid uses flagged cars only: %s" % str(r["id"]))
+
+
+## A rival drives its own spec and the AI never aims above the spec's top speed, so a rival slower than the cap of the
+## track speed profile cannot keep up on any straight (the 170 km/h Strix S sat in the grid of the final for a day).
+func test_rivals_reach_the_speed_profile_cap() -> void:
+	var track := Track.new()
+	var cap_kmh: float = track.max_speed * 3.6
+	track.free()
+	var flagged: int = 0
+	for c: Dictionary in CarCatalog.DEFAULT_CARS:
+		if not bool(c.get("rival", false)):
+			continue
+		flagged += 1
+		var spec: CarSpec = load(CarCatalog.spec_path(str(c["id"]))) as CarSpec
+		check(spec != null and spec.top_speed_kmh >= cap_kmh, "rival %s tops out below the profile cap of %.0f km/h" % [c["id"], cap_kmh])
+	check(flagged >= 5, "a full grid of five different rival models needs five flagged cars, got %d" % flagged)

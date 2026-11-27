@@ -63,6 +63,11 @@ RIM_REF_SHARE = 0.08  # fallback only: the brightest wheel colour that covers at
 MATT_TARGETS = ("M_Trim", "M_Interior")
 METAL_MIN = 0.6  # source metallicFactor from which a material counts as a metal
 METAL_AS_MATT = 0.18
+# The collapse (with symmetry) now and then throws a vertex far off the part: a 1 m spike out of a flank, a fin under
+# the road (found in four LOD2 files), and at 6 % it leaves body corners 5 to 25 cm off. A vertex further than this
+# from the part before the collapse is put back onto it. Deleting its faces was tried: 4 vertices cost 60 body faces.
+STRAY_TOL_M = 0.04
+LOD_BOX_MARGIN_M = 0.1  # a far LOD may not reach further than this beyond the LOD0 box (the run fails otherwise)
 
 # Values from docs/art/CAR_01_BRIEF.md (materials table). The engine re-styles most of them by name at run time.
 SPEC = {
@@ -97,7 +102,7 @@ def set_in(bsdf, name, value):
         print("WARN no Principled input", name)
 
 
-def make_material(name, cfg, src_images):
+def make_material(name, cfg):
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     nt = m.node_tree
@@ -122,32 +127,9 @@ def make_material(name, cfg, src_images):
         tex = nt.nodes.new("ShaderNodeTexImage")
         tex.image = bpy.data.images.load(cfg["plate_image"], check_existing=True)
         nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-    src = cfg.get("texture_from", {}).get(name)
-    for kind, img in src_images.get(src, {}).items() if src else []:
-        tex = nt.nodes.new("ShaderNodeTexImage")
-        tex.image = img
-        if kind == "normal":
-            nm = nt.nodes.new("ShaderNodeNormalMap")
-            nt.links.new(tex.outputs["Color"], nm.inputs["Color"])
-            nt.links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
-        elif kind == "base" and name == "M_Carbon":
-            nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    # No source texture is carried over: the nodes built here have no source UVs. The engine gives M_Carbon its weave
+    # and M_Tire its tyre picture by projection (car_materials.gd).
     return m
-
-
-def source_images():
-    """Source material name -> {'normal': image, 'base': image}: the first image texture of each kind in that material."""
-    out = {}
-    for mat in bpy.data.materials:
-        if not mat.use_nodes:
-            continue
-        found = {}
-        for n in mat.node_tree.nodes:
-            if n.bl_idname == "ShaderNodeTexImage" and n.image is not None:
-                kind = "normal" if "normal" in n.image.name.lower() else "base"
-                found.setdefault(kind, n.image)
-        out[mat.name] = found
-    return out
 
 
 def srgb_to_linear(a):
@@ -324,9 +306,20 @@ def smooth_paint(verts, faces):
     return out
 
 
+def pull_back_strays(ob, before):
+    """Moves the vertices of ob that lie further than STRAY_TOL_M from the surface it had before the collapse back
+    onto that surface (before: its BVH, object space). Returns how many moved."""
+    moved = 0
+    for v in ob.data.vertices:
+        co, _normal, _index, dist = before.find_nearest(v.co)
+        if co is not None and dist > STRAY_TOL_M:
+            v.co = co
+            moved += 1
+    return moved
+
+
 def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     load_source(src)
-    imgs = source_images()
     centres = wheel_centres()
     shift = Vector((0.0, -(centres["wheel_FL"][0].y + centres["wheel_RL"][0].y) / 2, 0.0))
     for o in bpy.data.objects:
@@ -344,6 +337,13 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     mats_map.update(cfg.get("materials_lod%d" % level, {}))  # fewer surfaces at the far LODs
     mats_by_obj = dict(cfg.get("materials_by_object", {}))  # "Object|SourceMaterial": engine material, when it differs
     mats_by_obj.update(cfg.get("materials_by_object_lod%d" % level, {}))
+    # "drop_ahead_lodN": {source material: metres}: its faces further forward of the axle midpoint than that are left
+    # out at this LOD (the Vela's auxiliary lamp glasses share the head lamp lens material, which glows from LOD1 on).
+    drop_ahead = cfg.get("drop_ahead_lod%d" % level, {})
+    # "lift_mm_lodN": {source material: millimetres}: its faces move out along the vertex normals at this LOD. A second
+    # paint (stripes) is a shell 1 to 4 mm over the paint; the collapsed body under it moves by more than that and
+    # buries a third of the stripes. Only for a material whose faces share no vertex with another material.
+    lift = {k: v / 1000.0 for k, v in cfg.get("lift_mm_lod%d" % level, {}).items()}
     mats_used = {}
     rim_area = {}  # source colour -> face area among the M_Rim faces
     rim_face = {}  # source colour -> area of the M_Rim faces that look away from the car: the wheel face (spokes)
@@ -365,7 +365,7 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
                 target = cfg["front_plate_material"]  # nose-side plate: a second plate would stretch the rear plate UVs
                 col = SPEC["M_Trim"]["base"][:3]  # and it stays a dark recess: in the plate's own colour it is a blank plate
             ov = by_obj_mat.get(o.name + "|" + src_mat, nodes_map.get(src_mat))
-            if ov == "drop":
+            if ov == "drop" or -f.center.y > drop_ahead.get(src_mat, math.inf):  # the nose is -Y
                 continue
             wheel_obj = o.name.startswith("Wheel_")
             if wheel_obj and target not in ("M_Tire", "M_BrakeDisc", "M_Caliper"):
@@ -398,7 +398,7 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
                 key = (o.name, vi)
                 if key not in b["map"]:
                     b["map"][key] = len(b["verts"])
-                    b["verts"].append(me.vertices[vi].co.copy())
+                    b["verts"].append(me.vertices[vi].co + me.vertices[vi].normal * lift.get(src_mat, 0.0))
                 idx.append(b["map"][key])
             # corner normals of the source: they carry the hard panel gaps and creases (lost otherwise: soft, wrinkled flanks)
             if target == "M_Rim":
@@ -425,7 +425,7 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     if cfg.get("tail_cell") is not None and tail is None:
         print("WARN LOD%d tail lights skipped: rear light faces too few or one-sided" % level)
     mcfg = cfg if tail or cfg.get("tail_cell") is None else dict(cfg, tail_cell=None)
-    materials = {m: make_material(m, mcfg, imgs) for m in mats_used}
+    materials = {m: make_material(m, mcfg) for m in mats_used}
     for o in list(bpy.data.objects):  # the source objects are replaced by the engine nodes built below
         bpy.data.objects.remove(o, do_unlink=True)
 
@@ -489,10 +489,12 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
             print("WARN node %s empty in LOD%d" % (name, level))
 
     dec = cfg.get("decimate", {}).get(str(level), {})
+    strays = {}
     for ob in list(bpy.data.objects):
         kind = "wheel" if ob.name.startswith(("wheel_", "brake_")) else "default"
         ratio = dec.get(ob.name, dec.get(kind, 1.0))
         if ratio < 1.0 and len(ob.data.polygons) > 0:
+            before = BVHTree.FromPolygons([v.co.copy() for v in ob.data.vertices], [tuple(p.vertices) for p in ob.data.polygons])
             bpy.context.view_layer.objects.active = ob
             mod = ob.modifiers.new("dec", "DECIMATE")
             mod.decimate_type = "COLLAPSE"
@@ -500,6 +502,9 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
             mod.use_symmetry = not ob.name.startswith(("wheel_", "brake_"))  # symmetry collapse left wheel_RL invalid
             mod.symmetry_axis = "X"
             bpy.ops.object.modifier_apply(modifier=mod.name)
+            moved = pull_back_strays(ob, before)
+            if moved:
+                strays[ob.name] = moved
             # Decimation scrambles the carried normals: smooth shading with hard edges above 35 degrees instead.
             for poly in ob.data.polygons:
                 poly.use_smooth = True
@@ -508,16 +513,30 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     make_col_body(["body", "trim", "underbody"])
 
     tris = {}
+    pts = []
     for ob in bpy.data.objects:
         if ob.type == "MESH":
             ob.data.calc_loop_triangles()
             tris[ob.name] = len(ob.data.loop_triangles)
+            if ob.name != "col_body":
+                pts += [ob.matrix_world @ v.co for v in ob.data.vertices]
+    box = [[min(p[a] for p in pts) for a in range(3)], [max(p[a] for p in pts) for a in range(3)]]  # Blender axes
     total = sum(tris.values())
     surfaces = sum(len(ob.data.materials) for ob in bpy.data.objects if ob.type == "MESH")
     slots = {ob.name: [m.name for m in ob.data.materials] for ob in bpy.data.objects if ob.type == "MESH"}
+    # LOD0 only: one empty node per tail pipe outlet, where the nitro flames start (car_fx.gd finds them by name).
+    # "tail_pipes" in the config: [x, up, z] of each outlet in the source file's glTF axes (the nose is +z). Only
+    # pipes that leave at the tail: flames at the Bruiser's side pipes were hidden from the chase camera by its rear
+    # fenders (tried straight back and 35 and 55 degrees outwards), so that car has none and gets the default.
+    pipes = cfg.get("tail_pipes", []) if level == 0 else []
+    for i, (x, up, z) in enumerate(pipes):
+        tip = bpy.data.objects.new("exhaust_tip_%d" % i, None)
+        bpy.context.collection.objects.link(tip)
+        tip.location = Vector((x, -z, up)) + shift
     stats["lod%d" % level] = {"tris": total, "tris_by_node": tris, "slots_by_node": slots, "surfaces": surfaces,
-                              "materials": sorted(mats_used), "material_count": len(mats_used)}
-    print("LOD%d tris=%d surfaces=%d materials=%d" % (level, total, surfaces, len(mats_used)))
+                              "materials": sorted(mats_used), "material_count": len(mats_used), "box": box,
+                              "stray_verts_moved": strays, "tail_pipes": len(pipes)}
+    print("LOD%d tris=%d surfaces=%d materials=%d strays=%s" % (level, total, surfaces, len(mats_used), strays or "none"))
     export(os.path.join(out_dir, "%s_lod%d.glb" % (cfg["car_id"], level)), cfg)
 
 
@@ -637,6 +656,13 @@ def main():
         build_lod(src, cfg, level, out_dir, stats, colours, metallic)
     with open(os.path.join(out_dir, car_id + "_prepare_stats.json"), "w", encoding="utf-8") as fh:
         json.dump(stats, fh, indent=1)
+    if "lod0" in stats:
+        lo0, hi0 = stats["lod0"]["box"]
+        for key in ("lod1", "lod2"):
+            lo, hi = stats.get(key, stats["lod0"])["box"]
+            out = max([lo0[a] - lo[a] for a in range(3)] + [hi[a] - hi0[a] for a in range(3)])
+            if out > LOD_BOX_MARGIN_M:
+                raise SystemExit("%s %s reaches %.2f m beyond the LOD0 box" % (car_id, key, out))
 
 
 main()

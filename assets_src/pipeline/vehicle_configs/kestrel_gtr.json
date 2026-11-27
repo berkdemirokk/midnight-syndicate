@@ -107,9 +107,6 @@
     "Tread_Car": "M_Tire",
     "Glass_Dark": "M_Glass"
   },
-  "texture_from": {
-    "M_Carbon": "Carbon"
-  },
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",

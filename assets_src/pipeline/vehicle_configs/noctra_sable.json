@@ -109,9 +109,6 @@
     "Paint_Track_White": "M_Paint",
     "Paint_Track_Orange": "M_Trim"
   },
-  "texture_from": {
-    "M_Carbon": "Carbon"
-  },
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",
@@ -283,5 +280,17 @@
     }
   },
   "tail_cell": 0,
-  "front_plate_material": "M_Trim"
+  "front_plate_material": "M_Trim",
+  "tail_pipes": [
+    [
+      0.1,
+      0.495,
+      -2.23
+    ],
+    [
+      -0.1,
+      0.495,
+      -2.23
+    ]
+  ]
 }

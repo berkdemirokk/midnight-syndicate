@@ -7,8 +7,10 @@ Rebuild everything (Blender 5.3, deterministic):
     blender --background --factory-startup --python build_atmaca.py -- stock|modified|taxi
     blender --background --factory-startup --python render_atmaca.py -- <variant> cycles <abs outdir> front34,rear34,side,wheel 128
 
-Outputs in `out/` (GLBs, summary_<variant>.json; the .blend files are rebuilt, not committed). Ship by copying the
-GLBs to `game/assets/vehicles/bosfor_atmaca/` and registering them with `tools/asset_factory.py register`.
+Outputs in `out/` (GLBs, summary_<variant>.json; the .blend files are rebuilt, not committed). Ship the stock and
+taxi variants by copying their GLBs to `game/assets/vehicles/bosfor_atmaca/` and registering them with
+`tools/asset_factory.py register`. Do not copy `atmaca_modified_*.glb`: since 2026-11-27 the game's modified car is a
+licensed CC BY model built by `assets_src/pipeline/rebuild_vehicles.py`; the copy would overwrite it.
 
 Method (differs from the hero body.py on purpose): a boxy car does not want the hero's smooth PCHIP loft, which
 melts flat panels (see the arden_civic renders). Instead: lower body = ring sections along Y with quarter-circle
