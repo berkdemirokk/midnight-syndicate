@@ -183,6 +183,7 @@ func _ptext(kind: String, px: int, col: Color) -> HudText:
 func _button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5 * (1.0 + (MSTheme.k() - 1.0) * 0.8), MSTheme.button_h())
+	b.set_meta("base_w", b.custom_minimum_size.x)  # the label may widen it (Turkish), never shrink it
 	b.pressed.connect(handler)
 	# The board paints the background; the button keeps only its label (same font, colours and size from the theme).
 	var none := StyleBoxEmpty.new()
@@ -198,7 +199,10 @@ func _button(parent: Container, key: String, handler: Callable) -> Button:
 
 func _refresh_text() -> void:
 	for pair: Array in _text_nodes:
-		(pair[0] as Button).text = I18n.t(pair[1])
+		var btn: Button = pair[0]
+		btn.text = I18n.t(pair[1])
+		var text_w: float = btn.get_theme_font("font").get_string_size(btn.text, HORIZONTAL_ALIGNMENT_LEFT, -1, btn.get_theme_font_size("font_size")).x
+		btn.custom_minimum_size.x = maxf(float(btn.get_meta("base_w", 0.0)), text_w + 40.0)
 	_cash_caption.set_text(I18n.t("results.reward_cash"))
 	_rep_caption.set_text(I18n.t("results.reward_rep"))
 	var keys: Array[String] = ["results.col_pos", "results.col_driver", "results.col_time", "results.col_gap", "results.col_best"]
