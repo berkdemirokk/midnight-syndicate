@@ -14,10 +14,16 @@ import math
 import bpy
 import json
 import os
+import struct
 import sys
+import tempfile
+import numpy as np
 from mathutils import Matrix, Vector
+from mathutils.bvhtree import BVHTree
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from bake_vertex_ao import _occluded  # noqa: E402  cosine-weighted hemisphere test against a BVH (the kit baker's)
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 WHEELS = ["wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR"]
 WHEEL_SRC = ["Wheel_FL", "Wheel_FR", "Wheel_RL", "Wheel_RR"]
@@ -30,6 +36,33 @@ DEFAULT_NODE = {
 }
 KNOWN = ["M_Paint", "M_Glass", "M_Lens", "M_LightFront", "M_LightRear", "M_Carbon", "M_Rim", "M_Tire",
          "M_BrakeDisc", "M_Caliper", "M_Trim", "M_Chrome", "M_Interior", "M_Plate"]
+
+# Engine materials whose faces carry the source material's colour as a vertex colour (COLOR_0). A source car has about
+# 60 materials (chrome, projector glass, amber lamps, tan leather, yellow calipers) and the contract has 14, so a plain
+# merge paints every part of a group one flat colour. The vertex colour keeps the part colours with no extra surface and
+# no extra draw call. Faces of every other material get white: their look is a texture or the player's choice.
+VC_TARGETS = ("M_Trim", "M_Chrome", "M_Interior", "M_BrakeDisc", "M_Caliper", "M_Rim")
+VC_FLOOR = 0.012  # pure black parts keep a little diffuse, or they read as holes in the body
+RIM_SHADE_MIN = 0.5  # darkest wheel part against the bright alloy: M_Rim carries a shade, the player picks the colour
+# (0.16 was tried: a wheel in the default gunmetal read as a black disc; the baked shade below gives the depth)
+# Baked shade (ambient occlusion) multiplied into those vertex colours: the Mobile renderer has no SSAO, and without it
+# a wheel barrel, a grille opening and a footwell are as bright as the part in front of them.
+AO_SAMPLES = 24
+AO_DISTANCE_M = 0.45  # reach: wheel barrels, grille and lamp housings, footwells, sills over the road
+AO_FLOOR = 0.28  # darkest shade
+AO_FLOOR_BRAKE = 0.55  # discs and calipers sit deep in the wheel; a coloured caliper has to stay readable
+AO_EPS_M = 0.004  # ray origin off the surface
+AO_CLEAR = ("M_Glass", "M_Lens")  # see-through parts do not shade what is behind them
+# Source colours that do not work as a flat colour. Screens: the mean of a lit map screen is a mid grey, and a grey
+# rectangle on the dash reads as a blank panel through the rear window; a dark glass blue reads as a display.
+COLOUR_FIXES = {"Screens": (0.015, 0.03, 0.06)}
+SPOKE_ZONE = (0.22, 0.5)  # share of the tyre radius where only spokes are: outside the nuts, inside the lip
+RIM_REF_SHARE = 0.08  # fallback only: the brightest wheel colour that covers at least this share of the rim area
+# A metal's base colour is its mirror tint, not a paint. Where the far LODs (and a few LOD0 parts) fold a metal into a
+# matt engine material, that tint as albedo is light grey plastic (chrome 0.77 on a grille at 6 m), so it is dimmed.
+MATT_TARGETS = ("M_Trim", "M_Interior")
+METAL_MIN = 0.6  # source metallicFactor from which a material counts as a metal
+METAL_AS_MATT = 0.18
 
 # Values from docs/art/CAR_01_BRIEF.md (materials table). The engine re-styles most of them by name at run time.
 SPEC = {
@@ -70,7 +103,8 @@ def make_material(name, cfg, src_images):
     nt = m.node_tree
     bsdf = nt.nodes["Principled BSDF"]
     v = SPEC[name]
-    set_in(bsdf, "Base Color", v["base"])
+    # the colour of these lives in the vertex colours (VC_TARGETS); M_Rim keeps its base, its vertex colour is a shade
+    set_in(bsdf, "Base Color", (1, 1, 1, 1) if name in VC_TARGETS and name != "M_Rim" else v["base"])
     set_in(bsdf, "Metallic", v.get("metallic", 0.0))
     set_in(bsdf, "Roughness", v.get("roughness", 0.5))
     if "alpha" in v:
@@ -124,6 +158,123 @@ def source_images():
     return out
 
 
+def srgb_to_linear(a):
+    return np.where(a <= 0.04045, a / 12.92, ((a + 0.055) / 1.055) ** 2.4)
+
+
+def luminance(c):
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+
+
+def image_mean(js, data, bin0, img_i, alpha_mode="OPAQUE", cutoff=0.5):
+    """Mean linear RGB of one image embedded in the GLB. For a cut-out or blended material the mean is weighted by
+    what is opaque: a wire mesh that is 40 % wire is 40 % of the wire colour over the dark behind it."""
+    img = js["images"][img_i]
+    if "bufferView" not in img:
+        return (1.0, 1.0, 1.0)
+    bv = js["bufferViews"][img["bufferView"]]
+    start = bin0 + bv.get("byteOffset", 0)
+    ext = ".png" if img.get("mimeType") == "image/png" else ".jpg"
+    tmp = os.path.join(tempfile.gettempdir(), "ms_vc_%d_%d%s" % (os.getpid(), img_i, ext))
+    with open(tmp, "wb") as fh:
+        fh.write(data[start:start + bv["byteLength"]])
+    im = bpy.data.images.load(tmp)
+    px = np.empty(im.size[0] * im.size[1] * 4, dtype=np.float32)
+    im.pixels.foreach_get(px)
+    px = px.reshape(-1, 4)
+    rgb = srgb_to_linear(px[:, :3])
+    if alpha_mode == "MASK":
+        rgb = rgb * (px[:, 3:4] >= cutoff)
+    elif alpha_mode == "BLEND":
+        rgb = rgb * px[:, 3:4]
+    rgb = rgb.mean(axis=0)
+    bpy.data.images.remove(im)
+    os.remove(tmp)
+    return tuple(float(c) for c in rgb)
+
+
+def source_colours(path):
+    """Two dicts by source material name: linear RGB (the glTF base colour factor times the mean of its base colour
+    texture) and the metallic factor. Read from the GLB itself, so it does not depend on how Blender names the
+    imported images."""
+    with open(path, "rb") as fh:
+        data = fh.read()
+    jlen = struct.unpack("<I", data[12:16])[0]
+    js = json.loads(data[20:20 + jlen])
+    bin0 = 20 + jlen + 8
+    means, out, metallic = {}, {}, {}
+    for m in js.get("materials", []):
+        pbr = m.get("pbrMetallicRoughness", {})
+        col = list(pbr.get("baseColorFactor", [1.0, 1.0, 1.0, 1.0]))[:3]
+        tex = pbr.get("baseColorTexture")
+        img_i = js["textures"][tex["index"]].get("source") if tex is not None else None
+        if img_i is not None:
+            key = (img_i, m.get("alphaMode", "OPAQUE"), m.get("alphaCutoff", 0.5))
+            if key not in means:
+                means[key] = image_mean(js, data, bin0, *key)
+            col = [c * t for c, t in zip(col, means[key])]
+        out[m.get("name", "")] = tuple(col)
+        metallic[m.get("name", "")] = float(pbr.get("metallicFactor", 1.0))  # the glTF default is 1
+    return out, metallic
+
+
+def face_colour(target, col, rim_ref):
+    """Vertex colour (RGBA) of a face: the source colour for VC_TARGETS, a shade against the main alloy for M_Rim,
+    white for everything else."""
+    if target not in VC_TARGETS:
+        return (1.0, 1.0, 1.0, 1.0)
+    if target == "M_Rim":
+        s = min(max(luminance(col) / rim_ref, RIM_SHADE_MIN), 1.0) if rim_ref > 1e-6 else 1.0
+        return (s, s, s, 1.0)
+    return (max(col[0], VC_FLOOR), max(col[1], VC_FLOOR), max(col[2], VC_FLOOR), 1.0)
+
+
+def bake_part_ao(buckets):
+    """Shade per bucket vertex in [AO_FLOOR, 1] for the vertices of VC_TARGETS faces (1 for the rest). The body nodes
+    are tested against the whole car and the road (z = 0); a wheel and its brake only against each other, because they
+    turn and the shade has to turn with them. Returns {bucket name: [shade per bucket vertex]}."""
+    def group_of(name):
+        return name[-2:] if name[:6] in ("wheel_", "brake_") else "body"
+
+    def tree(names):
+        verts, polys = [], []
+        for nm in names:
+            base = len(verts)
+            verts += buckets[nm]["verts"]
+            polys += [[base + i for i in idx] for idx, target, *_ in buckets[nm]["faces"] if target not in AO_CLEAR and len(idx) >= 3]
+        return BVHTree.FromPolygons(verts, polys) if polys else None
+
+    groups = {}
+    for name in buckets:
+        groups.setdefault(group_of(name), []).append(name)
+    trees = {g: tree(sorted(buckets) if g == "body" else names) for g, names in groups.items()}
+    out = {}
+    for name, b in buckets.items():
+        g = group_of(name)
+        normal = [Vector((0.0, 0.0, 0.0)) for _ in b["verts"]]
+        wanted = set()
+        for idx, target, *_ in b["faces"]:
+            if len(idx) < 3:
+                continue
+            c = (b["verts"][idx[1]] - b["verts"][idx[0]]).cross(b["verts"][idx[2]] - b["verts"][idx[0]])  # area-weighted
+            for i in idx:
+                normal[i] += c
+            if target in VC_TARGETS:
+                wanted.update(idx)
+        shade = [1.0] * len(b["verts"])
+        if trees[g] is not None:
+            ground = 0.0 if g == "body" else -1.0e9
+            for vi in wanted:
+                if normal[vi].length < 1e-12:
+                    continue
+                n = normal[vi].normalized()
+                rot = ((vi * 0.6180339887) % 1.0) * 2.0 * math.pi
+                occ = _occluded(b["verts"][vi] + n * AO_EPS_M, n, trees[g], AO_SAMPLES, AO_DISTANCE_M, ground, rot)
+                shade[vi] = max(AO_FLOOR_BRAKE if name.startswith("brake_") else AO_FLOOR, 1.0 - occ)
+        out[name] = shade
+    return out
+
+
 def load_source(path):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=path)
@@ -158,7 +309,7 @@ def smooth_paint(verts, faces):
     """LOD0 only: area-weighted vertex normals for the M_Paint faces of one bucket. Neighbours across an edge
     sharper than 40 degrees (panel gaps) do not blend. Returns {face index: [normal per corner]}."""
     face_n, vfaces = {}, {}
-    for fi, (idx, target, _, _) in enumerate(faces):
+    for fi, (idx, target, *_) in enumerate(faces):
         if target != "M_Paint" or len(idx) < 3:
             continue
         c = (verts[idx[1]] - verts[idx[0]]).cross(verts[idx[2]] - verts[idx[0]])
@@ -181,7 +332,7 @@ def smooth_paint(verts, faces):
     return out
 
 
-def build_lod(src, cfg, level, out_dir, stats):
+def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     load_source(src)
     imgs = source_images()
     centres = wheel_centres()
@@ -202,7 +353,9 @@ def build_lod(src, cfg, level, out_dir, stats):
     mats_by_obj = dict(cfg.get("materials_by_object", {}))  # "Object|SourceMaterial": engine material, when it differs
     mats_by_obj.update(cfg.get("materials_by_object_lod%d" % level, {}))
     mats_used = {}
-    buckets = {}  # node name -> {"verts": [...], "faces": [(vert_indices, target_material, smooth)], "map": {}}
+    rim_area = {}  # source colour -> face area among the M_Rim faces
+    rim_face = {}  # source colour -> area of the M_Rim faces that look away from the car: the wheel face (spokes)
+    buckets = {}  # node name -> {"verts": [...], "faces": [(vert_indices, target_material, smooth, normals, colour)], "map": {}}
 
     def nearest_wheel(co):
         return min(WHEELS, key=lambda w: (centres[w][0] - co).length)
@@ -215,8 +368,10 @@ def build_lod(src, cfg, level, out_dir, stats):
             if src_mat not in mats_map:
                 raise SystemExit("unmapped source material: %s (object %s)" % (src_mat, o.name))
             target = mats_by_obj.get(o.name + "|" + src_mat, mats_map[src_mat])
+            col = colours.get(src_mat, (1.0, 1.0, 1.0))
             if target == "M_Plate" and f.center.y < 0.0 and cfg.get("front_plate_material"):
                 target = cfg["front_plate_material"]  # nose-side plate: a second plate would stretch the rear plate UVs
+                col = SPEC["M_Trim"]["base"][:3]  # and it stays a dark recess: in the plate's own colour it is a blank plate
             ov = by_obj_mat.get(o.name + "|" + src_mat, nodes_map.get(src_mat))
             if ov == "drop":
                 continue
@@ -226,9 +381,17 @@ def build_lod(src, cfg, level, out_dir, stats):
             routed = wheel_obj or target in ("M_BrakeDisc", "M_Caliper")
             if routed and not wheel_obj and (f.center - centres[nearest_wheel(f.center)][0]).length > BRAKE_REACH_M:
                 target, routed = "M_Trim", False  # caliper-coloured body part far from every wheel: it stays body
+            if target in MATT_TARGETS and metallic.get(src_mat, 0.0) >= METAL_MIN:
+                col = tuple(c * METAL_AS_MATT for c in col)
             if routed:
                 w = nearest_wheel(f.center)  # brake parts from the Body (calipers) go to the nearest wheel
                 node = ("brake_" if target in ("M_BrakeDisc", "M_Caliper") else "wheel_") + w[-2:]
+                if target == "M_Rim":  # the axle is X: +X wheels look to +X
+                    wc, ws = centres[w]
+                    r = math.hypot(f.center.y - wc.y, f.center.z - wc.z) / (max(ws.y, ws.z) * 0.5)
+                    if SPOKE_ZONE[0] <= r <= SPOKE_ZONE[1]:
+                        out_x = f.normal.x if wc.x >= 0.0 else -f.normal.x
+                        rim_face[col] = rim_face.get(col, 0.0) + f.area * max(0.0, out_x)
             elif ov:
                 node = ov
             elif o.name in by_obj:
@@ -246,9 +409,23 @@ def build_lod(src, cfg, level, out_dir, stats):
                     b["verts"].append(me.vertices[vi].co.copy())
                 idx.append(b["map"][key])
             # corner normals of the source: they carry the hard panel gaps and creases (lost otherwise: soft, wrinkled flanks)
-            b["faces"].append((idx, target, f.use_smooth, [me.corner_normals[li].vector.copy() for li in f.loop_indices]))
+            if target == "M_Rim":
+                rim_area[col] = rim_area.get(col, 0.0) + f.area
+            b["faces"].append((idx, target, f.use_smooth, [me.corner_normals[li].vector.copy() for li in f.loop_indices], col))
             mats_used[target] = mats_used.get(target, 0) + 1
+    # The wheel face takes the rim colour the player picks at full strength; darker parts (pockets, caps, an inner
+    # barrel behind bright spokes) go darker. The face is the colour with the most area looking away from the car in
+    # the spoke zone: "the brightest sizeable colour" picked the barrel on black-spoke wheels, and all outward area
+    # picked a polished lip; both halved the picked colour on the spokes.
+    rim_ref, rim_total = 0.0, sum(rim_area.values())
+    if rim_face and max(rim_face.values()) > 0.0:
+        rim_ref = luminance(max(rim_face, key=rim_face.get))
+    else:
+        for c, a in rim_area.items():
+            if a >= RIM_REF_SHARE * rim_total:
+                rim_ref = max(rim_ref, luminance(c))
 
+    part_ao = bake_part_ao(buckets)
     for mname in mats_used:
         if mname not in KNOWN:
             raise SystemExit("target %s is not an engine material name" % mname)
@@ -267,12 +444,18 @@ def build_lod(src, cfg, level, out_dir, stats):
         bm = bmesh.new()
         bverts = [bm.verts.new(v - origin) for v in b["verts"]]
         slot_of, slot_mats = {}, []
-        for mname in sorted(set(t for _, t, _, _ in b["faces"])):
+        for mname in sorted(set(f[1] for f in b["faces"])):
             slot_of[mname] = len(slot_mats)
             slot_mats.append(materials[mname])
-        loop_normals = []
+        loop_normals, loop_cols = [], []
         paint_norms = smooth_paint(b["verts"], b["faces"]) if level == 0 else {}
-        for fi, (idx, target, smooth, norms) in enumerate(b["faces"]):
+        # Far LODs: one mean shade for the whole rim. The collapse to 12 % of the wheel smears the per-corner pocket
+        # shade over the spoke faces (blotchy rims, left and right wheels different, measured on the LOD1 files).
+        rim_flat = None
+        if level > 0:
+            vals = [part_ao[name][i] for idx, target, *_ in b["faces"] if target == "M_Rim" for i in idx]
+            rim_flat = sum(vals) / len(vals) if vals else None
+        for fi, (idx, target, smooth, norms, col) in enumerate(b["faces"]):
             try:
                 f = bm.faces.new([bverts[i] for i in idx])
             except ValueError:
@@ -280,7 +463,20 @@ def build_lod(src, cfg, level, out_dir, stats):
             f.material_index = slot_of[target]
             f.smooth = True
             loop_normals.extend(paint_norms.get(fi, norms))
+            base = face_colour(target, col, rim_ref)
+            for i in idx:
+                k = part_ao[name][i] if target in VC_TARGETS else 1.0
+                if target == "M_Rim" and rim_flat is not None:
+                    k = rim_flat
+                loop_cols.extend((base[0] * k, base[1] * k, base[2] * k, 1.0))
         bm.to_mesh(me)
+        if len(loop_cols) == 4 * len(me.loops):
+            attr = me.color_attributes.new("Col", "FLOAT_COLOR", "CORNER")
+            attr.data.foreach_set("color", loop_cols)
+            me.color_attributes.active_color = attr
+            me.color_attributes.render_color_index = 0
+        else:
+            print("WARN %s: %d colours for %d loops, no vertex colours" % (name, len(loop_cols) // 4, len(me.loops)))
         if len(loop_normals) == len(me.loops):
             me.normals_split_custom_set(loop_normals)
         else:
@@ -344,7 +540,7 @@ def tail_boxes(buckets):
     pts = {"L": [], "R": []}
     count = {"L": 0, "R": 0}
     for b in buckets.values():
-        for idx, target, _, _ in b["faces"]:
+        for idx, target, *_ in b["faces"]:
             if target != "M_LightRear":
                 continue
             cs = [b["verts"][i] for i in idx]
@@ -423,6 +619,7 @@ def export(path, cfg):
     bpy.ops.export_scene.gltf(
         filepath=path, export_format="GLB", use_selection=True, export_copyright=cfg["copyright"],
         export_materials="EXPORT", export_extras=False, export_apply=False, export_yup=True,
+        export_vertex_color="ACTIVE", export_all_vertex_colors=False,  # COLOR_0: the source part colours (VC_TARGETS)
     )
     print("EXPORTED", path)
 
@@ -439,8 +636,12 @@ def main():
         cfg["plate_image"] = os.path.join(ROOT, cfg["plate_image"])
     os.makedirs(out_dir, exist_ok=True)
     stats = {"car_id": car_id, "source": src}
+    colours, metallic = source_colours(src)
+    colours.update(COLOUR_FIXES)
+    print("COLOURS " + ", ".join("%s %.2f/%.2f/%.2f" % (k, v[0], v[1], v[2]) for k, v in sorted(colours.items())))
+    colours.update({k: tuple(v) for k, v in cfg.get("source_colours", {}).items()})  # hand-set part colours (linear RGB)
     for level in cfg.get("lods", [0, 1, 2]):
-        build_lod(src, cfg, level, out_dir, stats)
+        build_lod(src, cfg, level, out_dir, stats, colours, metallic)
     with open(os.path.join(out_dir, car_id + "_prepare_stats.json"), "w", encoding="utf-8") as fh:
         json.dump(stats, fh, indent=1)
 

@@ -9661,14 +9661,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 87547,
+      "tris": 87618,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 5975916,
-      "sha256": "d4627cd872303e1133c85b88642831dac47d9d45ee9f5af2083a895cb2f9afe3",
+      "bytes": 6705044,
+      "sha256": "915e2f090dd075d8e02f14640989109fdaf9d3b9f22a32aad1697a4cbbd597a6",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
+      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
     },
     {
       "id": "kestrel_vanta_lod1",
@@ -9678,14 +9678,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 23147,
+      "tris": 23148,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 4142124,
-      "sha256": "bd857cd40ba13175ecc4d44fd86db393285e412894eb4e260fecb06c723a0df5",
+      "bytes": 4400972,
+      "sha256": "776c54ce463f5485cd31edcaaec2427c29e39d59e8001f2995a6c219281d4a12",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
+      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
     },
     {
       "id": "kestrel_vanta_lod2",
@@ -9695,14 +9695,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 6452,
+      "tris": 6453,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 3523924,
-      "sha256": "56ff997e58b4af4c04c1230e7603cf3ea5f5acdaa77111bc241ba3601bf87ae2",
+      "bytes": 3611356,
+      "sha256": "af9a3cf6b4981cb92e18da0b92444944b0f78eea98e4a96f175fa947fff66b0e",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
+      "notes": "\"Mid-Engine Supercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Vanta). Downloaded 2026-11-26."
     },
     {
       "id": "arden_havoc_lod0",
@@ -9712,14 +9712,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 88578,
+      "tris": 88299,
       "texture_sizes": {},
       "material_count": 13,
-      "bytes": 5839448,
-      "sha256": "4e638abccdf206909e10857d6924723ce10a410533b8b0ba7a560f7ad19fb407",
+      "bytes": 6516636,
+      "sha256": "810cc72d6c25342659371a39b627b2bb55314aec9481c5e48342bc5f8c93c112",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
     },
     {
       "id": "arden_havoc_lod1",
@@ -9729,14 +9729,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 27294,
+      "tris": 27293,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 4237808,
-      "sha256": "ac0900e538d86b4549ac70f18422d472e2999ba1e6584c1f50b58b1b1c21cf17",
+      "bytes": 4517736,
+      "sha256": "7ffe6d4686348aca5cac0964515df001e353ca3e35d2af554e0e42db3494bbd7",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
     },
     {
       "id": "arden_havoc_lod2",
@@ -9746,14 +9746,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 6677,
+      "tris": 6679,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 3525068,
-      "sha256": "647d84ce6da0788ca86c075c2d006294afcbaa5274750dc4011007f6f3d8c11b",
+      "bytes": 3611284,
+      "sha256": "8be95b67cd7148c078c7aba1479eb999ee2610adbe04b7cdcfcd687bb9cf3027",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
+      "notes": "\"Muscle Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Arden Havoc). Downloaded 2026-11-26."
     },
     {
       "id": "vinish_widebody_drift_coupe",
@@ -9780,14 +9780,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 89711,
+      "tris": 89786,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 5991244,
-      "sha256": "2ae0a824c3c9654f5804846fa0fdd936f0c8231a1ddfe58e2cba1fcde022fa35",
+      "bytes": 6721028,
+      "sha256": "38a9e489832f48f5fc8cfa4db6dbdc64276d2665c728286d4b3282f2a64cdbca",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
+      "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
     },
     {
       "id": "noctra_tayfun_lod1",
@@ -9800,11 +9800,11 @@
       "tris": 24583,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 4164344,
-      "sha256": "27be30ed2f53dd1bf11e39a9ecfea4459aab6a0f7bf5524912fcd4fab07c765e",
+      "bytes": 4426608,
+      "sha256": "b992f294f120e41de99aed030e65324d9c4245900a0a5148da72d74e51c03d67",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
+      "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
     },
     {
       "id": "noctra_tayfun_lod2",
@@ -9817,11 +9817,11 @@
       "tris": 6053,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 3502804,
-      "sha256": "6c7dba6f8e9bb4b7a61034416532ef97a28f8efe993326dc97cab50bcaa5e8fc",
+      "bytes": 3583476,
+      "sha256": "5320bfa2573b25d63347b148e99e299f008fc8858a2768e03313759370aed624",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
+      "notes": "\"Widebody Drift Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Cyclon). Downloaded 2026-11-26."
     },
     {
       "id": "vinish_grand_tourer",
@@ -9848,14 +9848,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 89475,
+      "tris": 89555,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 5998396,
-      "sha256": "dfe147bc75ee9d1bc9017eb7ba998bf983970d6374c74a836a9478eba2e46668",
+      "bytes": 6728720,
+      "sha256": "f35b4c08618660c1ea5d0ee5dcd6703a6c1b7e1494973cef6965a6db4dcbdde5",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
+      "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
     },
     {
       "id": "noctra_meridian_lod1",
@@ -9868,11 +9868,11 @@
       "tris": 23959,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 4159956,
-      "sha256": "7b0a0a7d40cfff62b62ff47c321105873e9b9873a22a82b1f5c06a622f958046",
+      "bytes": 4421624,
+      "sha256": "e41e4d4ed456a05d3837b9658273441a803bfeda61c2c8160af1fd9133f84aff",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
+      "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
     },
     {
       "id": "noctra_meridian_lod2",
@@ -9885,11 +9885,11 @@
       "tris": 6696,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 3515660,
-      "sha256": "52b953df428826616d554dba295e2c173913ae9eb81c38e4946bdb7432a2c362",
+      "bytes": 3599280,
+      "sha256": "1b299cd266bba267637987ed0d9ce640e32946c21f5b1c0711a5f104f6d34fe1",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
+      "notes": "\"Grand Tourer\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Noctra Meridian). Downloaded 2026-11-26."
     },
     {
       "id": "vinish_rear_engine_sports_coupe",
@@ -9916,14 +9916,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 89454,
+      "tris": 89541,
       "texture_sizes": {},
       "material_count": 13,
-      "bytes": 5978024,
-      "sha256": "59aafdf1a4d2a5cb99ae167a4e6cc9f29be76a29a162991860132f616875519c",
+      "bytes": 6710000,
+      "sha256": "bb77280d94bf4e6693921fa6a488d993417639eabb810d56c867b726566b4fce",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
+      "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
     },
     {
       "id": "kestrel_marten_lod1",
@@ -9936,11 +9936,11 @@
       "tris": 24661,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 4174032,
-      "sha256": "d96e56da8d518f612cfb414be9509c7d708e5f7992f3a025cb6a98112cc6d3e6",
+      "bytes": 4439536,
+      "sha256": "1bde93119867c18c684f1c4e6ebb5785f50d861056ff4d9fedc0c3c2fa9bce0e",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
+      "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
     },
     {
       "id": "kestrel_marten_lod2",
@@ -9953,11 +9953,11 @@
       "tris": 5689,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 3472084,
-      "sha256": "b903983ead9246dd4e1a83fd21d15bfb8551c409dcc48d625f157f813cf14c01",
+      "bytes": 3543312,
+      "sha256": "39589900bb13458d51b8c20a927635b3b9540005031cc0cd01f8005a3a43d4cc",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
+      "notes": "\"Rear-Engine Sports Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Kestrel Marten). Downloaded 2026-11-26."
     },
     {
       "id": "vinish_hypercar",
@@ -9984,14 +9984,14 @@
       "source_url": "https://vinish.dev/free-3d-models/realistic-cars",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 89072,
+      "tris": 89147,
       "texture_sizes": {},
       "material_count": 14,
-      "bytes": 6019008,
-      "sha256": "380b87f03c962f9a245fce372bd3ff0142dbc6240d8648413b4a04077ad9f9f1",
+      "bytes": 6760724,
+      "sha256": "440f589e6ed67f3e5b9c6f673812a2694e247aabcca8909810167ee58ef7381d",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
+      "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
     },
     {
       "id": "bosfor_yildirim_lod1",
@@ -10004,11 +10004,11 @@
       "tris": 23452,
       "texture_sizes": {},
       "material_count": 8,
-      "bytes": 4159676,
-      "sha256": "711aa0b0d0a376ca5502bc5d74c8acfa5c236e32256d1c1401f8565d890c2e03",
+      "bytes": 4423828,
+      "sha256": "4bf22c050187cc754f25d2f01201660090c3082c46225b3a8e62143545695837",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
+      "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
     },
     {
       "id": "bosfor_yildirim_lod2",
@@ -10021,11 +10021,11 @@
       "tris": 6614,
       "texture_sizes": {},
       "material_count": 5,
-      "bytes": 3528484,
-      "sha256": "75186483ec07ba305d58aa94c1fadcd0702bca3363cd34df406e3dc141b23a61",
+      "bytes": 3617116,
+      "sha256": "9f2b5d0a001374fda7219a238b5bf768410b7c6d8ca491e2f157fe50e2f456fe",
       "test_result": "pass",
       "added": "2026-11-26",
-      "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged, LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
+      "notes": "\"Hypercar\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, renamed in game (Velmar Fulmen). Downloaded 2026-11-26."
     },
     {
       "id": "sandstone_blocks_08",
@@ -12352,6 +12352,28 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Quilted upholstery picture, triplanar on every car interior. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/interior_quilt.png."
+    },
+    {
+      "id": "car_workshop_pano",
+      "kind": "texture",
+      "path": "game/assets/vehicles/shared/workshop_pano.jpg",
+      "source": "generated:ai",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project (image model output, owner's ChatGPT account)",
+      "tris": 0,
+      "texture_sizes": {
+        "workshop_pano.jpg": [
+          2048,
+          1024
+        ]
+      },
+      "material_count": 0,
+      "bytes": 458218,
+      "sha256": "dbd6e29c3a1477869e950ff31b4e7da59e239ca20c3a63f10f56d8456e5bdf16",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Workshop panorama mirrored in the car paint in the garage (second pass); the floor half is dimmed. Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/workshop_pano.png."
     }
   ]
 }

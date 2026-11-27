@@ -170,6 +170,43 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
   main untouched. Six merged session worktrees still on disk.
 - Commits: bf70f98, 110c71e, 2acf183, b72fb63, 055bd6b, 78a2f75, 6571a6d, 673526c, 8c8d888, c6562f2, 0b4a523, 0428c35.
 
+## Session 7 — 2026-11-27 afternoon (why the cars looked cheap, and the fix)
+- Owner: "çok dandik hala arabalar", "sadece fable 5.2 kullan", "kalite acil artsın". Work done by the lead (Fable) alone;
+  two review workflows with Fable agents. No Haiku sessions.
+- Root cause found: a licensed source model has about 60 materials; `prepare_vehicle.py` merged them into the 14 engine
+  materials as flat colours (white lamp discs, grey grille boxes, one-grey cabins, flat rims). The triangle count was never
+  the problem (LOD0 about 89000).
+- Fix, all six licensed cars: the source part colours and a baked ambient-occlusion shade travel as vertex colours
+  (COLOR_0), used as albedo by M_Trim, M_Chrome, M_Interior, M_BrakeDisc, M_Caliper and as a shade under the rim colour.
+  Projector and mirror glass are chrome parts at LOD0, the lens cover is clear (alpha 0.1). Same surfaces and draw calls.
+  Details: `docs/design/CAR_INTEGRATION.md`, last section. New test `test_part_colours_reach_the_right_materials`.
+- Garage: the paint mirrors a workshop panorama (generated picture, floor half dimmed), not on the Low preset; the key
+  light uses one shadow map instead of four cascades. Garage screen (impeccable critique, lead in-thread): stats on a
+  backing panel, RACE as the one filled button, touch wording.
+- Earlier the same day: tyre picture on every tyre (wheel-local projection), quilted interior for the project-made cars,
+  night street panoramas for Maslak and Neon Wharf in the paint, rain beads 0.4 -> 0.2, rim metallic 0.8 -> 0.5,
+  car names (Noctra Cyclon, Velmar Strix / Strix S, Velmar Fulmen; ids and paths unchanged).
+- Independent review (workflow, three Fable reviewers, each finding checked by a second agent): six findings confirmed and
+  fixed: far-LOD metals drawn as light plastic (rivals switch to LOD1 at 6 m), the Meridian mesh grille, rim shade
+  inverted on black-spoke wheels, the garage pass cost and its missing preset gate, the lens change reaching the
+  project-made cars. A second workflow (two Fable checkers) measured the fixes in the built files: all six hold. It
+  reported five smaller defects, also fixed: far-LOD rim shade smeared by the decimation (now one mean shade a wheel),
+  the garage shadow reach (40 m -> 18 m), the panorama reloaded on every car switch, no test for the garage pass
+  (added: `test_paint_mirrors_the_workshop_except_on_low`), doc sentences without a file behind them.
+- Found by that new test: the garage showed a raw key for three car classes (sport, super, hyper had no label). Fixed.
+- Evidence (dev PC, RTX 5060 Ti, High preset; not iPhone numbers): 335 tests, 0 failed. Bosphorus peak 399 draw calls /
+  443219 primitives, Maslak night 396 / 307289, Neon Wharf night 481 / 373547 (budget 500 / 450000). Garage up to 304 /
+  390886. Night gameplay 340 fps. Manifest 653 records, 0 failing. Studio shots of all ten cars re-captured.
+- Not done: the five project-made player cars (Noctra Sable R, Velmar Strix S, Noctra Vela, Arden Bruiser, Kestrel GT)
+  and the traffic cars are still the crude procedural models; licensed replacements of the same quality exist at the
+  same source (CC BY 4.0, about 3.7 MB each) and wait for the owner's yes to download. Rear reflectors and the Havoc
+  mirror indicators are colourless glass (older than this session). Found, not fixed: every licensed car GLB embeds the
+  tail-light atlas, so Godot extracts it 18 times (55 MB of PNG beside the GLBs, untracked, and as many textures in
+  the pack); one shared texture set by `car_materials.gd` would do. No baked GI. The TestFlight build (ios-release-1,
+  commit 0428c35) has none of today's work. Never run on an iPhone by the lead: the owner said "Denedim" and has not
+  reported what they saw. The owner's target (their concept pictures, "Need for Speed'i geçebilmemiz lazım") is not reached.
+- Commits: 83b14f3, f83a96f, b57967c, 1b260e8, 3e25639 and the commit that carries this entry.
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,

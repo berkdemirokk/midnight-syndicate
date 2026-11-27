@@ -11,23 +11,23 @@
     "draw_calls": 49,
     "draw_calls_min": 49,
     "driver": "vulkan",
-    "fps": 641.437,
-    "frame_ms_avg": 1.559,
-    "frame_ms_p95": 1.682,
-    "frame_ms_p99": 1.786,
+    "fps": 696.12,
+    "frame_ms_avg": 1.437,
+    "frame_ms_p95": 1.466,
+    "frame_ms_p99": 1.516,
     "frames": 60,
     "objects": 49,
     "os": "Windows",
     "primitives": 115994,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 511.593,
+    "video_mem_mb": 531.098,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_2812458e-b03-8/evidence/screens/car_studio_kestrel/cabin_closeup.png",
+  "png": "C:/Users/berk/car race/evidence/screens/car_studio_kestrel/cabin_closeup.png",
   "preset": "high",
   "scenario": "car_studio_kestrel"
 }

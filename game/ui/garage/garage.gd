@@ -35,10 +35,16 @@ const GLOW_INTENSITY: float = 0.6
 const GLOW_BLOOM: float = 0.06
 const BG_COLOUR: Color = Color(0.012, 0.014, 0.022)
 const AMBIENT_COLOUR: Color = Color(0.05, 0.06, 0.09)
+const KEY_SHADOW_DISTANCE_M: float = 18.0  ## the farthest corner of the room is 15.9 m from the camera; a longer reach only coarsens the map
+const WORKSHOP_PANO: String = "res://assets/vehicles/shared/workshop_pano.jpg"  ## mirrored in the car paint
+const WORKSHOP_REFLECTION: float = 0.6
+const WORKSHOP_BLUR: float = 1.5  ## sharper than on the road: the car stands still and is looked at up close
+const WORKSHOP_HIGHLIGHT: float = 3.0  ## the tube lights draw bright streaks along the body
 
 var layout: Dictionary = {}
 var orbit: GarageOrbit = GarageOrbit.new()
 var car: CarLod = null
+var _pano: Texture2D = null
 var spec: CarSpec = null
 var car_id: String = ""
 
@@ -286,6 +292,12 @@ func _spawn_car() -> void:
 	car.rotation.y = CAR_TURN
 	_pivot.add_child(car)
 	CarMaterials.set_rim_color(car, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
+	# the workshop's tube lights and windows in the paint; one more pass over the body, so not on the Low preset
+	if Settings.get_preset_id() != "low":
+		if _pano == null and ResourceLoader.exists(WORKSHOP_PANO):
+			_pano = load(WORKSHOP_PANO) as Texture2D  # kept: switching car must not read the picture again
+		if _pano != null:
+			CarMaterials.set_reflection(car, _pano, WORKSHOP_REFLECTION, WORKSHOP_BLUR, WORKSHOP_HIGHLIGHT)
 
 
 func _build_lights() -> void:
@@ -322,6 +334,10 @@ func _build_lights() -> void:
 	_key.light_color = KEY_COLOUR
 	_key.light_energy = KEY_ENERGY
 	_key.shadow_enabled = true
+	# one shadow map: the default four cascades over 100 m drew the car (the only shadow caster) up to four times
+	# a frame for a room that is 16 m across
+	_key.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	_key.directional_shadow_max_distance = KEY_SHADOW_DISTANCE_M
 	_key.light_angular_distance = 1.5
 	_key.rotation_degrees = Vector3(-62.0, 28.0, 0.0)
 	_lights.add_child(_key)

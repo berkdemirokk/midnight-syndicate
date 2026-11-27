@@ -11,23 +11,23 @@
     "draw_calls": 142,
     "draw_calls_min": 142,
     "driver": "vulkan",
-    "fps": 845.988,
-    "frame_ms_avg": 1.182,
-    "frame_ms_p95": 1.221,
-    "frame_ms_p99": 1.296,
+    "fps": 766.117,
+    "frame_ms_avg": 1.305,
+    "frame_ms_p95": 1.324,
+    "frame_ms_p99": 1.336,
     "frames": 60,
     "objects": 142,
     "os": "Windows",
-    "primitives": 453400,
+    "primitives": 469930,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 474.095,
+    "video_mem_mb": 546.183,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/cars2/evidence/screens/car_studio_havoc/paint_variants.png",
+  "png": "C:/Users/berk/car race/evidence/screens/car_studio_havoc/paint_variants.png",
   "preset": "high",
   "scenario": "car_studio_havoc"
 }

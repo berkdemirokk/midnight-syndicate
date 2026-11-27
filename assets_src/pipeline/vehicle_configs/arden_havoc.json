@@ -51,11 +51,11 @@
     "LED_Red": "M_LightRear",
     "LED": "M_LightFront",
     "Lamp_Amber": "M_Lens",
-    "Projector": "M_LightFront",
+    "Projector": "M_Chrome",
     "Reflector": "M_Lens",
     "Grille_Frame": "M_Trim",
     "Mesh_Hex": "M_Trim",
-    "Mirror": "M_Trim",
+    "Mirror": "M_Chrome",
     "Mirror_Case": "M_Trim",
     "Plate": "M_Plate",
     "Plate_Back": "M_Trim",
@@ -113,7 +113,9 @@
     "Exhaust": "M_Trim",
     "Caliper_Red": "M_Trim",
     "Pad": "M_Trim",
-    "Lamp_Amber": "M_LightFront"
+    "Lamp_Amber": "M_LightFront",
+    "Projector": "M_LightFront",
+    "Mirror": "M_Trim"
   },
   "nodes_lod1": {
     "Disc": "drop",

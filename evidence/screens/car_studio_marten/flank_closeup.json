@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.965,
+  "luma_max": 0.961,
   "luma_min": 0.0,
   "name": "flank_closeup",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 47,
     "draw_calls_min": 47,
     "driver": "vulkan",
-    "fps": 594.307,
-    "frame_ms_avg": 1.683,
-    "frame_ms_p95": 1.728,
-    "frame_ms_p99": 1.76,
+    "fps": 595.616,
+    "frame_ms_avg": 1.679,
+    "frame_ms_p95": 1.695,
+    "frame_ms_p99": 1.721,
     "frames": 60,
     "objects": 47,
     "os": "Windows",
-    "primitives": 173436,
+    "primitives": 177312,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 472.724,
+    "video_mem_mb": 545.259,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/cars3/evidence/screens/car_studio_marten/flank_closeup.png",
+  "png": "C:/Users/berk/car race/evidence/screens/car_studio_marten/flank_closeup.png",
   "preset": "high",
   "scenario": "car_studio_marten"
 }

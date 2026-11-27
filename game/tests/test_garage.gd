@@ -72,6 +72,33 @@ func test_scene_instantiates() -> void:
 	_restore(old)
 
 
+## The paint mirrors the workshop panorama (a second pass on M_Paint), on every car put on the turntable, and not on
+## the Low preset.
+func test_paint_mirrors_the_workshop_except_on_low() -> void:
+	var old: Dictionary = _open_temp_profile()
+	var prev: String = Settings.get_preset_id()
+	Settings.set_preset("high")
+	var g: Variant = _spawn_garage()
+	await frames(3)
+	var paint: StandardMaterial3D = _mat_named(g.get("car"), "M_Paint")
+	check(paint != null and paint.next_pass is ShaderMaterial, "no reflection pass on the paint on High")
+	if paint != null and paint.next_pass is ShaderMaterial:
+		check((paint.next_pass as ShaderMaterial).get_shader_parameter("pano") is Texture2D, "reflection pass has no picture")
+	var ids: Array[String] = CarCatalog.available_ids()
+	g.show_car(ids[ids.size() - 1])  # another car through the same path as the arrows
+	await frames(2)
+	paint = _mat_named(g.get("car"), "M_Paint")
+	check(paint != null and paint.next_pass is ShaderMaterial, "no reflection pass after switching car")
+	Settings.set_preset("low")
+	g.show_car(ids[0])
+	await frames(2)
+	paint = _mat_named(g.get("car"), "M_Paint")
+	check(paint != null and paint.next_pass == null, "reflection pass on the Low preset")
+	Settings.set_preset(prev)
+	await cleanup([g])
+	_restore(old)
+
+
 func test_swatch_changes_paint_and_saved_setup() -> void:
 	var old: Dictionary = _open_temp_profile()
 	var g: Variant = _spawn_garage()

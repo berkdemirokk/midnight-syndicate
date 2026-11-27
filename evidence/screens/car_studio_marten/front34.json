@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.965,
+  "luma_max": 0.961,
   "luma_min": 0.0,
   "name": "front34",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 59,
     "draw_calls_min": 59,
     "driver": "vulkan",
-    "fps": 982.688,
-    "frame_ms_avg": 1.018,
-    "frame_ms_p95": 1.04,
-    "frame_ms_p99": 1.108,
+    "fps": 961.924,
+    "frame_ms_avg": 1.04,
+    "frame_ms_p95": 1.058,
+    "frame_ms_p99": 1.066,
     "frames": 60,
     "objects": 59,
     "os": "Windows",
-    "primitives": 157988,
+    "primitives": 170192,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 472.724,
+    "video_mem_mb": 545.259,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/cars3/evidence/screens/car_studio_marten/front34.png",
+  "png": "C:/Users/berk/car race/evidence/screens/car_studio_marten/front34.png",
   "preset": "high",
   "scenario": "car_studio_marten"
 }

@@ -8,26 +8,26 @@
   "name": "shop_buy",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 264,
-    "draw_calls_min": 264,
+    "draw_calls": 277,
+    "draw_calls_min": 277,
     "driver": "vulkan",
-    "fps": 495.381,
-    "frame_ms_avg": 2.019,
-    "frame_ms_p95": 3.386,
-    "frame_ms_p99": 3.868,
+    "fps": 575.027,
+    "frame_ms_avg": 1.739,
+    "frame_ms_p95": 1.758,
+    "frame_ms_p99": 1.763,
     "frames": 60,
-    "objects": 410,
+    "objects": 420,
     "os": "Windows",
-    "primitives": 232760,
+    "primitives": 230234,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 456.551,
+    "video_mem_mb": 568.916,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_0929d959-435-3/evidence/screens/garage_shop/shop_buy.png",
+  "png": "C:/Users/berk/car race/evidence/screens/garage_shop/shop_buy.png",
   "preset": "high",
   "scenario": "garage_shop"
 }

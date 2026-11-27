@@ -36,14 +36,20 @@ const RIM_ANISOTROPY: float = 0.75  ## stretched highlight across the brushing
 const TIRE_ROUGHNESS: float = 0.92  ## rubber: matte, with sidewall variation from the map
 const TRIM_ROUGHNESS: float = 0.42  ## satin black plastic
 const TRIM_GRAIN_SCALE: float = 0.25  ## fine grain normal on trim
+const INTERIOR_GRAIN_SCALE: float = 0.35  ## leather grain on part-coloured interiors
+const INTERIOR_GRAIN_TILING: float = 6.0  ## repeats per metre
 const CHROME_ROUGHNESS: float = 0.08
 const GLASS_ROUGHNESS: float = 0.1  ## base; the streak map scales it to 0.06..0.1 so reflections break into streaks
 const GLASS_STREAK_SCALE: Vector3 = Vector3(1.5, 1.0, 1.5)  ## triplanar repeats per metre of the streak map (about 2 cm columns)
-const LENS_ALPHA: float = 0.25
+const LENS_ALPHA: float = 0.1  ## clear cover: at 0.25 it laid a white veil over the lamp and hid the ring and the projector
 const CARBON_CLEAR: float = 0.6
 const CARBON_CLEAR_ROUGHNESS: float = 0.2
 const REAR_REST: float = 1.8  ## rear lamp emission multiplier at rest: above the glow threshold (1.3), so running lights bloom at night
 const REAR_BRAKE: float = 5.0  ## rear lamp emission multiplier while braking
+## Surfaces of these materials use the mesh's vertex colours when it has them: the licensed cars carry every part's
+## own colour there (assets_src/pipeline/prepare_vehicle.py, VC_TARGETS), so one material shows chrome, amber lamps,
+## tan seats and black seals without one more surface.
+const VERTEX_COLOURED: PackedStringArray = ["M_Trim", "M_Chrome", "M_Interior", "M_BrakeDisc", "M_Caliper", "M_Rim"]
 const SHADOW_CASTERS: PackedStringArray = [
 	"body", "underbody", "trim", "wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR",
 ]
@@ -67,6 +73,9 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT
 			if src == null or not KNOWN.has(src.resource_name):
 				continue
 			var nm: String = src.resource_name
+			var am: ArrayMesh = mi.mesh as ArrayMesh
+			var vc: bool = VERTEX_COLOURED.has(nm) and am != null and (am.surface_get_format(s) & Mesh.ARRAY_FORMAT_COLOR) != 0
+			var slot: String = nm + "#vc" if vc else nm  # a mesh without part colours keeps the plain material
 			var mat: StandardMaterial3D
 			if nm == "M_Tire" and String(mi.name).begins_with("wheel"):
 				# per wheel size: the tyre picture is projected along the axle and must span one tyre diameter
@@ -75,13 +84,13 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT
 					_shared[key] = _tyre_photo(_build(nm, src, paint, finish), mi.mesh.get_aabb().size.y)
 				mat = _shared[key]
 			elif PER_CAR.has(nm):
-				if not per_car.has(nm):
-					per_car[nm] = _build(nm, src, paint, finish)
-				mat = per_car[nm]
+				if not per_car.has(slot):
+					per_car[slot] = _build(nm, src, paint, finish, vc)
+				mat = per_car[slot]
 			else:
-				if not _shared.has(nm):
-					_shared[nm] = _build(nm, src, paint, finish)
-				mat = _shared[nm]
+				if not _shared.has(slot):
+					_shared[slot] = _build(nm, src, paint, finish, vc)
+				mat = _shared[slot]
 			mi.set_surface_override_material(s, mat)
 
 
@@ -109,9 +118,10 @@ static func set_wet(car: Node, wet: bool) -> void:
 
 
 ## Mirrors a street panorama in the paint (second pass, res://shaders/car_reflection.gdshader); null removes it.
-static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5) -> void:
+## blur is the mip level read (2.5 = soft, hides the facets of a low-poly body at speed); highlight lifts the lamps.
+static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5, blur: float = 2.5, highlight: float = 0.0) -> void:
 	# paint only: a glass pass was tried on 2026-11-27, it was barely visible and took the Bosphorus night over the primitive budget
-	for spec: Array in [["M_Paint", strength, 2.5]]:
+	for spec: Array in [["M_Paint", strength, blur]]:
 		_each_material(car, spec[0], func(m: StandardMaterial3D) -> void:
 			if pano == null:
 				m.next_pass = null
@@ -121,6 +131,7 @@ static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5) ->
 			mirror.set_shader_parameter("pano", pano)
 			mirror.set_shader_parameter("strength", spec[1])
 			mirror.set_shader_parameter("blur", spec[2])
+			mirror.set_shader_parameter("highlight", highlight)
 			m.next_pass = mirror)
 
 
@@ -129,9 +140,10 @@ static func set_brake_lights(car: Node, on: bool) -> void:
 	_each_material(car, "M_LightRear", func(m: StandardMaterial3D) -> void: m.emission_energy_multiplier = level)
 
 
-static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: int) -> StandardMaterial3D:
+static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: int, part_colours: bool = false) -> StandardMaterial3D:
 	var m: StandardMaterial3D = src.duplicate() as StandardMaterial3D
 	m.resource_name = nm
+	m.vertex_color_use_as_albedo = false  # set here, not by the importer (it turns it on for every surface with COLOR_0)
 	match nm:
 		"M_Paint":
 			m.albedo_color = paint
@@ -214,7 +226,27 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.clearcoat_enabled = true
 			m.clearcoat = CARBON_CLEAR
 			m.clearcoat_roughness = CARBON_CLEAR_ROUGHNESS
+	if part_colours:
+		_use_part_colours(m, nm)
 	return m
+
+
+## The mesh carries each part's own colour (the source model's material colours) as a vertex colour, so the albedo is
+## white and the vertex colour does the work. M_Rim is the exception: its vertex colour is a shade (1 = the main alloy,
+## darker = caps, nuts and the inner barrel) under the rim colour the player picks.
+static func _use_part_colours(m: StandardMaterial3D, nm: String) -> void:
+	m.vertex_color_use_as_albedo = true
+	m.vertex_color_is_srgb = false  # glTF COLOR_0 is linear
+	if nm == "M_Rim":
+		return
+	m.albedo_color = Color.WHITE
+	if nm == "M_Interior":
+		m.albedo_texture = null  # the quilt picture is black cloth: it would hide the seat and dash colours
+		m.normal_enabled = true  # fine leather grain instead, object-space (these interiors have no UVs)
+		m.normal_texture = _tex_file("car_grain_normal.png")
+		m.normal_scale = INTERIOR_GRAIN_SCALE
+		m.uv1_triplanar = true
+		m.uv1_scale = Vector3(INTERIOR_GRAIN_TILING, INTERIOR_GRAIN_TILING, INTERIOR_GRAIN_TILING)
 
 
 ## Tyre picture (sidewall ring, tread in the middle) projected in wheel-local space: it turns with the wheel and needs

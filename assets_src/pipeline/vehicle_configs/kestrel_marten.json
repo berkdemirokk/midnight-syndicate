@@ -48,12 +48,12 @@
     "Lamp_RedDark": "M_LightRear",
     "LED_Red": "M_LightRear",
     "LED": "M_LightFront",
-    "Projector": "M_LightFront",
+    "Projector": "M_Chrome",
     "Reflector": "M_Lens",
     "Grille_Frame": "M_Trim",
     "Mesh_Hex": "M_Trim",
     "Carbon": "M_Carbon",
-    "Mirror": "M_Trim",
+    "Mirror": "M_Chrome",
     "Mirror_Case": "M_Trim",
     "Plate": "M_Plate",
     "Plate_Back": "M_Trim",
@@ -129,7 +129,9 @@
     "Disc": "M_Rim",
     "Disc_Hat": "M_Rim",
     "Alloy": "M_Trim",
-    "Mesh_Chrome": "M_Trim"
+    "Mesh_Chrome": "M_Trim",
+    "Projector": "M_LightFront",
+    "Mirror": "M_Trim"
   },
   "nodes_lod1": {
     "Disc": "drop",

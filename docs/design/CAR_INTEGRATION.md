@@ -59,3 +59,48 @@ Re-ship after every car build: `py -3.10 tools/ship_assets.py` (copies the three
 - Node names and wheel/brake setup unchanged. Ship via tools/ship_assets.py (SHIP OK); ASSET_MANIFEST.json re-registered.
 - Triangles: LOD0 86558, LOD1 27493, LOD2 6797. Height 1.155 m (within 3% of 1.19 m).
 - Engine: the body still carries the glass, col_body (collision_only) and wheel/brake nodes as before.
+
+## Licensed cars: part colours and baked shade (2026-11-27)
+Why: a source model from vinish.dev has about 60 materials (chrome, projector glass, amber lamps, tan leather, yellow
+calipers, black seals). The contract has 14 engine materials, and the first conversion painted every part of a group one
+flat colour: white lamp discs, grey grille boxes, one-grey interiors. That, not the triangle count, made the cars look cheap.
+- `assets_src/pipeline/prepare_vehicle.py` writes a vertex colour (COLOR_0) on every face. `VC_TARGETS` has six
+  materials: for M_Trim, M_Chrome, M_Interior, M_BrakeDisc and M_Caliper the colour is the source material's colour
+  times a baked shade; M_Rim carries a shade instead (see Rims) times the baked shade. Every other material gets
+  white. Surfaces and draw calls are the same as before.
+- Source colour: the glTF base colour factor times the mean of the base colour texture. A cut-out texture (alphaMode
+  MASK or BLEND) is weighted by what is opaque: a chrome wire mesh that is 40 % wire is 40 % of the wire colour.
+  `COLOUR_FIXES` holds colours that do not work flat (Screens: a dark glass blue, the mean of the lit map was a grey
+  panel). A config may set `source_colours` to override a colour for one car.
+- Metal folded into a matt material: where a source metal (metallicFactor from 0.6) lands in M_Trim or M_Interior (the
+  far LODs fold chrome, alloy, exhaust and mirror into M_Trim), its colour is multiplied by 0.18. A mirror tint used as
+  albedo is light grey plastic; rivals switch to LOD1 at 6 m in a race, so this is the common view of them.
+- Rims: the reference is the wheel face, the colour with the most area looking away from the car in the spoke zone
+  (0.22 to 0.5 of the tyre radius). That colour and everything brighter gets shade 1, darker parts down to 0.5. At
+  LOD0 the player's rim colour is therefore full strength on the spokes of every car (flat spoke faces 0.91 to 0.99
+  with the baked shade). At LOD1 the baked shade of a rim is one mean value for the wheel: the collapse to 12 % of
+  the wheel smeared the per-corner pocket shade over the spokes.
+- Baked shade (`bake_part_ao`): 24 cosine-weighted rays a vertex, reach 0.45 m, floor 0.28 (0.55 for brakes). Glass and
+  lens covers do not occlude. A wheel and its brake are tested only against each other, so the shade turns with the wheel.
+- Mapping changes in every `vehicle_configs/*.json`: Projector and Mirror go to M_Chrome at LOD0 (they were an
+  emissive lamp and matt plastic). LOD1 and LOD2 keep their old surface lists.
+- Engine (`car_materials.gd`): a surface of a `VERTEX_COLOURED` material whose mesh has COLOR_0 gets the `#vc` variant
+  (albedo white, vertex colour as albedo; M_Rim keeps the player's rim colour). Every other material turns the flag off,
+  because the glTF importer turns it on for any surface with COLOR_0. Cars without COLOR_0 (the project-made ones) keep
+  the plain materials.
+- M_Lens alpha 0.25 -> 0.1 for every car, the project-made ones too (one shared material): the cover laid a white veil
+  over the lamp. `docs/art/CAR_01_BRIEF.md` still says about 0.25.
+- Rebuild one car: `blender -b --factory-startup -P assets_src/pipeline/prepare_vehicle.py -- assets_src/third_party/vinish_cars/<source>.glb <car_id> game/assets/vehicles/<car_id>`,
+  then `godot --headless --path game --import` and refresh its three records in `ASSET_MANIFEST.json` (bytes, sha256, tris).
+- Garage: the paint mirrors `workshop_pano.jpg` (`CarMaterials.set_reflection` with blur 1.5 and highlight 3.0), not on
+  the Low preset; the picture is loaded once (`_pano`). The key light uses one shadow map (orthogonal, 18 m: the
+  farthest corner of the room is 15.9 m from the camera) instead of four cascades over 100 m; only the car casts a
+  shadow there. Numbers (dev PC, RTX 5060 Ti, High preset, starter car): see `evidence/screens/garage/*.json`. Against
+  the captures before the pass and with four cascades (339000 to 380299 primitives, 212 to 297 draw calls) the eight
+  shots stay under 450000 primitives and 500 draw calls. With the pass and four cascades three shots were over the
+  budget (436922 to 527729 primitives, seen during this session; those captures were overwritten and are not in
+  evidence). Not captured: Medium and Low (1024 shadow atlas), a turning turntable.
+- Independent review of this change (three Fable reviewers, each finding checked by a second one, 2026-11-27): six
+  findings confirmed and fixed (far-LOD metals as light plastic, the Meridian mesh grille, rim shade inverted on three
+  cars, the garage pass cost and preset gate, the lens note above). Open and older than this change: rear reflectors
+  and the Havoc mirror indicators are colourless glass (Reflector and Lamp_Amber map to M_Lens there).

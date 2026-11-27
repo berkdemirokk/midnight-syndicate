@@ -217,6 +217,44 @@ func test_paint_is_per_car_and_brake_lights_work() -> void:
 		await _done()
 
 
+## The source models' part colours travel as vertex colours (prepare_vehicle.py, VC_TARGETS). Trim, chrome, interior,
+## brakes and rims use them; paint, glass, lamps, tyres and the plate must not, or the source paint tints the player's.
+## A car without vertex colours (the project-made hero) keeps the plain materials.
+func test_part_colours_reach_the_right_materials() -> void:
+	for c: Dictionary in CARS:
+		var car: CarLod = _spawn(c["scene"], true)
+		await frames(1)
+		var used: Dictionary = {}
+		for mi: MeshInstance3D in _meshes(car):
+			var am: ArrayMesh = mi.mesh as ArrayMesh
+			if am == null:
+				continue
+			for s: int in am.get_surface_count():
+				var m: StandardMaterial3D = mi.get_active_material(s) as StandardMaterial3D
+				if m == null:
+					continue
+				var coloured: bool = (am.surface_get_format(s) & Mesh.ARRAY_FORMAT_COLOR) != 0
+				var wanted: bool = coloured and CarMaterials.VERTEX_COLOURED.has(m.resource_name)
+				check(m.vertex_color_use_as_albedo == wanted, "%s %s %s: vertex colour as albedo is %s" % [c["id"], mi.name, m.resource_name, m.vertex_color_use_as_albedo])
+				if wanted and m.resource_name != "M_Rim":
+					check(m.albedo_color.is_equal_approx(Color.WHITE), "%s %s: albedo %s would tint the part colours" % [c["id"], m.resource_name, m.albedo_color])
+				if wanted:
+					used[m.resource_name] = true
+		for nm: String in ["M_Trim", "M_Interior", "M_Rim"]:
+			check(used.has(nm), "%s: %s has no part colours" % [c["id"], nm])
+		CarMaterials.set_rim_color(car, PAINT_TEST)
+		var rim: StandardMaterial3D = _material(car, "M_Rim")
+		check(rim != null and rim.albedo_color.is_equal_approx(PAINT_TEST), "%s rim colour not applied" % c["id"])
+		await _done()
+	var hero: CarLod = _spawn("res://vehicles/noctra_sable/noctra_sable.tscn", true)
+	await frames(1)
+	for mi: MeshInstance3D in _meshes(hero):
+		for s: int in (mi.mesh.get_surface_count() if mi.mesh != null else 0):
+			var m: StandardMaterial3D = mi.get_active_material(s) as StandardMaterial3D
+			check(m == null or not m.vertex_color_use_as_albedo, "hero %s %s uses vertex colours it does not have" % [mi.name, m.resource_name if m else ""])
+	await _done()
+
+
 func test_lod_switching_and_wheel_sets() -> void:
 	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"])
