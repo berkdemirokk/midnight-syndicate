@@ -398,3 +398,29 @@ func test_wrong_way_signal() -> void:
 	check(_wrong_events == 2 and not _wrong_last, "wrong-way did not clear when driving forward (events %d)" % _wrong_events)
 	var nodes: Array[Node] = [manager, car, track]
 	await cleanup(nodes)
+
+
+## Both reset candidates are occupied: no unchecked teleport, and retry succeeds once clear.
+func test_reset_never_teleports_into_occupied_candidate() -> void:
+	var track: Track = TestTrack.build()
+	add(track)
+	var car: ArcadeCar = _make_car(1.0, 0.0)
+	var blocker_a: ArcadeCar = _make_car(0.8, 0.0)
+	var blocker_b: ArcadeCar = _make_car(0.8, 0.0)
+	var driver: AIDriver = car.get_node("AIDriver") as AIDriver
+	driver.setup(track)
+	driver.reset_probe_tries = 1
+	driver.reset_advance_m = 4.0
+	driver.reset_probe_step_m = 16.0
+	var traffic: Array[ArcadeCar] = [car, blocker_a, blocker_b]
+	driver.set_traffic(traffic)
+	_place(track, car, 70.0)
+	_place(track, blocker_a, 74.0)
+	_place(track, blocker_b, 90.0)
+	var before: Vector3 = car.global_position
+	check(not driver._reset_to_line(), "all candidates occupied: refuse reset")
+	check(car.global_position.distance_to(before) < 0.01, "no teleport to occupied spot")
+	_place(track, blocker_b, 160.0)
+	check(driver._reset_to_line(), "last candidate is now clear")
+	check(absf(_wrap(track.get_progress(car.global_position) - 90.0, track.length)) < 1.0, "reset to checked second candidate")
+	await cleanup([car, blocker_a, blocker_b, track])
