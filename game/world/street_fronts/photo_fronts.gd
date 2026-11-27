@@ -33,7 +33,8 @@ const ROOF_COLOUR: Color = Color(0.2, 0.07, 0.045)  ## linear terracotta (pitche
 const FLAT_ROOF_COLOUR: Color = Color(0.12, 0.12, 0.13)  ## linear bitumen grey (flat roofs)
 const ROOF_ALPHA: float = 0.5  ## vertex alpha of a roof plane: the shader roof band (0 wall, 1 street face)
 const SOFFIT_COLOUR: Color = Color(0.12, 0.09, 0.07)  ## linear shadowed underside of the eave
-const WALL_COLOUR: Color = Color(0.45, 0.4, 0.34)  ## linear plaster grey: side and back walls
+const WALL_COLOUR: Color = Color(0.45, 0.4, 0.34)  ## linear plaster grey: side and back walls of textured groups
+const PLAIN_WALL_COLOUR: Color = Color(0.3, 0.27, 0.23)  ## the same walls in the groups without a texture
 const WALL_UV_M: float = 2.5  ## metres per texture repeat on walls
 const ROOF_UV_M: float = 1.0  ## metres per texture repeat on roofs
 const NIGHT_GLOW: float = 1.6
@@ -242,8 +243,10 @@ func _house_mesh(index: int, group: Dictionary) -> ArrayMesh:
 	# seen from the street (looking along +Z) the model +X is on the left: u0 goes there
 	_quad(st, [Vector3(w, h, 0.0), Vector3(-w, h, 0.0), Vector3(-w, 0.0, 0.0), Vector3(w, 0.0, 0.0)],
 			[Vector2(u0, 0.0), Vector2(u1, 0.0), Vector2(u1, 1.0), Vector2(u0, 1.0)], Vector3(0.0, 0.0, -1.0), Color.WHITE)
-	var wall := Color(WALL_COLOUR, 0.0)
-	var roof := Color(ROOF_COLOUR if rise > 0.0 else FLAT_ROOF_COLOUR, ROOF_ALPHA)
+	# the plaster and tile band (roof alpha, lifted wall colour) is for the textured groups only; other tracks keep the plain look
+	var textured: bool = bool(group.get("textured", false))
+	var wall := Color(WALL_COLOUR if textured else PLAIN_WALL_COLOUR, 0.0)
+	var roof := Color(ROOF_COLOUR if rise > 0.0 else FLAT_ROOF_COLOUR, ROOF_ALPHA if textured else 0.0)
 	var wall_uv := func(p: Vector3) -> Vector2: return Vector2(p.x + p.z, -p.y) / WALL_UV_M
 	var roof_uv := func(p: Vector3) -> Vector2: return Vector2(p.x, Vector2(p.y - ridge, p.z - d / 2.0).length()) / ROOF_UV_M
 	var side_r: Array = [Vector3(w, h, 0.0), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(w, 0.0, 0.0)]

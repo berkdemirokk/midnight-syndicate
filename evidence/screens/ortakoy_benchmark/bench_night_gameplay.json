@@ -8,26 +8,26 @@
   "name": "bench_night_gameplay",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 406,
+    "draw_calls": 412,
     "draw_calls_min": 316,
     "driver": "vulkan",
-    "fps": 185.435,
-    "frame_ms_avg": 5.393,
-    "frame_ms_p95": 6.851,
-    "frame_ms_p99": 30.265,
+    "fps": 133.868,
+    "frame_ms_avg": 7.47,
+    "frame_ms_p95": 8.396,
+    "frame_ms_p99": 54.912,
     "frames": 60,
-    "objects": 18750,
+    "objects": 18846,
     "os": "Windows",
-    "primitives": 451672,
+    "primitives": 453891,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 763.754,
+    "video_mem_mb": 781.709,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_night_gameplay.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-arch/evidence/screens/ortakoy_benchmark/bench_night_gameplay.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

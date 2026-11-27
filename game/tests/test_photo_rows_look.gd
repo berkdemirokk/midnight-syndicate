@@ -54,3 +54,13 @@ func test_bogaz_group_wires_plaster_and_tile() -> void:
 		for p: String in ["wall_tex", "wall_nrm", "roof_tex"]:
 			check(m.get_shader_parameter(p) is Texture2D, "%s is not set on a bogaz facade" % p)
 	pf.free()
+
+
+func test_plain_groups_keep_plain_roofs() -> void:
+	var pf := PhotoFronts.new()
+	var group: Dictionary = _group().duplicate()
+	group["textured"] = false
+	var cols: PackedColorArray = (pf._house_mesh(1, group).surface_get_arrays(0)[Mesh.ARRAY_COLOR])
+	for i: int in cols.size():
+		check(absf(cols[i].a - PhotoFronts.ROOF_ALPHA) > 0.02, "a plain group roof carries the roof alpha")
+	pf.free()
