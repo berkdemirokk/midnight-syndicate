@@ -415,6 +415,8 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 				lod.lod2_start_m = config_used.rival_lod2_start_low_m
 			lod.set_forced(lod.force_lod)  # rewrites the visibility ranges with the new switch distance
 		lod.build_mirror_lod()
+		if not rival:
+			_cheap_player_mirror(lod)
 		# The mirror-only copies are never drawn by the race camera: they must not cast a second sun shadow beside the real LOD.
 		for n: Node in lod.find_children("*", "MeshInstance3D", true, false):
 			var cm: MeshInstance3D = n as MeshInstance3D
@@ -602,6 +604,21 @@ func _tag_mirror_skipped() -> void:
 			copy.visibility_range_begin = 0.0
 			copy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			gi.get_parent().add_child(copy)
+
+
+## The player car in the wet road mirror: the 7k-tri LOD2 copy at every distance. The LOD1 copy (about 20k primitives)
+## only showed a blurred reflection of the car 5 m behind the camera. Rivals keep the mirror LOD1/LOD2 split.
+func _cheap_player_mirror(lod: CarLod) -> void:
+	var copy1: Node3D = lod.get_mirror_lod()
+	var copy2: Node3D = lod.find_child(CarLod.MIRROR_LOD2_NAME, true, false) as Node3D
+	if copy1 == null or copy2 == null:
+		return
+	copy1.visible = false
+	copy2.visible = true
+	for n: Node in copy2.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		mi.visibility_range_begin = 0.0
+		mi.visibility_range_end = lod.lod2_start_m
 
 
 ## "LOD0" / "LOD1" / "LOD2" when the node is a building LOD mesh or sits under one, else "".

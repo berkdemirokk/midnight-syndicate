@@ -21,10 +21,10 @@ const MAX_HFOV_DEG: float = 125.0  ## horizontal FOV ceiling, whatever the aspec
 @export var mode: Mode = Mode.CHASE
 @export_group("Chase")
 @export var distance_rest_m: float = 4.5
-@export var distance_top_m: float = 5.4
-@export var height_m: float = 1.28
-@export var look_ahead_m: float = 3.0
-@export var look_height_m: float = 0.55
+@export var distance_top_m: float = 5.9
+@export var height_m: float = 1.18
+@export var look_ahead_m: float = 9.0
+@export var look_height_m: float = 0.85
 @export var velocity_blend: float = 0.5  ## max weight of the travel direction against the facing
 @export var velocity_full_ms: float = 25.0  ## speed at which velocity_blend is fully applied
 @export var offset_smooth_s: float = 0.2  ## critically damped smoothing time of the offsets
@@ -33,7 +33,7 @@ const MAX_HFOV_DEG: float = 125.0  ## horizontal FOV ceiling, whatever the aspec
 @export var fallback_top_speed_kmh: float = 286.0  ## used when the car has no spec
 @export var min_distance_m: float = 3.0
 @export_group("Look, roll and speed feel")
-@export var look_inside_m: float = 1.2  ## look point shift toward the inside of a corner, at full yaw
+@export var look_inside_m: float = 2.2  ## look point shift toward the inside of a corner, at full yaw
 @export var look_smooth_s: float = 0.35  ## time constant of the look shift
 @export var yaw_full_rad_s: float = 0.6  ## yaw rate at which look shift and roll reach full strength
 @export var max_roll_deg: float = 2.5  ## camera roll into a turn, chase mode only

@@ -11,23 +11,23 @@
     "draw_calls": 310,
     "draw_calls_min": 310,
     "driver": "vulkan",
-    "fps": 394.117,
-    "frame_ms_avg": 2.537,
-    "frame_ms_p95": 3.603,
-    "frame_ms_p99": 22.97,
+    "fps": 508.35,
+    "frame_ms_avg": 1.967,
+    "frame_ms_p95": 3.114,
+    "frame_ms_p99": 3.741,
     "frames": 60,
     "objects": 310,
     "os": "Windows",
     "primitives": 378177,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 770.829,
+    "video_mem_mb": 771.329,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/fable-graphics-visual-quality-105c41/evidence/screens/ortakoy_benchmark/bench_day_hero.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-nightdiet/evidence/screens/ortakoy_benchmark/bench_day_hero.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }
