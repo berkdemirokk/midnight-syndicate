@@ -76,7 +76,14 @@ jobs:
         run: godot --headless --path game --import
 
       - name: Run logic tests (headless, fixed 60 fps)
-        run: godot --headless --fixed-fps 60 --path game -s res://tests/run_tests.gd
+        run: |
+          rm -f evidence/test_results.json
+          godot --headless --fixed-fps 60 --path game -s res://tests/run_tests.gd
+
+      - name: Verify fresh test evidence
+        run: |
+          python3 -m unittest discover -s tools -p test_verify_test_evidence.py
+          python3 tools/verify_test_evidence.py evidence/test_results.json --minimum 335
 
       - name: Upload test evidence
         if: always()
@@ -84,7 +91,7 @@ jobs:
         with:
           name: test-results
           path: evidence/test_results.json
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 14
 
   asset-validation:
@@ -102,11 +109,5 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Validate assets if the asset factory exists
-        run: |
-          if [ -f tools/asset_factory.py ]; then
-            python tools/asset_factory.py validate
-          else
-            # tools/ is empty in the repo today. This is a skip, not a pass.
-            echo "::notice::tools/asset_factory.py is not in the repo yet. Asset validation was SKIPPED, not passed."
-          fi
+      - name: Validate assets
+        run: python tools/asset_factory.py validate
