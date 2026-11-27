@@ -61,6 +61,10 @@ func _on_start(info: Dictionary) -> void:
 		var car: ArcadeCar = CarFactory.create(_scene.config_used.car_scene, spec, _scene.config_used.opponent_paint(pid))
 		get_parent().add_child(car)
 		car.set_physics_process(false)
+		# ghost: a frozen remote copy is a static wall on this machine (a finished car parked past the line stopped the
+		# local car 4 m short and cost it the race, net_ingame run 2026-11-28); positions come only from the server relay
+		car.collision_layer = 0
+		car.collision_mask = 0
 		car.reset_to(track.get_grid_transform(int(grid[pid])))
 		car.set_frozen_for_grid(true)
 		_cars[pid] = car
@@ -71,7 +75,9 @@ func _on_start(info: Dictionary) -> void:
 func _physics_process(delta: float) -> void:
 	if not _started or _done or _scene == null or _scene.race == null or _scene.player == null:
 		return
-	if _scene.race.state != RaceManager.State.RACING:
+	# keep sending after the local finish until the server's results arrive: the local race (this player only) ends at
+	# the line, and stopping there left the last state one send interval (about 2 m) short of the server's line (DNF)
+	if _scene.race.state != RaceManager.State.RACING and _scene.race.state != RaceManager.State.FINISHED:
 		return
 	_send_t += delta
 	var step: float = 1.0 / NetConfig.SNAP_HZ
