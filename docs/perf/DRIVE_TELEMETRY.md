@@ -109,7 +109,9 @@ The top-speed numbers are spec values from the catalog. They say nothing about h
 
 ## After: AI churn (package ai, 2026-11-28)
 
-Code: `game/ai/ai_driver.gd`. Tests: `game/tests/test_ai_churn.gd` (2 tests). Same matrix, same sim (`--fixed-fps 60`, headless, `--part=matrix`, bogaz and city01, 3 cars x grid 4 and 8 each). Before = the commit before this package (168c27a). The matrix is deterministic for a fixed code state: the before numbers reproduced the table above, and the final after run reproduced the candidate run exactly.
+Code: `game/ai/ai_driver.gd`. Tests: `game/tests/test_ai_churn.gd` (2 tests). Same matrix, same sim (`--fixed-fps 60`, headless, `--part=matrix`, bogaz and city01, 3 cars x grid 4 and 8 each). Before = the commit before this package (168c27a). The matrix is deterministic for a fixed code state: the before numbers reproduced the table above, and the final after run reproduced the candidate run exactly. The lead review re-ran the after matrix on commit 7fd1fa1 and got the same numbers.
+
+Evidence: before = `evidence/telemetry/sim_matrix_bogaz.json`, `evidence/telemetry/sim_matrix_city01.json`; after = `evidence/telemetry/sim_matrix_bogaz_after_ai.json`, `evidence/telemetry/sim_matrix_city01_after_ai.json`.
 
 ### Causes found (stuck events)
 Detector: `stuck_time` 2.0 s without 2 m of forward progress. Debug prints of each stuck event (speed, yaw, lateral, traffic) on city01 and bogaz showed three things:
@@ -124,7 +126,7 @@ Totals over the 12 races:
 |---|---|---|---|---|
 | stuck recoveries | 70 | 43 | 44 | 23 |
 | teleports (jumps over 5 m) | 47 | 19 | 29 | 11 |
-| contact events (all cars) | 673 | 556 | 361 | 205 |
+| contact events (all cars) | 673 | 557 | 361 | 205 |
 | unfinished cars at race end | 4 | 0 | 7 | 2 |
 | mean AI best lap, s (all AI cars with a best lap) | 55.55 | 54.89 | 76.65 | 75.04 |
 
@@ -173,14 +175,15 @@ Matched AI cars (same race, same slot, two laps in both runs, n = 47): mean best
 | shipped + no reverse into a car behind (reset instead) | 49 / 24 / 516 | 23 / 11 / 191 | rejected: more stuck and teleports on bogaz |
 
 ### Tests
-- `test_ai_churn`: queued car behind two stopped side blockers, not stuck (0; fails with 3 without the held rule) and stops short of the car ahead. Closing car at 25 m/s from 40 m, no contact. The closing test passes with or without the follow brake, so it guards against contact regressions only; it does not prove the follow brake.
-- `test_ai_race` 10 of 10 and `test_city_race` 10 of 10 pass unchanged (city 8-car stuck counts: order A 1/0/0, order B 2/4/1 at nitro 0/100/140).
+- `test_ai_churn`: queued car behind two stopped side blockers, not stuck (0; the lead review confirmed it fails without the held rule) and stops short of the car ahead. Closing car at 25 m/s from 40 m, no contact. The closing test passes with or without the follow brake, so it guards against contact regressions only; it does not prove the follow brake.
+- `test_ai_race` 10 of 10 and `test_city_race` 10 of 10 pass unchanged (city 8-car stuck counts: order A 1/0/0, order B 2/3/1 (lead review re-run) at nitro 0/100/140).
 - Full suite: 382 tests, 0 failed (380 before plus the 2 new ones).
 
 ### Not done or risky
 - Stuck events left: most are cars that stopped after a spin or a kerb hit. The recovery still resets (teleports) after a reverse that does not free the car; a steering-aware reverse was not built.
-- City01 grid 4: stuck 8 to 11 and unfinished 1 to 2 (bosfor race): this one got worse. Noise level for a single race, not separated.
+- City01 grid 4 regresses and is accepted as a regression, not called noise: stuck 8 to 11, teleports 3 to 5, unfinished 1 to 2, mean AI best lap 74.89 to 76.05 s (+1.55 %). The matrix has no seed option, so it was not separated from run-to-run variation; n = 3 races. Every other cell and every total improved.
 - Contacts are impulse counts (`ArcadeCar.hit`), not verified collisions.
-- The follow brake slows a car that is closing on a slower car in its lane, so one car can get a slower lap (the 27 % car above). Pace on average is unchanged.
+- The follow brake slows a car that is closing on a slower car in its lane, so one car can get a slower lap (the 27 % car above). Pace on average is unchanged. Per track, matched AI cars: bogaz +1.59 % (n = 26), city01 -1.27 % (n = 21), both inside the 3 % limit. 19 matched cars moved more than 5 % (12 slower, 7 faster); single 2-lap samples in traffic.
+- The follow brake uses a bumper gap floored at 0.05 m. A car in our lane band that overlaps us along the track (along under `car_length`) gives full brake at a closing speed above about 0.45 m/s. The old time rule already matched speed there; the new rule brakes harder. Not analysed per event.
 - Sim runs only (Windows dev PC, headless, `--fixed-fps 60`). The rendered run was not repeated.
 - The autopilot is a stand-in for a player. Nothing here says anything about a newcomer.
