@@ -255,6 +255,11 @@ func _build_race() -> void:
 	race.total_laps = config_used.laps
 	_world.add_child(race)
 	race.setup(track, cars, player, _names)
+	if config_used.pursuit and PursuitMode.ENABLED:
+		var pursuit := PursuitMode.new()
+		pursuit.name = "PursuitMode"
+		_world.add_child(pursuit)
+		pursuit.setup(track, player, cars, race)
 	if config_used.traffic_enabled and not dev_track_used:
 		var traffic := TrafficSystem.new()
 		traffic.name = "Traffic"
