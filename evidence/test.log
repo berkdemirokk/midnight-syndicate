@@ -88,7 +88,7 @@ CityBuilder: corridor push bld_waterfront_01_b s=1272.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1334.8 by 5.25 m (clear)
 CityBuilder: dressing placed 128 { "bollard": 88, "bench": 10, "litter_bin": 9, "lamp_sodium": 14, "gantry_crane": 1, "container_stack": 2, "bus_shelter": 2, "newspaper_box": 1, "planter_shrub": 1 }, missed { "bench": 5, "litter_bin": 2, "newspaper_box": 3, "planter_shrub": 3, "bus_shelter": 2, "bollard": 1 }, reasons { "bollard:clash": 18, "bench:walk": 156, "bench:box": 47, "litter_bin:walk": 152, "litter_bin:clash": 3, "litter_bin:box": 44, "bench:clash": 3, "lamp_sodium:walk": 13, "lamp_sodium:box": 1, "bench:deck": 189, "newspaper_box:deck": 189, "planter_shrub:deck": 189, "bus_shelter:deck": 126, "bollard:walk": 114, "bollard:box": 36 }
 CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
-[PASS] test_city_01.gd::test_scene_builds_and_counts {"count_instances":1573,"count_lights_built":163,"count_lights_dropped":3,"count_multimeshes":1105,"count_occluders":140,"count_probes":37,"count_prop_colliders":368,"count_unbound_materials":0,"light_budget_log":4,"light_worst_per_mesh_omni":8,"light_worst_per_mesh_spot":8,"load_time_ms":1043.1,"probe_worst_per_mesh":3}
+[PASS] test_city_01.gd::test_scene_builds_and_counts {"count_instances":1573,"count_lights_built":163,"count_lights_dropped":3,"count_multimeshes":1105,"count_occluders":140,"count_probes":37,"count_prop_colliders":368,"count_unbound_materials":0,"light_budget_log":4,"light_worst_per_mesh_omni":8,"light_worst_per_mesh_spot":8,"load_time_ms":1055.8,"probe_worst_per_mesh":3}
 CityBuilder: corridor push bld_waterfront_01_a s=1025.7 by 0.50 m (clear)
 CityBuilder: corridor push bld_waterfront_01_b s=1062.5 by 0.25 m (clear)
 CityBuilder: corridor push bld_parking_01_a s=1125.9 by 5.25 m (clear)
@@ -530,7 +530,7 @@ HANDLING landing_upright_dot = 1.000
 [PASS] test_handling.gd::test_landing {"landing_upright_dot":0.999993324279785}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons {  }
 CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
-[PASS] test_istanbul_bogaz.gd::test_scene_builds_with_real_content {"crown_strips":0,"first_row":158,"istanbul_sign_types":7,"lights_built":150,"lights_dropped":19,"load_ms":677.0,"prop_instances":991,"second_row":155,"track_length_m":2205.4}
+[PASS] test_istanbul_bogaz.gd::test_scene_builds_with_real_content {"crown_strips":0,"first_row":158,"istanbul_sign_types":7,"lights_built":150,"lights_dropped":19,"load_ms":663.0,"prop_instances":991,"second_row":155,"track_length_m":2205.4}
 [PASS] test_istanbul_bogaz.gd::test_track_data_matches_layout {"cobble_samples":306,"hill_samples_over_2m":157,"water_samples":347}
 CityBuilder: dressing placed 12 { "bollard": 12 }, missed {  }, reasons {  }
 CityBuilder: parked cars 70 of 70 candidates, worst corridor margin -0.94 m
@@ -794,7 +794,7 @@ CityBuilder: parked cars 80 of 159 candidates, worst corridor margin -0.90 m
 ERROR: 1 RID allocations of type 'P10JoltBody3D' were leaked at exit.
 WARNING: 1 RID of type "CanvasItem" was leaked.
    at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2733)
-WARNING: 15 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+WARNING: 17 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)
-ERROR: 5 resources still in use at exit (run with --verbose for details).
+ERROR: 6 resources still in use at exit (run with --verbose for details).
    at: clear (core/io/resource.cpp:822)

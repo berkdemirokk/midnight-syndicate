@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-27T00:54:35"
+    "time": "2026-11-27T07:42:34"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -740,7 +740,7 @@
         "light_budget_log": 4,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1039.9,
+        "load_time_ms": 1055.8,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -806,7 +806,7 @@
         "8car_orderA_nitro100_race_time_s": 74.53,
         "8car_orderA_nitro100_stuck_events": 0,
         "8car_orderA_nitro100_stuck_worst_car": 0,
-        "8car_orderA_nitro100_wall_s": 4.4
+        "8car_orderA_nitro100_wall_s": 4.5
       },
       "pass": true
     },
@@ -842,7 +842,7 @@
         "8car_orderB_nitro100_race_time_s": 81.72,
         "8car_orderB_nitro100_stuck_events": 2,
         "8car_orderB_nitro100_stuck_worst_car": 1,
-        "8car_orderB_nitro100_wall_s": 5.2
+        "8car_orderB_nitro100_wall_s": 4.9
       },
       "pass": true
     },
@@ -1727,7 +1727,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 672.0,
+        "load_ms": 663.0,
         "prop_instances": 991,
         "second_row": 155,
         "track_length_m": 2205.4
@@ -1799,7 +1799,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 737.0,
+        "load_ms": 743.0,
         "prop_instances": 1252,
         "second_row": 102,
         "track_length_m": 2243.6
