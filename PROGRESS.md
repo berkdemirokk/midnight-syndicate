@@ -155,6 +155,21 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
   no iOS build (secrets missing), no push since c191d50, main untouched. The owner's target pictures are AI concepts with
   real-brand cars; the game is closer to them but is not that image.
 
+## Session 6b — 2026-11-27 morning (reflections, relief, cars, first TestFlight upload)
+- Paint: second pass on the car paint mirrors a street panorama (`car_reflection.gdshader`, night 0.55 / sunset 0.3 /
+  day 0.16). Facades and mosque walls: normal maps derived from the pictures (`build_relief.py`).
+- Cars (Haiku sessions, merged): area-weighted paint normals on LOD0 with panel gaps kept sharp, textured tail lights.
+  Day: ground bounce fill (`day_bounce.gd`). Far shore band fades out at its ends.
+- iOS: secrets set by the owner. Workflow fixed over four check runs (archive unsigned, export step signs).
+  `ios-check-4` green (run 45949516766). `ios-release-1` (commit 0428c35, run 45963571142): "Upload succeeded",
+  the build is in App Store Connect for TestFlight. Warning only: built with the iOS 26.5 SDK, iOS 27 SDK needed from April 2027.
+- Evidence: 333 tests, 0 failed. Bosphorus peak 400 draws / 443146 primitives, Neon Wharf night 499 / 378534
+  (budget 500 / 450000: both at the limit). Night 188 fps on the dev PC, measured while other GPU jobs ran (not an iPhone number).
+- Not done: never run on an iPhone (no fps, heat or touch numbers), so not "App Store ready". Cars are still stylised
+  licensed low-poly models, no baked GI; the owner's target pictures are not matched one to one. Lead gate about 88 (target 90).
+  main untouched. Six merged session worktrees still on disk.
+- Commits: bf70f98, 110c71e, 2acf183, b72fb63, 055bd6b, 78a2f75, 6571a6d, 673526c, 8c8d888, c6562f2, 0b4a523, 0428c35.
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
