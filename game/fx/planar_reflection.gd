@@ -30,7 +30,7 @@ func _ready() -> void:
 	_vp.transparent_bg = false
 	_vp.handle_input_locally = false
 	_vp.render_target_update_mode = SubViewport.UPDATE_DISABLED
-	# No shadowed omni/spot light exists (headlights cast no shadow), so the mirror needs no shadow atlas.
+	# Race lights cast no omni/spot shadow (headlights included); the garage key spot does, so its shadow is missing only in the floor reflection.
 	_vp.positional_shadow_atlas_size = 0
 	_vp.msaa_3d = Viewport.MSAA_DISABLED
 	add_child(_vp)
