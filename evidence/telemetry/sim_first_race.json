@@ -1,0 +1,256 @@
+{
+  "cpu": "AMD Ryzen 5 7600 6-Core Processor",
+  "first_race": [
+    {
+      "all_finished": true,
+      "car": "noctra_tayfun",
+      "contact_events_all": 8,
+      "contact_events_per_lap_all": 8.0,
+      "contact_events_player": 4,
+      "event": "ortakoy_night (first race, starter car, rivals from the event's rival_mix)",
+      "grid": 4,
+      "laps": 1,
+      "per_car": [
+        {
+          "best_lap_s": 54.0,
+          "contact_events": 1,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.7,
+          "slot": 0,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 172.4
+        },
+        {
+          "best_lap_s": 56.883,
+          "contact_events": 3,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.68,
+          "slot": 1,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 173.5
+        },
+        {
+          "best_lap_s": 58.167,
+          "contact_events": 0,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.66,
+          "slot": 2,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 167.1
+        },
+        {
+          "best_lap_s": 54.883,
+          "contact_events": 4,
+          "is_player": true,
+          "laps": 1,
+          "skill": 0.8,
+          "slot": 3,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 196.5
+        }
+      ],
+      "player_best_lap_s": 54.883,
+      "player_lap_s": [
+        54.8833333333315
+      ],
+      "player_position": 2,
+      "player_top_kmh": 196.5,
+      "player_total_time_s": 54.88,
+      "player_zero_to_100_s": 3.98,
+      "player_zero_to_200_s": null,
+      "race_time_s": 58.17,
+      "rival_skills": [
+        0.699999988079071,
+        0.680000007152557,
+        0.660000026226044
+      ],
+      "rival_top_kmh_max": 173.5,
+      "spec_top_kmh": 268.0,
+      "stuck_recoveries_all": 0,
+      "stuck_recoveries_player": 0,
+      "tag": "ortakoy_night_autopilot_0.80",
+      "teleports_all": 0,
+      "teleports_player": 0,
+      "timed_out": false,
+      "track": "istanbul_bogaz.tscn",
+      "track_max_speed_kmh": 252.0,
+      "unfinished_cars": 0
+    },
+    {
+      "all_finished": true,
+      "car": "noctra_tayfun",
+      "contact_events_all": 36,
+      "contact_events_per_lap_all": 36.0,
+      "contact_events_player": 17,
+      "event": "ortakoy_night (first race, starter car, rivals from the event's rival_mix)",
+      "grid": 4,
+      "laps": 1,
+      "per_car": [
+        {
+          "best_lap_s": 59.683,
+          "contact_events": 5,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.7,
+          "slot": 0,
+          "stuck_recoveries": 1,
+          "teleports": 1,
+          "top_kmh": 170.4
+        },
+        {
+          "best_lap_s": 63.8,
+          "contact_events": 13,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.68,
+          "slot": 1,
+          "stuck_recoveries": 1,
+          "teleports": 0,
+          "top_kmh": 173.5
+        },
+        {
+          "best_lap_s": 58.733,
+          "contact_events": 1,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.66,
+          "slot": 2,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 167.1
+        },
+        {
+          "best_lap_s": 69.033,
+          "contact_events": 17,
+          "is_player": true,
+          "laps": 1,
+          "skill": 0.9,
+          "slot": 3,
+          "stuck_recoveries": 3,
+          "teleports": 2,
+          "top_kmh": 209.5
+        }
+      ],
+      "player_best_lap_s": 69.033,
+      "player_lap_s": [
+        69.0333333333307
+      ],
+      "player_position": 4,
+      "player_top_kmh": 209.5,
+      "player_total_time_s": 69.03,
+      "player_zero_to_100_s": 3.98,
+      "player_zero_to_200_s": 8.93,
+      "race_time_s": 69.03,
+      "rival_skills": [
+        0.699999988079071,
+        0.680000007152557,
+        0.660000026226044
+      ],
+      "rival_top_kmh_max": 173.5,
+      "spec_top_kmh": 268.0,
+      "stuck_recoveries_all": 5,
+      "stuck_recoveries_player": 3,
+      "tag": "ortakoy_night_autopilot_0.90",
+      "teleports_all": 3,
+      "teleports_player": 2,
+      "timed_out": false,
+      "track": "istanbul_bogaz.tscn",
+      "track_max_speed_kmh": 252.0,
+      "unfinished_cars": 0
+    },
+    {
+      "all_finished": true,
+      "car": "noctra_tayfun",
+      "contact_events_all": 8,
+      "contact_events_per_lap_all": 8.0,
+      "contact_events_player": 1,
+      "event": "ortakoy_night (first race, starter car, rivals from the event's rival_mix)",
+      "grid": 4,
+      "laps": 1,
+      "per_car": [
+        {
+          "best_lap_s": 53.65,
+          "contact_events": 5,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.7,
+          "slot": 0,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 180.6
+        },
+        {
+          "best_lap_s": 60.133,
+          "contact_events": 1,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.68,
+          "slot": 1,
+          "stuck_recoveries": 1,
+          "teleports": 1,
+          "top_kmh": 179.7
+        },
+        {
+          "best_lap_s": 55.483,
+          "contact_events": 1,
+          "is_player": false,
+          "laps": 1,
+          "skill": 0.66,
+          "slot": 2,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 177.5
+        },
+        {
+          "best_lap_s": 46.533,
+          "contact_events": 1,
+          "is_player": true,
+          "laps": 1,
+          "skill": 0.97,
+          "slot": 3,
+          "stuck_recoveries": 0,
+          "teleports": 0,
+          "top_kmh": 213.2
+        }
+      ],
+      "player_best_lap_s": 46.533,
+      "player_lap_s": [
+        46.533333333332
+      ],
+      "player_position": 1,
+      "player_top_kmh": 213.2,
+      "player_total_time_s": 46.53,
+      "player_zero_to_100_s": 3.98,
+      "player_zero_to_200_s": 8.93,
+      "race_time_s": 60.13,
+      "rival_skills": [
+        0.699999988079071,
+        0.680000007152557,
+        0.660000026226044
+      ],
+      "rival_top_kmh_max": 180.6,
+      "spec_top_kmh": 268.0,
+      "stuck_recoveries_all": 1,
+      "stuck_recoveries_player": 0,
+      "tag": "ortakoy_night_autopilot_0.97",
+      "teleports_all": 1,
+      "teleports_player": 0,
+      "timed_out": false,
+      "track": "istanbul_bogaz.tscn",
+      "track_max_speed_kmh": 252.0,
+      "unfinished_cars": 0
+    }
+  ],
+  "godot": "4.7.2-stable (official)",
+  "machine": "Windows 11 dev PC, NVIDIA RTX 5060 Ti 8 GB, Godot 4.7.2. Not a phone.",
+  "mode": "sim",
+  "part": "first",
+  "sim_tick_hz": 60.0
+}
