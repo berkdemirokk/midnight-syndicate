@@ -1,7 +1,8 @@
 extends "res://devtools/capture_scenario.gd"
 ## Pursuit evidence on the city track: the real race scene, autopilot player, PursuitMode force-enabled for this run
 ## only (the kill switch is off in normal builds). Shots: pursuit_police_behind (a police car with its light bar
-## on, alongside and just behind the player) and pursuit_roadblock (heat 3, barriers ahead, one lane open).
+## on, alongside and just behind the player) and pursuit_roadblock (heat 3, barriers ahead, one lane open, from a
+## shot camera above and behind the player).
 
 const SCENE: String = "res://race/race_scene.tscn"
 const TRACK: String = "res://world/city_01/city_01.tscn"
@@ -11,11 +12,13 @@ const OPPONENTS: int = 3
 const SETTLE_FRAMES: int = 20
 const WAIT_STEP_S: float = 1.0 / 60.0
 const WAIT_MAX_S: float = 40.0
-const CLOSE_M: float = 2.0  ## the first police car is placed this far behind the player, beside it
+const CLOSE_M: float = 0.0  ## the first police car is placed this far behind the player: level with it, in frame
 const SIDE_M: float = 3.5  ## lateral offset of that car: the next lane
 const HEAT_FOR_ROADBLOCK: int = 3
 const ROADBLOCK_WAIT_S: float = 6.0
-const ROADBLOCK_NEAR_M: float = 70.0  ## the roadblock shot waits until the barriers are this close
+const ROADBLOCK_NEAR_M: float = 30.0  ## the roadblock shot waits until the barriers are this close
+const SHOT_CAM_UP_M: float = 7.0  ## the roadblock shot camera: above and behind the player, so rivals do not hide the barriers
+const SHOT_CAM_BACK_M: float = 8.0
 const ROADBLOCK_NEAR_WAIT_S: float = 40.0
 
 var _scene: RaceScene
@@ -56,9 +59,8 @@ func run() -> void:
 	if pm.police.is_empty():
 		cap.fail("no police car spawned on GO")
 		return
-	# Bring the first police car into frame: 14 m behind the player, on the same lane, with its light bar on.
 	var car: ArcadeCar = pm.police[0]
-	# The chase camera looks forward, so a car 14 m straight behind is out of frame: put it alongside, in the next lane.
+	# The chase camera sits about 6 m back and looks forward: a car behind the player is out of frame, so put it alongside.
 	var track: Track = _scene.track
 	var s: float = track.get_progress(_scene.player.global_position) - CLOSE_M
 	var t: Vector3 = track.get_tangent_at(s)
@@ -66,8 +68,15 @@ func run() -> void:
 	var lat: float = clampf(track.get_lateral_offset(_scene.player.global_position) + SIDE_M, -half, half)
 	var p: Vector3 = track.get_point_at(s) + Vector3(-t.z, 0.0, t.x) * lat + Vector3(0.0, PursuitMode.SPAWN_HEIGHT_M, 0.0)
 	car.global_transform = Transform3D(Basis.looking_at(t, Vector3.UP), p)
+	car.linear_velocity = _scene.player.linear_velocity  # keep pace for the shot instead of starting from rest
 	await cap.wait_seconds(0.3)
-	print("PURSUIT_DEMO police=%s player=%s visible=%s" % [car.global_position, _scene.player.global_position, car.visible])
+	var cam: Camera3D = tree.root.get_viewport().get_camera_3d()
+	var bar: Node3D = car.get_node("LightBar") as Node3D
+	var in_frame: bool = cam != null and cam.is_position_in_frustum(bar.global_position)
+	print("PURSUIT_DEMO police=%s player=%s cam=%s light_bar_in_frame=%s" % [car.global_position, _scene.player.global_position, cam.global_position if cam else Vector3.ZERO, in_frame])
+	if not in_frame:
+		cap.fail("police light bar is not in the camera frame")
+		return
 	await cap.shot("pursuit_police_behind")
 	pm.state.heat = HEAT_FOR_ROADBLOCK
 	waited = 0.0
@@ -81,5 +90,26 @@ func run() -> void:
 	while _scene.track.get_point_at(pm.roadblock.progress).distance_to(_scene.player.global_position) > ROADBLOCK_NEAR_M and waited < ROADBLOCK_NEAR_WAIT_S:
 		await cap.wait_frames(1)
 		waited += WAIT_STEP_S
-	print("PURSUIT_DEMO roadblock=%s player=%s" % [_scene.track.get_point_at(pm.roadblock.progress), _scene.player.global_position])
+	# A shot camera above and behind the player: from the chase camera the player car and the rivals hide the barriers.
+	var fwd: Vector3 = _scene.track.get_tangent_at(_scene.track.get_progress(_scene.player.global_position))
+	var mid: Vector3 = Vector3.ZERO
+	for b: Node in pm.roadblock.get_children():
+		mid += (b as Node3D).global_position / float(pm.roadblock.get_child_count())
+	var cam2 := Camera3D.new()
+	cam2.fov = 60.0
+	_scene.add_child(cam2)
+	cam2.global_position = _scene.player.global_position - fwd * SHOT_CAM_BACK_M + Vector3.UP * SHOT_CAM_UP_M
+	cam2.look_at(mid, Vector3.UP)
+	cam2.make_current()
+	await cap.wait_frames(2)
+	var seen: int = 0
+	for b: Node in pm.roadblock.get_children():
+		var bp: Vector3 = (b as Node3D).global_position
+		var vis: bool = cam2 != null and cam2.is_position_in_frustum(bp)
+		seen += 1 if vis else 0
+		print("PURSUIT_DEMO barrier=%s in_frame=%s dist=%.1f screen=%s" % [bp, vis, bp.distance_to(_scene.player.global_position), cam2.unproject_position(bp) if cam2 else Vector2.ZERO])
+	print("PURSUIT_DEMO player=%s cam=%s" % [_scene.player.global_position, cam2.global_position if cam2 else Vector3.ZERO])
+	if seen == 0:
+		cap.fail("no roadblock barrier in the camera frame")
+		return
 	await cap.shot("pursuit_roadblock")

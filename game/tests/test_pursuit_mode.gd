@@ -149,6 +149,38 @@ func test_roadblock_layout_leaves_a_lane_open() -> void:
 	metric("roadblock_layout_14m", Array(Roadblock.layout(14.0)))
 
 
+## City 01: the racing line is not the road centre, so barriers must follow the kerb lines of the centreline file.
+func test_roadblock_on_city_road() -> void:
+	var city: CityBuilder = (load("res://world/city_01/city_01.tscn") as PackedScene).instantiate() as CityBuilder
+	city.parked_car_count = 0
+	add(city)
+	await frames(2)
+	var placed: int = 0
+	var worst: float = INF
+	for k: int in 20:
+		var s: float = city.length * float(k) / 20.0
+		var rb: Roadblock = Roadblock.build(city, s, PackedVector3Array())
+		if rb == null:
+			continue
+		placed += 1
+		var hint: int = roundi(fposmod(s, city.length) / city._c_spacing)
+		var t: Vector3 = city.get_tangent_at(s)
+		var right: Vector3 = Vector3(-t.z, 0.0, t.x)
+		var last: Vector3 = Vector3.ZERO
+		for b: Node in rb.get_children():
+			var bp: Vector3 = (b as Node3D).transform.origin
+			last = bp
+			# _corridor_margin is kerb line + CORRIDOR_MARGIN_M minus |lateral|: the barrier edge must be inside the kerb.
+			worst = minf(worst, city._corridor_margin(Vector2(bp.x, bp.z), hint) - CityBuilder.CORRIDOR_MARGIN_M - Roadblock.BARRIER_WIDTH_M * 0.5)
+		var lane: Vector3 = last + right * (Roadblock.BARRIER_WIDTH_M * 0.5 + Roadblock.OPEN_LANE_M)
+		check(city._corridor_margin(Vector2(lane.x, lane.z), hint) - CityBuilder.CORRIDOR_MARGIN_M >= -0.05, "s %.0f: open lane right of the barriers leaves the road" % s)
+		rb.free()
+	check(placed >= 10, "roadblocks placed at only %d of 20 city spots" % placed)
+	check(worst >= -0.05, "a barrier edge is %.2f m past the kerb" % -worst)
+	metric("city_barrier_worst_kerb_margin_m", worst)
+	await cleanup([city])
+
+
 func test_roadblock_placement_is_safe() -> void:
 	var was: bool = PursuitMode.ENABLED
 	PursuitMode.ENABLED = true
@@ -257,6 +289,26 @@ func test_chase_holds_and_heat_rises() -> void:
 	check(pm.state.heat == 2, "heat should be 2 after 25 s of chase, got %d" % pm.state.heat)
 	check(car.global_position.distance_to(scene.player.global_position) < PursuitState.ESCAPE_DISTANCE_M, "the police car should still be in sensing range")
 	await cleanup([scene])
+	PursuitMode.ENABLED = was
+
+
+func test_no_escape_without_police() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var old: Dictionary = _open_temp_profile()
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.start()
+	pm._spawn_t = INF  # every spawn is held back, as when all spawn spots are blocked
+	var cash_before: int = GameState.get_cash()
+	for i: int in 600:  # 10 s, past the 8 s escape time
+		pm.step(STEP_S)
+	check(pm.police.is_empty(), "no police should exist, got %d" % pm.police.size())
+	check(pm.state.phase == PursuitState.Phase.CHASE, "no police ever: must not cool down or escape, phase %d" % pm.state.phase)
+	check(GameState.get_cash() == cash_before and pm.escape_reward == 0, "no reward without a chase")
+	await cleanup([scene])
+	_restore_profile(old)
 	PursuitMode.ENABLED = was
 
 

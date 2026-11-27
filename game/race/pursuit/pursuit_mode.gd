@@ -15,7 +15,8 @@ const POLICE_PAINT: Color = Color("#16305C")  ## dark blue body; the light bar c
 const LIGHT_RED: Color = Color("#FF2A2A")
 const LIGHT_BLUE: Color = Color("#2A7BFF")
 const LIGHT_FLASH_S: float = 0.12  ## half period of the light bar
-const LIGHT_BAR_Y_M: float = 1.25  ## light bar height above the car origin
+const LIGHT_BAR_Y_M: float = 1.25  ## light bar height above the car origin when the body has no mesh to measure
+const LIGHT_BAR_HALF_H_M: float = 0.07  ## half the lamp height: the bar sits on the roof
 const LIGHT_BAR_X_M: float = 0.3  ## each lamp this far left or right of the centre line
 const DRIVER_NAME: String = "PoliceDriver"
 const SKILL_BASE: float = 0.94
@@ -49,6 +50,7 @@ var _spawn_t: float = 0.0
 var _roadblock_cd: float = 0.0
 var _flash_t: float = 0.0
 var _hints: Dictionary = {}  ## police car -> last track progress, search hint
+var _had_police: bool = false  ## a police car existed in this chase: no cooldown or escape before that
 
 
 ## Police cars allowed at a heat level: 1 / 2 / 2 / 3 / 3 for heat 1..5, none at heat 0.
@@ -81,6 +83,7 @@ func start() -> void:
 	state.start(1)
 	_spawn_t = 0.0
 	_roadblock_cd = 0.0
+	_had_police = false
 	_update_hud()
 
 
@@ -100,6 +103,9 @@ func step(delta: float) -> void:
 	# Spawn before the rules tick, so the first police car exists when the chase is judged (no false escape on GO).
 	if _spawn_t <= 0.0 and police.size() < max_police_for_heat(state.heat) and spawn_police():
 		_spawn_t = SPAWN_INTERVAL_S
+	if police.is_empty() and not _had_police:
+		return  # every spawn spot blocked so far: no chase to escape from, so no reward
+	_had_police = true
 	var nearest: float = INF
 	for c: ArcadeCar in police:
 		nearest = minf(nearest, c.global_position.distance_to(player.global_position))
@@ -292,7 +298,7 @@ func _police_model() -> Dictionary:
 func _add_lights(car: ArcadeCar) -> void:
 	var bar := Node3D.new()
 	bar.name = "LightBar"
-	bar.position = Vector3(0.0, LIGHT_BAR_Y_M, 0.0)
+	bar.position = Vector3(0.0, _roof_y(car) + LIGHT_BAR_HALF_H_M, 0.0)
 	car.add_child(bar)
 	for side: float in [-1.0, 1.0]:
 		var lamp := MeshInstance3D.new()
@@ -303,6 +309,17 @@ func _add_lights(car: ArcadeCar) -> void:
 		lamp.material_override = _red if side < 0.0 else _blue
 		lamp.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		bar.add_child(lamp)
+
+
+## Top of the car body meshes in car space, so the light bar sits on the roof of whichever model is used.
+func _roof_y(car: ArcadeCar) -> float:
+	var top: float = -INF
+	var inv: Transform3D = car.global_transform.affine_inverse()
+	for n: Node in car.find_children("*", "MeshInstance3D", true, false):
+		var m: MeshInstance3D = n as MeshInstance3D
+		if m.mesh != null:
+			top = maxf(top, (inv * m.global_transform * m.get_aabb()).end.y)
+	return top if top > -INF else LIGHT_BAR_Y_M
 
 
 func _lamp_material(colour: Color) -> StandardMaterial3D:

@@ -144,6 +144,12 @@ func get_curvature(offset: float) -> float:
 	return _curv[_index_of(offset)]
 
 
+## Road edges at offset as signed metres from the line (x = left kerb, y = right kerb, positive = right). Default:
+## the line is the road centre and the road is width wide. A track whose line is not the road centre overrides it.
+func get_road_span(offset: float) -> Vector2:
+	return Vector2(-width * 0.5, width * 0.5)
+
+
 ## Signed metres from the line, positive = right of the race direction.
 func get_lateral_offset(world_pos: Vector3, hint: float = UNSET_HINT) -> float:
 	if _count == 0:

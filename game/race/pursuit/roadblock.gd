@@ -31,16 +31,18 @@ static func layout(width: float) -> PackedFloat32Array:
 
 ## Null when the road has no layout or a car is within CLEAR_M of a barrier. Positions are world space.
 static func build(track: Track, s: float, car_positions: PackedVector3Array) -> Roadblock:
-	var offsets: PackedFloat32Array = layout(track.width)
+	var span: Vector2 = track.get_road_span(s)  # kerb lines relative to the line, which need not be the road centre
+	var offsets: PackedFloat32Array = layout(span.y - span.x)
 	if offsets.is_empty():
 		return null
+	var mid: float = (span.x + span.y) * 0.5
 	var centre: Vector3 = track.get_point_at(s)
 	var t: Vector3 = track.get_tangent_at(s)
 	var right: Vector3 = Vector3(-t.z, 0.0, t.x)
 	var orient: Basis = Basis.looking_at(t, Vector3.UP)
 	var spots: PackedVector3Array = PackedVector3Array()
 	for lat: float in offsets:
-		var p: Vector3 = centre + right * lat
+		var p: Vector3 = centre + right * (mid + lat)
 		p.y += BARRIER_HEIGHT_M * 0.5
 		for c: Vector3 in car_positions:
 			if c.distance_to(p) < CLEAR_M:
