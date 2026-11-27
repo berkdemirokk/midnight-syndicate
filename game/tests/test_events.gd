@@ -36,7 +36,7 @@ func _wipe() -> void:
 
 
 func test_catalog_shape() -> void:
-	check(EventCatalog.count() == 11, "the Ortakoy showcase, six Arden Bay events and four Istanbul events")
+	check(EventCatalog.count() == 30, "original eleven events plus nineteen extended tour events")
 	for id: String in ["maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]:
 		var c: RaceConfig = EventCatalog.config_for(id)
 		check(c != null and ResourceLoader.exists(c.track_scene) and c.track_scene.contains("istanbul"), "%s races on an Istanbul track" % id)
@@ -57,7 +57,8 @@ func test_catalog_shape() -> void:
 	check(EventCatalog.reward_multiplier("syndicate_final") > EventCatalog.reward_multiplier("wharf_sprint"), "rewards grow along the ladder")
 	check(EventCatalog.previous_id("ortakoy_night") == "" and EventCatalog.is_open("ortakoy_night"), "the showcase comes first and is always open")
 	check(EventCatalog.next_id("syndicate_final") == "maslak_sprint", "the Arden Bay final opens the Istanbul tour")
-	check(EventCatalog.next_id("bogaz_final") == "", "last event has no next")
+	check(EventCatalog.next_id("bogaz_final") == "maslak_time_trial", "original finale leads to extended tour")
+	check(EventCatalog.next_id("istanbul_championship") == "", "last event has no next")
 	check(EventCatalog.next_id("wharf_sprint") == "neon_strip_circuit", "ladder order")
 	check(EventCatalog.next_id("dev_circuit") == "", "unknown id has no next")
 
@@ -159,6 +160,45 @@ func test_results_next_event() -> void:
 	screen.set_event_id("")
 	screen.show_results(rows, {})
 	check(screen.get_next_event_id() == "", "no event id means no next button")
+	cleanup([screen])
+	await frames(2)
+	_end()
+
+
+func test_extended_tour_preserves_original_ids_and_unlocks() -> void:
+	_begin()
+	var originals: Array[String] = ["ortakoy_night", "wharf_sprint", "neon_strip_circuit", "midnight_time_trial", "overpass_duel", "harbour_run", "syndicate_final", "maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]
+	for i: int in originals.size():
+		check(EventCatalog.id_at(i) == originals[i], "original event id/order unchanged")
+	check(not GameState.is_event_unlocked("maslak_time_trial"), "extension initially locked")
+	GameState.record_result("bogaz_final", 210.0, 1)
+	check(GameState.is_event_unlocked("maslak_time_trial"), "old finale result unlocks extension")
+	for i: int in range(originals.size(), EventCatalog.count()):
+		var id: String = EventCatalog.id_at(i)
+		var cfg: RaceConfig = EventCatalog.config_for(id)
+		check(cfg != null and ResourceLoader.exists(cfg.track_scene), "valid track for " + id)
+		check(GameState.is_event_unlocked(id), "extension unlocks in order: " + id)
+		var result: Dictionary = GameState.record_result(id, 70.0 if EventCatalog.is_time_event(id) else 210.0, 1)
+		check(int(result["stars"]) >= 1, "finish earns star: " + id)
+		for lang: String in ["tr", "en"]:
+			Settings.set_language(lang)
+			check(I18n.t(EventCatalog.name_key(id)) != EventCatalog.name_key(id), "localized " + id + " " + lang)
+	_end()
+
+
+func test_long_career_list_keeps_selected_row_visible() -> void:
+	_begin()
+	var screen: EventSelect = (load(SELECT) as PackedScene).instantiate() as EventSelect
+	add(screen)
+	await frames(3)
+	check(screen.get_row_count() == 30, "all career events exist")
+	var capacity: int = EventSelect.PHONE_WINDOW_ROWS if MSTheme.phone else EventSelect.DESKTOP_WINDOW_ROWS
+	for i: int in [0, 11, 29, 0]:
+		screen.select(i)
+		await frames(2)
+		check(screen.get_selected_id() == EventCatalog.id_at(i), "selection reachable: %d" % i)
+		check(screen.is_selected_row_visible(), "selected row visible: %d" % i)
+		check(screen.get_visible_row_count() == capacity, "bounded event window")
 	cleanup([screen])
 	await frames(2)
 	_end()

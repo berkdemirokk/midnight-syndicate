@@ -136,13 +136,20 @@ func test_event_select_phone_window_follows_selection() -> void:
 	_end()
 
 
-func test_event_select_desktop_shows_every_row() -> void:
+func test_event_select_desktop_window_follows_selection() -> void:
 	_begin(false)
 	var es: EventSelect = add(load(EVENTS).instantiate()) as EventSelect
 	await frames(3)
 	var rows: Array[Button] = es.get("_row_btns")
-	for b: Button in rows:
-		check(b.visible, "desktop row hidden")
+	check(es.get_visible_row_count() == EventSelect.DESKTOP_WINDOW_ROWS, "desktop window bounds the long career")
+	var last: int = es.get_row_count() - 1
+	es.select(last)
+	await frames(2)
+	check(rows[last].visible and not rows[0].visible, "desktop can reach final event")
+	check(es.get_visible_row_count() == EventSelect.DESKTOP_WINDOW_ROWS, "desktop window stays bounded at end")
+	es.select(0)
+	await frames(2)
+	check(rows[0].visible and not rows[last].visible, "desktop window returns to top")
 	await cleanup([es])
 	_end()
 

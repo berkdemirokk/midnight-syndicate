@@ -218,3 +218,23 @@ func test_stats_grow_with_upgrades() -> void:
 		check(float(base[s]) >= 0.0 and float(base[s]) <= 1.0 and float(up[s]) <= 1.0, "%s stays in 0..1" % s)
 	metric("stats_base", base)
 	metric("stats_max", up)
+
+
+func test_tuned_spec_does_not_change_shared_resource() -> void:
+	var spec := CarSpec.new()
+	var base_mass: float = spec.mass_kg
+	var base_force: float = spec.engine_force
+	var base_torque: float = spec.peak_torque_nm
+	var tuned: CarSpec = GarageStats.tuned_spec(spec, {"engine": 2, "tires": 3, "nitro": 1, "weight": 4})
+	check(tuned != spec, "upgrades use a private spec")
+	check(is_equal_approx(tuned.engine_force, base_force * 1.10), "legacy drive force increases")
+	check(is_equal_approx(tuned.peak_torque_nm, base_torque * 1.10), "geared engine torque increases")
+	check(is_equal_approx(tuned.mass_kg, base_mass * 0.92), "weight reduction applies")
+	check(is_equal_approx(tuned.top_speed_kmh, spec.top_speed_kmh + 8.0), "speed cap rises")
+	check(is_equal_approx(tuned.grip_front, spec.grip_front * 1.12), "front grip increases")
+	check(is_equal_approx(tuned.grip_rear, spec.grip_rear * 1.12), "rear grip increases")
+	check(is_equal_approx(tuned.nitro_capacity_s, spec.nitro_capacity_s * 1.10), "nitro capacity increases")
+	check(is_equal_approx(spec.mass_kg, base_mass) and is_equal_approx(spec.peak_torque_nm, base_torque), "base spec unchanged")
+	var clamped: CarSpec = GarageStats.tuned_spec(spec, {"engine": 99, "weight": -3})
+	check(is_equal_approx(clamped.peak_torque_nm, base_torque * 1.25), "engine level capped at five")
+	check(is_equal_approx(clamped.mass_kg, base_mass), "negative level clamped")

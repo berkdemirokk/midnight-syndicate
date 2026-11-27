@@ -9,6 +9,7 @@ extends Control
 
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
+const DESKTOP_WINDOW_ROWS: int = 10
 const PHONE_WINDOW_ROWS: int = 4  ## rows shown at once on a phone: 44 pt rows do not fit ten at a time
 const TITLE_PX: int = 40
 const SUB_PX: int = 18
@@ -135,8 +136,8 @@ func _ready() -> void:
 	_up_btn.pressed.connect(_step.bind(-1))
 	_down_btn = _plain_button(footer, Vector2(MSTheme.button_h(), MSTheme.button_h()))
 	_down_btn.pressed.connect(_step.bind(1))
-	_up_btn.visible = MSTheme.phone
-	_down_btn.visible = MSTheme.phone
+	_up_btn.visible = true
+	_down_btn.visible = true
 	_up_btn.focus_mode = Control.FOCUS_ALL
 	_start_btn = _button(footer, "event.start", start_race)
 	_start_btn.custom_minimum_size.x = MSTheme.BUTTON_MIN_W * 0.75
@@ -175,24 +176,34 @@ func select(index: int) -> void:
 	_refresh_text()
 
 
-## Phone only: keeps the selected row inside the window of visible rows. Desktop shows every row.
+## Keep the selected row in a bounded window on both phone and desktop.
 func _update_window() -> void:
 	var n: int = _row_btns.size()
-	if not MSTheme.phone:
-		_win = 0
-		for b: Button in _row_btns:
-			b.visible = true
-		return
-	_win = clampi(_win, 0, maxi(n - PHONE_WINDOW_ROWS, 0))
+	var capacity: int = PHONE_WINDOW_ROWS if MSTheme.phone else DESKTOP_WINDOW_ROWS
+	_win = clampi(_win, 0, maxi(n - capacity, 0))
 	if _sel < _win:
 		_win = _sel
-	elif _sel >= _win + PHONE_WINDOW_ROWS:
-		_win = _sel - PHONE_WINDOW_ROWS + 1
+	elif _sel >= _win + capacity:
+		_win = _sel - capacity + 1
 	for i: int in n:
-		_row_btns[i].visible = i >= _win and i < _win + PHONE_WINDOW_ROWS
+		_row_btns[i].visible = i >= _win and i < _win + capacity
 	if _up_btn != null:
 		_up_btn.disabled = _sel <= 0
 		_down_btn.disabled = _sel >= n - 1
+		_start_btn.focus_neighbor_top = _start_btn.get_path_to(_row_btns[_sel])
+		_back_btn.focus_neighbor_top = _back_btn.get_path_to(_row_btns[_sel])
+
+
+func get_visible_row_count() -> int:
+	var count: int = 0
+	for b: Button in _row_btns:
+		if b.visible:
+			count += 1
+	return count
+
+
+func is_selected_row_visible() -> bool:
+	return _row_btns[_sel].visible
 
 
 func _step(delta: int) -> void:
@@ -275,7 +286,7 @@ func _wire_neighbours() -> void:
 	_start_btn.focus_neighbor_top = _start_btn.get_path_to(last)
 	_back_btn.focus_neighbor_top = _back_btn.get_path_to(last)
 	_row_btns[0].focus_neighbor_top = _row_btns[0].get_path_to(_row_btns[0])
-	if MSTheme.phone:
+	if _up_btn.visible:
 		_start_btn.focus_neighbor_left = _start_btn.get_path_to(_down_btn)
 		_down_btn.focus_neighbor_left = _down_btn.get_path_to(_up_btn)
 		_up_btn.focus_neighbor_left = _up_btn.get_path_to(_back_btn)
@@ -370,8 +381,6 @@ func _on_back() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not MSTheme.phone:
-		return
 	var down: bool = event.is_action_pressed("ui_down")
 	if not (down or event.is_action_pressed("ui_up")):
 		return
