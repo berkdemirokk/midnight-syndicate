@@ -141,6 +141,36 @@ def wheel_centres():
     return out
 
 
+SMOOTH_COS = math.cos(math.radians(40.0))  # corners across an edge sharper than 40 degrees keep their own normal
+
+
+def smooth_paint(verts, faces):
+    """LOD0 only: area-weighted vertex normals for the M_Paint faces of one bucket. Neighbours across an edge
+    sharper than 40 degrees (panel gaps) do not blend. Returns {face index: [normal per corner]}."""
+    face_n, vfaces = {}, {}
+    for fi, (idx, target, _, _) in enumerate(faces):
+        if target != "M_Paint" or len(idx) < 3:
+            continue
+        c = (verts[idx[1]] - verts[idx[0]]).cross(verts[idx[2]] - verts[idx[0]])
+        if c.length < 1e-12:
+            continue
+        face_n[fi] = (c.normalized(), c.length * 0.5)
+        for vi in idx:
+            vfaces.setdefault(vi, []).append(fi)
+    out = {}
+    for fi, (n, _) in face_n.items():
+        corners = []
+        for vi in faces[fi][0]:
+            acc = Vector((0.0, 0.0, 0.0))
+            for gi in vfaces[vi]:
+                ng, ag = face_n[gi]
+                if n.dot(ng) >= SMOOTH_COS:
+                    acc += ng * ag
+            corners.append(acc.normalized() if acc.length > 1e-12 else n)
+        out[fi] = corners
+    return out
+
+
 def build_lod(src, cfg, level, out_dir, stats):
     load_source(src)
     imgs = source_images()
@@ -227,14 +257,15 @@ def build_lod(src, cfg, level, out_dir, stats):
             slot_of[mname] = len(slot_mats)
             slot_mats.append(materials[mname])
         loop_normals = []
-        for idx, target, smooth, norms in b["faces"]:
+        paint_norms = smooth_paint(b["verts"], b["faces"]) if level == 0 else {}
+        for fi, (idx, target, smooth, norms) in enumerate(b["faces"]):
             try:
                 f = bm.faces.new([bverts[i] for i in idx])
             except ValueError:
                 continue  # degenerate or duplicate after merging
             f.material_index = slot_of[target]
             f.smooth = True
-            loop_normals.extend(norms)
+            loop_normals.extend(paint_norms.get(fi, norms))
         bm.to_mesh(me)
         if len(loop_normals) == len(me.loops):
             me.normals_split_custom_set(loop_normals)
