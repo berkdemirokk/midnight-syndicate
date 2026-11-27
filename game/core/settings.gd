@@ -116,6 +116,7 @@ func attach_viewport(vp: Viewport) -> void:
 
 func apply_to_viewport(vp: Viewport) -> void:
 	vp.msaa_3d = get_preset().msaa_3d
+	vp.screen_space_aa = get_preset().screen_space_aa
 	vp.scaling_3d_scale = _scale
 
 
@@ -159,6 +160,7 @@ func _select_preset(id: String) -> void:
 
 func _apply_renderer() -> void:
 	RenderingServer.directional_shadow_atlas_set_size(get_preset().directional_shadow_size, false)
+	RenderingServer.directional_soft_shadow_filter_set_quality(get_preset().shadow_filter)
 
 
 # --- audio ------------------------------------------------------------------
