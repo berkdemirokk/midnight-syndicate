@@ -33,6 +33,7 @@ func _ready() -> void:
 	box.add_child(_label("Online (LAN, experimental)", 26))
 	box.add_child(_label("Local network only. Not internet multiplayer.", 14))
 	_address = _field(box, "Address", NetConfig.cmdline_value("address", NetConfig.DEFAULT_BIND))
+	_address.text_changed.connect(_on_address_changed)
 	_port = _field(box, "Port", str(NetConfig.DEFAULT_PORT))
 	_name = _field(box, "Name", DEFAULT_NAME)
 	var row := HBoxContainer.new()
@@ -98,6 +99,12 @@ func _on_host() -> void:
 		return
 	_status.text = "Hosting on %s:%s, %d lap(s)." % [_address.text, _port.text, laps]
 	_refresh_buttons()
+
+
+## Warns while typing an address the server would refuse to host on (anything but loopback without --address).
+func _on_address_changed(text: String) -> void:
+	if not NetConfig.bind_allowed(text.strip_edges()) and text.strip_edges() != "":
+		_status.text = "Hosting needs 127.0.0.1, or start the game with --address=<LAN IP>. Joining any address is fine."
 
 
 func _on_join() -> void:

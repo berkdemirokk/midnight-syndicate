@@ -158,6 +158,8 @@ func _on_results(rows: Array) -> void:
 	_scene.results_screen.set_replay_enabled(false)
 	_scene.results_screen.show_results(out, {})
 	_scene.results_screen.visible = true
+	# Retry is not a new online race: the retry button goes back to the menu like the lobby does.
+	_scene.results_screen.retry_pressed.connect(_go_menu)
 	call_deferred("_leave_session")
 
 

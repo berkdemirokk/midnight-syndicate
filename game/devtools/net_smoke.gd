@@ -1,7 +1,8 @@
 extends SceneTree
 ## Multi-process LAN smoke test for the online race (game/net). Start one server and two clients on 127.0.0.1:
-##   godot --headless --fixed-fps 60 --path game -s res://devtools/net_smoke.gd -- --role=server --port=24590 --laps=1
-##   godot --headless --fixed-fps 60 --path game -s res://devtools/net_smoke.gd -- --role=client --port=24590 --name=Ada
+##   godot --headless --path game -s res://devtools/net_smoke.gd -- --role=server --port=24590 --laps=1
+##   godot --headless --path game -s res://devtools/net_smoke.gd -- --role=client --port=24590 --name=Ada
+## (tools/net_smoke.py starts all three and checks the logs. No --fixed-fps: the server clock must be wall time.)
 ## Clients are real game processes: each drives a real ArcadeCar with the racing AI (AIDriver, RaceConfig.autopilot
 ## style) on the development circuit and sends its car state at SNAP_HZ. The server validates, relays, and decides
 ## laps, finish order and times. Prints "[smoke]" lines; exit code 0 when the results arrived.

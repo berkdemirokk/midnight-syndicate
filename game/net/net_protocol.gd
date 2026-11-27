@@ -43,8 +43,8 @@ static func make_state(seq: int, xf: Transform3D, vel: Vector3, steer: float) ->
 
 ## "" when the new state may follow prev (the last accepted state of this car, empty for the first one).
 ## dt is the server-side time since prev was accepted. Rejects malformed, non-finite, too fast,
-## out-of-order and teleporting states.
-static func validate_state(prev: Dictionary, st: Dictionary, dt: float) -> String:
+## out-of-order and teleporting states. A flagged reset (R key, respawn) waives only the teleport limit.
+static func validate_state(prev: Dictionary, st: Dictionary, dt: float, reset: bool = false) -> String:
 	if not (st.get("seq") is int and st.get("xf") is Transform3D and st.get("vel") is Vector3 and st.get("steer") is float):
 		return "malformed state"
 	var xf: Transform3D = st["xf"]
@@ -66,6 +66,6 @@ static func validate_state(prev: Dictionary, st: Dictionary, dt: float) -> Strin
 	var prev_xf: Transform3D = prev["xf"]
 	var allowed: float = maxf(speed, prev_speed) * maxf(dt, 0.05) * NetConfig.JUMP_FACTOR + NetConfig.JUMP_SLACK_M
 	var jump: float = prev_xf.origin.distance_to(xf.origin)
-	if jump > allowed:
+	if not reset and jump > allowed:
 		return "teleport %.1f m in %.3f s (limit %.1f m)" % [jump, dt, allowed]
 	return ""

@@ -172,6 +172,8 @@ func reset_player() -> void:
 
 ## Fresh race from the grid with the same config. Used by RETRY and by the pause menu's restart.
 func retry() -> void:
+	if config_used.net_hold_grid:
+		return  ## online: the session is closed, so no new grid; NetRaceGlue leaves to the menu instead
 	_release_reflection()
 	if _world != null:
 		_world.queue_free()

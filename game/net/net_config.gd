@@ -18,11 +18,19 @@ const FINISH_WAIT_S: float = 15.0  ## after the first finish, unfinished cars ge
 const MAX_SPEED_MS: float = 120.0  ## server rejects faster states
 const JUMP_FACTOR: float = 1.5  ## allowed position jump = max speed * dt * JUMP_FACTOR + JUMP_SLACK_M
 const JUMP_SLACK_M: float = 2.0
-const RESET_MAX_M: float = 40.0  ## a flagged reset (R key, stuck recovery) may move a car this far at most
 const RESET_TRIGGER_M: float = 12.0  ## client: a move this long between two sent states counts as a reset
+const MAX_STATES_PER_S: int = 40  ## server: states accepted per car per second (2 x SNAP_HZ), the rest are dropped
+const MAX_PROGRESS_JUMPS: int = 200  ## server: bad track projections per car before it is DNF (about 3 s at 60 fps)
 const MAX_NAME_LEN: int = 24
 const MAX_PACKET_BYTES: int = 65536
 const SERVER_CHANNEL: int = 0
+
+
+## True when the server may bind this address: loopback always, anything else only when given with --address.
+static func bind_allowed(address: String) -> bool:
+	if address == DEFAULT_BIND:
+		return true
+	return address != "" and address == cmdline_value("address", "")
 
 
 ## True when the online menu entry and the network code may run.

@@ -39,6 +39,20 @@ func test_sequence_and_teleport_rules() -> void:
 	check(jump.begins_with("teleport"), "a 500 m jump in one state is rejected, got '%s'" % jump)
 
 
+func test_reset_waives_only_the_teleport_limit() -> void:
+	var prev: Dictionary = _st(5, Vector3.ZERO)
+	check(NetProtocol.validate_state(prev, _st(6, Vector3(0.0, 0.0, -500.0)), 0.05, true) == "", "a flagged reset may move the car")
+	check(NetProtocol.validate_state(prev, _st(5, Vector3(0.0, 0.0, -500.0)), 0.05, true) == "sequence not increasing", "a flagged reset keeps the sequence check")
+	check(NetProtocol.validate_state(prev, _st(6, Vector3(NAN, 0.0, 0.0)), 0.05, true) == "non-finite state", "a flagged reset keeps the finite check")
+
+
+func test_bind_is_loopback_unless_lan_is_given() -> void:
+	check(NetConfig.bind_allowed("127.0.0.1"), "loopback is allowed")
+	check(not NetConfig.bind_allowed("0.0.0.0"), "a wildcard bind is refused")
+	check(not NetConfig.bind_allowed("192.168.1.20"), "a LAN address needs --address on the command line")
+	check(not NetConfig.bind_allowed(""), "an empty address is refused")
+
+
 func test_lobby_ready_and_capacity() -> void:
 	var lobby := NetLobby.new()
 	check(lobby.join(1, "A") == "", "first player joins")

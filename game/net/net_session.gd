@@ -28,7 +28,7 @@ var my_pid: int = -1
 var my_name: String = ""
 var last_message: String = ""  ## read by the main menu after a reject or a lost connection
 var race_info: Dictionary = {}  ## client: the last start message
-var stats: Dictionary = {"accepted": 0, "rejected": 0, "relayed": 0, "snapshots_seen": 0}  ## logs and smoke tests
+var stats: Dictionary = {"accepted": 0, "rejected": 0, "relayed": 0, "rate_limited": 0, "snapshots_seen": 0}  ## logs and smoke tests
 
 var _host: ENetConnection = null
 var _server_link: ENetPacketPeer = null  ## client: the connection to the server
@@ -36,6 +36,9 @@ var _lobby: NetLobby = NetLobby.new()
 var _pid_of: Dictionary = {}  ## server: peer key (String) -> pid
 var _peer_of: Dictionary = {}  ## server: pid -> ENetPacketPeer
 var _next_pid: int = 1
+var _rate: Dictionary = {}  ## server: pid -> [window start s of the sim clock, states in window]
+var _sim_t: float = 0.0  ## server: summed frame time, so the rate cap follows game time, not the wall clock
+var _accepted_by_pid: Dictionary = {}  ## server: pid -> accepted states, printed at the end of the race
 var _state: String = STATE_LOBBY
 var _countdown_t: float = 0.0
 var _race: NetRaceAuthority = null
@@ -84,6 +87,8 @@ func _process(delta: float) -> void:
 func start_server(bind_address: String, port: int, laps: int) -> String:
 	if role != ROLE_NONE:
 		return "already running"
+	if not NetConfig.bind_allowed(bind_address):
+		return "refused: %s is not loopback; start with --address=<LAN IP> to host on the LAN" % bind_address
 	_host = ENetConnection.new()
 	var err: int = _host.create_host_bound(bind_address, port, NetConfig.MAX_PLAYERS)
 	if err != OK:
@@ -161,6 +166,7 @@ func lobby_players() -> Array:
 
 
 func _tick_server(delta: float) -> void:
+	_sim_t += delta
 	if _state == STATE_COUNTDOWN:
 		_countdown_t -= delta
 		if _countdown_t <= 0.0:
@@ -203,6 +209,7 @@ func _server_message(peer: ENetPacketPeer, t: String, d: Dictionary) -> void:
 			if _state != STATE_LOBBY:
 				return
 			_lobby.set_ready(pid, bool(d.get("on", false)))
+			print("[net] ready pid %d: %s" % [pid, str(bool(d.get("on", false)))])
 			_broadcast_lobby()
 			if _lobby.can_start():
 				_begin_countdown()
@@ -236,7 +243,11 @@ func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
 
 
 func _on_state(pid: int, d: Dictionary) -> void:
-	if _state != STATE_RACING or _race == null:
+	# Cars that finished or dropped out send no more useful states: dropped silently, not logged as rejects.
+	if _state != STATE_RACING or _race == null or not _race.is_racing(pid):
+		return
+	if _over_rate(pid):
+		stats["rate_limited"] = int(stats["rate_limited"]) + 1
 		return
 	# Raw client values: NetRaceAuthority.submit type-checks them before they are used.
 	var st: Dictionary = {"seq": d.get("seq"), "xf": d.get("xf"), "vel": d.get("vel"), "steer": d.get("steer")}
@@ -246,11 +257,23 @@ func _on_state(pid: int, d: Dictionary) -> void:
 		print("[net] reject state pid %d: %s" % [pid, reason])
 		return
 	stats["accepted"] = int(stats["accepted"]) + 1
+	_accepted_by_pid[pid] = int(_accepted_by_pid.get(pid, 0)) + 1
 	for other: int in _peer_of:
 		if other == pid:
 			continue
 		_send(_peer_of[other], {"t": NetProtocol.MSG_SNAP, "pid": pid, "seq": st["seq"], "xf": st["xf"], "vel": st["vel"], "steer": st["steer"]}, false)
 		stats["relayed"] = int(stats["relayed"]) + 1
+
+
+## Caps the states accepted per car per second (NetConfig.MAX_STATES_PER_S); the excess is dropped unread.
+func _over_rate(pid: int) -> bool:
+	var now: float = _sim_t
+	var w: Array = _rate.get(pid, [now, 0])
+	if now - float(w[0]) >= 1.0:
+		w = [now, 0]
+	w[1] = int(w[1]) + 1
+	_rate[pid] = w
+	return int(w[1]) > NetConfig.MAX_STATES_PER_S
 
 
 func _begin_countdown() -> void:
@@ -271,6 +294,7 @@ func _begin_countdown() -> void:
 func _end_race() -> void:
 	var rows: Array[Dictionary] = _race.results()
 	print("[net] results: %s" % str(rows))
+	print("[net] accepted states per pid: %s, rate limited: %d" % [str(_accepted_by_pid), int(stats["rate_limited"])])
 	_broadcast({"t": NetProtocol.MSG_RESULTS, "rows": rows})
 	server_results.emit(rows)
 	_race = null
@@ -290,6 +314,7 @@ func _on_disconnect(peer: ENetPacketPeer) -> void:
 	var pid: int = _pid_of[key]
 	_pid_of.erase(key)
 	_peer_of.erase(pid)
+	_rate.erase(pid)
 	_lobby.leave(pid)
 	if _race != null and _race.has_driver(pid):
 		_race.mark_dnf(pid, "disconnected")

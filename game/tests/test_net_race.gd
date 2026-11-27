@@ -77,6 +77,69 @@ func test_disconnect_is_dnf_and_race_goes_on() -> void:
 	await cleanup([track])
 
 
+func test_repeated_resets_add_no_distance() -> void:
+	var track: Track = _make_track()
+	var race := NetRaceAuthority.new()
+	race.setup(track, 1, {1: "Reset"}, {1: 0})
+	race.tick(STEP_S)
+	check(race.submit(1, _state_at(track, 1, 10.0, 0.0)) == "", "the first state is accepted")
+	race.tick(STEP_S)  ## the honest first move is credited here; the baseline is taken after it
+	var before: float = race.driver(1).distance
+	var o: float = 10.0
+	var seq: int = 1
+	var accepted: int = 0
+	while o + 39.0 < track.length and accepted < 300:
+		race.tick(STEP_S)
+		o += 39.0
+		seq += 1
+		var reason: String = race.submit(1, _state_at(track, seq, o, 0.0), true)
+		if reason != "":
+			check(false, "a flagged reset of 39 m was refused: %s" % reason)
+			break
+		accepted += 1
+	check(accepted >= 5, "several resets were accepted (%d)" % accepted)
+	check(race.driver(1).distance <= before + 0.01, "forward resets add no distance (before %.1f m, now %.1f m)" % [before, race.driver(1).distance])
+	check(race.submit(1, _state_at(track, seq, o, 0.0), true) == "sequence not increasing", "a reset keeps the sequence check")
+	metric("net_reset_accepted", accepted)
+	await cleanup([track])
+
+
+## A client claiming 120 m/s and sending at the 40 Hz rate cap passes every per-state check (10 m per state), but the
+## server never credits more than MAX_SPEED_MS of forward distance on its own clock.
+func test_claimed_speed_cannot_outrun_the_server_clock() -> void:
+	var track: Track = _make_track()
+	var race := NetRaceAuthority.new()
+	race.setup(track, 1, {1: "Cheat"}, {1: 0})
+	var dt: float = 1.0 / float(NetConfig.MAX_STATES_PER_S)
+	var o: float = race.driver(1).progress
+	var start: float = race.driver(1).distance
+	var refused: int = 0
+	for seq: int in range(1, NetConfig.MAX_STATES_PER_S * 2 + 1):  ## two seconds
+		race.tick(dt)
+		o += 10.0
+		if race.submit(1, _state_at(track, seq, o, NetConfig.MAX_SPEED_MS - 1.0)) != "":
+			refused += 1
+	race.tick(dt)
+	var gained: float = race.driver(1).distance - start
+	var limit: float = NetConfig.MAX_SPEED_MS * (race.race_t + NetRaceAuthority.CREDIT_BURST_S)
+	check(refused == 0, "the cheating states pass the per-state checks (%d refused)" % refused)
+	check(gained <= limit + 0.5, "credited %.0f m in %.2f s, limit %.0f m (the states moved %.0f m)" % [gained, race.race_t, limit, 10.0 * NetConfig.MAX_STATES_PER_S * 2])
+	metric("net_cheat_credited_m", gained)
+	await cleanup([track])
+
+
+func test_projection_failures_dnf_the_car() -> void:
+	var track: Track = _make_track()
+	var race := NetRaceAuthority.new()
+	race.setup(track, 1, {1: "Lost", 2: "Fine"}, {1: 0, 2: 1})
+	for i: int in NetConfig.MAX_PROGRESS_JUMPS:
+		race._count_jump(race.driver(1))
+	check(race.driver(1).dnf and race.driver(1).dnf_reason == "track projection failed", "a car with too many bad projections is DNF")
+	check(not race.driver(2).dnf, "the other car is not affected")
+	check(int(race.results()[1]["progress_jumps"]) == NetConfig.MAX_PROGRESS_JUMPS, "results show the projection count")
+	await cleanup([track])
+
+
 func test_time_limit_after_first_finish() -> void:
 	var track: Track = _make_track()
 	var race := NetRaceAuthority.new()

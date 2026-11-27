@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-27T23:50:43"
+    "time": "2026-11-28T00:37:09"
   },
   "test_ai_race.gd": {
     "test_countdown": {
@@ -855,7 +855,7 @@
         "light_budget_log": 4,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1136.7,
+        "load_time_ms": 1115.0,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -921,7 +921,7 @@
         "8car_orderA_nitro100_race_time_s": 75.63,
         "8car_orderA_nitro100_stuck_events": 0,
         "8car_orderA_nitro100_stuck_worst_car": 0,
-        "8car_orderA_nitro100_wall_s": 4.5
+        "8car_orderA_nitro100_wall_s": 4.6
       },
       "pass": true
     },
@@ -945,7 +945,7 @@
         "8car_orderA_nitro0_race_time_s": 74.25,
         "8car_orderA_nitro0_stuck_events": 0,
         "8car_orderA_nitro0_stuck_worst_car": 0,
-        "8car_orderA_nitro0_wall_s": 4.5
+        "8car_orderA_nitro0_wall_s": 4.6
       },
       "pass": true
     },
@@ -981,7 +981,7 @@
         "8car_orderB_nitro0_race_time_s": 82.4,
         "8car_orderB_nitro0_stuck_events": 7,
         "8car_orderB_nitro0_stuck_worst_car": 2,
-        "8car_orderB_nitro0_wall_s": 5.9
+        "8car_orderB_nitro0_wall_s": 5.8
       },
       "pass": true
     },
@@ -1016,7 +1016,7 @@
         "6car_nitro140_race_time_s": 73.75,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.3
+        "6car_nitro140_wall_s": 3.0
       },
       "pass": true
     },
@@ -1916,7 +1916,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 693.0,
+        "load_ms": 989.0,
         "prop_instances": 991,
         "second_row": 155,
         "track_length_m": 2205.4
@@ -1968,7 +1968,7 @@
         "race_time_s": 60.48,
         "stuck_total": 0,
         "stuck_worst_car": 0,
-        "wall_s": 2.2
+        "wall_s": 2.1
       },
       "pass": true
     },
@@ -1988,7 +1988,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 790.0,
+        "load_ms": 805.0,
         "prop_instances": 1252,
         "second_row": 102,
         "track_length_m": 2243.6
@@ -2042,6 +2042,88 @@
         "landmark_origin_lateral_m": -13.0,
         "layout_instances_in_footprint": 0
       },
+      "pass": true
+    }
+  },
+  "test_net_protocol.gd": {
+    "test_bind_is_loopback_unless_lan_is_given": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_grid_cap_matches_track": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_invalid_states_rejected": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_lobby_ready_and_capacity": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_reset_waives_only_the_teleport_limit": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_sequence_and_teleport_rules": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_version_mismatch_rejected": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_net_race.gd": {
+    "test_authority_orders_finish_by_server_clock": {
+      "failures": [],
+      "metrics": {
+        "net_race_fast_time_s": 43.6999999999997,
+        "net_race_slow_time_s": 52.3999999999992,
+        "net_race_ticks": 1048
+      },
+      "pass": true
+    },
+    "test_claimed_speed_cannot_outrun_the_server_clock": {
+      "failures": [],
+      "metrics": {
+        "net_cheat_credited_m": 240.0
+      },
+      "pass": true
+    },
+    "test_disconnect_is_dnf_and_race_goes_on": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_projection_failures_dnf_the_car": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_repeated_resets_add_no_distance": {
+      "failures": [],
+      "metrics": {
+        "net_reset_accepted": 33
+      },
+      "pass": true
+    },
+    "test_teleport_and_stale_states_refused": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_time_limit_after_first_finish": {
+      "failures": [],
+      "metrics": {},
       "pass": true
     }
   },
@@ -2482,7 +2564,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@22199"
+        "main_menu_focus": "@Button@22301"
       },
       "pass": true
     },

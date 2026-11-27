@@ -5,6 +5,7 @@ extends RefCounted
 ## Pure logic: no nodes, no network. Unit tested with a real Track (game/tests/test_net_race.gd).
 
 const PROGRESS_JUMP_M: float = 25.0  ## largest believable progress change in one tick, plus speed * dt
+const CREDIT_BURST_S: float = 0.5  ## forward credit can bank this many seconds at MAX_SPEED_MS (late or bunched states)
 
 class NetDriver extends RefCounted:
 	var pid: int = 0
@@ -21,6 +22,7 @@ class NetDriver extends RefCounted:
 	var dnf: bool = false
 	var dnf_reason: String = ""
 	var progress_jumps: int = 0  ## track samples that moved the car implausibly far in one tick (ignored)
+	var credit_budget: float = 0.0  ## metres of forward distance the server may still credit (refills at MAX_SPEED_MS)
 
 	func racing() -> bool:
 		return not finished and not dnf
@@ -63,24 +65,25 @@ func driver(pid: int) -> NetDriver:
 
 
 ## "" when accepted. Rejected states leave the driver's last accepted state unchanged.
+func is_racing(pid: int) -> bool:
+	var d: NetDriver = driver(pid)
+	return d != null and d.racing()
+
+
+## "" when accepted. Rejected states leave the driver's last accepted state unchanged.
 func submit(pid: int, st: Dictionary, reset: bool = false) -> String:
 	var d: NetDriver = driver(pid)
 	if d == null or not d.racing():
 		return "not racing"
-	if reset:
-		# A reset is a short, flagged jump: the new spot must be near the old one, and progress follows it.
-		if not (st.get("xf") is Transform3D) or not d.has_state:
-			return "reset without a state"
-		var moved: float = (d.last_state["xf"] as Transform3D).origin.distance_to((st["xf"] as Transform3D).origin)
-		if moved > NetConfig.RESET_MAX_M:
-			return "reset moved %.1f m (limit %.1f m)" % [moved, NetConfig.RESET_MAX_M]
-	var reason: String = NetProtocol.validate_state({} if reset else d.last_state, st, race_t - d.last_t)
+	# A flagged reset (R key, respawn) may move the car anywhere, and the sequence and speed checks still apply.
+	var reason: String = NetProtocol.validate_state(d.last_state, st, race_t - d.last_t, reset)
 	if reason != "":
 		return reason
-	if reset:
-		var origin: Vector3 = (st["xf"] as Transform3D).origin
-		var p: float = _track.get_progress(origin, d.progress)
-		d.distance += _wrap_signed(p - d.progress)
+	if reset and d.has_state:
+		# Progress follows the new spot, but a reset never adds distance: a forward reset gains nothing and a
+		# backward one takes metres back. Repeated resets therefore cannot shorten a lap.
+		var p: float = _track.get_progress((st["xf"] as Transform3D).origin, d.progress)
+		d.distance += minf(_wrap_signed(p - d.progress), 0.0)
 		d.progress = p
 	d.last_state = st
 	d.last_t = race_t
@@ -99,8 +102,14 @@ func tick(dt: float) -> void:
 		var p: float = _track.get_progress(xf.origin, d.progress)
 		var step: float = _wrap_signed(p - d.progress)
 		if absf(step) > PROGRESS_JUMP_M + 2.0 * NetConfig.MAX_SPEED_MS * dt:
-			d.progress_jumps += 1  ## a bad projection, not a car: keep the last good progress
+			_count_jump(d)  ## a bad projection, not a car: keep the last good progress
 			continue
+		# Forward credit never outruns MAX_SPEED_MS on the server clock, whatever speed the states claim
+		# (the per-state teleport limit alone allows bursts well above it at the rate cap).
+		d.credit_budget = minf(d.credit_budget + NetConfig.MAX_SPEED_MS * dt, NetConfig.MAX_SPEED_MS * CREDIT_BURST_S)
+		if step > 0.0:
+			step = minf(step, d.credit_budget)
+			d.credit_budget -= step
 		d.distance += step
 		d.progress = p
 		if d.distance >= float(total_laps) * _track.length:
@@ -147,6 +156,13 @@ func results() -> Array[Dictionary]:
 			"progress_jumps": d.progress_jumps,
 		})
 	return out
+
+
+## Too many bad projections in one race means the car cannot be placed honestly: DNF, with the reason in the results.
+func _count_jump(d: NetDriver) -> void:
+	d.progress_jumps += 1
+	if d.progress_jumps == NetConfig.MAX_PROGRESS_JUMPS:
+		mark_dnf(d.pid, "track projection failed")
 
 
 func _finish(d: NetDriver) -> void:
