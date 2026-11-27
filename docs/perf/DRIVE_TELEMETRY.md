@@ -1,0 +1,108 @@
+# Drive telemetry (measured, no physics changes)
+
+Machine: Windows 11 dev PC, AMD Ryzen 5 7600, NVIDIA RTX 5060 Ti 8 GB, Godot 4.7.2. Not a phone. Desktop numbers are never phone numbers.
+
+## What was measured and how
+
+- Runner: `game/devtools/scenarios/drive_telemetry_run.gd`, launched by `drive_telemetry.gd`. It drives the real race scene (`race/race_scene.tscn`) with `RaceConfig.autopilot = true`. The autopilot is an `AIDriver`, not a human. Its skill is a stand-in for a player, not a newcomer test.
+- Race results go to `user://telemetry_save.json`, not the owner's profile. `game/tests/test_drive_telemetry.gd` checks that the scratch save is not `user://save.json`, that cleanup removes only the scratch file, and that the best-lap helper is correct.
+- Sim runs: headless, `--fixed-fps 60`, `--audio-driver Dummy`. Rendered run: one GPU job under the lock helper, default vsync.
+- "Contact events" are contact-impulse signal counts from `ArcadeCar.hit`. They are NOT verified collisions.
+- "Teleports" are per-tick jumps over 5 m while racing. AI resets also count.
+- A car counted as unfinished when it had not completed the laps when the race ended.
+- Matrix note: the two track processes ran at the same time and shared `user://telemetry_save.json`. Race outcomes are held in memory, so the measurements should be unaffected, but this was not isolated.
+
+## Files
+
+- `evidence/telemetry/sim_restart.json`
+- `evidence/telemetry/sim_first_race.json`
+- `evidence/telemetry/sim_matrix_bogaz.json`
+- `evidence/telemetry/sim_matrix_city01.json`
+- `evidence/telemetry/sim_fairness.json` (CONFIG-DERIVED, not a race measurement)
+- `evidence/telemetry/hitch_rendered.json` (rendered, GPU-locked)
+
+## 1. Restart reliability (bogaz, Tayfun, grid 4, 2 laps, 4 runs in one process)
+
+| run | finished | race time s | player pos | nodes after finish |
+|---|---|---|---|---|
+| 1 | yes | 121.37 | 3 | 4049 |
+| 2 | yes | 119.38 | 4 | 4049 |
+| 3 | yes | 119.53 | 4 | 4049 |
+| 4 | yes | 112.28 | 3 | 4049 |
+
+Node count before the first race was 4039. It was 4049 after every run, so there is no growth across retries. After the scene was freed it was 18. All 4 runs finished, with 4-7 stuck recoveries and 2-7 teleports per run.
+
+## 2. First race (ortakoy_night, starter Tayfun, autopilot stand-in)
+
+Event rivals are fixed by the event config: skills 0.70, 0.68, 0.66, grid 4, 1 lap.
+
+| autopilot skill | player pos | race time s | 0-100 s | stuck | teleports | contacts (player) |
+|---|---|---|---|---|---|---|
+| 0.80 | 2 | 54.88 | 3.98 | 0 | 0 | 4 |
+| 0.90 | 4 | 69.03 | 3.98 | 3 | 2 | 17 |
+| 0.97 | 1 | 46.53 | 3.98 | 0 | 0 | 1 |
+
+Answer to the brief's question: a stand-in at 0.80 to 0.97 places 1st to 4th against the event's rivals. This does not prove a human newcomer can place. The 0.90 run placed 4th only after repeated stuck events. Human testing is still needed.
+
+## 3. Matrix (2 laps, rival_mix off, autopilot 0.97, night)
+
+Grid 4 = 3 AI + player. Grid 8 = 7 AI + player. "Unfinished" is the count of cars that had not completed 2 laps when the race ended.
+
+| track | car | grid | pos | race s | best lap s | 0-100 s | 0-200 s | top km/h (spec) | rival top max | stuck | teleports | contacts per lap (all) | unfinished |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| bogaz | Tayfun | 4 | 3 | 112.82 | 53.95 | 3.50 | 9.68 | 211.1 (268) | 209.5 | 6 | 3 | 16.5 | 0 |
+| bogaz | Tayfun | 8 | 4 | 109.28 | 54.12 | 3.80 | 9.90 | 214.2 (268) | 209.6 | 8 | 7 | 44.0 | 0 |
+| bogaz | Marten | 4 | 2 | 117.43 | 54.35 | 2.97 | 6.95 | 231.4 (316) | 226.6 | 7 | 5 | 41.0 | 0 |
+| bogaz | Marten | 8 | 4 | 131.05 | 58.28 | 3.18 | 49.23 | 226.7 (316) | 223.4 | 21 | 15 | 99.5 | 1 |
+| bogaz | Yildirim | 4 | 4 | 139.40 | 61.93 | 3.62 | 7.68 | 227.6 (352) | 223.8 | 12 | 8 | 37.0 | 0 |
+| bogaz | Yildirim | 8 | 2 | 112.73 | 56.27 | 3.80 | 8.02 | 230.4 (352) | 227.4 | 16 | 9 | 98.5 | 3 |
+| city01 | Tayfun | 4 | 1 | 139.43 | 68.28 | 3.43 | 76.72 | 204.3 (268) | 203.6 | 1 | 0 | 13.5 | 1 |
+| city01 | Tayfun | 8 | 1 | 143.92 | 69.92 | 3.72 | not reached | 197.7 (268) | 198.2 | 9 | 6 | 33.0 | 1 |
+| city01 | Marten | 4 | 1 | 141.45 | 68.57 | 2.97 | 75.12 | 220.8 (316) | 219.5 | 1 | 0 | 9.0 | 0 |
+| city01 | Marten | 8 | 4 | 162.78 | 79.73 | 3.17 | not reached | 198.5 (316) | 207.2 | 14 | 11 | 56.0 | 0 |
+| city01 | Yildirim | 4 | 2 | 154.18 | 75.63 | 3.62 | 83.07 | 223.7 (352) | 213.0 | 6 | 3 | 22.5 | 0 |
+| city01 | Yildirim | 8 | 1 | 143.32 | 70.93 | 3.77 | 76.45 | 222.4 (352) | 222.8 | 13 | 9 | 46.5 | 5 |
+
+- Timed out: none (900 s cap). Teleports are AI resets, not a race fault by themselves.
+- Lap times are only 2-lap samples. A 2-lap best lap is noisy.
+- Player classification is the autopilot's, not a human's.
+
+## 4. Opponent class fairness (CONFIG-DERIVED, not measured in races)
+
+`sim_fairness.json` lists the rival models that `CarCatalog.rival_models` picks for each career event, with the starter Tayfun at 268 km/h top speed:
+
+- ortakoy_night (street, 3 opponents): Sable 286, Tayfun 268, Sable 286. 2 of 3 faster.
+- wharf_sprint (street, 3): same picks. 2 of 3 faster.
+- neon_strip_circuit (any class, 5): Sable, Bruiser, Gtr, Vanta, Havoc. 4 of 5 faster.
+- midnight_time_trial: no rivals.
+- overpass_duel (1): Yildirim 352. 1 of 1 faster.
+- harbour_run (5): 3 of 5 faster.
+- syndicate_final (5): includes Marten 316.
+
+The top-speed numbers are spec values from the catalog. They say nothing about how rivals perform in races. The per-race rival top speeds in section 3 are the only race-based rival data here.
+
+## 5. Rendered start hitch (bogaz, Tayfun, grid 8, rendered, RTX 5060 Ti, default vsync, screen 180 Hz)
+
+- Countdown starts at 1892 ms after scene start. GO at 4888 ms.
+- Max frame before the countdown: 482.5 ms (scene build, not a race frame).
+- Max frame during countdown: 57.5 ms.
+- Max frame in the first 5 s after GO: 34.6 ms.
+- Frames over 25 ms: 11 before the countdown (grid build), 25 during the countdown, and 20 or more after GO (the first at 0.07 s after GO, the 20th checked at 1.99 s after GO). After GO most frames in the first 2 s are 25-35 ms (about 30 fps). The exact count after GO was not totalled. This is a desktop number only, with one run.
+
+## Ranked driving problems (measured; parameters are NOT changed)
+
+1. Stuck and reset churn grows with grid size. 4 to 21 stuck recoveries per 2-lap race, 0 to 15 teleports. Grid 8 Marten on bogaz had 21 stuck and 15 teleports. The recovery trigger is `stuck_time` (2.0 s) and `stuck_progress_m` (2.0 m). The teleport fallback is `reset_yaw_deg` (40 deg). File: `game/ai/ai_driver.gd`.
+2. Contact pressure is high. 9 to 99 contact events per lap on grid 8 and 13 to 17 per lap at grid 4 in the first race. Some of these are wall or rival touches. The avoidance inputs are `car_width` (1.9 m), `side_clearance` (0.8 m), `lane_margin` (0.6 m), `ttc_brake` (1.5 s). File: `game/ai/ai_driver.gd`. The contact impulse threshold in `ArcadeCar` was not read.
+3. Top speed in races is far below spec. Tayfun reaches 198 to 214 km/h against 268 km/h spec. Marten and Yildirim reach 198 to 232 km/h against 316 and 352. Speed is capped by the driver target: `skill` (0.8 to 1.0 of the target, set to 0.97 in the matrix) and `throttle_gain` (0.5). The track target-speed table was not read. File: `game/ai/ai_driver.gd`.
+4. City01 never reaches 200 km/h for most cars: 0-200 is 75 s or more in 5 of 6 city cars, and not reached for 2 of them on grid 8. Track max speed on city01 was not read (it is reported as track_max_speed_kmh in the JSON). The parameter to check is in the city track scene or track script, not yet traced.
+5. Race ends with cars unfinished. On city01 grid 8, Yildirim left 5 of 8 cars unfinished at the end. Up to 3 unfinished on bogaz. This decides which cars are classified. The finish rule is in `game/race/race_manager.gd` (not read).
+
+## Not done or risky
+
+- The first-race and newcomer checks use autopilot skills, not a human player. The 0.80 to 0.97 stand-ins are not a newcomer test.
+- Contact events are impulse counts, not verified collisions.
+- Matrix runs shared one scratch save file in parallel (see Matrix note).
+- Single rendered hitch run. Desktop, not phone.
+- The rendered hitch was only one run, measured with vsync.
+- Rival data for races: only the 2-lap matrix and the first race. No per-race rival finish data was compared with the config picks.
+- The full suite (358 tests, 0 failed) printed "Parse JSON failed" messages to the log. These were not investigated in this package.

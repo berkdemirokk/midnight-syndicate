@@ -1,0 +1,698 @@
+{
+  "cpu": "AMD Ryzen 5 7600 6-Core Processor",
+  "fairness": [
+    {
+      "class_filter": "street",
+      "event": "ortakoy_night",
+      "opponents": 3,
+      "rivals": [
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        }
+      ],
+      "rivals_faster_than_starter": 2,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "street",
+      "event": "wharf_sprint",
+      "opponents": 3,
+      "rivals": [
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        }
+      ],
+      "rivals_faster_than_starter": 2,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "neon_strip_circuit",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        },
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        },
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        }
+      ],
+      "rivals_faster_than_starter": 4,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "midnight_time_trial",
+      "opponents": 0,
+      "rivals": [],
+      "rivals_faster_than_starter": 0,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "overpass_duel",
+      "opponents": 1,
+      "rivals": [
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        }
+      ],
+      "rivals_faster_than_starter": 1,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "harbour_run",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "syndicate_final",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        }
+      ],
+      "rivals_faster_than_starter": 4,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_sprint",
+      "opponents": 3,
+      "rivals": [
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        },
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        },
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_circuit",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        }
+      ],
+      "rivals_faster_than_starter": 4,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_night",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_final",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        },
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        },
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        }
+      ],
+      "rivals_faster_than_starter": 5,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_time_trial",
+      "opponents": 0,
+      "rivals": [],
+      "rivals_faster_than_starter": 0,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_duel",
+      "opponents": 1,
+      "rivals": [
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        }
+      ],
+      "rivals_faster_than_starter": 1,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "wharf_return",
+      "opponents": 3,
+      "rivals": [
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        },
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        },
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_rush",
+      "opponents": 3,
+      "rivals": [
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_time_trial",
+      "opponents": 0,
+      "rivals": [],
+      "rivals_faster_than_starter": 0,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "wharf_duel",
+      "opponents": 1,
+      "rivals": [
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        }
+      ],
+      "rivals_faster_than_starter": 1,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_endurance",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        },
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_rush",
+      "opponents": 3,
+      "rivals": [
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        }
+      ],
+      "rivals_faster_than_starter": 2,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "wharf_time_trial",
+      "opponents": 0,
+      "rivals": [],
+      "rivals_faster_than_starter": 0,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_duel",
+      "opponents": 1,
+      "rivals": [
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        }
+      ],
+      "rivals_faster_than_starter": 1,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_blue_hour",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        },
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        }
+      ],
+      "rivals_faster_than_starter": 4,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "wharf_endurance",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_elite",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        },
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        },
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        }
+      ],
+      "rivals_faster_than_starter": 4,
+      "starter_top_kmh": 268.0,
+      "tod": "sunset"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_night_duel",
+      "opponents": 1,
+      "rivals": [
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        }
+      ],
+      "rivals_faster_than_starter": 1,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "wharf_elite",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "maslak_master",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "bogaz_master",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        }
+      ],
+      "rivals_faster_than_starter": 4,
+      "starter_top_kmh": 268.0,
+      "tod": "day"
+    },
+    {
+      "class_filter": "",
+      "event": "wharf_championship",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        },
+        {
+          "model": "bosfor_yildirim",
+          "top_kmh": 352.0
+        },
+        {
+          "model": "noctra_tayfun",
+          "top_kmh": 268.0
+        },
+        {
+          "model": "noctra_sable",
+          "top_kmh": 286.0
+        },
+        {
+          "model": "arden_bruiser",
+          "top_kmh": 268.0
+        }
+      ],
+      "rivals_faster_than_starter": 3,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    },
+    {
+      "class_filter": "",
+      "event": "istanbul_championship",
+      "opponents": 5,
+      "rivals": [
+        {
+          "model": "kestrel_gtr",
+          "top_kmh": 312.0
+        },
+        {
+          "model": "kestrel_vanta",
+          "top_kmh": 330.0
+        },
+        {
+          "model": "arden_havoc",
+          "top_kmh": 300.0
+        },
+        {
+          "model": "kestrel_marten",
+          "top_kmh": 316.0
+        },
+        {
+          "model": "noctra_meridian",
+          "top_kmh": 308.0
+        }
+      ],
+      "rivals_faster_than_starter": 5,
+      "starter_top_kmh": 268.0,
+      "tod": "night"
+    }
+  ],
+  "godot": "4.7.2-stable (official)",
+  "machine": "Windows 11 dev PC, NVIDIA RTX 5060 Ti 8 GB, Godot 4.7.2. Not a phone.",
+  "mode": "sim",
+  "part": "fairness",
+  "sim_tick_hz": 60.0
+}
