@@ -57,6 +57,7 @@ class NearCar extends RefCounted:
 @export var lane_margin: float = 0.6  ## m, lateral overlap margin for a car ahead in our lane
 @export var side_clearance: float = 0.8  ## m, lateral clearance kept from a car alongside (body gap)
 @export var side_long_range: float = 7.0  ## m, a car this close along the track counts as alongside (overlaps longitudinally)
+@export var follow_decel: float = 4.0  ## m/s^2, braking that stops short of a car ahead in our lane: the brake needed for the closing speed over the bumper gap, at this deceleration = full brake
 @export var ttc_brake: float = 1.5  ## s, a car ahead in our lane closer than this in time is matched in speed unless a side is free
 @export var pass_timeout_s: float = 8.0  ## s, a pass that is not finished by then is aborted
 @export var pass_cooldown_s: float = 3.0  ## s, after an aborted pass no new pass starts
@@ -123,6 +124,8 @@ var _go_lat: float = 0.0  ## lateral offset at GO (the grid lane)
 var _grid_hold: bool = false  ## started behind the line: keep the grid lane for grid_hold_m
 var _race_m: float = 0.0  ## m along the race since GO, unwrapped (a lap is not wrapped back to zero)
 var _race_s_prev: float = 0.0  ## track progress on the last tick, for _race_m
+var _follow_brake: float = 0.0  ## this tick: brake (0..1) the car ahead needs from us, from the closing speed and the bumper gap
+var _held: bool = false  ## last tick: the car ahead caps our speed (a queue, not a wedge), so it is not counted as stuck
 
 
 func _init() -> void:
@@ -202,7 +205,8 @@ func _physics_process(delta: float) -> void:
 	if _anchor_s < 0.0:
 		_anchor_s = s
 	# Progress-based stuck check: no forward progress along the line for stuck_time while racing.
-	if _wrap_signed(s - _anchor_s) >= stuck_progress_m:
+	# A car held behind traffic is queued, not wedged: the car ahead is what stops it, and that car is counted itself.
+	if _held or _wrap_signed(s - _anchor_s) >= stuck_progress_m:
 		_anchor_s = s
 		_idle_t = 0.0
 	else:
@@ -265,6 +269,7 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	var want: float = minf(_track.get_target_speed(s), _track.get_target_speed(ahead)) * skill * get_rubber_band()
 	want *= 1.0 + brake_noise * _noise(NOISE_BRAKE)
 	var cap: float = _traffic_cap(v)
+	_held = cap < want
 	want = minf(want, cap)
 	want = minf(want, top_ms)
 	var err: float = want - v
@@ -281,6 +286,10 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 		inp.brake = clampf(-err * brake_gain, 0.0, 1.0)
 	# Sliding sideways: brake too, so the tyres get back the grip the lateral slide is using.
 	inp.brake = maxf(inp.brake, clampf((absf(lat_v) - slide_lift_ms) * slide_brake_gain, 0.0, 1.0))
+	# Closing on the car ahead: brake for the closing speed, not only toward its speed (no throttle while doing so).
+	if _follow_brake > 0.0:
+		inp.brake = maxf(inp.brake, clampf(_follow_brake, 0.0, 1.0))
+		inp.throttle = 0.0
 	# Start nitro above NITRO_MIN_AMOUNT, then keep it running until the charge is gone (the car ends it at 0).
 	var charged: bool = _car.nitro_amount > 0.0 if _car.nitro_active else _car.nitro_amount > NITRO_MIN_AMOUNT
 	# No nitro while a slower car is in follow range: it would arrive too fast to pass it cleanly.
@@ -300,7 +309,8 @@ func _tick_reverse(delta: float) -> void:
 		return
 	# Free only if it gained progress since the recovery started and faces along the line.
 	var s: float = _track.get_progress(_car.global_position, _last_s)
-	var free: bool = _wrap_signed(s - _anchor_s) >= stuck_progress_m and _heading_error_deg(s) <= reset_yaw_deg
+	# Reversing moves the car back along the line, so the test is distance moved, not forward progress.
+	var free: bool = absf(_wrap_signed(s - _anchor_s)) >= stuck_progress_m and _heading_error_deg(s) <= reset_yaw_deg
 	if not free:
 		_reset_to_line()  # last resort: teleport back onto the line
 	_mode = Mode.RACE
@@ -395,6 +405,7 @@ func _lead_index() -> int:
 ## Speed cap from the cars ahead in our lane. Gap rule: match the car ahead at follow_gap, more gap allows more speed.
 ## Time rule: a car ahead closer than ttc_brake in time is matched in speed, unless a pass to a free side is possible.
 func _traffic_cap(v: float) -> float:
+	_follow_brake = 0.0
 	if _pass_side != SIDE_NONE:
 		return INF  # already passing: the lane shift is the answer, not braking behind the car
 	var limit: float = INF
@@ -407,6 +418,9 @@ func _traffic_cap(v: float) -> float:
 			limit = minf(limit, n.speed + follow_gain * (n.along - follow_gap))
 		if n.ttc < ttc_brake and not (_pass_ok and _pick_side(n.car, n.dl) != SIDE_NONE):
 			limit = minf(limit, n.speed)
+		var closing: float = v - n.speed
+		if closing > 0.0 and not (_pass_ok and _pick_side(n.car, n.dl) != SIDE_NONE):
+			_follow_brake = maxf(_follow_brake, closing * closing / (2.0 * maxf(n.along - car_length, 0.05) * follow_decel))
 	return limit
 
 
