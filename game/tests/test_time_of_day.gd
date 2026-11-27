@@ -190,6 +190,7 @@ func test_city_race_at_day() -> void:
 		check(sun.shadow_enabled == (Settings.get_preset_id() != "low"), "sun shadow follows the preset")
 		check(sun.light_energy > 1.0, "sun energy")
 	check(scene.track.find_child("Moon", true, false) == null, "no moon at day")
+	check(scene.track.find_child("DayBounce", true, false) != null, "day has the ground shade and warm fill (DayBounce)")
 	check(scene.find_children("*", "RainFx", true, false).is_empty(), "no rain at day")
 	var lit_spots: int = 0
 	for n: Node in scene.track.find_children("lamp_head_*", "Light3D", true, false):

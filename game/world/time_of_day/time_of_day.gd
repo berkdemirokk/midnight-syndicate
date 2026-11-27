@@ -301,6 +301,10 @@ func apply_shadow_casters(root: Node) -> void:
 		var gi: GeometryInstance3D = n as GeometryInstance3D
 		if _is_non_caster(gi, root):
 			gi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# day only: ground shade strips and the warm bounce fill (DayBounce), built once the buildings exist
+	var track: Track = root.get_parent() as Track
+	if id == DAY and track != null:
+		DayBounce.build(root, track, sun_world)
 
 
 ## A building casts its sun shadow from its LOD2 box (10 triangles, one draw) instead of LOD0 (3500 triangles, 14 draws):
