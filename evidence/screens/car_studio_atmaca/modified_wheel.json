@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.964,
+  "luma_max": 0.963,
   "luma_min": 0.0,
   "name": "modified_wheel",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 53,
-    "draw_calls_min": 53,
+    "draw_calls": 55,
+    "draw_calls_min": 55,
     "driver": "vulkan",
-    "fps": 628.18,
-    "frame_ms_avg": 1.592,
-    "frame_ms_p95": 1.793,
-    "frame_ms_p99": 1.861,
+    "fps": 593.671,
+    "frame_ms_avg": 1.684,
+    "frame_ms_p95": 1.711,
+    "frame_ms_p99": 1.769,
     "frames": 60,
-    "objects": 53,
+    "objects": 55,
     "os": "Windows",
-    "primitives": 70956,
+    "primitives": 175428,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 460.731,
+    "video_mem_mb": 513.654,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_d45452b9-4d2-1/evidence/screens/car_studio_atmaca/modified_wheel.png",
+  "png": "C:/Users/berk/car race/evidence/screens/car_studio_atmaca/modified_wheel.png",
   "preset": "high",
   "scenario": "car_studio_atmaca"
 }

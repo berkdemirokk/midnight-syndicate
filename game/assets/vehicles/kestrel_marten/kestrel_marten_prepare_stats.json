@@ -2,7 +2,7 @@
  "car_id": "kestrel_marten",
  "source": "assets_src/third_party/vinish_cars/rear-engine-sports-coupe.glb",
  "lod0": {
-  "tris": 89541,
+  "tris": 89515,
   "tris_by_node": {
    "body": 24444,
    "brake_FL": 2275,
@@ -14,9 +14,9 @@
    "glass": 3430,
    "interior": 9130,
    "lights_front": 3166,
-   "lights_rear": 1672,
+   "lights_rear": 1616,
    "plate_rear": 2,
-   "trim": 12156,
+   "trim": 12186,
    "underbody": 1620,
    "wheel_FL": 4412,
    "wheel_FR": 4412,
@@ -58,7 +58,6 @@
     "M_LightFront"
    ],
    "lights_rear": [
-    "M_Lens",
     "M_LightRear"
    ],
    "plate_rear": [
@@ -87,7 +86,7 @@
     "M_Tire"
    ]
   },
-  "surfaces": 27,
+  "surfaces": 26,
   "materials": [
    "M_BrakeDisc",
    "M_Caliper",
@@ -106,15 +105,15 @@
   "material_count": 13
  },
  "lod1": {
-  "tris": 24661,
+  "tris": 24647,
   "tris_by_node": {
    "body": 6110,
    "col_body": 90,
    "glass": 686,
    "interior": 4565,
    "lights_front": 1776,
-   "lights_rear": 836,
-   "trim": 7071,
+   "lights_rear": 808,
+   "trim": 7085,
    "wheel_FL": 882,
    "wheel_FR": 881,
    "wheel_RL": 882,

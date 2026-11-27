@@ -1,0 +1,224 @@
+{
+ "car_id": "kestrel_gtr",
+ "source": "assets_src/third_party/vinish_cars/electric-super-gt.glb",
+ "lod0": {
+  "tris": 85455,
+  "tris_by_node": {
+   "body": 25564,
+   "brake_FL": 1236,
+   "brake_FR": 1236,
+   "brake_RL": 1236,
+   "brake_RR": 1236,
+   "col_body": 90,
+   "exhaust": 2724,
+   "glass": 5030,
+   "interior": 11444,
+   "lights_front": 1054,
+   "lights_rear": 1519,
+   "plate_rear": 2,
+   "trim": 13762,
+   "underbody": 1698,
+   "wheel_FL": 4406,
+   "wheel_FR": 4406,
+   "wheel_RL": 4406,
+   "wheel_RR": 4406
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Carbon",
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 27,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Caliper",
+   "M_Carbon",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 14
+ },
+ "lod1": {
+  "tris": 24454,
+  "tris_by_node": {
+   "body": 6390,
+   "col_body": 90,
+   "glass": 1004,
+   "interior": 5721,
+   "lights_front": 614,
+   "lights_rear": 758,
+   "trim": 6353,
+   "wheel_FL": 881,
+   "wheel_FR": 881,
+   "wheel_RL": 881,
+   "wheel_RR": 881
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 14,
+  "materials": [
+   "M_Glass",
+   "M_Interior",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 8
+ },
+ "lod2": {
+  "tris": 6716,
+  "tris_by_node": {
+   "body": 2816,
+   "col_body": 90,
+   "glass": 349,
+   "lights_rear": 120,
+   "trim": 2089,
+   "wheel_FL": 313,
+   "wheel_FR": 313,
+   "wheel_RL": 313,
+   "wheel_RR": 313
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 8,
+  "materials": [
+   "M_Glass",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 5
+ }
+}

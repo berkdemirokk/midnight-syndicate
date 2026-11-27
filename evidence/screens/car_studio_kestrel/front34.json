@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.96,
+  "luma_max": 0.965,
   "luma_min": 0.0,
   "name": "front34",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 59,
     "draw_calls_min": 59,
     "driver": "vulkan",
-    "fps": 959.095,
-    "frame_ms_avg": 1.043,
-    "frame_ms_p95": 1.064,
-    "frame_ms_p99": 1.196,
+    "fps": 944.317,
+    "frame_ms_avg": 1.059,
+    "frame_ms_p95": 1.073,
+    "frame_ms_p99": 1.093,
     "frames": 60,
     "objects": 59,
     "os": "Windows",
-    "primitives": 110250,
+    "primitives": 159610,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 531.098,
+    "video_mem_mb": 484.113,
     "viewport_size": [
       1920,
       1061

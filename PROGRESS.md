@@ -207,6 +207,29 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
   reported what they saw. The owner's target (their concept pictures, "Need for Speed'i geçebilmemiz lazım") is not reached.
 - Commits: 83b14f3, f83a96f, b57967c, 1b260e8, 3e25639 and the commit that carries this entry.
 
+## Session 8 — 2026-11-27 evening (the last five project-made cars replaced)
+- Owner's yes ("tamam yap") to download five models: "Track Day Coupe", "Drift Sedan", "Rally Hatchback",
+  "Supercharged Street Machine", "Electric Super GT" (vinish.dev, CC BY 4.0, 18.6 MB in all, no login). They replace
+  the project-made models of Noctra Sable R, Velmar Strix S, Noctra Vela, Arden Bruiser and Kestrel GT in place: same
+  ids, scenes, saves and prices. All eleven shop cars are licensed models now and all eleven race as rivals.
+- Pipeline: `assets_src/pipeline/rebuild_vehicles.py` (one command rebuilds every car and refreshes the manifest),
+  five new `vehicle_configs`, per-car decimation to the 90000 / 28000 / 7000 caps.
+- One shared tail-light atlas: the GLBs no longer embed it and `car_materials.gd` sets it. 236 extracted texture files
+  left the repo (the atlas alone was extracted 18 times, 55 MB). Rear reflectors and amber indicators are coloured
+  parts now (they were colourless glass).
+- Specs follow the new models (wheelbase, tracks, radii, body size); performance values unchanged. The Sable keeps
+  its gearing through a final drive of 3.2457 for the larger rear wheel (the gear test caught the drift).
+- Tests: per-car tests point at the new models; the five joined `test_car_licensed.gd`. 335 tests, 0 failed.
+- Evidence (dev PC, RTX 5060 Ti, High; not iPhone numbers): Bosphorus peak 408 draw calls / 443576 primitives, Maslak
+  night 349 / 373584, Neon Wharf night 423 / 410342, garage and shop up to 304 / 390966 (budget 500 / 450000).
+  Studio shots of all eleven cars, garage, shop and all track captures re-taken. Manifest 655 records, 0 failing.
+- Owner's new bar the same evening: "Asphalt 4.7 almış App Store'da, hedef onu geçmek" and the Asphalt Ferrari key
+  art as the quality reference. Said plainly to the owner: out-producing those studios is not possible here; the
+  plan in ROADMAP.md goes for the rating instead. The ChatGPT work chat was deleted at the owner's request.
+- Not done: traffic cars (two sedans, the Arden Civic) are still project-made. The Kestrel GT model is an electric car
+  and keeps the engine sound. No iPhone measurement in the lead's hands. The TestFlight build is older than today.
+- Commits: ad0f4de (part colours) and the commit that carries this entry.
+
 ### Next (superseded list below kept for history)
 0. Environment density (waterfront, rooftops), camera replay, car read in the race, phone build.
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,

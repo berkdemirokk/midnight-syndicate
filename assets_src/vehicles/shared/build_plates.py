@@ -5,7 +5,7 @@ import os
 from PIL import Image, ImageDraw
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-PLATES = {"noctra_sable": "34 MS 2026", "noctra_vela": "34 NV 707", "arden_bruiser": "06 AB 458", "kestrel_gtr": "35 KG 382"}
+PLATES = {}  # the project-made cars with a plate per LOD were replaced by licensed models on 2026-11-27 (see below)
 SS = 4  # supersampling
 G = {  # polylines on a 4 x 8 cell, y down; chamfered corners like a plate typeface
     "0": [[(1, 0), (3, 0), (4, 1), (4, 7), (3, 8), (1, 8), (0, 7), (0, 1), (1, 0)]],
@@ -79,9 +79,12 @@ for car, number in PLATES.items():
 
 # Pipeline cars (assets_src/pipeline/prepare_vehicle.py): one plate image per car, 512 x 128, read by the config.
 PIPELINE_PLATES = {"kestrel_vanta": "34 KV 517", "arden_havoc": "34 AH 208", "noctra_tayfun": "34 NT 077",
-                   "noctra_meridian": "34 NM 364", "kestrel_marten": "34 KM 428", "bosfor_yildirim": "34 BY 001"}
+                   "noctra_meridian": "34 NM 364", "kestrel_marten": "34 KM 428", "bosfor_yildirim": "34 BY 001",
+                   "noctra_sable": "34 MS 2026", "noctra_vela": "34 NV 707", "arden_bruiser": "06 AB 458",
+                   "kestrel_gtr": "35 KG 382", "atmaca_modified": "34 VS 034"}
+PLATE_DIRS = {"atmaca_modified": "bosfor_atmaca"}  # cars whose asset folder is not named after the car id
 for car, number in PIPELINE_PLATES.items():
-    d = os.path.join(ROOT, "game", "assets", "vehicles", car)
+    d = os.path.join(ROOT, "game", "assets", "vehicles", PLATE_DIRS.get(car, car))
     os.makedirs(d, exist_ok=True)
     p = os.path.join(d, "%s_plate_base.png" % car)
     plate(number).save(p)

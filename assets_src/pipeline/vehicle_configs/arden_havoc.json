@@ -50,9 +50,9 @@
     "Lamp_RedDark": "M_LightRear",
     "LED_Red": "M_LightRear",
     "LED": "M_LightFront",
-    "Lamp_Amber": "M_Lens",
+    "Lamp_Amber": "M_Trim",
     "Projector": "M_Chrome",
-    "Reflector": "M_Lens",
+    "Reflector": "M_Trim",
     "Grille_Frame": "M_Trim",
     "Mesh_Hex": "M_Trim",
     "Mirror": "M_Chrome",
@@ -72,9 +72,7 @@
     "Belt_Red": "M_Interior",
     "Pedal": "M_Interior"
   },
-  "texture_from": {
-    "M_Tire": "Tread_Sport"
-  },
+  "texture_from": {},
   "nodes": {
     "Under": "underbody",
     "Arch": "underbody",
@@ -83,8 +81,7 @@
     "Chassis": "drop",
     "Spring": "drop",
     "Damper": "drop",
-    "Plate_Back": "drop",
-    "Reflector": "lights_rear"
+    "Plate_Back": "drop"
   },
   "nodes_by_object": {
     "Steering_Wheel": "interior"
@@ -105,7 +102,7 @@
   },
   "materials_lod1": {
     "Lens": "M_LightFront",
-    "Reflector": "M_LightRear",
+    "Reflector": "M_Trim",
     "Chrome": "M_Trim",
     "Alu": "M_Trim",
     "Steel": "M_Trim",
@@ -113,7 +110,6 @@
     "Exhaust": "M_Trim",
     "Caliper_Red": "M_Trim",
     "Pad": "M_Trim",
-    "Lamp_Amber": "M_LightFront",
     "Projector": "M_LightFront",
     "Mirror": "M_Trim"
   },

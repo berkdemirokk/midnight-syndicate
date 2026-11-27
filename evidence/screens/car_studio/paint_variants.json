@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.96,
+  "luma_max": 0.961,
   "luma_min": 0.0,
   "name": "paint_variants",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 142,
     "draw_calls_min": 142,
     "driver": "vulkan",
-    "fps": 907.071,
-    "frame_ms_avg": 1.102,
-    "frame_ms_p95": 1.118,
-    "frame_ms_p99": 1.154,
+    "fps": 846.358,
+    "frame_ms_avg": 1.182,
+    "frame_ms_p95": 1.201,
+    "frame_ms_p99": 1.213,
     "frames": 60,
     "objects": 142,
     "os": "Windows",
-    "primitives": 284827,
+    "primitives": 474230,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 495.01,
+    "video_mem_mb": 514.498,
     "viewport_size": [
       1920,
       1061

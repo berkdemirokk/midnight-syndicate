@@ -10,13 +10,13 @@ const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
 	"wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR", "brake_FL", "brake_FR", "brake_RL", "brake_RR", "col_body",
 ]
-const LEN_M: float = 4.70  ## the mesh runs about 4.76 with the nose and tail caps; 3 % either side of the brief
-const WIDTH_M: float = 1.98
-const HEIGHT_M: float = 1.28
+const LEN_M: float = 4.652  ## licensed "Electric Super GT" since 2026-11-27: its source GLB bounding box
+const WIDTH_M: float = 2.096
+const HEIGHT_M: float = 1.40
 const SIZE_TOL: float = 0.03
 const MAX_GAP_M: float = 0.06
-const TRI_LOD0_MAX: int = 85000
-const TRI_LOD1_MAX: int = 26000
+const TRI_LOD0_MAX: int = 90000  ## the licensed-car contract (test_car_licensed.gd)
+const TRI_LOD1_MAX: int = 28000
 const TRI_LOD2_MAX: int = 7000
 
 
@@ -140,7 +140,7 @@ func test_drives_and_outruns_the_sable() -> void:
 	check(spec.top_speed_kmh > hero.top_speed_kmh, "Kestrel top speed %.0f not above the Sable %.0f" % [spec.top_speed_kmh, hero.top_speed_kmh])
 	check(spec.mass_kg > hero.mass_kg, "Kestrel is not heavier than the Sable")
 	check(spec.grip_front < hero.grip_front and spec.steer_angle_low_deg < hero.steer_angle_low_deg, "Kestrel is not less agile than the Sable")
-	check(is_equal_approx(spec.wheelbase, 2.75), "wheelbase %.2f, brief says 2.75" % spec.wheelbase)
+	check(is_equal_approx(spec.wheelbase, 2.92), "wheelbase %.2f, the model has 2.92" % spec.wheelbase)
 	var car: ArcadeCar = CarFactory.create(SCENE, spec, Color.RED)
 	add(car)
 	car.reset_to(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.47, 0.0)))

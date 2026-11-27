@@ -2,7 +2,7 @@
  "car_id": "noctra_tayfun",
  "source": "assets_src/third_party/vinish_cars/widebody-drift-coupe.glb",
  "lod0": {
-  "tris": 89786,
+  "tris": 89764,
   "tris_by_node": {
    "body": 24608,
    "brake_FL": 2275,
@@ -14,9 +14,9 @@
    "glass": 3446,
    "interior": 9285,
    "lights_front": 3158,
-   "lights_rear": 1620,
+   "lights_rear": 1564,
    "plate_rear": 2,
-   "trim": 13428,
+   "trim": 13462,
    "underbody": 1719,
    "wheel_FL": 4064,
    "wheel_FR": 4065,
@@ -58,7 +58,6 @@
     "M_LightFront"
    ],
    "lights_rear": [
-    "M_Lens",
     "M_LightRear"
    ],
    "plate_rear": [
@@ -88,7 +87,7 @@
     "M_Tire"
    ]
   },
-  "surfaces": 28,
+  "surfaces": 27,
   "materials": [
    "M_BrakeDisc",
    "M_Caliper",
@@ -108,15 +107,15 @@
   "material_count": 14
  },
  "lod1": {
-  "tris": 24583,
+  "tris": 24566,
   "tris_by_node": {
    "body": 6152,
    "col_body": 90,
    "glass": 689,
    "interior": 4643,
    "lights_front": 1772,
-   "lights_rear": 810,
-   "trim": 7180,
+   "lights_rear": 782,
+   "trim": 7191,
    "wheel_FL": 812,
    "wheel_FR": 813,
    "wheel_RL": 811,

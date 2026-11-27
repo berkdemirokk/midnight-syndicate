@@ -50,7 +50,7 @@
     "LED_Red": "M_LightRear",
     "LED": "M_LightFront",
     "Projector": "M_Chrome",
-    "Reflector": "M_Lens",
+    "Reflector": "M_Trim",
     "Grille_Frame": "M_Trim",
     "Mesh_Hex": "M_Trim",
     "Carbon": "M_Carbon",
@@ -72,7 +72,6 @@
     "Pedal": "M_Interior"
   },
   "texture_from": {
-    "M_Tire": "Tread_Sport",
     "M_Carbon": "Carbon"
   },
   "nodes": {
@@ -83,8 +82,7 @@
     "Chassis": "drop",
     "Spring": "drop",
     "Damper": "drop",
-    "Plate_Back": "drop",
-    "Reflector": "lights_rear"
+    "Plate_Back": "drop"
   },
   "nodes_by_object": {
     "Steering_Wheel": "interior"
@@ -104,7 +102,7 @@
   },
   "materials_lod1": {
     "Lens": "M_LightFront",
-    "Reflector": "M_LightRear",
+    "Reflector": "M_Trim",
     "Carbon": "M_Trim",
     "Chrome": "M_Trim",
     "Alu": "M_Trim",

@@ -1,0 +1,215 @@
+{
+ "car_id": "arden_bruiser",
+ "source": "assets_src/third_party/vinish_cars/supercharged-street-machine.glb",
+ "lod0": {
+  "tris": 88630,
+  "tris_by_node": {
+   "body": 31108,
+   "brake_FL": 1236,
+   "brake_FR": 1236,
+   "brake_RL": 1236,
+   "brake_RR": 1236,
+   "col_body": 90,
+   "exhaust": 11725,
+   "glass": 3884,
+   "interior": 9540,
+   "lights_front": 320,
+   "lights_rear": 232,
+   "plate_rear": 2,
+   "trim": 9278,
+   "underbody": 1599,
+   "wheel_FL": 3980,
+   "wheel_FR": 3980,
+   "wheel_RL": 3974,
+   "wheel_RR": 3974
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc",
+    "M_Caliper"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 25,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Caliper",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 12
+ },
+ "lod1": {
+  "tris": 24033,
+  "tris_by_node": {
+   "body": 7776,
+   "col_body": 90,
+   "glass": 776,
+   "interior": 4768,
+   "lights_rear": 114,
+   "trim": 7330,
+   "wheel_FL": 796,
+   "wheel_FR": 796,
+   "wheel_RL": 793,
+   "wheel_RR": 794
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 13,
+  "materials": [
+   "M_Glass",
+   "M_Interior",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 7
+ },
+ "lod2": {
+  "tris": 5271,
+  "tris_by_node": {
+   "body": 2545,
+   "col_body": 90,
+   "glass": 388,
+   "lights_rear": 26,
+   "trim": 1136,
+   "wheel_FL": 272,
+   "wheel_FR": 271,
+   "wheel_RL": 272,
+   "wheel_RR": 271
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 8,
+  "materials": [
+   "M_Glass",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 5
+ }
+}

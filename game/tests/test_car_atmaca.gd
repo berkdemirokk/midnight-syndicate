@@ -1,6 +1,7 @@
 extends "res://tests/test_case.gd"
-## Bosfor Atmaca (stock, modified, taxi): scene contract, four wheels, triangle budgets, size, seating on the
-## suspension, and the modified car drives straight.
+## Velmar Strix (ids atmaca_*: stock, modified, taxi): scene contract, four wheels, triangle budgets, size, seating on
+## the suspension, and the modified car drives straight. Stock and taxi are the project-made traffic sedans; the
+## modified one, the player's car, is the licensed "Drift Sedan" since 2026-11-27 (sizes: its source GLB).
 
 const SCENES: Dictionary = {
 	"stock": "res://vehicles/bosfor_atmaca/atmaca_stock.tscn",
@@ -16,11 +17,12 @@ const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "plate_rear", "lights_front", "lights_rear",
 	"wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR", "brake_FL", "brake_FR", "brake_RL", "brake_RR", "col_body",
 ]
-const LEN_M: float = 4.30
-const WIDTH_M: Dictionary = {"stock": 1.65, "modified": 1.76, "taxi": 1.65}
-const HEIGHT_M: Dictionary = {"stock": 1.40, "modified": 1.35, "taxi": 1.51}  ## taxi: roof sign on top
+const LEN_M: Dictionary = {"stock": 4.30, "modified": 5.028, "taxi": 4.30}
+const WIDTH_M: Dictionary = {"stock": 1.65, "modified": 2.165, "taxi": 1.65}
+const HEIGHT_M: Dictionary = {"stock": 1.40, "modified": 1.498, "taxi": 1.51}  ## taxi: roof sign on top
 const SIZE_TOL: float = 0.04  ## 3 percent in the brief plus mirrors and the lamp bezels
-const TRI_MAX: Array[int] = [45000, 15000, 5000]
+const TRI_MAX: Array[int] = [45000, 15000, 5000]  ## the traffic sedans
+const TRI_MAX_LICENSED: Array[int] = [90000, 28000, 7000]  ## the modified car: the licensed-car contract
 const MAX_GAP_M: float = 0.06
 
 
@@ -70,7 +72,8 @@ func test_all_three_load_with_four_wheels_and_budgets() -> void:
 			var lod: Node = car.get_node("LOD%d" % i)
 			var t: int = _tris(lod)
 			metric("%s_lod%d_tris" % [variant, i], t)
-			check(t > 500 and t <= TRI_MAX[i], "%s LOD%d tris %d outside budget %d" % [variant, i, t, TRI_MAX[i]])
+			var cap: int = TRI_MAX_LICENSED[i] if variant == "modified" else TRI_MAX[i]
+			check(t > 500 and t <= cap, "%s LOD%d tris %d outside budget %d" % [variant, i, t, cap])
 			var col: Node = lod.find_child("col_body", true, false)
 			if col != null:
 				check(not (col as Node3D).is_visible_in_tree(), "%s LOD%d col_body renders" % [variant, i])
@@ -83,7 +86,7 @@ func test_all_three_load_with_four_wheels_and_budgets() -> void:
 			var b: AABB = _to_root(mi, car) * mi.mesh.get_aabb()
 			box = b if first else box.merge(b)
 			first = false
-		check_range(box.size.z, LEN_M * (1.0 - SIZE_TOL), LEN_M * (1.0 + SIZE_TOL), "%s length" % variant)
+		check_range(box.size.z, LEN_M[variant] * (1.0 - SIZE_TOL), LEN_M[variant] * (1.0 + SIZE_TOL), "%s length" % variant)
 		check_range(box.size.x, WIDTH_M[variant] * (1.0 - SIZE_TOL), WIDTH_M[variant] * (1.0 + SIZE_TOL), "%s width" % variant)
 		check_range(box.size.y, HEIGHT_M[variant] * (1.0 - SIZE_TOL), HEIGHT_M[variant] * (1.0 + SIZE_TOL), "%s height" % variant)
 		metric("%s_size" % variant, "%.2f x %.2f x %.2f" % [box.size.x, box.size.y, box.size.z])

@@ -8,18 +8,18 @@ const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
 	"wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR", "brake_FL", "brake_FR", "brake_RL", "brake_RR", "col_body",
 ]
-const LEN_M: float = 4.05  ## along Z
-const WIDTH_M: float = 1.80  ## body only, along X (mirrors add about 0.14 m)
-const HEIGHT_M: float = 1.42  ## along Y
+const LEN_M: float = 4.337  ## along Z; licensed "Rally Hatchback" since 2026-11-27: its source GLB bounding box
+const WIDTH_M: float = 1.863  ## the body node only, along X (arches and mirrors are other nodes; the whole car is 2.10 m)
+const HEIGHT_M: float = 1.523  ## along Y, with the roof scoop
 const SIZE_TOL: float = 0.03
-const AXLE_Z_M: float = 1.275
+const AXLE_Z_M: float = 1.30
 const FRONT_X_M: float = 0.775
-const REAR_X_M: float = 0.765
-const RADIUS_M: float = 0.32
+const REAR_X_M: float = 0.775
+const RADIUS_M: float = 0.325
 const POS_TOL_M: float = 0.02
-const TRI_LOD0_MAX: int = 70000
-const TRI_LOD1_MAX: int = 22000
-const TRI_LOD2_MAX: int = 6000
+const TRI_LOD0_MAX: int = 90000  ## the licensed-car contract (test_car_licensed.gd)
+const TRI_LOD1_MAX: int = 28000
+const TRI_LOD2_MAX: int = 7000
 const MAX_GAP_M: float = 0.06
 const GRAVITY_SETTLE_FRAMES: int = 150
 

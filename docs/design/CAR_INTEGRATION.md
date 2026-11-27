@@ -1,5 +1,9 @@
 # Hero car engine integration (Noctra Sable)
 
+Read first (2026-11-27): the sections down to "Noctra Sable R round 9" describe the project-made Blender models. Those
+models are no longer in the game for the player's cars: all eleven cars of the shop are licensed CC BY 4.0 models now
+(see the last two sections). The scene contract, the node names and `car_lod.gd` / `car_materials.gd` are unchanged.
+
 Owner: car_godot agent. Code: `game/vehicles/noctra_sable/`, `game/tests/test_car_asset.gd`, `game/devtools/scenarios/car_studio.gd`.
 Re-ship after every car build: `py -3.10 tools/ship_assets.py` (copies the three LOD GLBs, checks sha256, registers them in ASSET_MANIFEST.json with tris and material counts read from the GLB).
 
@@ -86,12 +90,13 @@ flat colour: white lamp discs, grey grille boxes, one-grey interiors. That, not 
   emissive lamp and matt plastic). LOD1 and LOD2 keep their old surface lists.
 - Engine (`car_materials.gd`): a surface of a `VERTEX_COLOURED` material whose mesh has COLOR_0 gets the `#vc` variant
   (albedo white, vertex colour as albedo; M_Rim keeps the player's rim colour). Every other material turns the flag off,
-  because the glTF importer turns it on for any surface with COLOR_0. Cars without COLOR_0 (the project-made ones) keep
-  the plain materials.
-- M_Lens alpha 0.25 -> 0.1 for every car, the project-made ones too (one shared material): the cover laid a white veil
-  over the lamp. `docs/art/CAR_01_BRIEF.md` still says about 0.25.
-- Rebuild one car: `blender -b --factory-startup -P assets_src/pipeline/prepare_vehicle.py -- assets_src/third_party/vinish_cars/<source>.glb <car_id> game/assets/vehicles/<car_id>`,
-  then `godot --headless --path game --import` and refresh its three records in `ASSET_MANIFEST.json` (bytes, sha256, tris).
+  because the glTF importer turns it on for any surface with COLOR_0. Cars without COLOR_0 (the project-made traffic
+  sedans and the Arden Civic) keep the plain materials.
+- M_Lens alpha 0.25 -> 0.1 for every car (one shared material): the cover laid a white veil over the lamp.
+  `docs/art/CAR_01_BRIEF.md` still says about 0.25.
+- Rebuild: `py -3.10 assets_src/pipeline/rebuild_vehicles.py [car_id ...]` (no ids = every config). It runs
+  `prepare_vehicle.py` in Blender for each car and refreshes the car's three records in `ASSET_MANIFEST.json` (bytes,
+  sha256, tris). Then `godot --headless --path game --import` and the tests.
 - Garage: the paint mirrors `workshop_pano.jpg` (`CarMaterials.set_reflection` with blur 1.5 and highlight 3.0), not on
   the Low preset; the picture is loaded once (`_pano`). The key light uses one shadow map (orthogonal, 18 m: the
   farthest corner of the room is 15.9 m from the camera) instead of four cascades over 100 m; only the car casts a
@@ -102,5 +107,35 @@ flat colour: white lamp discs, grey grille boxes, one-grey interiors. That, not 
   evidence). Not captured: Medium and Low (1024 shadow atlas), a turning turntable.
 - Independent review of this change (three Fable reviewers, each finding checked by a second one, 2026-11-27): six
   findings confirmed and fixed (far-LOD metals as light plastic, the Meridian mesh grille, rim shade inverted on three
-  cars, the garage pass cost and preset gate, the lens note above). Open and older than this change: rear reflectors
-  and the Havoc mirror indicators are colourless glass (Reflector and Lamp_Amber map to M_Lens there).
+  cars, the garage pass cost and preset gate, the lens note above). A second pass measured the fixes in the built
+  files and found five smaller defects, fixed too (far-LOD rim shade, shadow reach, the panorama reloaded on every car
+  switch, no test for the garage pass, doc sentences).
+
+## All eleven shop cars are licensed models (2026-11-27, owner's yes to five downloads)
+The five player cars that were still project-made Blender models were replaced in place: same car ids, scenes, specs
+and saves, new GLBs under the same paths. Sources (CC BY 4.0, vinish.dev, about 3.7 MB each, in
+`assets_src/third_party/vinish_cars/`): noctra_sable = "Track Day Coupe", atmaca_modified = "Drift Sedan", noctra_vela =
+"Rally Hatchback", arden_bruiser = "Supercharged Street Machine", kestrel_gtr = "Electric Super GT". Credits:
+`game/ui/credits_third_party.txt`, `THIRD_PARTY_LICENSES.md`, the 15 records in `ASSET_MANIFEST.json`.
+- Configs: `vehicle_configs/<car_id>.json` for each; new keys `out_dir` (atmaca_modified lives in `bosfor_atmaca/`) and
+  `source_file`, read by `rebuild_vehicles.py`. A second paint of a source (stripes) goes to M_Trim and keeps its own
+  colour; the main paint is the one with the most area. `front_plate_material` is M_Trim on all five.
+- Specs: wheelbase, tracks, wheel radii and body_size follow the new models; mass, power, grip and prices did not
+  change. The Kestrel GT model is an electric car (no tail pipes) and still has the engine sound.
+- Triangles (LOD0 / LOD1 / LOD2): Sable 89185 / 23479 / 6627, Strix S 86997 / 26952 / 6585, Vela 87685 / 27371 / 6444,
+  Bruiser 88630 / 24033 / 5271, Kestrel GT 85455 / 24454 / 6716 (caps 90000 / 28000 / 7000, per-car decimate ratios in
+  the configs; far-LOD body and trim are at the floor of the collapse).
+- Rivals: every car of the shop has `"rival": true` now, so a grid mixes eleven models instead of six.
+- Tail lamps: the GLBs no longer embed the tail-light atlas. `car_materials.gd` sets the two shared pictures
+  (`shared/tail_atlas_day.jpg`, `tail_atlas_lit.jpg`) on an M_LightRear surface that has UVs and COLOR_0 (`#atlas`
+  variant). Before, Godot extracted the atlas 18 times (55 MB of PNG, one texture pair per car and LOD in memory).
+  Cars without `tail_cell` (Noctra Vela: smoked lenses with far-apart lamps; Kestrel GT: a thin full-width bar) use the
+  plain red glowing material. The tyre normal map is not embedded either (the engine uses the tyre picture).
+- Rear reflectors and amber indicators are M_Trim now (coloured plastic through the vertex colour); they were M_Lens
+  and drew as colourless glass. The lights_rear node has one surface less.
+- Tests: the five cars joined `test_car_licensed.gd` (eleven cars). `test_car_asset`, `test_car_bruiser`,
+  `test_car_kestrel`, `test_car_vela`, `test_car_atmaca` keep their spec and driving checks; their sizes, wheel
+  positions and triangle caps are the new models'. Studios: `car_studio`, `car_studio_bruiser`, `car_studio_kestrel`,
+  `car_studio_vela` are copies of `car_studio_tayfun` with their own car.
+- Still project-made: the traffic sedans (atmaca_stock, atmaca_taxi) and the Arden Civic. Their Blender sources and
+  the old ones of the five replaced cars stay under `assets_src/vehicles/` (not shipped).

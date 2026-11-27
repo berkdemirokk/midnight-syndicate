@@ -1,18 +1,19 @@
 extends "res://tests/test_case.gd"
-## Noctra Sable hero car: scene contract, col_body, bounding box, wheel origins, paint isolation, budgets, LOD switching.
+## Noctra Sable R: scene contract, col_body, bounding box, wheel origins, paint isolation, budgets, LOD switching.
+## Since 2026-11-27 the model is the licensed "Track Day Coupe" (CC BY 4.0, vinish.dev); sizes below are its source GLB.
 
 const SCENE: String = "res://vehicles/noctra_sable/noctra_sable.tscn"
 const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
 	"wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR", "brake_FL", "brake_FR", "brake_RL", "brake_RR", "col_body",
 ]
-const LEN_M: float = 4.45  ## along Z, nose at +Z
-const WIDTH_M: float = 1.96  ## along X
-const HEIGHT_M: float = 1.19  ## along Y
+const LEN_M: float = 4.607  ## along Z, nose at +Z (track-day-coupe.glb bounding box)
+const WIDTH_M: float = 2.145  ## along X
+const HEIGHT_M: float = 1.30  ## along Y
 const SIZE_TOL: float = 0.03
-const FRONT_AXLE_M: float = 1.33
-const FRONT_RADIUS_M: float = 0.335
-const REAR_RADIUS_M: float = 0.35
+const FRONT_AXLE_M: float = 1.32
+const FRONT_RADIUS_M: float = 0.33
+const REAR_RADIUS_M: float = 0.355
 const POS_TOL_M: float = 0.02
 const TRI_LOD0_RANGE: Vector2 = Vector2(45000, 90000)
 const TRI_LOD1_MAX: int = 28000

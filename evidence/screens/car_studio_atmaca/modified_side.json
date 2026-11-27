@@ -8,26 +8,26 @@
   "name": "modified_side",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 47,
-    "draw_calls_min": 47,
+    "draw_calls": 49,
+    "draw_calls_min": 49,
     "driver": "vulkan",
-    "fps": 987.898,
-    "frame_ms_avg": 1.012,
-    "frame_ms_p95": 1.181,
-    "frame_ms_p99": 1.258,
+    "fps": 843.253,
+    "frame_ms_avg": 1.186,
+    "frame_ms_p95": 1.197,
+    "frame_ms_p99": 1.241,
     "frames": 60,
-    "objects": 47,
+    "objects": 49,
     "os": "Windows",
-    "primitives": 60970,
+    "primitives": 160820,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 460.731,
+    "video_mem_mb": 513.654,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wf_d45452b9-4d2-1/evidence/screens/car_studio_atmaca/modified_side.png",
+  "png": "C:/Users/berk/car race/evidence/screens/car_studio_atmaca/modified_side.png",
   "preset": "high",
   "scenario": "car_studio_atmaca"
 }

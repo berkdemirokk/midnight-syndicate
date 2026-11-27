@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.964,
+  "luma_max": 0.963,
   "luma_min": 0.0,
   "name": "side",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 49,
     "draw_calls_min": 49,
     "driver": "vulkan",
-    "fps": 902.772,
-    "frame_ms_avg": 1.108,
-    "frame_ms_p95": 1.134,
-    "frame_ms_p99": 1.165,
+    "fps": 900.63,
+    "frame_ms_avg": 1.11,
+    "frame_ms_p95": 1.14,
+    "frame_ms_p99": 1.316,
     "frames": 60,
     "objects": 49,
     "os": "Windows",
-    "primitives": 87016,
+    "primitives": 146560,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 534.131,
+    "video_mem_mb": 483.644,
     "viewport_size": [
       1920,
       1061

@@ -6,15 +6,16 @@ extends RefCounted
 
 const STARTER: String = "noctra_tayfun"
 const DEFAULT_CARS: Array[Dictionary] = [
-	# CC BY 4.0 models, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival grid.
+	# All eleven are CC BY 4.0 models, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival
+	# grid: every one of them since 2026-11-27, when licensed models replaced the last five project-made cars.
 	{"id": "noctra_tayfun", "class": "street", "price": 0, "rep": 0, "rival": true},
-	{"id": "noctra_sable", "class": "street", "price": 2500, "rep": 0},
-	# Original 80s-90s Istanbul sedan, the cheap tuner (modified variant; stock and taxi run in traffic).
-	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0,
+	{"id": "noctra_sable", "class": "street", "price": 2500, "rep": 0, "rival": true},
+	# The cheap tuner sedan. Its stock and taxi variants (project-made models) run in traffic only.
+	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0, "rival": true,
 		"scene": "res://vehicles/bosfor_atmaca/atmaca_modified.tscn", "spec": "res://vehicles/specs/atmaca_modified.tres"},
-	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
-	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300},
-	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800},
+	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0, "rival": true},
+	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300, "rival": true},
+	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800, "rival": true},
 	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200, "rival": true},
 	{"id": "arden_havoc", "class": "muscle", "price": 16000, "rep": 400, "rival": true},
 	{"id": "kestrel_marten", "class": "sport", "price": 22000, "rep": 500, "rival": true},

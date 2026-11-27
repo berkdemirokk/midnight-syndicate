@@ -2,7 +2,7 @@
  "car_id": "bosfor_yildirim",
  "source": "assets_src/third_party/vinish_cars/hypercar.glb",
  "lod0": {
-  "tris": 89147,
+  "tris": 89123,
   "tris_by_node": {
    "body": 24701,
    "brake_FL": 2277,
@@ -14,9 +14,9 @@
    "glass": 4046,
    "interior": 7786,
    "lights_front": 788,
-   "lights_rear": 808,
+   "lights_rear": 752,
    "plate_rear": 2,
-   "trim": 17333,
+   "trim": 17365,
    "underbody": 1750,
    "wheel_FL": 4749,
    "wheel_FR": 4749,
@@ -58,7 +58,6 @@
     "M_LightFront"
    ],
    "lights_rear": [
-    "M_Lens",
     "M_LightRear"
    ],
    "plate_rear": [
@@ -88,7 +87,7 @@
     "M_Tire"
    ]
   },
-  "surfaces": 28,
+  "surfaces": 27,
   "materials": [
    "M_BrakeDisc",
    "M_Caliper",
@@ -108,15 +107,15 @@
   "material_count": 14
  },
  "lod1": {
-  "tris": 23452,
+  "tris": 23436,
   "tris_by_node": {
    "body": 6175,
    "col_body": 90,
    "glass": 808,
    "interior": 3894,
    "lights_front": 482,
-   "lights_rear": 404,
-   "trim": 7805,
+   "lights_rear": 376,
+   "trim": 7817,
    "wheel_FL": 949,
    "wheel_FR": 949,
    "wheel_RL": 948,

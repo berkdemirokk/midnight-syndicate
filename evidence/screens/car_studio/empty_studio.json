@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.965,
+  "luma_max": 0.96,
   "luma_min": 0.0,
   "name": "empty_studio",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 20,
     "draw_calls_min": 20,
     "driver": "vulkan",
-    "fps": 1508.713,
-    "frame_ms_avg": 0.663,
-    "frame_ms_p95": 0.681,
-    "frame_ms_p99": 0.744,
+    "fps": 1520.681,
+    "frame_ms_avg": 0.658,
+    "frame_ms_p95": 0.668,
+    "frame_ms_p99": 0.714,
     "frames": 60,
     "objects": 20,
     "os": "Windows",
     "primitives": 1652,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 494.068,
+    "video_mem_mb": 513.556,
     "viewport_size": [
       1920,
       1061

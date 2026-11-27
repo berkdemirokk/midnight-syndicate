@@ -1,5 +1,5 @@
 extends "res://devtools/capture_scenario.gd"
-## Evaluation studio for the Kestrel GT-R (copy of car_studio with its own camera marks). Built in code, for looking at the car only (not a game scene).
+## Evaluation studio for the Kestrel GT (CC BY 4.0 model since 2026-11-27, copy of car_studio_tayfun with its own wheel mark). Built in code, for looking at the car only (not a game scene).
 ## The stage is ShowroomSet: glossy mirror floor, contact shadow, three-point softbox lighting, gradient backdrop, neon.
 ## Shots: empty_studio (car hidden, baseline perf), front34, rear34, side, wheel_closeup, lights_on,
 ## lod1, lod2 (forced at 40 m and 100 m), paint_variants (three paints side by side).
@@ -19,7 +19,7 @@ const EYE_FRONT34: Vector3 = Vector3(-3.3, 1.1, 4.9)
 const EYE_REAR34: Vector3 = Vector3(3.4, 1.2, -4.5)
 const EYE_SIDE: Vector3 = Vector3(-5.8, 0.9, 0.0)
 const EYE_WHEEL: Vector3 = Vector3(2.2, 0.55, 2.7)
-const WHEEL_TARGET: Vector3 = Vector3(0.82, 0.343, 1.375)
+const WHEEL_TARGET: Vector3 = Vector3(0.8, 0.345, 1.46)
 const EYE_LOD1: Vector3 = Vector3(-14.0, 1.3, 38.0)  ## about 40 m from the car
 const EYE_LOD2: Vector3 = Vector3(-34.0, 1.6, 94.0)  ## about 100 m from the car
 const EYE_PAINT: Vector3 = Vector3(-3.6, 1.6, 8.0)

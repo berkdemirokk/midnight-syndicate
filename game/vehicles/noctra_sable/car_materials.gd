@@ -76,6 +76,11 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT
 			var am: ArrayMesh = mi.mesh as ArrayMesh
 			var vc: bool = VERTEX_COLOURED.has(nm) and am != null and (am.surface_get_format(s) & Mesh.ARRAY_FORMAT_COLOR) != 0
 			var slot: String = nm + "#vc" if vc else nm  # a mesh without part colours keeps the plain material
+			# Licensed cars: the rear lamp faces carry UVs into one cell of the shared tail-light atlas (tail_cell in the
+			# vehicle config); the pictures are set here, the GLBs do not embed them.
+			var tail_atlas: bool = nm == "M_LightRear" and am != null 				and (am.surface_get_format(s) & (Mesh.ARRAY_FORMAT_COLOR | Mesh.ARRAY_FORMAT_TEX_UV)) == (Mesh.ARRAY_FORMAT_COLOR | Mesh.ARRAY_FORMAT_TEX_UV)
+			if tail_atlas:
+				slot += "#atlas"
 			var mat: StandardMaterial3D
 			if nm == "M_Tire" and String(mi.name).begins_with("wheel"):
 				# per wheel size: the tyre picture is projected along the axle and must span one tyre diameter
@@ -85,7 +90,7 @@ static func apply(car: Node, paint: Color = DEFAULT_PAINT, finish: int = DEFAULT
 				mat = _shared[key]
 			elif PER_CAR.has(nm):
 				if not per_car.has(slot):
-					per_car[slot] = _build(nm, src, paint, finish, vc)
+					per_car[slot] = _build(nm, src, paint, finish, vc, tail_atlas)
 				mat = per_car[slot]
 			else:
 				if not _shared.has(slot):
@@ -140,7 +145,7 @@ static func set_brake_lights(car: Node, on: bool) -> void:
 	_each_material(car, "M_LightRear", func(m: StandardMaterial3D) -> void: m.emission_energy_multiplier = level)
 
 
-static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: int, part_colours: bool = false) -> StandardMaterial3D:
+static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: int, part_colours: bool = false, tail_atlas: bool = false) -> StandardMaterial3D:
 	var m: StandardMaterial3D = src.duplicate() as StandardMaterial3D
 	m.resource_name = nm
 	m.vertex_color_use_as_albedo = false  # set here, not by the importer (it turns it on for every surface with COLOR_0)
@@ -213,6 +218,12 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.emission_enabled = true
 			m.emission = Color(1.0, 0.102, 0.102)
 			m.emission_energy_multiplier = REAR_REST
+			if tail_atlas:  # day picture as albedo, the lit picture times the red as the glow
+				m.albedo_color = Color.WHITE
+				m.albedo_texture = _tex_file("tail_atlas_day.jpg")
+				m.emission_texture = _tex_file("tail_atlas_lit.jpg")
+				m.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
+				m.texture_repeat = false
 		"M_LightFront":
 			m.emission_enabled = true
 		"M_Interior":

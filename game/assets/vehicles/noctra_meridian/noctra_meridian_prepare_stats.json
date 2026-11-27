@@ -2,7 +2,7 @@
  "car_id": "noctra_meridian",
  "source": "assets_src/third_party/vinish_cars/grand-tourer.glb",
  "lod0": {
-  "tris": 89555,
+  "tris": 89532,
   "tris_by_node": {
    "body": 24860,
    "brake_FL": 1838,
@@ -14,9 +14,9 @@
    "glass": 4144,
    "interior": 8784,
    "lights_front": 748,
-   "lights_rear": 2206,
+   "lights_rear": 2150,
    "plate_rear": 2,
-   "trim": 12405,
+   "trim": 12438,
    "underbody": 1774,
    "wheel_FL": 4715,
    "wheel_FR": 4715,
@@ -58,7 +58,6 @@
     "M_LightFront"
    ],
    "lights_rear": [
-    "M_Lens",
     "M_LightRear"
    ],
    "plate_rear": [
@@ -88,7 +87,7 @@
     "M_Tire"
    ]
   },
-  "surfaces": 28,
+  "surfaces": 27,
   "materials": [
    "M_BrakeDisc",
    "M_Caliper",
@@ -108,15 +107,15 @@
   "material_count": 14
  },
  "lod1": {
-  "tris": 23959,
+  "tris": 23943,
   "tris_by_node": {
    "body": 6213,
    "col_body": 90,
    "glass": 828,
    "interior": 4391,
    "lights_front": 764,
-   "lights_rear": 1100,
-   "trim": 6803,
+   "lights_rear": 1072,
+   "trim": 6815,
    "wheel_FL": 943,
    "wheel_FR": 943,
    "wheel_RL": 942,

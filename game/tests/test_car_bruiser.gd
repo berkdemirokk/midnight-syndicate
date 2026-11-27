@@ -9,16 +9,16 @@ const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
 	"wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR", "brake_FL", "brake_FR", "brake_RL", "brake_RR", "col_body",
 ]
-const LEN_M: float = 4.85
-const WIDTH_M: float = 1.92
-const HEIGHT_M: float = 1.36
+const LEN_M: float = 4.968  ## licensed "Supercharged Street Machine" since 2026-11-27: its source GLB bounding box
+const WIDTH_M: float = 2.036
+const HEIGHT_M: float = 1.382
 const SIZE_TOL: float = 0.03
-const AXLE_M: float = 1.425
-const FRONT_RADIUS_M: float = 0.345
-const REAR_RADIUS_M: float = 0.358
+const AXLE_M: float = 1.395
+const FRONT_RADIUS_M: float = 0.35
+const REAR_RADIUS_M: float = 0.35
 const POS_TOL_M: float = 0.02
-const TRI_LOD0_MAX: int = 85000
-const TRI_LOD1_MAX: int = 26000
+const TRI_LOD0_MAX: int = 90000  ## the licensed-car contract (test_car_licensed.gd)
+const TRI_LOD1_MAX: int = 28000
 const TRI_LOD2_MAX: int = 7000
 const MAX_MATERIALS_LOD0: int = 15
 const MAX_DRAW_OBJECTS_LOD0: int = 20
@@ -225,7 +225,7 @@ func test_spec_is_heavy_strong_and_loose() -> void:
 	check(s.grip_rear < s.grip_front and s.grip_rear < h.grip_rear, "rear is not looser than front and hero")
 	check(s.drift_rear_grip_mult < h.drift_rear_grip_mult, "drift rear grip not lower than the hero")
 	check(s.drift_entry_slip_deg < h.drift_entry_slip_deg and s.drift_entry_speed_kmh < h.drift_entry_speed_kmh, "drift entry not easier than the hero")
-	check(is_equal_approx(s.wheelbase, 2.85), "wheelbase %.2f" % s.wheelbase)
+	check(is_equal_approx(s.wheelbase, 2.0 * AXLE_M), "wheelbase %.2f, the model has %.2f" % [s.wheelbase, 2.0 * AXLE_M])
 	metric("accel_ratio_vs_hero", snappedf((s.engine_force / s.mass_kg) / (h.engine_force / h.mass_kg), 0.01))
 
 

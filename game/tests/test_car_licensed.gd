@@ -1,7 +1,7 @@
 extends "res://tests/test_case.gd"
-## CC BY 4.0 cars from vinish.dev (Noctra Tayfun, Noctra Meridian, Kestrel Marten, Bosfor Yildirim, Kestrel Vanta, Arden Havoc): scene contract, source size within 5 %, wheel origins,
-## budgets, LOD switching, paint and brake lights, spec character, and that the model rests on the suspension.
-## Same checks as test_car_bruiser.gd, run for all six cars.
+## CC BY 4.0 cars from vinish.dev: scene contract, source size within 5 %, wheel origins, budgets, LOD switching,
+## paint and brake lights, part colours, spec character, and that the model rests on the suspension. All eleven
+## player cars: the first six, and the five that replaced the project-made models on 2026-11-27.
 
 const CARS: Array[Dictionary] = [
 	{
@@ -40,6 +40,36 @@ const CARS: Array[Dictionary] = [
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb
 		"axle": 1.395, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.79,
 	},
+	{
+		"id": "noctra_sable", "scene": "res://vehicles/noctra_sable/noctra_sable.tscn",
+		"spec": "res://vehicles/specs/noctra_sable.tres", "name": "Noctra Sable R",
+		"len": 4.607, "width": 2.145, "height": 1.30,  # source GLB bounding box (metres), track-day-coupe.glb
+		"axle": 1.32, "front_r": 0.33, "rear_r": 0.355, "wheelbase": 2.64,
+	},
+	{
+		"id": "atmaca_modified", "scene": "res://vehicles/bosfor_atmaca/atmaca_modified.tscn",
+		"spec": "res://vehicles/specs/atmaca_modified.tres", "name": "Velmar Strix S",
+		"len": 5.028, "width": 2.165, "height": 1.498,  # source GLB bounding box (metres), drift-sedan.glb
+		"axle": 1.49, "front_r": 0.345, "rear_r": 0.345, "wheelbase": 2.98,
+	},
+	{
+		"id": "noctra_vela", "scene": "res://vehicles/noctra_vela/noctra_vela.tscn",
+		"spec": "res://vehicles/specs/noctra_vela.tres", "name": "Noctra Vela",
+		"len": 4.337, "width": 2.10, "height": 1.523,  # source GLB bounding box (metres), rally-hatchback.glb
+		"axle": 1.30, "front_r": 0.325, "rear_r": 0.325, "wheelbase": 2.60,
+	},
+	{
+		"id": "arden_bruiser", "scene": "res://vehicles/arden_bruiser/arden_bruiser.tscn",
+		"spec": "res://vehicles/specs/arden_bruiser.tres", "name": "Arden Bruiser",
+		"len": 4.968, "width": 2.036, "height": 1.382,  # source GLB bounding box (metres), supercharged-street-machine.glb
+		"axle": 1.395, "front_r": 0.35, "rear_r": 0.35, "wheelbase": 2.79,
+	},
+	{
+		"id": "kestrel_gtr", "scene": "res://vehicles/kestrel_gtr/kestrel_gtr.tscn",
+		"spec": "res://vehicles/specs/kestrel_gtr.tres", "name": "Kestrel GT",
+		"len": 4.652, "width": 2.096, "height": 1.40,  # source GLB bounding box (metres), electric-super-gt.glb
+		"axle": 1.46, "front_r": 0.345, "rear_r": 0.345, "wheelbase": 2.92,
+	},
 ]
 const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
@@ -55,6 +85,7 @@ const MAX_DRAW_OBJECTS_LOD0: int = 20
 const MAX_GAP_M: float = 0.06
 const PAINT_TEST: Color = Color(0.0, 0.0, 1.0)
 const HERO_SPEC: String = "res://vehicles/specs/noctra_sable.tres"
+const PLAIN_CAR: String = "res://vehicles/bosfor_atmaca/atmaca_stock.tscn"  ## a project-made model: no vertex colours
 
 var _spawned: Array[Node] = []
 
@@ -219,7 +250,7 @@ func test_paint_is_per_car_and_brake_lights_work() -> void:
 
 ## The source models' part colours travel as vertex colours (prepare_vehicle.py, VC_TARGETS). Trim, chrome, interior,
 ## brakes and rims use them; paint, glass, lamps, tyres and the plate must not, or the source paint tints the player's.
-## A car without vertex colours (the project-made hero) keeps the plain materials.
+## A car without vertex colours (a project-made traffic sedan) keeps the plain materials.
 func test_part_colours_reach_the_right_materials() -> void:
 	for c: Dictionary in CARS:
 		var car: CarLod = _spawn(c["scene"], true)
@@ -246,12 +277,12 @@ func test_part_colours_reach_the_right_materials() -> void:
 		var rim: StandardMaterial3D = _material(car, "M_Rim")
 		check(rim != null and rim.albedo_color.is_equal_approx(PAINT_TEST), "%s rim colour not applied" % c["id"])
 		await _done()
-	var hero: CarLod = _spawn("res://vehicles/noctra_sable/noctra_sable.tscn", true)
+	var plain: CarLod = _spawn(PLAIN_CAR, true)
 	await frames(1)
-	for mi: MeshInstance3D in _meshes(hero):
+	for mi: MeshInstance3D in _meshes(plain):
 		for s: int in (mi.mesh.get_surface_count() if mi.mesh != null else 0):
 			var m: StandardMaterial3D = mi.get_active_material(s) as StandardMaterial3D
-			check(m == null or not m.vertex_color_use_as_albedo, "hero %s %s uses vertex colours it does not have" % [mi.name, m.resource_name if m else ""])
+			check(m == null or not m.vertex_color_use_as_albedo, "plain car %s %s uses vertex colours it does not have" % [mi.name, m.resource_name if m else ""])
 	await _done()
 
 
@@ -289,7 +320,8 @@ func test_spec_is_a_real_car_and_matches_the_model() -> void:
 		check(absf(s.wheelbase - float(c["wheelbase"])) <= POS_TOL_M * 2.0, "%s wheelbase %.2f vs model %.2f" % [c["id"], s.wheelbase, c["wheelbase"]])
 		check(absf(s.wheel_radius_front - float(c["front_r"])) <= POS_TOL_M, "%s front radius does not match the model" % c["id"])
 		check(absf(s.wheel_radius_rear - float(c["rear_r"])) <= POS_TOL_M, "%s rear radius does not match the model" % c["id"])
-		check(s.top_speed_kmh > 200.0 and s.grip_front > 0.5, "%s is not a usable car" % c["id"])
+		# 150: the Velmar Strix S is the slow classic of the shop (170 km/h); the others are far above
+		check(s.top_speed_kmh > 150.0 and s.grip_front > 0.5, "%s is not a usable car" % c["id"])
 
 
 func test_model_wheels_rest_on_the_suspension() -> void:

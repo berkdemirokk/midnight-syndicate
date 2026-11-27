@@ -116,16 +116,8 @@ def make_material(name, cfg, src_images):
     if "emission" in v:
         set_in(bsdf, "Emission Color", v["emission"])
         set_in(bsdf, "Emission Strength", v["emission_strength"])
-    if name == "M_LightRear" and cfg.get("tail_cell") is not None:
-        # one unit of the tail-light atlas: day picture as albedo, the lit picture as emission (same UV)
-        day = nt.nodes.new("ShaderNodeTexImage")
-        day.image = bpy.data.images.load(os.path.join(ROOT, TAIL_DAY), check_existing=True)
-        day.extension = "EXTEND"
-        lit = nt.nodes.new("ShaderNodeTexImage")
-        lit.image = bpy.data.images.load(os.path.join(ROOT, TAIL_LIT), check_existing=True)
-        lit.extension = "EXTEND"
-        nt.links.new(day.outputs["Color"], bsdf.inputs["Base Color"])
-        nt.links.new(lit.outputs["Color"], bsdf.inputs["Emission Color"])
+    # M_LightRear with a tail_cell: the mesh gets the atlas UVs (tail_uv) and the engine sets the two shared atlas
+    # pictures (car_materials.gd). They are not embedded here: every GLB carried its own copy, 18 files of 3 MB.
     if name == "M_Plate" and cfg.get("plate_image"):
         tex = nt.nodes.new("ShaderNodeTexImage")
         tex.image = bpy.data.images.load(cfg["plate_image"], check_existing=True)
@@ -529,8 +521,9 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     export(os.path.join(out_dir, "%s_lod%d.glb" % (cfg["car_id"], level)), cfg)
 
 
-TAIL_DAY = "assets_src/ai_generated/chatgpt/tail_atlas_day.png"  # 2 x 3 cells of six tail-light units, black ground
-TAIL_LIT = "assets_src/ai_generated/chatgpt/tail_atlas_lit.png"  # pixel-aligned: lenses and LED strips only
+# Tail-light atlas: 2 x 3 cells of six tail-light units on a black ground, and a pixel-aligned lit picture (lenses and
+# LED strips only). Sources: assets_src/ai_generated/chatgpt/tail_atlas_day.png and tail_atlas_lit.png; shipped once as
+# game/assets/vehicles/shared/tail_atlas_day.jpg and tail_atlas_lit.jpg.
 TAIL_ASPECT = (1536 / 2) / (1024 / 3)  # one cell is 768 x 341 px
 TAIL_MIN_FACES = 12  # per side (left/right of the car): fewer faces and the light is too small to read
 

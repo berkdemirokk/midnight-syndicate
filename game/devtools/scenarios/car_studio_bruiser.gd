@@ -1,5 +1,5 @@
 extends "res://devtools/capture_scenario.gd"
-## Evaluation studio for the Arden Bruiser. Built in code, for looking at the car only (not a game scene).
+## Evaluation studio for the Arden Bruiser (CC BY 4.0 model since 2026-11-27, copy of car_studio_tayfun with its own wheel mark). Built in code, for looking at the car only (not a game scene).
 ## The stage is ShowroomSet: glossy mirror floor, contact shadow, three-point softbox lighting, gradient backdrop, neon.
 ## Shots: empty_studio (car hidden, baseline perf), front34, rear34, side, wheel_closeup, lights_on,
 ## lod1, lod2 (forced at 40 m and 100 m), paint_variants (three paints side by side).
@@ -9,17 +9,17 @@ const SETTLE_FRAMES: int = 30
 const SHOT_SETTLE_FRAMES: int = 8
 const CAM_FOV: float = 42.0
 const CAR_SPACING: float = 3.6
-const TARGET: Vector3 = Vector3(0.0, 0.55, 0.0)
+const TARGET: Vector3 = Vector3(0.0, 0.58, 0.0)
 const PAINTS: Array[Color] = [
 	Color(0.557, 0.059, 0.118),  ## candy red, the brief's #8E0F1E
 	Color(0.04, 0.09, 0.36),  ## deep blue
 	Color(0.2, 0.21, 0.23),  ## graphite (lifted: at 0.12 it read as black)
 ]
-const EYE_FRONT34: Vector3 = Vector3(-3.2, 1.2, 4.9)
-const EYE_REAR34: Vector3 = Vector3(3.4, 1.3, -4.5)
-const EYE_SIDE: Vector3 = Vector3(-5.8, 0.95, 0.0)
-const EYE_WHEEL: Vector3 = Vector3(2.1, 0.55, 2.5)
-const WHEEL_TARGET: Vector3 = Vector3(0.795, 0.345, 1.425)
+const EYE_FRONT34: Vector3 = Vector3(-3.3, 1.1, 4.9)
+const EYE_REAR34: Vector3 = Vector3(3.4, 1.2, -4.5)
+const EYE_SIDE: Vector3 = Vector3(-5.8, 0.9, 0.0)
+const EYE_WHEEL: Vector3 = Vector3(2.2, 0.55, 2.7)
+const WHEEL_TARGET: Vector3 = Vector3(0.795, 0.35, 1.395)
 const EYE_LOD1: Vector3 = Vector3(-14.0, 1.3, 38.0)  ## about 40 m from the car
 const EYE_LOD2: Vector3 = Vector3(-34.0, 1.6, 94.0)  ## about 100 m from the car
 const EYE_PAINT: Vector3 = Vector3(-3.6, 1.6, 8.0)
@@ -67,6 +67,21 @@ func run() -> void:
 	_aim_at(EYE_WHEEL, WHEEL_TARGET)
 	await cap.wait_frames(SHOT_SETTLE_FRAMES)
 	await cap.shot("wheel_closeup")
+	_aim_at(Vector3(1.6, 1.0, -3.9), Vector3(0.0, 0.62, -2.3))
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("tail_closeup")
+	_aim_at(Vector3(-1.5, 0.75, 4.5), Vector3(0.0, 0.42, 2.3))
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("nose_closeup")
+	_aim_at(Vector3(-3.0, 0.85, 0.2), Vector3(0.0, 0.6, 0.2))
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("flank_closeup")
+	_aim_at(Vector3(-2.4, 1.45, 1.6), Vector3(0.0, 1.0, -0.3))
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("cabin_closeup")
+	_aim_at(Vector3(-2.5, 0.95, 3.6), Vector3(0.0, 0.55, 0.3))
+	await cap.wait_frames(SHOT_SETTLE_FRAMES)
+	await cap.shot("hero34")
 
 	CarMaterials.set_brake_lights(_car, true)
 	_aim(EYE_REAR34)

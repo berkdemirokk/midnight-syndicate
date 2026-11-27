@@ -2,7 +2,7 @@
  "car_id": "arden_havoc",
  "source": "assets_src/third_party/vinish_cars/muscle-coupe.glb",
  "lod0": {
-  "tris": 88299,
+  "tris": 88132,
   "tris_by_node": {
    "body": 28446,
    "brake_FL": 2275,
@@ -13,10 +13,10 @@
    "exhaust": 3426,
    "glass": 3872,
    "interior": 8214,
-   "lights_front": 1840,
-   "lights_rear": 2120,
+   "lights_front": 1560,
+   "lights_rear": 2064,
    "plate_rear": 2,
-   "trim": 13777,
+   "trim": 13946,
    "underbody": 1631,
    "wheel_FL": 3980,
    "wheel_FR": 3980,
@@ -58,7 +58,6 @@
     "M_LightFront"
    ],
    "lights_rear": [
-    "M_Lens",
     "M_LightRear"
    ],
    "plate_rear": [
@@ -87,7 +86,7 @@
     "M_Tire"
    ]
   },
-  "surfaces": 27,
+  "surfaces": 26,
   "materials": [
    "M_BrakeDisc",
    "M_Caliper",
@@ -106,15 +105,15 @@
   "material_count": 13
  },
  "lod1": {
-  "tris": 27293,
+  "tris": 27200,
   "tris_by_node": {
    "body": 7899,
    "col_body": 90,
    "glass": 774,
    "interior": 4926,
-   "lights_front": 1200,
-   "lights_rear": 1060,
-   "trim": 8164,
+   "lights_front": 1060,
+   "lights_rear": 1032,
+   "trim": 8239,
    "wheel_FL": 796,
    "wheel_FR": 796,
    "wheel_RL": 794,
