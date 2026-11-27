@@ -143,7 +143,7 @@ func _make_day() -> void:
 	sky_params = {
 		# hazy Bosphorus horizon, a deep but not candy zenith; the ground half is street-dark so the cars' lower
 		# body, rims and tyres stop mirroring a light blue-grey "ground" (it was 0.52, 0.60, 0.70)
-		"zenith_colour": Color(0.11, 0.32, 0.78), "horizon_colour": Color(0.76, 0.84, 0.93),
+		"zenith_colour": Color(0.10, 0.30, 0.76), "horizon_colour": Color(0.64, 0.77, 0.92),
 		"ground_colour": Color(0.27, 0.255, 0.235), "sun_colour": Color(1.0, 0.96, 0.88),
 		"sun_disk_energy": 9.0, "halo_energy": 0.5, "halo_power": 30.0,
 		"band_energy": 0.0, "cloud_cover": 0.38,
@@ -152,15 +152,15 @@ func _make_day() -> void:
 	fog_color = Color(0.80, 0.84, 0.90)
 	fog_begin_m = 60.0
 	fog_end_m = 1400.0
-	fog_sky_affect = 0.25
-	fog_density = 0.55  # aerial depth: the bridge and far shore recede instead of staying as sharp as the street
+	fog_sky_affect = 0.08  # the haze sits on the far shore, not on the sky (0.25 washed the sky white)
+	fog_density = 0.42  # aerial depth: the bridge and far shore recede instead of staying as sharp as the street
 	fog_aerial = 0.6
 	fog_sun_scatter = 0.1  # low: the day fill and car rim are directional lights too and add their own lobes
 	exposure = 1.2  # with white 6 (ACES midtones about 0.8 of white 1); 0.8 at white 1 clipped the walls anyway
 	tonemap_white = 6.0
 	glow_bloom = 0.0
-	grade_contrast = 1.07  # the haze and white 6 flatten the frame a little; mild, in the existing tonemap pass
-	grade_saturation = 1.04
+	grade_contrast = 1.1  # the haze and white 6 flatten the frame; arcade-bright colour like the reference frames
+	grade_saturation = 1.12
 	glow_scale = 0.35
 	glow_threshold = 2.2
 	window_scale = 0.0
