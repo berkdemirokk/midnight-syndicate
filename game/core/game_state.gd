@@ -72,7 +72,7 @@ func add_cash(amount: int) -> void:
 	if amount < 0:
 		push_warning("GameState: add_cash with negative amount")
 		return
-	profile["cash"] = mini(get_cash() + amount, MAX_CASH)
+	profile["cash"] = get_cash() + mini(amount, MAX_CASH - get_cash())
 	_commit()
 
 
@@ -89,7 +89,7 @@ func add_rep(amount: int) -> void:
 	if amount < 0:
 		push_warning("GameState: add_rep with negative amount")
 		return
-	profile["rep"] = mini(get_rep() + amount, MAX_CASH)
+	profile["rep"] = get_rep() + mini(amount, MAX_CASH - get_rep())
 	_commit()
 
 
@@ -185,9 +185,12 @@ func record_result(event_id: String, time_s: float, position: int) -> Dictionary
 		push_warning("GameState: bad result for event '%s'" % event_id)
 		return {}
 	var mult: float = EventCatalog.reward_multiplier(event_id)
-	var cash_reward: int = roundi(_reward(REWARD_CASH, position) * mult)
-	var rep_reward: int = roundi(_reward(REWARD_REP, position) * mult)
 	var stars: int = EventCatalog.stars_for(event_id, time_s, position)
+	# A solo time trial always finishes in position 1. Pay by achieved star tier instead,
+	# using the existing 1st/2nd/3rd reward table, so a slow lap does not earn the top prize.
+	var reward_position: int = (MAX_STARS - stars + 1) if EventCatalog.is_time_event(event_id) else position
+	var cash_reward: int = roundi(_reward(REWARD_CASH, reward_position) * mult)
+	var rep_reward: int = roundi(_reward(REWARD_REP, reward_position) * mult)
 	var career: Dictionary = profile["career"]
 	var rec: Dictionary = career.get(event_id, {"best_time": 0.0, "best_position": 0, "stars": 0})
 	var new_best: bool = float(rec["best_time"]) <= 0.0 or time_s < float(rec["best_time"])
@@ -200,10 +203,10 @@ func record_result(event_id: String, time_s: float, position: int) -> Dictionary
 	profile["cash"] = mini(get_cash() + cash_reward, MAX_CASH)
 	profile["rep"] = mini(get_rep() + rep_reward, MAX_CASH)
 	var stats: Dictionary = profile["stats"]
-	stats["races"] = int(stats["races"]) + 1
-	if position == 1:
-		stats["wins"] = int(stats["wins"]) + 1
-	stats["cash_earned"] = int(stats["cash_earned"]) + cash_reward
+	stats["races"] = mini(int(stats["races"]) + 1, MAX_CASH)
+	if reward_position == 1:
+		stats["wins"] = mini(int(stats["wins"]) + 1, MAX_CASH)
+	stats["cash_earned"] = mini(int(stats["cash_earned"]) + cash_reward, MAX_CASH)
 	_commit()
 	return {"cash": cash_reward, "rep": rep_reward, "stars": stars, "new_best": new_best}
 
@@ -256,12 +259,20 @@ func save_profile() -> bool:
 	var g_tmp: String = ProjectSettings.globalize_path(tmp_path)
 	var g_bak: String = ProjectSettings.globalize_path(bak_path)
 	if _read_file(save_path) != null:
-		if FileAccess.file_exists(bak_path):
-			DirAccess.remove_absolute(g_bak)
-		if DirAccess.copy_absolute(g_main, g_bak) != OK:
-			push_warning("GameState: backup of %s failed" % save_path)
-	if FileAccess.file_exists(save_path):
-		DirAccess.remove_absolute(g_main)
+		# Stage the backup without deleting the last known-good backup or primary.
+		var g_bak_tmp: String = g_bak + ".tmp"
+		if DirAccess.dir_exists_absolute(g_bak) or DirAccess.dir_exists_absolute(g_bak_tmp):
+			push_warning("GameState: backup path blocked for %s; keeping primary" % save_path)
+			DirAccess.remove_absolute(g_tmp)
+			return false
+		var copied: bool = DirAccess.copy_absolute(g_main, g_bak_tmp) == OK
+		if not copied or _read_file(bak_path + ".tmp") == null or DirAccess.rename_absolute(g_bak_tmp, g_bak) != OK:
+			push_warning("GameState: backup of %s failed; keeping primary" % save_path)
+			if FileAccess.file_exists(bak_path + ".tmp"):
+				DirAccess.remove_absolute(g_bak_tmp)
+			DirAccess.remove_absolute(g_tmp)
+			return false
+	# Godot supports replacing an existing file by rename. Do not remove the primary first.
 	var renamed: bool = DirAccess.rename_absolute(g_tmp, g_main) == OK
 	if not renamed:
 		push_error("GameState: cannot move %s into place" % tmp_path)

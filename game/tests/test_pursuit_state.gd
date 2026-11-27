@@ -1,0 +1,41 @@
+extends "res://tests/test_case.gd"
+
+func test_pursuit_inactive_and_heat_limit() -> void:
+	var p := PursuitState.new()
+	p.tick(100.0, 0.0, 0.0)
+	check(p.phase == PursuitState.Phase.INACTIVE, "inactive rules have no effect")
+	p.start()
+	check(p.heat == 1 and not p.can_request_roadblock(), "initial heat")
+	p.tick(50.0, 30.0, 100.0)
+	check(p.heat == 3 and p.can_request_roadblock(), "heat escalates")
+	p.tick(100.0, 30.0, 100.0)
+	check(p.heat == 5, "heat capped")
+	p.reset()
+	check(p.phase == PursuitState.Phase.INACTIVE and p.heat == 0, "reset clean")
+
+func test_escape_requires_uninterrupted_cooldown() -> void:
+	var p := PursuitState.new()
+	p.start()
+	p.tick(5.0, 100.0, 100.0)
+	check(p.phase == PursuitState.Phase.COOLDOWN, "distance enters cooldown")
+	p.tick(1.0, 50.0, 100.0)
+	check(p.phase == PursuitState.Phase.CHASE and p.cooldown_s == 0.0, "reacquisition resets cooldown")
+	p.tick(7.0, INF, 100.0)
+	check(p.phase == PursuitState.Phase.COOLDOWN, "not escaped too early")
+	p.tick(1.0, INF, 100.0)
+	check(p.phase == PursuitState.Phase.ESCAPED, "escaped")
+	p.tick(20.0, 0.0, 0.0)
+	check(p.phase == PursuitState.Phase.ESCAPED, "terminal result stable")
+
+func test_bust_requires_continuous_proximity_and_low_speed() -> void:
+	var p := PursuitState.new()
+	p.start()
+	p.tick(3.0, 5.0, 0.0)
+	check(p.phase == PursuitState.Phase.CHASE, "not busted early")
+	p.tick(1.0, 5.0, 40.0)
+	check(p.bust_s == 0.0, "moving breaks bust timer")
+	p.tick(3.0, 5.0, -2.0)
+	p.tick(1.0, 5.0, -2.0)
+	check(p.phase == PursuitState.Phase.BUSTED, "continuous close low speed busts")
+	p.tick(30.0, INF, 100.0)
+	check(p.phase == PursuitState.Phase.BUSTED, "terminal result stable")

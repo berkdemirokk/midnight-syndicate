@@ -315,18 +315,24 @@ func _heading_error_deg(s: float) -> float:
 	return rad_to_deg(acos(clampf(fwd.dot(t), -1.0, 1.0)))
 
 
-func _reset_to_line() -> void:
-	# Search near the last known progress: parts of the lap pass close to each other (underpass and
-	# hairpin are about 43 m apart), so an unhinted search can land on the wrong part of the track.
+func _reset_to_line() -> bool:
+	# Search near the last known progress: parts of the lap pass close to each other.
 	var hint: float = _last_s if _last_s >= 0.0 else _anchor_s
 	var s0: float = _track.get_progress(_car.global_position, hint) if hint >= 0.0 else _track.get_progress(_car.global_position)
-	# Land ahead of the stuck spot, on a piece of line that no other car occupies (a reset onto a
-	# stopped car was how one car got stuck 110 times in a row).
+	# Check every candidate, including the last one (previously it could be used unchecked).
 	var s: float = s0 + reset_advance_m
-	for k: int in reset_probe_tries:
+	var found: bool = false
+	for k: int in range(maxi(reset_probe_tries, 0) + 1):
 		if _spot_free(_track.get_point_at(s)):
+			found = true
 			break
 		s += reset_probe_step_m
+	if not found:
+		# Stay put instead of teleporting into another car. Normal recovery can retry later.
+		_clear_pass()
+		_shift = 0.0
+		_car.input.clear()
+		return false
 	var c: Vector3 = _track.get_point_at(s)
 	var t: Vector3 = _track.get_tangent_at(s)
 	var rgt: Vector3 = Vector3(-t.z, 0.0, t.x)
@@ -334,6 +340,7 @@ func _reset_to_line() -> void:
 	_shift = 0.0
 	_car.reset_to(Transform3D(Basis(rgt, Vector3.UP, -t), c + Vector3.UP * reset_height))
 	_last_s = s
+	return true
 
 
 func _spot_free(p: Vector3) -> bool:
