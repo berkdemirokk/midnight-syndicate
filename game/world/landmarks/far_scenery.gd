@@ -110,6 +110,13 @@ static func cable_height(lx: float) -> float:
 
 # --- bridge ----------------------------------------------------------------------------------------
 
+## Tower vertex colour: the floodlight level after dark; by day a near-white level that darkens toward the water.
+func _bridge_tower_colour(y: float, panel: int) -> Color:
+	if _lit:
+		return _tower_colour(y, panel)
+	return Color.WHITE * lerpf(0.65, 1.0, clampf(y / (DECK_Y + TOWER_H), 0.0, 1.0))
+
+
 func _build_bridge() -> void:
 	var steel_st := SurfaceTool.new()
 	steel_st.begin(Mesh.PRIMITIVE_TRIANGLES)
@@ -129,12 +136,12 @@ func _build_bridge() -> void:
 			var n: int = 0
 			while y < top_y:
 				var h: float = minf(TOWER_PANEL_M, top_y - y)
-				tower_st.set_color(_tower_colour(y + h * 0.5, n))
+				tower_st.set_color(_bridge_tower_colour(y + h * 0.5, n))
 				_box(tower_st, Vector3(tx, y + h * 0.5, CENTRE.z + sz), Vector3(3.0, h * 0.5 - 0.12, 3.0))
 				y += h
 				n += 1
 		for by: float in [DECK_Y + 25.0, DECK_Y + 75.0, DECK_Y + TOWER_H - 6.0]:
-			tower_st.set_color(_tower_colour(by, 0) * 1.15)
+			tower_st.set_color(_bridge_tower_colour(by, 0) * (1.15 if _lit else 1.0))
 			_box(tower_st, Vector3(tx, by, CENTRE.z), Vector3(2.0, 1.6, CABLE_Z + 1.0))
 	_box(deck_st, Vector3(CENTRE.x, DECK_Y - 1.5, CENTRE.z), Vector3(END_X, 1.5, 11.0))
 	_box(steel_st, Vector3(CENTRE.x, DECK_Y - 5.5, CENTRE.z), Vector3(END_X, 2.5, 2.0))
@@ -151,13 +158,15 @@ func _build_bridge() -> void:
 		for lx: int in range(-285, 286, 15):
 			var top: Vector3 = Vector3(CENTRE.x + lx, cable_height(lx), CENTRE.z + sz)
 			_bar(steel_st, top, Vector3(top.x, DECK_Y, top.z), 0.22)
-	var steel_mat: StandardMaterial3D = _mat(Color(0.2, 0.22, 0.25), 0.5, 0.5)
-	var deck_mat: StandardMaterial3D = _mat(Color(0.26, 0.26, 0.28), 0.0, 0.8)
-	var tower_mat: StandardMaterial3D = _mat(Color(0.3, 0.16, 0.14), 0.0, 0.7)
+	var steel_mat: StandardMaterial3D = _mat(Color(0.14, 0.15, 0.17), 0.5, 0.5)
+	var deck_mat: StandardMaterial3D = _mat(Color(0.58, 0.58, 0.6), 0.0, 0.6)
+	var tower_mat: StandardMaterial3D = _mat(Color(0.55, 0.55, 0.57), 0.0, 0.6)
 	if _lit:
 		tower_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED  # the floodlight level is baked in the vertex colours
 		tower_mat.vertex_color_use_as_albedo = true
 		tower_mat.albedo_color = Color(_k, _k, _k)
+	else:
+		tower_mat.vertex_color_use_as_albedo = true  # by day the legs darken toward the water
 	add_child(_mesh_node("BridgeSteel", steel_st.commit(), steel_mat))
 	add_child(_mesh_node("BridgeDeck", deck_st.commit(), deck_mat))
 	add_child(_mesh_node("BridgeTowers", tower_st.commit(), tower_mat))

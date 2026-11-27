@@ -3,17 +3,18 @@ extends StreetFronts
 ## Buildings with photo-textured fronts on the first-row frontages of a track: each kit building is replaced (its
 ## collider and occluder stay) by a row of plain bodies whose street face carries one building of a straight-on facade
 ## picture (res://assets/world/kits/photo_fronts/, generated for this project, see ASSET_MANIFEST.json and
-## docs/art/PHOTO_TEXTURE_PIPELINE.md). A body is about 20 triangles and the bodies of one frontage are merged into one
+## docs/art/PHOTO_TEXTURE_PIPELINE.md). A body is about 30 triangles and the bodies of one frontage are merged into one
 ## mesh per picture, so the rows need no LODs. At night the night picture of the same facade is the glow map.
 
 const ATLAS_DIR: String = "res://assets/world/kits/photo_fronts/"
 const HOUSES_PER_ATLAS: int = 4  ## buildings side by side in one picture, 384 x 1024 px each
 ## Per track (key = part of the track scene path): its layout file and its groups. A group serves the kit buildings whose
 ## asset name starts with one of "match" (empty = every building no earlier group took): pictures (<name>.jpg and
-## <name>_night.jpg), the size of one building of a picture, its depth and its roof rise (0 = flat roof).
+## <name>_night.jpg), the size of one building of a picture, its depth and its roof rise (0 = flat roof). "textured" puts
+## plaster walls and tile roofs on the side, back and roof planes (metre UVs), instead of the plain vertex colours.
 const SETS: Dictionary = {
 	"istanbul_bogaz": {"layout": "res://assets/world/istanbul_bogaz/istanbul_bogaz_layout.json", "groups": [
-		{"match": [], "atlases": ["facade_row_01", "facade_row_02"], "w": 5.4, "h": 14.4, "depth": 7.0, "roof": 1.7}]},
+		{"match": [], "atlases": ["facade_row_01", "facade_row_02"], "w": 5.4, "h": 14.4, "depth": 7.0, "roof": 1.7, "textured": true}]},
 	"istanbul_maslak": {"layout": "res://assets/world/istanbul_maslak/istanbul_maslak_layout.json", "groups": [
 		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0},
 		{"match": [], "atlases": ["modern_row_01", "neon_row_01"], "w": 8.0, "h": 21.3, "depth": 9.0, "roof": 0.0}]},
@@ -22,17 +23,26 @@ const SETS: Dictionary = {
 		{"match": ["bld_waterfront", "bld_parking"], "atlases": [], "w": 1.0, "h": 1.0, "depth": 1.0, "roof": 0.0},
 		{"match": [], "atlases": ["neon_row_01", "market_row_01"], "w": 6.6, "h": 17.6, "depth": 8.0, "roof": 0.0}]},
 }
-const EAVE_M: float = 0.4  ## a pitched roof comes this far out over the street face
+const EAVE_M: float = 0.8  ## a pitched roof comes this far out over the street face
+const FASCIA_M: float = 0.22  ## the board under the roof front edge; the soffit runs back from it under the eave
 const FACADE_SHADER: Shader = preload("res://world/street_fronts/photo_facade.gdshader")
+const WALL_TEX: String = "res://assets/textures/cc0/clay_plaster/basecolor.jpg"
+const WALL_NRM: String = "res://assets/textures/cc0/clay_plaster/normal.jpg"
+const ROOF_TEX: String = "res://assets/world/kits/istanbul/textures/roof_tile_basecolor.png"
 const ROOF_COLOUR: Color = Color(0.2, 0.07, 0.045)  ## linear terracotta (pitched roofs)
 const FLAT_ROOF_COLOUR: Color = Color(0.12, 0.12, 0.13)  ## linear bitumen grey (flat roofs)
-const WALL_COLOUR: Color = Color(0.3, 0.27, 0.23)  ## linear plaster grey: side and back walls
+const ROOF_ALPHA: float = 0.5  ## vertex alpha of a roof plane: the shader roof band (0 wall, 1 street face)
+const SOFFIT_COLOUR: Color = Color(0.12, 0.09, 0.07)  ## linear shadowed underside of the eave
+const WALL_COLOUR: Color = Color(0.45, 0.4, 0.34)  ## linear plaster grey: side and back walls of textured groups
+const PLAIN_WALL_COLOUR: Color = Color(0.3, 0.27, 0.23)  ## the same walls in the groups without a texture
+const WALL_UV_M: float = 2.5  ## metres per texture repeat on walls
+const ROOF_UV_M: float = 1.0  ## metres per texture repeat on roofs
 const NIGHT_GLOW: float = 1.6
 const SUNSET_GLOW: float = 0.7
-const NIGHT_TINT: Vector3 = Vector3(0.55, 0.5, 0.5)  ## unlit walls keep a little of the street's warm light
+const NIGHT_TINT: Vector3 = Vector3(0.55, 0.5, 0.5)  ## unlit walls keep a little of the street warm light
 
 var _facades: Array[ShaderMaterial] = []
-var _groups: Array[Dictionary] = []  ## the track's groups with "mats": indices into _facades of the shipped pictures
+var _groups: Array[Dictionary] = []  ## the track groups with "mats": indices into _facades of the shipped pictures
 
 
 ## True when this track has a picture set with at least one shipped picture.
@@ -91,12 +101,18 @@ func _load_groups(groups: Array) -> void:
 	var by_name: Dictionary = {}  # picture name -> index into _facades (a picture may serve two groups)
 	for g: int in groups.size():
 		var group: Dictionary = (groups[g] as Dictionary).duplicate()
+		var textured: bool = bool(group.get("textured", false))
 		var mats: Array[int] = []
 		for atlas_name: Variant in _shipped(group):
 			if not by_name.has(atlas_name):
 				var facade := ShaderMaterial.new()
 				facade.shader = FACADE_SHADER
 				facade.set_shader_parameter("albedo_tex", load(ATLAS_DIR + String(atlas_name) + ".jpg"))
+				facade.set_shader_parameter("textured_walls", textured)
+				if textured:
+					facade.set_shader_parameter("wall_tex", load(WALL_TEX))
+					facade.set_shader_parameter("wall_nrm", load(WALL_NRM))
+					facade.set_shader_parameter("roof_tex", load(ROOF_TEX))
 				var night_path: String = ATLAS_DIR + String(atlas_name) + "_night.jpg"
 				if ResourceLoader.exists(night_path):
 					facade.set_shader_parameter("night_tex", load(night_path))
@@ -150,10 +166,11 @@ func _slots(group: Dictionary, width: float, seed_value: int) -> Array[Dictionar
 	return out
 
 
-## Hides the kit's LOD0 and LOD1 and puts the row there as ONE mesh (one surface per picture used). A frontage whose
+## Hides the kit LOD0 and LOD1 and puts the row there as ONE mesh (one surface per picture used). A frontage whose
 ## buildings would reach into the race corridor keeps its kit building.
 func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary, parent: Node3D) -> void:
-	_info["g%d" % int(group["id"])] = {"width_m": float(group["w"]), "depth_m": float(group["depth"])}
+	_info["g%d" % int(group["id"])] = {"width_m": float(group["w"]), "depth_m": float(group["depth"]),
+			"eave_m": EAVE_M if float(group["roof"]) > 0.0 else 0.0}
 	var slots: Array[Dictionary] = _slots(group, float(d["width_m"]),
 			int(round(float(d["s_offset_m"]) * 10.0)) * 31 + int(root.global_position.x * 7.0))
 	for slot: Dictionary in slots:
@@ -172,13 +189,14 @@ func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary,
 			st.begin(Mesh.PRIMITIVE_TRIANGLES)
 			tools[mat] = st
 		var sx: float = float(slot["sx"])
-		# the model's street face is -Z (as in StreetFronts); width and height scale together, the picture keeps its shape
+		# the model street face is -Z as in StreetFronts; width and height scale together, the picture keeps its shape
 		var local := Transform3D(Basis(Vector3.UP, PI) * Basis.from_scale(Vector3(sx, sx, 1.0)), Vector3(float(slot["x"]), 0.0, 0.0))
 		(tools[mat] as SurfaceTool).append_from(group["meshes"][int(slot["house"])], 0, local)
 		_shop_fronts.append(root.global_transform * local)
 	var mesh := ArrayMesh.new()
 	for mat: int in tools:
 		var st: SurfaceTool = tools[mat]
+		st.generate_tangents()  # the wall and roof normal maps need tangents
 		st.set_material(_facades[mat])
 		st.commit(mesh)
 	var row := MeshInstance3D.new()
@@ -193,40 +211,73 @@ func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary,
 	_buildings.append(row)
 
 
+## The eave overhangs the street face by EAVE_M, so its ends must clear the corridor as well as the wall corners.
+func _clear_of_road(track: Track, root_xf: Transform3D, slot: Dictionary) -> bool:
+	if not super(track, root_xf, slot):
+		return false
+	var half: float = float(_info[slot["id"]]["width_m"]) / 2.0 * float(slot["sx"])
+	var x: float = float(slot["x"])
+	var eave: float = float(_info[slot["id"]]["eave_m"])
+	for p: Vector3 in [Vector3(x - half, 0.15, -eave), Vector3(x + half, 0.15, -eave)]:
+		if absf(track.get_lateral_offset(root_xf * p)) < CORRIDOR_CLEAR_M:
+			return false
+	return true
+
+
 ## One building, one surface: the street face with the picture of building `index` (vertex alpha 1: textured), then side
-## walls, back wall and the roof in plain vertex colours (alpha 0: the shader skips the picture there).
+## walls, back wall, gables, roof planes (alpha ROOF_ALPHA), the eave fascia and soffit (alpha 0). Walls and roofs have
+## metre UVs and the surface gets tangents, so textured rows can put plaster and tile on them.
 func _house_mesh(index: int, group: Dictionary) -> ArrayMesh:
 	var w: float = float(group["w"]) / 2.0
 	var h: float = float(group["h"])
 	var d: float = float(group["depth"])
 	var rise: float = float(group["roof"])
 	var eave: float = EAVE_M if rise > 0.0 else 0.0
+	var fascia: float = FASCIA_M if rise > 0.0 else 0.0
+	var ridge: float = h + rise
+	var low: float = h - fascia  # the roof front edge; the fascia board hangs from here to the wall top
 	var u0: float = float(index) / float(HOUSES_PER_ATLAS)
 	var u1: float = float(index + 1) / float(HOUSES_PER_ATLAS)
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# seen from the street (looking along +Z) the model's +X is on the left: u0 goes there
+	# seen from the street (looking along +Z) the model +X is on the left: u0 goes there
 	_quad(st, [Vector3(w, h, 0.0), Vector3(-w, h, 0.0), Vector3(-w, 0.0, 0.0), Vector3(w, 0.0, 0.0)],
 			[Vector2(u0, 0.0), Vector2(u1, 0.0), Vector2(u1, 1.0), Vector2(u0, 1.0)], Vector3(0.0, 0.0, -1.0), Color.WHITE)
-	var wall := Color(WALL_COLOUR, 0.0)
-	var roof := Color(ROOF_COLOUR if rise > 0.0 else FLAT_ROOF_COLOUR, 0.0)
-	var no_uv: Array = [Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]
-	_quad(st, [Vector3(w, h, 0.0), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(w, 0.0, 0.0)], no_uv, Vector3(1.0, 0.0, 0.0), wall)
-	_quad(st, [Vector3(-w, h, d), Vector3(-w, h, 0.0), Vector3(-w, 0.0, 0.0), Vector3(-w, 0.0, d)], no_uv, Vector3(-1.0, 0.0, 0.0), wall)
-	_quad(st, [Vector3(-w, h, d), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(-w, 0.0, d)], no_uv, Vector3(0.0, 0.0, 1.0), wall)
-	var ridge: float = h + rise
-	var front_n: Vector3 = Vector3(0.0, d / 2.0 + eave, -rise).normalized()
+	# the plaster and tile band (roof alpha, lifted wall colour) is for the textured groups only; other tracks keep the plain look
+	var textured: bool = bool(group.get("textured", false))
+	var wall := Color(WALL_COLOUR if textured else PLAIN_WALL_COLOUR, 0.0)
+	var roof := Color(ROOF_COLOUR if rise > 0.0 else FLAT_ROOF_COLOUR, ROOF_ALPHA if textured else 0.0)
+	var wall_uv := func(p: Vector3) -> Vector2: return Vector2(p.x + p.z, -p.y) / WALL_UV_M
+	var roof_uv := func(p: Vector3) -> Vector2: return Vector2(p.x, Vector2(p.y - ridge, p.z - d / 2.0).length()) / ROOF_UV_M
+	var side_r: Array = [Vector3(w, h, 0.0), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(w, 0.0, 0.0)]
+	_quad(st, side_r, _uvs(side_r, wall_uv), Vector3(1.0, 0.0, 0.0), wall)
+	var side_l: Array = [Vector3(-w, h, d), Vector3(-w, h, 0.0), Vector3(-w, 0.0, 0.0), Vector3(-w, 0.0, d)]
+	_quad(st, side_l, _uvs(side_l, wall_uv), Vector3(-1.0, 0.0, 0.0), wall)
+	var back: Array = [Vector3(-w, h, d), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(-w, 0.0, d)]
+	_quad(st, back, _uvs(back, wall_uv), Vector3(0.0, 0.0, 1.0), wall)
+	var front_n: Vector3 = Vector3(0.0, d / 2.0 + eave, -(rise + fascia)).normalized()
 	var back_n: Vector3 = Vector3(0.0, d / 2.0, rise).normalized()
-	_quad(st, [Vector3(w, ridge, d / 2.0), Vector3(-w, ridge, d / 2.0), Vector3(-w, h, -eave), Vector3(w, h, -eave)], no_uv, front_n, roof)
-	_quad(st, [Vector3(-w, ridge, d / 2.0), Vector3(w, ridge, d / 2.0), Vector3(w, h, d), Vector3(-w, h, d)], no_uv, back_n, roof)
+	var front_roof: Array = [Vector3(w, ridge, d / 2.0), Vector3(-w, ridge, d / 2.0), Vector3(-w, low, -eave), Vector3(w, low, -eave)]
+	_quad(st, front_roof, _uvs(front_roof, roof_uv), front_n, roof)
+	var back_roof: Array = [Vector3(-w, ridge, d / 2.0), Vector3(w, ridge, d / 2.0), Vector3(w, h, d), Vector3(-w, h, d)]
+	_quad(st, back_roof, _uvs(back_roof, roof_uv), back_n, roof)
 	if rise > 0.0:
+		var fascia_pts: Array = [Vector3(w, h, -eave), Vector3(-w, h, -eave), Vector3(-w, low, -eave), Vector3(w, low, -eave)]
+		_quad(st, fascia_pts, _uvs(fascia_pts, wall_uv), Vector3(0.0, 0.0, -1.0), Color(ROOF_COLOUR * 0.6, 0.0))
+		var soffit: Array = [Vector3(w, low, 0.0), Vector3(-w, low, 0.0), Vector3(-w, low, -eave), Vector3(w, low, -eave)]
+		_quad(st, soffit, _uvs(soffit, wall_uv), Vector3(0.0, -1.0, 0.0), Color(SOFFIT_COLOUR, 0.0))
 		for side: float in [1.0, -1.0]:  # gable ends
 			for p: Vector3 in [Vector3(side * w, h, 0.0), Vector3(side * w, ridge, d / 2.0), Vector3(side * w, h, d)]:
 				st.set_normal(Vector3(side, 0.0, 0.0))
 				st.set_color(wall)
-				st.set_uv(Vector2.ZERO)
+				st.set_uv(wall_uv.call(p))
 				st.add_vertex(p)
+	st.generate_tangents()
 	return st.commit()
+
+
+func _uvs(pts: Array, uv_of: Callable) -> Array:
+	return pts.map(uv_of)
 
 
 func _quad(st: SurfaceTool, p: Array, uv: Array, normal: Vector3, colour: Color) -> void:
