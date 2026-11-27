@@ -76,3 +76,14 @@ underglow. The player's car reflection is a LOD2 model, softer on the wet road b
 - The fallback framing (look_ahead 7.0 / look_height 0.75) was not measured because the primary fits.
 - Mirror LOD2 for the player is not guarded by a test.
 - GPU frame time was not measured as a budget, only the primitive and draw counts.
+
+## Lead review re-run (same machine, same day)
+
+- Re-captured `--capture=ortakoy_benchmark` and `--tod=sunset`: night gameplay 441 078 / 409, night hero 425 108 / 376,
+  day gameplay 419 053 / 353, day hero 378 177 / 310, sunset gameplay 418 441 / 361, sunset hero 378 377 / 321.
+  All under 450 000 and 500.
+- The committed `bench_sunset_gameplay.json` has `frame_ms_p99` 155.6 ms (one hitch in 60 frames). The re-run gave
+  4.66 ms, so it was a one-off. Frame times are not part of this budget; do not quote that p99.
+- The regenerated PNGs show the HUD in Turkish (`Sen`, `km/sa`) where the release baseline showed English. That comes
+  from the capture machine's locale, not from this change; primitive and draw counts do not depend on it.
+- `bench_*_street.png` changed slightly (pixel noise / rain); its primitives and draws are unchanged.
