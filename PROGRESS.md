@@ -235,3 +235,10 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
    waterfront light. 2. M2 game loop: career, audio (needs CC0 download approval), onboarding.
 3. Owner decisions: export templates (Windows .exe), macOS/Xcode access for iOS.
+
+
+## ChatGPT isolated follow-up — 2026-11-27 (save protection)
+- Based on cfa70d7b; no changes to main or feature/vertical-slice.
+- Found that a failed backup copy could be followed by deletion of the primary save. Stage and verify the backup before replacing it; abort on backup failure and do not explicitly delete the primary before rename.
+- Added two regression tests for blocked backup and backup staging paths. No save schema, vehicle, track, shader, or gameplay changes.
+- Validation pending: GitHub Actions and real device tests; do not count the new tests as passing until executed.

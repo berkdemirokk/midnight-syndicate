@@ -256,12 +256,20 @@ func save_profile() -> bool:
 	var g_tmp: String = ProjectSettings.globalize_path(tmp_path)
 	var g_bak: String = ProjectSettings.globalize_path(bak_path)
 	if _read_file(save_path) != null:
-		if FileAccess.file_exists(bak_path):
-			DirAccess.remove_absolute(g_bak)
-		if DirAccess.copy_absolute(g_main, g_bak) != OK:
-			push_warning("GameState: backup of %s failed" % save_path)
-	if FileAccess.file_exists(save_path):
-		DirAccess.remove_absolute(g_main)
+		# Stage the backup without deleting the last known-good backup or primary.
+		var g_bak_tmp: String = g_bak + ".tmp"
+		if DirAccess.dir_exists_absolute(g_bak) or DirAccess.dir_exists_absolute(g_bak_tmp):
+			push_warning("GameState: backup path blocked for %s; keeping primary" % save_path)
+			DirAccess.remove_absolute(g_tmp)
+			return false
+		var copied: bool = DirAccess.copy_absolute(g_main, g_bak_tmp) == OK
+		if not copied or _read_file(bak_path + ".tmp") == null or DirAccess.rename_absolute(g_bak_tmp, g_bak) != OK:
+			push_warning("GameState: backup of %s failed; keeping primary" % save_path)
+			if FileAccess.file_exists(bak_path + ".tmp"):
+				DirAccess.remove_absolute(g_bak_tmp)
+			DirAccess.remove_absolute(g_tmp)
+			return false
+	# Godot supports replacing an existing file by rename. Do not remove the primary first.
 	var renamed: bool = DirAccess.rename_absolute(g_tmp, g_main) == OK
 	if not renamed:
 		push_error("GameState: cannot move %s into place" % tmp_path)
