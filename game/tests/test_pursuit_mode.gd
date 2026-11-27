@@ -8,6 +8,7 @@ const MISSING_PATH: String = "res://does_not_exist/none.tscn"
 const STEP_S: float = 1.0 / 60.0
 const SPAWN_BEHIND_MIN_M: float = 70.0
 const SPAWN_BEHIND_MAX_M: float = 90.0
+const TEMP_SAVE: String = "user://test_pursuit_save.json"  ## the cash reward must not touch the real profile
 
 
 func _cfg(pursuit: bool) -> RaceConfig:
@@ -102,6 +103,7 @@ func test_police_spawn_behind_player() -> void:
 	pm.state.heat = 3
 	pm.top_up()
 	check(pm.police.size() == 2, "heat 3 should have 2 police, got %d" % pm.police.size())
+	metric("last_spawn_hidden_from_camera", 1.0 if pm.last_spawn_hidden else 0.0)  # best effort, not a pass/fail check
 	var s_player: float = _progress(scene, scene.player.global_position)
 	for c: ArcadeCar in pm.police:
 		var behind: float = -scene.track.get_progress(c.global_position) + s_player
@@ -201,24 +203,89 @@ func test_bust_when_parked_next_to_police() -> void:
 	PursuitMode.ENABLED = was
 
 
-func test_escape_pays_cash() -> void:
+func _open_temp_profile() -> Dictionary:
+	var old: Dictionary = {"path": GameState.save_path, "profile": GameState.profile.duplicate(true)}
+	GameState.open_profile(TEMP_SAVE)
+	GameState.reset_profile()
+	return old
+
+
+func _restore_profile(old: Dictionary) -> void:
+	GameState.save_path = str(old["path"])
+	GameState.profile = old["profile"]
+	var abs_path: String = ProjectSettings.globalize_path(TEMP_SAVE)
+	for suffix: String in ["", ".bak", ".tmp"]:
+		if FileAccess.file_exists(TEMP_SAVE + suffix):
+			DirAccess.remove_absolute(abs_path + suffix)
+
+
+## Moves one police car to a track distance behind the player and places it on the lane, with its physics frozen.
+func _place_police(scene: RaceScene, car: ArcadeCar, behind_m: float) -> void:
+	var s: float = scene.track.get_progress(scene.player.global_position) - behind_m
+	car.global_transform = Transform3D(Basis.looking_at(scene.track.get_tangent_at(s), Vector3.UP), scene.track.get_point_at(s) + Vector3(0.0, PursuitMode.SPAWN_HEIGHT_M, 0.0))
+
+
+func test_no_false_escape_on_go() -> void:
 	var was: bool = PursuitMode.ENABLED
 	PursuitMode.ENABLED = true
 	var scene: RaceScene = _make_scene(_cfg(true))
 	await frames(2)
 	var pm: PursuitMode = _pursuit_of(scene)
 	pm.start()
-	# No police at all: the chase cools down at once and escapes after ESCAPE_TIME_S. Spawning is switched off here.
-	pm._spawn_t = INF
+	pm.step(STEP_S)
+	check(pm.police.size() == 1, "the first police car should spawn on the first step, got %d" % pm.police.size())
+	check(pm.state.phase == PursuitState.Phase.CHASE, "GO with police behind must stay CHASE, phase %d" % pm.state.phase)
+	await cleanup([scene])
+	PursuitMode.ENABLED = was
+
+
+func test_chase_holds_and_heat_rises() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.start()
+	pm.step(STEP_S)  # the first police car spawns here
+	pm._spawn_t = INF  # no replacement spawns in this test
+	scene.player.speed_kmh = 60.0  # normal driving speed: above the bust limit, so no bust
+	var car: ArcadeCar = pm.police[0]
+	# Physics is off between steps, so the police car stays where the spawn put it (75..88 m behind).
+	for i: int in 26 * 60:  # 26 s: heat goes 1 -> 2 at 25 s
+		pm.step(STEP_S)
+	check(pm.state.phase == PursuitState.Phase.CHASE, "police 75..88 m behind must keep the chase, phase %d" % pm.state.phase)
+	check(pm.state.heat == 2, "heat should be 2 after 25 s of chase, got %d" % pm.state.heat)
+	check(car.global_position.distance_to(scene.player.global_position) < PursuitState.ESCAPE_DISTANCE_M, "the police car should still be in sensing range")
+	await cleanup([scene])
+	PursuitMode.ENABLED = was
+
+
+func test_escape_pays_cash() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var old: Dictionary = _open_temp_profile()
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.start()
+	pm._spawn_t = INF  # no new police; the one car is pulled out of range below
+	pm.top_up()
+	check(pm.police.size() == 1, "one police car for the chase, got %d" % pm.police.size())
+	# A real chase first: the police car is 75 m back and the chase runs for a second.
+	for i: int in 60:
+		pm.step(STEP_S)
+	check(pm.state.phase == PursuitState.Phase.CHASE, "chase should run before the escape, phase %d" % pm.state.phase)
+	# Then the police fall back out of range: cooldown, and 8 s later the escape.
+	_place_police(scene, pm.police[0], 120.0)
 	var cash_before: int = GameState.get_cash()
 	for i: int in 600:
 		pm.step(STEP_S)
 		if pm.state.phase == PursuitState.Phase.ESCAPED:
 			break
-	check(pm.state.phase == PursuitState.Phase.ESCAPED, "no police for 10 s should escape, phase %d" % pm.state.phase)
+	check(pm.state.phase == PursuitState.Phase.ESCAPED, "police out of range for 8 s should escape, phase %d" % pm.state.phase)
 	check(pm.escape_reward == PursuitMode.ESCAPE_REWARD_PER_HEAT, "escape reward %d" % pm.escape_reward)
 	check(GameState.get_cash() == cash_before + PursuitMode.ESCAPE_REWARD_PER_HEAT, "escape cash not added")
-	GameState.profile["cash"] = cash_before
 	check((pm._hud as PursuitHud)._banner.text.begins_with("ESCAPED"), "ESCAPED banner missing")
 	await cleanup([scene])
+	_restore_profile(old)
 	PursuitMode.ENABLED = was

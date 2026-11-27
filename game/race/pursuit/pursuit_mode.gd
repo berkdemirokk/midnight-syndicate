@@ -36,6 +36,7 @@ var police: Array[ArcadeCar] = []
 var player: ArcadeCar = null
 var roadblock: Roadblock = null
 var escape_reward: int = 0
+var last_spawn_hidden: bool = false  ## the last police spawn was out of the camera view (best effort, see the doc)
 
 var _track: Track = null
 var _cars: Array[ArcadeCar] = []  ## the race cars, player included: avoidance and spawn clearance
@@ -96,6 +97,9 @@ func step(delta: float) -> void:
 	_roadblock_cd = maxf(_roadblock_cd - delta, 0.0)
 	_player_s = _track.get_progress(player.global_position, _player_s)
 	cull()
+	# Spawn before the rules tick, so the first police car exists when the chase is judged (no false escape on GO).
+	if _spawn_t <= 0.0 and police.size() < max_police_for_heat(state.heat) and spawn_police():
+		_spawn_t = SPAWN_INTERVAL_S
 	var nearest: float = INF
 	for c: ArcadeCar in police:
 		nearest = minf(nearest, c.global_position.distance_to(player.global_position))
@@ -107,9 +111,8 @@ func step(delta: float) -> void:
 		var drv: PoliceDriver = c.get_node_or_null(DRIVER_NAME) as PoliceDriver
 		if drv != null:
 			drv.heat = state.heat
+			drv.skill = SKILL_BASE + SKILL_PER_HEAT * float(state.heat)
 			drv.player_s = _player_s
-	if _spawn_t <= 0.0 and police.size() < max_police_for_heat(state.heat) and spawn_police():
-		_spawn_t = SPAWN_INTERVAL_S
 	if roadblock != null and _wrap(_player_s - roadblock.progress) > ROADBLOCK_PASSED_M:
 		roadblock.queue_free()
 		roadblock = null
@@ -157,6 +160,7 @@ func spawn_police() -> bool:
 			break
 	if not found:
 		return false
+	last_spawn_hidden = hidden
 	var car: ArcadeCar = CarFactory.create(str(model["scene"]), model["spec"] as CarSpec, POLICE_PAINT)
 	add_child(car)
 	car.global_transform = spot
