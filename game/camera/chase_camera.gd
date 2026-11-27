@@ -14,6 +14,8 @@ const MIN_BLEND_SPEED_MS: float = 0.5  ## below this speed the car's facing alon
 const MIN_DIR_LEN_SQ: float = 0.000001  ## numeric guard for a near-zero blended direction
 const MIN_CAMERA_HEIGHT_M: float = 0.2  ## lowest camera height above the car origin under a ceiling
 const KICK_CLOCK_IDLE_S: float = 1000.0  ## starts the nitro kick clock far past its end
+const NITRO_PUNCH_S: float = 0.18  ## time constant of the nitro ignition FOV punch
+const MAX_HFOV_DEG: float = 125.0  ## horizontal FOV ceiling, whatever the aspect
 
 @export var target: ArcadeCar: set = set_target
 @export var mode: Mode = Mode.CHASE
@@ -41,14 +43,16 @@ const KICK_CLOCK_IDLE_S: float = 1000.0  ## starts the nitro kick clock far past
 @export var speed_shake_from_kmh: float = 180.0
 @export var speed_shake_full_kmh: float = 240.0
 @export var speed_shake_hz: float = 35.0
-@export var nitro_kick_back_m: float = 0.4  ## camera pushed back on nitro ignition, eased to 0
-@export var nitro_kick_back_s: float = 0.8
+@export var nitro_kick_back_m: float = 0.85  ## camera pushed back on nitro ignition, eased to 0
+@export var nitro_kick_back_s: float = 1.1
 @export_group("Lens")
 @export var fov_rest: float = 62.0
-@export var fov_top: float = 78.0
-@export var nitro_fov_kick: float = 8.0
-@export var nitro_kick_rate: float = 5.0  ## 1/s
+@export var fov_top: float = 72.0
+@export var nitro_fov_kick: float = 6.0
+@export var nitro_kick_rate: float = 9.0  ## 1/s
 @export var fov_rate: float = 3.0  ## 1/s
+@export var max_hfov_gain_deg: float = 14.0  ## horizontal FOV allowed above the rest lens, so wide phones keep their edges
+@export var nitro_punch_deg: float = 4.0  ## FOV spike on nitro ignition, gone in about half a second
 @export_group("Shake")
 @export var max_shake_m: float = 0.35
 @export var shake_hz: float = 16.0
@@ -65,10 +69,11 @@ const KICK_CLOCK_IDLE_S: float = 1000.0  ## starts the nitro kick clock far past
 @export_group("Hood and orbit")
 @export var hood_offset: Vector3 = Vector3(0.0, 0.5, -0.6)
 @export var hood_look_local: Vector3 = Vector3(0.0, 0.4, -30.0)
-@export var orbit_radius_m: float = 9.0
-@export var orbit_height_m: float = 2.5
-@export var orbit_rate_rad_s: float = 0.15
-@export var orbit_look_height_m: float = 0.8
+@export var orbit_radius_m: float = 6.5
+@export var orbit_height_m: float = 0.95
+@export var orbit_rate_rad_s: float = 0.09
+@export var orbit_look_height_m: float = 0.55
+@export var orbit_fov_deg: float = 38.0  ## long lens for the grid and finish orbit
 @export_group("Grid intro")
 @export var intro_fov_deg: float = 52.0  ## wide lens at the start of the intro, eased to the live lens
 
@@ -85,6 +90,7 @@ var _dir_vel: Vector3 = Vector3.ZERO
 var _off: Vector3 = Vector3.ZERO  ## smoothed offsets: x = distance behind, y = lateral swing
 var _off_vel: Vector3 = Vector3.ZERO
 var _wall_limit: float = INF  ## distance behind the car where a wall stops the camera
+var _orbit_limit: float = INF  ## ORBIT radius where a wall stops the camera
 var _ceiling_height_m: float = INF  ## camera height above the car origin where a ceiling stops it
 var _side_limit_right_m: float = INF  ## lateral swing to the right before a wall
 var _side_limit_left_m: float = INF  ## lateral swing to the left before a wall
@@ -136,7 +142,7 @@ func _physics_process(_delta: float) -> void:
 	var xf: Transform3D = target.global_transform
 	var dir: Vector3 = _goal_dir(xf)
 	var right: Vector3 = dir.cross(Vector3.UP)
-	var base: float = lerpf(distance_rest_m, distance_top_m, _speed_t())
+	var base: float = lerpf(distance_rest_m, distance_top_m, _speed_t()) + kick_back_m
 	var rear: Vector3 = xf.origin - dir * base
 	var hit: Dictionary = _cast(xf.origin + Vector3.UP * wall_ray_height_m, rear + Vector3.UP * height_m)
 	_wall_limit = INF
@@ -150,6 +156,12 @@ func _physics_process(_delta: float) -> void:
 		_ceiling_height_m = maxf(roof_y - xf.origin.y - wall_margin_m, MIN_CAMERA_HEIGHT_M)
 	_side_limit_right_m = _side_limit(xf.origin, right)
 	_side_limit_left_m = _side_limit(xf.origin, -right)
+	_orbit_limit = INF
+	if mode == Mode.ORBIT:
+		var ohit: Dictionary = _cast(xf.origin + Vector3.UP * wall_ray_height_m, _orbit_point(xf, orbit_radius_m))
+		if not ohit.is_empty():
+			var op: Vector3 = ohit["position"]
+			_orbit_limit = maxf(Vector2(op.x - xf.origin.x, op.z - xf.origin.z).length() - wall_margin_m, 0.0)
 
 
 func _process(delta: float) -> void:
@@ -205,8 +217,8 @@ func snap() -> void:
 	_off_vel = Vector3.ZERO
 	_initialised = true
 	nitro_kick = 1.0 if target.nitro_active else 0.0
-	_fov_now = compute_base_fov() + nitro_fov_kick * nitro_kick
-	fov = _fov_now
+	_fov_now = orbit_fov_deg if mode == Mode.ORBIT else compute_base_fov() + nitro_fov_kick * nitro_kick
+	fov = minf(_fov_now, fov_cap_deg())
 	global_position = compute_ideal_position()
 	look_at(_look_point(xf), Vector3.UP)
 
@@ -253,7 +265,7 @@ func _process_intro(xf: Transform3D, delta: float) -> void:
 	global_position = _intro_from_pos.lerp(_chase_pos(xf, _dir, _off), w)
 	look_at(_intro_from_look.lerp(_look_point(xf), w), Vector3.UP)
 	_apply_roll()
-	fov = lerpf(intro_fov_deg, _fov_now, w)
+	fov = minf(lerpf(intro_fov_deg, _fov_now, w), fov_cap_deg())
 	if _intro_t >= _intro_s:
 		_intro_t = -1.0
 
@@ -265,6 +277,15 @@ func add_trauma(amount: float) -> void:
 ## FOV for the current speed, before the nitro kick.
 func compute_base_fov() -> float:
 	return lerpf(fov_rest, fov_top, _speed_t())
+
+
+## Vertical FOV cap: horizontal FOV may grow at most max_hfov_gain_deg past the rest lens.
+func fov_cap_deg() -> float:
+	var sz: Vector2 = get_viewport().get_visible_rect().size
+	var asp: float = sz.x / maxf(sz.y, 1.0)
+	var rest_h: float = 2.0 * atan(tan(deg_to_rad(fov_rest) * 0.5) * asp)
+	var cap_h: float = minf(rest_h + deg_to_rad(max_hfov_gain_deg), deg_to_rad(MAX_HFOV_DEG))
+	return rad_to_deg(2.0 * atan(tan(cap_h * 0.5) / asp))
 
 
 func _on_car_hit(impulse: float, _world_pos: Vector3) -> void:
@@ -383,16 +404,21 @@ func _look_point(xf: Transform3D) -> Vector3:
 
 
 func _orbit_pos(xf: Transform3D) -> Vector3:
-	var ring: Vector3 = Vector3(cos(_orbit_angle), 0.0, sin(_orbit_angle)) * orbit_radius_m
+	return _orbit_point(xf, maxf(minf(orbit_radius_m, _orbit_limit), min_distance_m))
+
+
+func _orbit_point(xf: Transform3D, radius: float) -> Vector3:
+	var ring: Vector3 = Vector3(cos(_orbit_angle), 0.0, sin(_orbit_angle)) * radius
 	return xf.origin + ring + Vector3.UP * orbit_height_m
 
 
 func _update_lens(delta: float) -> void:
 	var nitro_goal: float = 1.0 if target.nitro_active else 0.0
 	nitro_kick = lerpf(nitro_kick, nitro_goal, 1.0 - exp(-nitro_kick_rate * delta))
-	var goal: float = compute_base_fov() + nitro_fov_kick * nitro_kick
+	var goal: float = orbit_fov_deg if mode == Mode.ORBIT else compute_base_fov() + nitro_fov_kick * nitro_kick
 	_fov_now = lerpf(_fov_now, goal, 1.0 - exp(-fov_rate * delta))
-	fov = _fov_now
+	# The ignition punch is added after smoothing, so it peaks at once instead of being filtered away.
+	fov = minf(_fov_now + nitro_punch_deg * exp(-_kick_clock / NITRO_PUNCH_S), fov_cap_deg())
 
 
 ## Two sines per axis, about 16 Hz, scaled by trauma squared and the camera_shake option.
