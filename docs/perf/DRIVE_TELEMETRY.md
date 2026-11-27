@@ -46,9 +46,9 @@ Answer to the brief's question: a stand-in at 0.80 to 0.97 places 1st to 4th aga
 
 ## 3. Matrix (2 laps, rival_mix off, autopilot 0.97, night)
 
-Grid 4 = 3 AI + player. Grid 8 = 7 AI + player. "Unfinished" is the count of cars that had not completed 2 laps when the race ended.
+Grid 4 = 3 AI + player. Grid 8 = 7 AI + player. "Player total s" is the player's finish time (`player_total_time_s`); the race itself ends up to 15 s later (`race_time_s` in the JSON). "Unfinished" is the count of cars that had not completed 2 laps when the race ended.
 
-| track | car | grid | pos | race s | best lap s | 0-100 s | 0-200 s | top km/h (spec) | rival top max | stuck | teleports | contacts per lap (all) | unfinished |
+| track | car | grid | pos | player total s | best lap s | 0-100 s | 0-200 s | top km/h (spec) | rival top max | stuck | teleports | contacts per lap (all) | unfinished |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | bogaz | Tayfun | 4 | 3 | 112.82 | 53.95 | 3.50 | 9.68 | 211.1 (268) | 209.5 | 6 | 3 | 16.5 | 0 |
 | bogaz | Tayfun | 8 | 4 | 109.28 | 54.12 | 3.80 | 9.90 | 214.2 (268) | 209.6 | 8 | 7 | 44.0 | 0 |
@@ -87,15 +87,15 @@ The top-speed numbers are spec values from the catalog. They say nothing about h
 - Max frame before the countdown: 482.5 ms (scene build, not a race frame).
 - Max frame during countdown: 57.5 ms.
 - Max frame in the first 5 s after GO: 34.6 ms.
-- Frames over 25 ms: 11 before the countdown (grid build), 25 during the countdown, and 20 or more after GO (the first at 0.07 s after GO, the 20th checked at 1.99 s after GO). After GO most frames in the first 2 s are 25-35 ms (about 30 fps). The exact count after GO was not totalled. This is a desktop number only, with one run.
+- First 5 s after GO: 301 frames, median 15.6 ms, 52 frames over 25 ms (20 of 121 in the first 2 s, median 14.9 ms; 32 of 180 in 2-5 s). So the start runs at about 60 fps with repeated 25-35 ms spikes, not a sustained 30 fps. Whole run: 96 frames over 25 ms. Desktop only, one run.
 
 ## Ranked driving problems (measured; parameters are NOT changed)
 
 1. Stuck and reset churn grows with grid size. 4 to 21 stuck recoveries per 2-lap race, 0 to 15 teleports. Grid 8 Marten on bogaz had 21 stuck and 15 teleports. The recovery trigger is `stuck_time` (2.0 s) and `stuck_progress_m` (2.0 m). The teleport fallback is `reset_yaw_deg` (40 deg). File: `game/ai/ai_driver.gd`.
-2. Contact pressure is high. 9 to 99 contact events per lap on grid 8 and 13 to 17 per lap at grid 4 in the first race. Some of these are wall or rival touches. The avoidance inputs are `car_width` (1.9 m), `side_clearance` (0.8 m), `lane_margin` (0.6 m), `ttc_brake` (1.5 s). File: `game/ai/ai_driver.gd`. The contact impulse threshold in `ArcadeCar` was not read.
-3. Top speed in races is far below spec. Tayfun reaches 198 to 214 km/h against 268 km/h spec. Marten and Yildirim reach 198 to 232 km/h against 316 and 352. Speed is capped by the driver target: `skill` (0.8 to 1.0 of the target, set to 0.97 in the matrix) and `throttle_gain` (0.5). The track target-speed table was not read. File: `game/ai/ai_driver.gd`.
-4. City01 never reaches 200 km/h for most cars: 0-200 is 75 s or more in 5 of 6 city cars, and not reached for 2 of them on grid 8. Track max speed on city01 was not read (it is reported as track_max_speed_kmh in the JSON). The parameter to check is in the city track scene or track script, not yet traced.
-5. Race ends with cars unfinished. On city01 grid 8, Yildirim left 5 of 8 cars unfinished at the end. Up to 3 unfinished on bogaz. This decides which cars are classified. The finish rule is in `game/race/race_manager.gd` (not read).
+2. Contact pressure is high. All cars together: 9 to 41 contact events per lap at grid 4 and 33 to 99.5 at grid 8 (matrix). In the 1-lap first race the player alone had 1 to 17. Some of these are wall or rival touches. The avoidance inputs are `car_width` (1.9 m), `side_clearance` (0.8 m), `lane_margin` (0.6 m), `ttc_brake` (1.5 s). File: `game/ai/ai_driver.gd`. The contact impulse threshold in `ArcadeCar` was not read.
+3. Top speed in races is far below spec. Tayfun reaches 198 to 214 km/h against 268 km/h spec. Marten and Yildirim reach 198 to 232 km/h against 316 and 352, so the car spec barely separates the classes. The hard cap is the track speed profile: `max_speed` = 70 m/s (252 km/h, `track_max_speed_kmh` in the JSON) in `game/world/track.gd`, below every spec top speed. The AI then drives a fraction of that profile: `skill` (0.97 in the matrix) in `game/ai/ai_driver.gd`.
+4. City01 almost never reaches 200 km/h: 0-200 is 75 s or more in 4 of 6 city runs and not reached in the other 2 (grid 8). The cap is the same 252 km/h as bogaz, so the limit is the corner speed profile: `lateral_accel_limit` = 9.5 m/s^2 (v = sqrt(a * r)) in `game/world/track.gd`, applied to city01's tighter curvature. Not verified per segment.
+5. Race ends with cars unfinished. On city01 grid 8, Yildirim left 5 of 8 cars unfinished at the end. Up to 3 unfinished on bogaz. This decides which cars are classified. The race ends `finish_wait_s` = 15 s after the player finishes (or when all cars finish), so slower cars are cut off and classified by distance. File: `game/race/race_manager.gd`.
 
 ## Not done or risky
 
