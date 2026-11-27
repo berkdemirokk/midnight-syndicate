@@ -65,6 +65,7 @@ func test_kit_domes_smooth_and_keep_shape() -> void:
 		if scene == null:
 			continue
 		var root: Node = scene.instantiate()
+		var dome_surfaces: int = 0
 		for mi: Node in root.find_children("*", "MeshInstance3D", true, false):
 			var src: Mesh = (mi as MeshInstance3D).mesh
 			var out: Mesh = Landmarks.smooth_dome_mesh(src)
@@ -86,12 +87,19 @@ func test_kit_domes_smooth_and_keep_shape() -> void:
 					continue
 				var old_n: PackedVector3Array = a[Mesh.ARRAY_NORMAL]
 				var new_n: PackedVector3Array = b[Mesh.ARRAY_NORMAL]
+				dome_surfaces += 1
 				var moved: int = 0
+				var flipped: int = 0
 				var unit_ok: bool = true
 				for k: int in new_n.size():
 					unit_ok = unit_ok and absf(new_n[k].length() - 1.0) < 1e-3
+					if new_n[k].dot(old_n[k]) < 0.0:
+						flipped += 1
 					if new_n[k].dot(old_n[k]) < cos(deg_to_rad(5.0)):
 						moved += 1
 				check(unit_ok, "dome normals are unit length in %s" % LOD_FILES[lod])
+				# only the zero-area slivers at the apex pole ship pointing down and turn to +Y (22 corners in LOD0, 4 in LOD2)
+				check(flipped <= 32, "dome normals keep their outward side in %s surface %d (%d flipped)" % [LOD_FILES[lod], i, flipped])
 				check(moved > new_n.size() / 4, "dome normals smoothed in %s surface %d (%d of %d moved)" % [LOD_FILES[lod], i, moved, new_n.size()])
+		check(dome_surfaces > 0, "an M_Dome surface exists in " + LOD_FILES[lod])
 		root.free()

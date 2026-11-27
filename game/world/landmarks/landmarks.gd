@@ -143,7 +143,8 @@ func _style(mi: MeshInstance3D, lod: int) -> void:
 ## The kit builds every triangle with its own vertices, so the dome's normals were the flat face normals (the facets
 ## read as panels). Same vertices, indices, surfaces and materials: only ARRAY_NORMAL of the DOME_MATERIAL surfaces
 ## changes, to the average of the faces that share the point and lie within CREASE_COS of this face.
-## shortcut: assumes each index is used by one triangle (true for the kit); a shared index would take its last corner's normal.
+## shortcut: a shared index takes its last corner's normal; the importer only shares corners with identical shipped normals
+## (coplanar faces, same weld), so the result is the same; revisit if a kit ships pre-smoothed shared vertices.
 static func smooth_dome_mesh(src: Mesh) -> ArrayMesh:
 	var out := ArrayMesh.new()
 	for i: int in src.get_surface_count():
@@ -151,13 +152,13 @@ static func smooth_dome_mesh(src: Mesh) -> ArrayMesh:
 		var mat: Material = src.surface_get_material(i)
 		var kind: int = src.surface_get_primitive_type(i)
 		if mat != null and mat.resource_name == DOME_MATERIAL and kind == Mesh.PRIMITIVE_TRIANGLES:
-			arrays[Mesh.ARRAY_NORMAL] = _smooth_normals(arrays[Mesh.ARRAY_VERTEX], arrays[Mesh.ARRAY_INDEX])
+			arrays[Mesh.ARRAY_NORMAL] = _smooth_normals(arrays[Mesh.ARRAY_VERTEX], arrays[Mesh.ARRAY_INDEX], arrays[Mesh.ARRAY_NORMAL])
 		out.add_surface_from_arrays(kind, arrays)
 		out.surface_set_material(i, mat)
 	return out
 
 
-static func _smooth_normals(verts: PackedVector3Array, index: Variant) -> PackedVector3Array:
+static func _smooth_normals(verts: PackedVector3Array, index: Variant, shipped: PackedVector3Array) -> PackedVector3Array:
 	var idx := PackedInt32Array()
 	if index == null:
 		idx.resize(verts.size())
@@ -172,6 +173,8 @@ static func _smooth_normals(verts: PackedVector3Array, index: Variant) -> Packed
 	for t: int in tris:
 		var a: Vector3 = verts[idx[3 * t]]
 		face_n[t] = (verts[idx[3 * t + 1]] - a).cross(verts[idx[3 * t + 2]] - a)
+		if face_n[t].dot(shipped[idx[3 * t]]) < 0.0:  ## face the way the shipped normal does (winding alone pointed them inward)
+			face_n[t] = -face_n[t]
 		for k: int in 3:
 			var key: Vector3i = _weld_key(verts[idx[3 * t + k]])
 			if not touching.has(key):
@@ -186,7 +189,7 @@ static func _smooth_normals(verts: PackedVector3Array, index: Variant) -> Packed
 			for f: int in touching[_weld_key(verts[idx[3 * t + k]])]:
 				if face_n[f].normalized().dot(own) >= CREASE_COS:
 					sum += face_n[f]
-			normals[idx[3 * t + k]] = sum.normalized() if not sum.is_zero_approx() else Vector3.UP
+			normals[idx[3 * t + k]] = sum.normalized() if not sum.is_zero_approx() else shipped[idx[3 * t + k]]  ## zero-area face: keep as shipped
 	return normals
 
 
