@@ -24,6 +24,14 @@ const MAX_PROGRESS_JUMPS: int = 200  ## server: bad track projections per car be
 const MAX_NAME_LEN: int = 24
 const MAX_PACKET_BYTES: int = 65536
 const SERVER_CHANNEL: int = 0
+const TRACK_SCENE: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"  ## the race track, chosen by the server
+const TRACK_ALLOW: PackedStringArray = [TRACK_SCENE]  ## the only track scenes a start message may name
+const ORDER_HZ: float = 4.0  ## server: live standings (place, lap, metres) for every racer
+
+
+## The track scene a start message names when it is allow-listed, else "" (the development circuit).
+static func track_for(path: String) -> String:
+	return path if TRACK_ALLOW.has(path) else ""
 
 
 ## True when the server may bind this address: loopback always, anything else only when given with --address.

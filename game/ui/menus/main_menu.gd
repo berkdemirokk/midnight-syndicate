@@ -59,7 +59,7 @@ func _ready() -> void:
 	# A lost online connection leaves its reason here once.
 	var net: NetSession = get_tree().root.get_node_or_null(NetSession.NODE_NAME) as NetSession
 	if net != null and net.last_message != "":
-		_show_toast(net.last_message)
+		_show_toast(I18n.t("net.lost") if net.last_message == NetSession.LOST_MESSAGE else net.last_message)
 		net.last_message = ""
 
 
@@ -102,7 +102,7 @@ func _build_foreground() -> void:
 	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
 	if NetConfig.is_enabled():
 		var online := Button.new()
-		online.text = "Online (LAN, experimental)"
+		online.text = I18n.t("net.menu_button")
 		online.pressed.connect(_on_online)
 		menu.add_child(online)
 	_quit_btn = _menu_button(menu, "menu.quit", _on_quit)

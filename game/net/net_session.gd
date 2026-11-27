@@ -14,6 +14,7 @@ signal peer_left(pid: int)
 signal results_received(rows: Array)
 signal connection_lost(reason: String)
 signal server_results(rows: Array)  ## server: results it sent to the clients
+signal order_received(rows: Array)  ## client: live order of the racers (NetProtocol.clean_order checks it)
 
 const NODE_NAME: String = "NetSession"
 const ROLE_NONE: int = 0
@@ -22,13 +23,14 @@ const ROLE_CLIENT: int = 2
 const STATE_LOBBY: String = "lobby"
 const STATE_COUNTDOWN: String = "countdown"
 const STATE_RACING: String = "racing"
+const LOST_MESSAGE: String = "lost the connection to the server"  ## English on the wire; menus show net.lost
 
 var role: int = ROLE_NONE
 var my_pid: int = -1
 var my_name: String = ""
 var last_message: String = ""  ## read by the main menu after a reject or a lost connection
 var race_info: Dictionary = {}  ## client: the last start message
-var stats: Dictionary = {"accepted": 0, "rejected": 0, "relayed": 0, "rate_limited": 0, "snapshots_seen": 0}  ## logs and smoke tests
+var stats: Dictionary = {"accepted": 0, "rejected": 0, "relayed": 0, "rate_limited": 0, "snapshots_seen": 0, "orders_seen": 0}  ## logs and smoke tests
 
 var _host: ENetConnection = null
 var _server_link: ENetPacketPeer = null  ## client: the connection to the server
@@ -41,6 +43,8 @@ var _sim_t: float = 0.0  ## server: summed frame time, so the rate cap follows g
 var _accepted_by_pid: Dictionary = {}  ## server: pid -> accepted states, printed at the end of the race
 var _state: String = STATE_LOBBY
 var _countdown_t: float = 0.0
+var _order_t: float = 0.0  ## server: time since the last order message
+var _track_path: String = ""  ## server: the allow-listed track scene the race uses, "" for the development circuit
 var _race: NetRaceAuthority = null
 var _track: Track = null
 var _laps: int = 1
@@ -84,7 +88,7 @@ func _process(delta: float) -> void:
 
 
 ## Server: binds bind_address:port (127.0.0.1 unless a LAN address is given) and builds the dev circuit.
-func start_server(bind_address: String, port: int, laps: int) -> String:
+func start_server(bind_address: String, port: int, laps: int, track_scene: String = NetConfig.TRACK_SCENE) -> String:
 	if role != ROLE_NONE:
 		return "already running"
 	if not NetConfig.bind_allowed(bind_address):
@@ -97,9 +101,15 @@ func start_server(bind_address: String, port: int, laps: int) -> String:
 	role = ROLE_SERVER
 	my_pid = 0
 	_laps = maxi(laps, 1)
-	_track = DevTrack.build()
+	_track = NetTrack.instance(track_scene)
+	_track_path = track_scene if _track != null else ""
+	if _track == null:
+		if track_scene != "":
+			push_warning("net: track %s did not load, using the development circuit" % track_scene)
+		_track = DevTrack.build()
 	add_child(_track)
 	print("[net] server listening on %s:%d, %d lap(s), protocol %d" % [bind_address, port, _laps, NetConfig.PROTOCOL_VERSION])
+	print("[net] track: %s" % (_track_path if _track_path != "" else "dev circuit"))
 	return ""
 
 
@@ -156,6 +166,7 @@ func close() -> void:
 	_next_pid = 1
 	_state = STATE_LOBBY
 	_race = null
+	_track_path = ""
 	if _track != null:
 		_track.queue_free()
 		_track = null
@@ -174,6 +185,10 @@ func _tick_server(delta: float) -> void:
 			print("[net] GO, server race clock starts")
 	elif _state == STATE_RACING and _race != null:
 		_race.tick(delta)
+		_order_t += delta
+		if _order_t >= 1.0 / NetConfig.ORDER_HZ:
+			_order_t -= 1.0 / NetConfig.ORDER_HZ
+			_broadcast({"t": NetProtocol.MSG_ORDER, "rows": _race.order_rows()}, false)
 		if _race.all_over():
 			_end_race()
 
@@ -287,8 +302,9 @@ func _begin_countdown() -> void:
 	_race.setup(_track, _laps, names, grid)
 	_state = STATE_COUNTDOWN
 	_countdown_t = NetConfig.COUNTDOWN_S
+	_order_t = 0.0
 	print("[net] start: %d racers, grid %s" % [racers.size(), str(grid)])
-	_broadcast({"t": NetProtocol.MSG_START, "countdown": NetConfig.COUNTDOWN_S, "laps": _laps, "grid": grid, "names": names})
+	_broadcast({"t": NetProtocol.MSG_START, "countdown": NetConfig.COUNTDOWN_S, "laps": _laps, "grid": grid, "names": names, "track": _track_path})
 
 
 func _end_race() -> void:
@@ -305,7 +321,7 @@ func _end_race() -> void:
 
 func _on_disconnect(peer: ENetPacketPeer) -> void:
 	if role != ROLE_SERVER:
-		last_message = "lost the connection to the server"
+		last_message = LOST_MESSAGE
 		connection_lost.emit(last_message)
 		return
 	var key: String = _peer_key(peer)
@@ -350,6 +366,9 @@ func _client_message(t: String, d: Dictionary) -> void:
 			_rtt_n += 1
 		NetProtocol.MSG_RESULTS:
 			results_received.emit(d.get("rows", []))
+		NetProtocol.MSG_ORDER:
+			stats["orders_seen"] = int(stats["orders_seen"]) + 1
+			order_received.emit(d.get("rows", []))
 
 
 func _broadcast_lobby() -> void:
@@ -358,9 +377,9 @@ func _broadcast_lobby() -> void:
 	_broadcast({"t": NetProtocol.MSG_LOBBY, "players": players})
 
 
-func _broadcast(msg: Dictionary) -> void:
+func _broadcast(msg: Dictionary, reliable: bool = true) -> void:
 	for pid: int in _peer_of:
-		_send(_peer_of[pid], msg)
+		_send(_peer_of[pid], msg, reliable)
 
 
 func _send(peer: ENetPacketPeer, msg: Dictionary, reliable: bool = true) -> void:

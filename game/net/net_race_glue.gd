@@ -15,6 +15,7 @@ var _done: bool = false
 var _send_t: float = 0.0
 var _seq: int = 0
 var _cars: Dictionary = {}  ## pid -> ArcadeCar (visual only)
+var _names: Dictionary = {}  ## pid -> display name, from the start message
 var _samples: Dictionary = {}  ## pid -> Array of [time_s: float, xf: Transform3D]
 var _last_origin: Vector3 = Vector3.ZERO
 var _has_last: bool = false
@@ -39,6 +40,7 @@ func _bind(scene: RaceScene) -> void:
 	_session.results_received.connect(_on_results)
 	_session.connection_lost.connect(_on_lost)
 	_session.race_starting.connect(_on_start)
+	_session.order_received.connect(_on_order)
 	if not _session.race_info.is_empty():
 		_on_start(_session.race_info)
 
@@ -49,8 +51,9 @@ func _on_start(info: Dictionary) -> void:
 	_started = true
 	var grid: Dictionary = info.get("grid", {})
 	if not grid.has(_session.my_pid):
-		_on_lost("this race started without you")
+		_on_lost(I18n.t("net.not_in_race"))
 		return
+	_names = info.get("names", {})
 	var track: Track = _scene.track
 	var spec: CarSpec = load(_scene.config_used.car_spec_path) as CarSpec
 	_scene.player.reset_to(track.get_grid_transform(int(grid[_session.my_pid])))
@@ -69,7 +72,28 @@ func _on_start(info: Dictionary) -> void:
 		car.set_frozen_for_grid(true)
 		_cars[pid] = car
 		_samples[pid] = []
+	# until the first live order arrives, the standings show the grid
+	var grid_rows: Array = []
+	for pid: int in grid:
+		grid_rows.append({"pid": pid, "place": int(grid[pid]) + 1, "lap": 0, "dist": 0.0})
+	_on_order(grid_rows)
 	_scene.start_net_countdown()
+
+
+## Live standings: the server's order (4 Hz) becomes the HUD rows, with the cars shown in the race. Rows of pids
+## this client does not know are skipped.
+func _on_order(raw: Array) -> void:
+	if not _started or _done or _scene == null or _scene.hud == null:
+		return
+	var rows: Array = []
+	for r: Dictionary in NetProtocol.clean_order(raw, _scene.config_used.laps):
+		var pid: int = r["pid"]
+		var car: ArcadeCar = _scene.player if pid == _session.my_pid else _cars.get(pid) as ArcadeCar
+		if car == null:
+			continue
+		rows.append({"car": car, "name": str(_names.get(pid, "")), "place": r["place"], "distance": r["dist"]})
+	if not rows.is_empty():
+		_scene.hud.set_online_rows(rows)
 
 
 func _physics_process(delta: float) -> void:

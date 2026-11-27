@@ -2,7 +2,7 @@ class_name NetLobbyMenu
 extends Control
 ## Online (LAN, experimental) lobby overlay, opened from the main menu when NetConfig.is_enabled().
 ## Host a server on this PC (127.0.0.1 by default) or join one, set ready, and the race starts once
-## NetConfig.MIN_START_READY players are ready. Built in code, plain controls, English text.
+## NetConfig.MIN_START_READY players are ready. Built in code, plain controls, text through I18n.
 
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const DEFAULT_NAME: String = "Player"
@@ -30,20 +30,20 @@ func _ready() -> void:
 	box.grow_vertical = Control.GROW_DIRECTION_BOTH
 	box.add_theme_constant_override("separation", 10)
 	add_child(box)
-	box.add_child(_label("Online (LAN, experimental)", 26))
-	box.add_child(_label("Local network only. Not internet multiplayer.", 14))
-	_address = _field(box, "Address", NetConfig.cmdline_value("address", NetConfig.DEFAULT_BIND))
+	box.add_child(_label(I18n.t("net.title"), 26))
+	box.add_child(_label(I18n.t("net.local_only"), 14))
+	_address = _field(box, I18n.t("net.address"), NetConfig.cmdline_value("address", NetConfig.DEFAULT_BIND))
 	_address.text_changed.connect(_on_address_changed)
-	_port = _field(box, "Port", str(NetConfig.DEFAULT_PORT))
-	_name = _field(box, "Name", DEFAULT_NAME)
+	_port = _field(box, I18n.t("net.port"), str(NetConfig.DEFAULT_PORT))
+	_name = _field(box, I18n.t("net.name"), DEFAULT_NAME)
 	var row := HBoxContainer.new()
-	row.add_child(_button("Host", _on_host))
-	row.add_child(_button("Join", _on_join))
-	_ready_btn = _button("Ready", _on_ready)
+	row.add_child(_button(I18n.t("net.host"), _on_host))
+	row.add_child(_button(I18n.t("net.join"), _on_join))
+	_ready_btn = _button(I18n.t("net.ready"), _on_ready)
 	row.add_child(_ready_btn)
-	row.add_child(_button("Back", _on_back))
+	row.add_child(_button(I18n.t("net.back"), _on_back))
 	box.add_child(row)
-	_players = _label("No lobby yet.", 16)
+	_players = _label(I18n.t("net.no_lobby"), 16)
 	box.add_child(_players)
 	_status = _label("", 16)
 	box.add_child(_status)
@@ -54,7 +54,7 @@ func _ready() -> void:
 	_session.race_starting.connect(_on_race_starting)
 	_session.server_results.connect(_on_server_results)
 	if _session.role == NetSession.ROLE_SERVER:
-		_status.text = "Hosting. Join from a second game window to race."
+		_status.text = I18n.t("net.hosting_here")
 	_refresh_buttons()
 
 
@@ -88,23 +88,23 @@ func _button(text: String, handler: Callable) -> Button:
 
 func _refresh_buttons() -> void:
 	_ready_btn.visible = _session.role == NetSession.ROLE_CLIENT
-	_ready_btn.text = "Not ready" if _ready_on else "Ready"
+	_ready_btn.text = I18n.t("net.not_ready") if _ready_on else I18n.t("net.ready")
 
 
 func _on_host() -> void:
 	var laps: int = int(NetConfig.cmdline_value("laps", "1"))
-	var err: String = _session.start_server(_address.text.strip_edges(), int(_port.text), laps)
+	var err: String = _session.start_server(_address.text.strip_edges(), int(_port.text), laps, NetConfig.TRACK_SCENE)
 	if err != "":
 		_status.text = err
 		return
-	_status.text = "Hosting on %s:%s, %d lap(s)." % [_address.text, _port.text, laps]
+	_status.text = I18n.t("net.hosting") % [_address.text, _port.text, laps]
 	_refresh_buttons()
 
 
 ## Warns while typing an address the server would refuse to host on (anything but loopback without --address).
 func _on_address_changed(text: String) -> void:
 	if not NetConfig.bind_allowed(text.strip_edges()) and text.strip_edges() != "":
-		_status.text = "Hosting needs 127.0.0.1, or start the game with --address=<LAN IP>. Joining any address is fine."
+		_status.text = I18n.t("net.address_warning")
 
 
 func _on_join() -> void:
@@ -112,7 +112,7 @@ func _on_join() -> void:
 	if err != "":
 		_status.text = err
 		return
-	_status.text = "Connecting to %s:%s..." % [_address.text, _port.text]
+	_status.text = I18n.t("net.connecting") % [_address.text, _port.text]
 	_refresh_buttons()
 
 
@@ -131,28 +131,28 @@ func _on_lobby(players: Array) -> void:
 	var lines: PackedStringArray = PackedStringArray()
 	for p: Variant in players:
 		var d: Dictionary = p
-		lines.append("%s %s" % ["[ready]" if bool(d.get("ready", false)) else "[    ]", str(d.get("name", ""))])
-	_players.text = "Players (%d/%d, %d ready needed):\n%s" % [players.size(), NetConfig.MAX_PLAYERS, NetConfig.MIN_START_READY, "\n".join(lines)]
+		lines.append("%s %s" % [I18n.t("net.tag_ready") if bool(d.get("ready", false)) else I18n.t("net.tag_wait"), str(d.get("name", ""))])
+	_players.text = I18n.t("net.players") % [players.size(), NetConfig.MAX_PLAYERS, NetConfig.MIN_START_READY] + "\n" + "\n".join(lines)
 
 
 func _on_welcomed(pid: int) -> void:
-	_status.text = "Joined as player %d. Press Ready when you are set." % pid
+	_status.text = I18n.t("net.joined") % pid
 
 
 func _on_rejected(reason: String) -> void:
-	_status.text = "Rejected: %s" % reason
+	_status.text = I18n.t("net.rejected") % reason
 	_ready_on = false
 	_refresh_buttons()
 
 
 func _on_lost(reason: String) -> void:
-	_status.text = reason
+	_status.text = I18n.t("net.lost") if reason == NetSession.LOST_MESSAGE else reason
 	_ready_on = false
 	_refresh_buttons()
 
 
 func _on_server_results(_rows: Array) -> void:
-	_status.text = "Race done. Lobby reopened."
+	_status.text = I18n.t("net.race_done")
 
 
 func _on_race_starting(info: Dictionary) -> void:
@@ -160,7 +160,7 @@ func _on_race_starting(info: Dictionary) -> void:
 	cfg.net_hold_grid = true
 	cfg.opponent_count = 0
 	cfg.laps = int(info.get("laps", 1))
-	cfg.track_scene = ""  ## missing file = development circuit, the same on every machine
+	cfg.track_scene = NetConfig.track_for(str(info.get("track", "")))  ## "" = development circuit, the same on every machine
 	cfg.autopilot = false
 	cfg.traffic_enabled = false
 	cfg.event_id = "online_lan"

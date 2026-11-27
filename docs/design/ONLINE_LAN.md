@@ -7,7 +7,8 @@ Do not expose the PC to the internet with this build.
 ## How to switch it on
 - `game/net/net_config.gd`: `ENABLED = false` (default). Set it to true only for a deliberate test build.
 - Or start the game with `--experimental-online` (after the user arguments: `-- --experimental-online`).
-- With either, the main menu shows "Online (LAN, experimental)". Without them the button does not exist.
+- With either, the main menu shows "Online (LAN, experimental)" (Turkish: "Online (LAN, deneysel)"). Without them the
+  button does not exist. All menu and lobby text goes through I18n (keys `net.*` in `ui/i18n.gd`).
 - The server binds 127.0.0.1. A LAN address is accepted only when the game is started with `--address=<LAN IP>`;
   `0.0.0.0` and any other address are refused by the server itself (`NetSession.start_server`), not only by the UI.
 
@@ -25,11 +26,12 @@ snapshots and exit codes. Exit code 0 only when every check passes. Output: `evi
 | game/net/net_lobby.gd | lobby players, ready flags, start rule (2 ready), grid order = join order |
 | game/net/net_race_authority.gd | server race truth: progress from validated positions (Track.get_progress), laps, finish order, DNF |
 | game/net/net_session.gd | ENetConnection transport (create_host_bound), lobby and relay, rate cap, ping/pong |
-| game/net/net_race_glue.gd | client: grid slot, shared countdown, 20 Hz state send, remote car interpolation, results screen |
+| game/net/net_race_glue.gd | client: grid slot, shared countdown, 20 Hz state send, remote car interpolation, live standings, results screen |
+| game/net/net_track.gd | the allow-listed track scene for the server and every client (`NetConfig.TRACK_ALLOW`); null falls back to DevTrack |
 | game/net/net_lobby_menu.gd | lobby overlay: host, join, ready, back |
 | tools/net_smoke.py | launcher: 1 server + 2 clients, log checks, `evidence/net_smoke/<run>/summary.json` |
 | game/devtools/net_smoke.gd | the Godot side of the smoke test (server or client role) |
-| game/tests/test_net_protocol.gd, test_net_race.gd | in-process unit tests (14 tests) |
+| game/tests/test_net_protocol.gd, test_net_race.gd, test_net_polish.gd | in-process unit tests (track allow-list, order rows, order validation) |
 
 Small hooks in existing code: `race/race_config.gd` (net_hold_grid), `race/race_scene.gd` (no AI opponents and no
 own countdown when net_hold_grid, `start_net_countdown()`, glue attach, local results skipped, retry does nothing
@@ -42,13 +44,20 @@ Packets above 64 KB are dropped.
 - client to server: hello {v, name}, ready {on}, state {seq, xf, vel, steer, reset?}, ping {ts}, bye
 - server to client: welcome {pid, v}, reject {reason}, lobby {players}, start {countdown, laps, grid, names},
   snap {pid, seq, xf, vel, steer}, peer_left {pid}, results {rows}, pong {ts}
+- server to client also: order {rows} (unreliable, 4 Hz)
 - State is unreliable (FLAG_UNSEQUENCED); hello, ready, lobby, start and results are reliable.
 
 ## Server rules
 - Hello: a different protocol version is rejected with the reason. Names 1 to 24 characters. Lobby full or a race
   running: rejected.
-- Start: when 2 or more players are ready the server sends start with a 3 s countdown and builds the race on the
-  development circuit (DevTrack, the same geometry on every machine). The race clock starts at GO on the server.
+- Track: the race runs on the Bosphorus track (`res://world/istanbul_bogaz/istanbul_bogaz.tscn`). The server loads that scene
+  for its racing line and grid, and names it in the start message (`track`). A client loads only an allow-listed name from
+  that message. If the scene does not load on the server, the server logs a warning and uses the development circuit (
+  `track` is then "", the same on every machine). The log line `[net] track: ...` shows which one ran.
+- Start: when 2 or more players are ready the server sends start with a 3 s countdown. The race clock starts at GO on the server.
+- Live order: while racing, the server sends `order` rows (pid, place, lap, metres) 4 times a second, unreliable. Clients
+  check every row (`NetProtocol.clean_order`: integer pid, place 1..8, lap 0..laps, finite metres) and show the standings in the
+  HUD (every online racer by name, the local player's place). Order rows are never trusted for progress or results.
 - State checks: finite numbers, speed at most 120 m/s, steer within 1.01, strictly increasing sequence, and the
   position may move at most speed * dt * 1.5 + 2 m since the last accepted state. Refused states are counted
   and the last good state is kept.
@@ -82,8 +91,15 @@ Packets above 64 KB are dropped.
   client does not know its finish; it sends until the results arrive, and the server drops those states silently.
 
 ## Measured (this PC, headless, Godot 4.7.2, 127.0.0.1, not a real network)
-Final run: `evidence/net_smoke/run7_realtime/` (`summary.json`, logs). Command: `py -3 tools/net_smoke.py --run run7_realtime`.
-All 16 checks passed. The three processes run headless at real time (no `--fixed-fps`), so the server clock is wall time.
+Latest run on the Bosphorus track: `evidence/net_smoke/wp_netpolish_2/` (`summary.json`, logs). Command:
+`py -3.10 tools/net_smoke.py --run wp_netpolish_2`. All 20 checks passed. Ada 1st (47.31 s, 2205 m), Bo 2nd (48.06 s,
+2207 m), both finished, 0 rejected, 0 rate limited, 189 order messages seen by each client (4 Hz).
+In-game (rendered client on the race scene, `py -3.10 tools/net_ingame_check.py` under the GPU lock): exit 0, 4 shots
+in `evidence/screens/net_client/` (grid, racing, remote, results). The HUD lists both names with the live order and the
+results screen lists both finished (run times 47.30 s and 51.05 s). No DEV TRACK watermark.
+
+Earlier smoke run on the development circuit: `evidence/net_smoke/run7_realtime/` (`summary.json`, logs).
+Command: `py -3 tools/net_smoke.py --run run7_realtime`. All 16 checks passed. The three processes run headless at real time (no `--fixed-fps`), so the server clock is wall time.
 - Join, ready, start: both clients joined, ready flags seen by both, start with 2 racers, grid slots 0 and 1.
 - Client send rate: 20.0 Hz (939 states each over the race).
 - Server accepted 939 (Ada) and 938 (Bo) states, rate limited 0, rejected 0, progress_jumps 0 for both.
@@ -103,19 +119,23 @@ Earlier runs (not used as evidence):
 - run4 (the first version): Ada lost her connection right after GO. Not reproduced in run5, run6 or run7.
   The cause is unknown; the earlier log is not kept as evidence.
 
-Unit tests: `game/tests/test_net_protocol.gd`, `test_net_race.gd`: 14 tests, 0 failed.
+Unit tests: `game/tests/test_net_protocol.gd`, `test_net_race.gd`, `test_net_polish.gd`: 17 tests, 0 failed.
+Full suite: 383 tests, 0 failed (`evidence/test_results.json`).
 
 ## Not done, risky
 - Not internet multiplayer. No NAT traversal, no encryption, no authentication, no anti-cheat beyond the checks above.
 - Clients load the race scene after the start message, so a slow-loading client reaches GO later than the server
   clock does; its finish time includes the load delay. Not a problem in the smoke test (no scene load), untested in game.
-- The race scene path (net_race_glue inside race_scene.gd, the lobby overlay, the results screen) was not run in a
-  real scene and not captured with the capture harness. The smoke test drives the same protocol with real cars in
-  separate processes but skips race_scene.gd. No screenshots exist for the online path.
+- The smoke test drives the same protocol with real cars in separate processes but skips race_scene.gd. The rendered
+  in-game check (net_ingame_check.py) covers race_scene.gd, the HUD standings and the results screen for one client.
+  The lobby overlay itself is not captured.
+- The server's own reject and error texts (for example "lobby is full", "refused: ...") are protocol strings and are
+  shown in English. Only the menu, lobby labels and the lost-connection and race-start messages go through I18n.
+- The remote car in the in-game check reports speed 0 km/h: the glue does not set remote velocities (visual only).
 - Remote cars have no LOD, shadow proxy or audio setup from race_scene; they are a visual approximation.
 - A reset may move a car anywhere; the visual result is shown to every peer. It gives no distance, but it is not
   checked against the track, so a cheating client can show a car in a wrong place.
 - The "Next" button on the online results screen stays hidden: event "online_lan" is not in the event ladder.
-- The online race uses the development circuit (track_scene empty), not a final track.
+- The online race uses the Bosphorus track when it loads; the development circuit is only the fallback.
 - ENet over WAN has not been tested. LAN or localhost only.
 - Projection failures are counted per car but a cap of 200 is a guess, not measured on real play.

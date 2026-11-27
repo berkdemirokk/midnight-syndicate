@@ -46,7 +46,7 @@ func run() -> void:
 	cfg.net_hold_grid = true
 	cfg.opponent_count = 0
 	cfg.laps = int(_info.get("laps", 1))
-	cfg.track_scene = ""
+	cfg.track_scene = NetConfig.track_for(str(_info.get("track", "")))  ## the server's track; "" = development circuit
 	cfg.autopilot = true
 	cfg.traffic_enabled = false
 	cfg.event_id = "online_lan"

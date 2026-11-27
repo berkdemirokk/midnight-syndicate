@@ -1,0 +1,67 @@
+{
+  "run": "wp_netpolish_2",
+  "port": 24590,
+  "laps": 1,
+  "checks": {
+    "server_exit_0": true,
+    "joins_2": true,
+    "ready_2": true,
+    "start_2_racers": true,
+    "track_bogaz": true,
+    "server_go": true,
+    "server_results": true,
+    "results_both_cars": true,
+    "car_finished": true,
+    "Ada_go": true,
+    "Ada_results": true,
+    "Ada_exit_0": true,
+    "Ada_snapshots": true,
+    "Ada_orders": true,
+    "Bo_go": true,
+    "Bo_results": true,
+    "Bo_exit_0": true,
+    "Bo_snapshots": true,
+    "Bo_orders": true
+  },
+  "passed": true,
+  "server_results": [
+    {
+      "pid": 1,
+      "name": "Ada",
+      "position": 1,
+      "finished": true,
+      "dnf": false,
+      "time_s": 47.3147760000017
+    },
+    {
+      "pid": 2,
+      "name": "Bo",
+      "position": 2,
+      "finished": true,
+      "dnf": false,
+      "time_s": 48.0647460000017
+    }
+  ],
+  "accepted_by_pid": "{ 1: 919, 2: 934 }",
+  "client_snapshots": {
+    "Ada": 929,
+    "Bo": 914
+  },
+  "client_rtt_ms_last_min_avg": {
+    "Ada": [
+      16.94,
+      16.8,
+      16.94
+    ],
+    "Bo": [
+      16.94,
+      16.85,
+      16.95
+    ]
+  },
+  "exit_codes": {
+    "server": 0,
+    "Ada": 0,
+    "Bo": 0
+  }
+}
