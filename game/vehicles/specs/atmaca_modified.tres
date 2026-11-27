@@ -7,7 +7,7 @@ _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.92), 0.0, 0.0, 0, 0, Vect
 
 [resource]
 script = ExtResource("1_spec")
-display_name = "Bosfor Atmaca S"
+display_name = "Velmar Strix S"
 mass_kg = 1010.0
 wheelbase = 2.45
 track_front = 1.48

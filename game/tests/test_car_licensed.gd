@@ -12,7 +12,7 @@ const CARS: Array[Dictionary] = [
 	},
 	{
 		"id": "noctra_tayfun", "scene": "res://vehicles/noctra_tayfun/noctra_tayfun.tscn",
-		"spec": "res://vehicles/specs/noctra_tayfun.tres", "name": "Noctra Tayfun",
+		"spec": "res://vehicles/specs/noctra_tayfun.tres", "name": "Noctra Cyclon",
 		"len": 4.335, "width": 2.027, "height": 1.259,  # source GLB bounding box (metres), widebody-drift-coupe.glb
 		"axle": 1.23, "front_r": 0.335, "rear_r": 0.35, "wheelbase": 2.46,
 	},
@@ -30,7 +30,7 @@ const CARS: Array[Dictionary] = [
 	},
 	{
 		"id": "bosfor_yildirim", "scene": "res://vehicles/bosfor_yildirim/bosfor_yildirim.tscn",
-		"spec": "res://vehicles/specs/bosfor_yildirim.tres", "name": "Bosfor Yildirim",
+		"spec": "res://vehicles/specs/bosfor_yildirim.tres", "name": "Velmar Fulmen",
 		"len": 4.456, "width": 2.145, "height": 1.112,  # source GLB bounding box (metres), hypercar.glb
 		"axle": 1.32, "front_r": 0.33, "rear_r": 0.355, "wheelbase": 2.64,
 	},

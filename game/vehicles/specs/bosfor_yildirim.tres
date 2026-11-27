@@ -7,7 +7,7 @@ _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.92), 0.0, 0.0, 0, 0, Vect
 
 [resource]
 script = ExtResource("1_spec")
-display_name = "Bosfor Yildirim"
+display_name = "Velmar Fulmen"
 mass_kg = 1600.0
 wheelbase = 2.64
 track_front = 1.66
