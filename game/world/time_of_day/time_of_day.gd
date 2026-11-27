@@ -131,9 +131,9 @@ func sun_vector(heading_deg: float = 0.0) -> Vector3:
 func _make_day() -> void:
 	id = DAY
 	label = "Day"
-	sun_elevation_deg = 44.0
-	sun_azimuth_deg = 140.0  # behind the start grid on the land side: the mosque and the faces the driver looks at are lit
-	sun_color = Color(1.0, 0.95, 0.84)
+	sun_elevation_deg = 34.0  # afternoon: long shadows across the road instead of flat noon (was 44)
+	sun_azimuth_deg = 130.0  # behind the start grid on the land side: the mosque and the faces the driver looks at are lit
+	sun_color = Color(1.0, 0.92, 0.80)
 	sun_energy = 3.0
 	ambient_energy = 1.15  # sky fill: with baked AO the shaded street fronts need it, or they read near black
 	ambient_sky_mix = 0.3
@@ -302,7 +302,10 @@ func apply_environment(env: Environment, sun: DirectionalLight3D, heading_deg: f
 	sun.basis = Basis.looking_at(-sun_vector(heading_deg), Vector3.UP)
 	var low: bool = Settings.get_preset_id() == "low"
 	sun.shadow_enabled = sun_shadows and not low
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	# two splits: the near one (12 % of the range, about 8 m) gives the hero car a crisp shadow, the far one the street
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sun.directional_shadow_split_1 = 0.12
+	sun.directional_shadow_blend_splits = false
 	sun.directional_shadow_max_distance = shadow_max_distance_m
 	sun.shadow_blur = 1.2
 	sun.shadow_bias = 0.05

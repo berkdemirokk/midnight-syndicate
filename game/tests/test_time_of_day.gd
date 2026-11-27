@@ -25,7 +25,7 @@ func test_presets() -> void:
 	check(TimeOfDay.preset("nonsense").is_night(), "an unknown id is night")
 	check(TimeOfDay.is_valid("day") and not TimeOfDay.is_valid("noon"), "is_valid")
 	# day: strong sun, dim signs, glass windows, no lamps, dry road, no rain, no headlights
-	check(day.sun_energy > sunset.sun_energy * 0.9 and day.sun_elevation_deg > 40.0, "day sun is high and strong")
+	check(day.sun_energy > sunset.sun_energy * 0.9 and day.sun_elevation_deg > 30.0, "day sun is high and strong")  # afternoon sun 34 deg since 2026-11-28
 	check(not day.lamps_on and day.window_scale == 0.0 and day.neon_scale < 0.3, "day: lamps off, windows not emissive, neon dim")
 	check(day.road_wetness < 0.3 and not day.rain and not day.headlights_on, "day: dry road, no rain, no headlights")
 	# sunset: low warm sun, lamps and headlights on, no rain
