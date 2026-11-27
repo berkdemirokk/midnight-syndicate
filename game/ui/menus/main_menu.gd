@@ -56,6 +56,11 @@ func _ready() -> void:
 	_refresh_text()
 	_race_btn.grab_focus()
 	_play_intro()
+	# A lost online connection leaves its reason here once.
+	var net: NetSession = get_tree().root.get_node_or_null(NetSession.NODE_NAME) as NetSession
+	if net != null and net.last_message != "":
+		_show_toast(net.last_message)
+		net.last_message = ""
 
 
 func _build_foreground() -> void:
@@ -94,6 +99,12 @@ func _build_foreground() -> void:
 	_race_btn.theme_type_variation = &"PrimaryButton"
 	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
 	_settings_btn = _menu_button(menu, "menu.settings", _on_settings)
+	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
+	if NetConfig.is_enabled():
+		var online := Button.new()
+		online.text = "Online (LAN, experimental)"
+		online.pressed.connect(_on_online)
+		menu.add_child(online)
 	_quit_btn = _menu_button(menu, "menu.quit", _on_quit)
 	_quit_btn.visible = not (OS.has_feature("ios") or OS.has_feature("android"))
 
@@ -223,6 +234,12 @@ func _on_race() -> void:
 
 func _on_garage() -> void:
 	_open(GARAGE_SCENE)
+
+
+func _on_online() -> void:
+	var lobby := NetLobbyMenu.new()
+	lobby.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(lobby)
 
 
 func _on_settings() -> void:

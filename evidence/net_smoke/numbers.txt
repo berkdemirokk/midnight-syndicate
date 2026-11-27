@@ -1,0 +1,12 @@
+Smoke run 4 (server + 2 clients, 127.0.0.1, 1 lap, DevTrack, headless, uncapped frame pacing, this PC):
+- Join, ready, start: both clients joined, lobby updated, countdown 3.0 s sent to both, grid slots 0 and 1.
+- Server accepted 3567 car states, relayed 3567 snapshots. Rejected 13695: mostly "not racing" after a driver finished,
+  because clients keep sending until results arrive (known, see Not done).
+- Results sent by the server: Ada 1st (server time 609.12 s, 0 progress jumps), Bo 2nd (609.88 s, 31 progress jumps ignored).
+- Ada lost her connection right after GO on this run (ENet timeout under load); the server kept her result and sent results to Bo.
+- Client send rate: 20.0 Hz (1 state per 50 ms of the client clock). Bo sent 55351 states in total (keeps sending after finishing).
+- Snapshots received by Bo: 939 (not every relayed state arrived in this loaded run).
+- RTT (ping/pong, localhost): min 0.12 ms, average about 1100 ms on this loaded PC. The average is dominated by the uncapped
+  headless client loop, not the network, so it is not a usable latency number.
+- Server clock vs real time: headless frames are not paced to real time, so the 609 s race time is a clock value, not a lap time.
+Unit tests (game/tests/test_net_protocol.gd, test_net_race.gd): 9 tests, 0 failed.
