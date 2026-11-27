@@ -495,7 +495,7 @@ func _paint_board(c: Control) -> void:
 		if i == _sel:
 			ResultsScreen._fill_skewed(c, Rect2(r2.position, Vector2(ACCENT_W, r2.size.y)), MSTheme.CYAN if open else MSTheme.MUTED)
 		if open:
-			draw_stars(c, star_rights[i], r2.position.y + r2.size.y * 0.5, STAR_R * k, GameState.event_stars(EventCatalog.id_at(i)), STAR_STEP * k)
+			draw_stars(c, star_rights[i], _row_name[i].pos.y + _row_name[i].height() * 0.5, STAR_R * k, GameState.event_stars(EventCatalog.id_at(i)), STAR_STEP * k)
 	if GameState.is_event_unlocked(get_selected_id()):
 		draw_stars(c, rx + star_r * 2.0 + star_r * 2.4 * 2.0, star_y, star_r, GameState.event_stars(get_selected_id()), star_r * 2.4)
 	for b: Button in _buttons:
