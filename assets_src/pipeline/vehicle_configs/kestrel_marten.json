@@ -232,5 +232,6 @@
       "glass": 0.1,
       "default": 0.12
     }
-  }
+  },
+  "tail_cell": 0
 }

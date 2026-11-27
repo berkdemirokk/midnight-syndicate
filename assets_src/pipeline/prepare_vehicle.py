@@ -82,6 +82,16 @@ def make_material(name, cfg, src_images):
     if "emission" in v:
         set_in(bsdf, "Emission Color", v["emission"])
         set_in(bsdf, "Emission Strength", v["emission_strength"])
+    if name == "M_LightRear" and cfg.get("tail_cell") is not None:
+        # one unit of the tail-light atlas: day picture as albedo, the lit picture as emission (same UV)
+        day = nt.nodes.new("ShaderNodeTexImage")
+        day.image = bpy.data.images.load(os.path.join(ROOT, TAIL_DAY), check_existing=True)
+        day.extension = "EXTEND"
+        lit = nt.nodes.new("ShaderNodeTexImage")
+        lit.image = bpy.data.images.load(os.path.join(ROOT, TAIL_LIT), check_existing=True)
+        lit.extension = "EXTEND"
+        nt.links.new(day.outputs["Color"], bsdf.inputs["Base Color"])
+        nt.links.new(lit.outputs["Color"], bsdf.inputs["Emission Color"])
     if name == "M_Plate" and cfg.get("plate_image"):
         tex = nt.nodes.new("ShaderNodeTexImage")
         tex.image = bpy.data.images.load(cfg["plate_image"], check_existing=True)
@@ -242,7 +252,11 @@ def build_lod(src, cfg, level, out_dir, stats):
     for mname in mats_used:
         if mname not in KNOWN:
             raise SystemExit("target %s is not an engine material name" % mname)
-    materials = {m: make_material(m, cfg, imgs) for m in mats_used}
+    tail = tail_boxes(buckets) if cfg.get("tail_cell") is not None else None
+    if cfg.get("tail_cell") is not None and tail is None:
+        print("WARN LOD%d tail lights skipped: rear light faces too few or one-sided" % level)
+    mcfg = cfg if tail or cfg.get("tail_cell") is None else dict(cfg, tail_cell=None)
+    materials = {m: make_material(m, mcfg, imgs) for m in mats_used}
     for o in list(bpy.data.objects):  # the source objects are replaced by the engine nodes built below
         bpy.data.objects.remove(o, do_unlink=True)
 
@@ -274,6 +288,8 @@ def build_lod(src, cfg, level, out_dir, stats):
         bm.free()
         if name == "plate_rear":
             plate_uv(me)
+        if tail and "M_LightRear" in slot_of:
+            tail_uv(me, tail, cfg["tail_cell"], slot_of["M_LightRear"])
         for m in slot_mats:
             me.materials.append(m)
         ob = bpy.data.objects.new(name, me)
@@ -315,6 +331,53 @@ def build_lod(src, cfg, level, out_dir, stats):
                               "materials": sorted(mats_used), "material_count": len(mats_used)}
     print("LOD%d tris=%d surfaces=%d materials=%d" % (level, total, surfaces, len(mats_used)))
     export(os.path.join(out_dir, "%s_lod%d.glb" % (cfg["car_id"], level)), cfg)
+
+
+TAIL_DAY = "assets_src/ai_generated/chatgpt/tail_atlas_day.png"  # 2 x 3 cells of six tail-light units, black ground
+TAIL_LIT = "assets_src/ai_generated/chatgpt/tail_atlas_lit.png"  # pixel-aligned: lenses and LED strips only
+TAIL_ASPECT = (1536 / 2) / (1024 / 3)  # one cell is 768 x 341 px
+TAIL_MIN_FACES = 12  # per side (left/right of the car): fewer faces and the light is too small to read
+
+
+def tail_boxes(buckets):
+    """Per side (L: x >= 0, R: x < 0) the rear light faces' extent in X and Z, or None when a side is too small."""
+    pts = {"L": [], "R": []}
+    count = {"L": 0, "R": 0}
+    for b in buckets.values():
+        for idx, target, _, _ in b["faces"]:
+            if target != "M_LightRear":
+                continue
+            cs = [b["verts"][i] for i in idx]
+            side = "L" if sum(c.x for c in cs) / len(cs) >= 0.0 else "R"
+            count[side] += 1
+            pts[side] += cs
+    out = {}
+    for side in ("L", "R"):
+        if count[side] < TAIL_MIN_FACES or not pts[side]:
+            return None
+        xs = [p.x for p in pts[side]]
+        zs = [p.z for p in pts[side]]
+        out[side] = (min(xs), max(xs), min(zs), max(zs))
+    return out
+
+
+def tail_uv(me, boxes, cell, slot):
+    """Planar rear view on the M_LightRear polygons: u runs right to left across the light (+X to -X), v bottom to
+    top. The frame keeps the atlas cell aspect (no stretch) and contains the light's extent."""
+    col, row = cell % 2, cell // 2
+    uv = me.uv_layers.new(name="UVMap")
+    for poly in me.polygons:
+        if poly.material_index != slot:
+            continue
+        x0, x1, z0, z1 = boxes["L" if poly.center.x >= 0.0 else "R"]
+        w = max(x1 - x0, (z1 - z0) * TAIL_ASPECT)
+        h = w / TAIL_ASPECT
+        cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
+        for li in poly.loop_indices:
+            c = me.vertices[me.loops[li].vertex_index].co
+            lu = (cx + w / 2 - c.x) / w
+            lv = (c.z - (cz - h / 2)) / h
+            uv.data[li].uv = ((col + lu) / 2, (2 - row + lv) / 3)
 
 
 def plate_uv(me):
