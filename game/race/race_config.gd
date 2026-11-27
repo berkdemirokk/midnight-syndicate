@@ -40,6 +40,7 @@ extends Resource
 @export var rival_mix: bool = false  ## rivals drive a mix of the available car models (CarCatalog), else the player's model
 @export var rival_class: String = ""  ## with rival_mix: only rival models of this catalog class ("street", ...); empty = every rival model
 @export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
+@export var net_hold_grid: bool = false  ## online race (net/): the grid waits for the server start message; no AI opponents are spawned
 
 
 ## Opponent paint by index, cycling through the list. Falls back to the player colour when no list is set.

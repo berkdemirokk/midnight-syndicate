@@ -139,7 +139,7 @@ func _process(delta: float) -> void:
 		WheelSpray.update_nearest(cars, player)
 	if race.state == RaceManager.State.GRID:
 		_grid_t += delta
-		if _grid_t >= GRID_BEAT_S:
+		if _grid_t >= GRID_BEAT_S and not config_used.net_hold_grid:
 			race.start_countdown()
 			_start_grid_intro()
 
@@ -172,6 +172,8 @@ func reset_player() -> void:
 
 ## Fresh race from the grid with the same config. Used by RETRY and by the pause menu's restart.
 func retry() -> void:
+	if config_used.net_hold_grid:
+		return  ## online: the session is closed, so no new grid; NetRaceGlue leaves to the menu instead
 	_release_reflection()
 	if _world != null:
 		_world.queue_free()
@@ -255,6 +257,8 @@ func _build_race() -> void:
 	race.total_laps = config_used.laps
 	_world.add_child(race)
 	race.setup(track, cars, player, _names)
+	if config_used.net_hold_grid:
+		NetRaceGlue.attach(self, _world)  ## online race: visuals for the others, countdown on the server start message
 	if config_used.traffic_enabled and not dev_track_used:
 		var traffic := TrafficSystem.new()
 		traffic.name = "Traffic"
@@ -363,7 +367,7 @@ func _spawn_cars() -> void:
 	var spec: CarSpec = load(config_used.car_spec_path) as CarSpec
 	cars.clear()
 	_names = PackedStringArray()
-	var opponents: int = clampi(config_used.opponent_count, 0, MAX_OPPONENTS)
+	var opponents: int = 0 if config_used.net_hold_grid else clampi(config_used.opponent_count, 0, MAX_OPPONENTS)  ## net: remote players are spawned by NetRaceGlue
 	var rivals: Array[Dictionary] = []
 	if config_used.rival_mix:
 		rivals = CarCatalog.rival_models(opponents, hash(config_used.event_id), config_used.rival_class)
@@ -719,6 +723,14 @@ func _ensure_watermark() -> void:
 	layer.add_child(_watermark)
 
 
+## Online race: the server start message starts the countdown (NetRaceGlue calls this). Local races never need it.
+func start_net_countdown() -> void:
+	if race == null or race.state != RaceManager.State.GRID:
+		return
+	race.start_countdown()
+	_start_grid_intro()
+
+
 ## Countdown camera: from high behind the pack, down over the cars to the chase pose at GO (see ChaseCamera).
 func _start_grid_intro() -> void:
 	var c: Vector3 = Vector3.ZERO
@@ -773,6 +785,8 @@ func _on_race_started() -> void:
 
 
 func _on_race_finished(results: Array[Dictionary]) -> void:
+	if config_used.net_hold_grid:
+		return  ## online: NetRaceGlue shows the server results instead
 	last_results = results
 	MusicPlayer.get_instance().duck(-10.0, 0.15)
 	UiSounds.finish()
