@@ -8,6 +8,9 @@ func test_track_allow_list() -> void:
 	check(NetConfig.track_for("res://world/city_01/city_01.tscn") == "", "other scenes are refused (development circuit)")
 	check(NetConfig.track_for("") == "", "an empty track name means the development circuit")
 	check(NetTrack.instance("res://world/missing_track.tscn") == null, "a missing scene gives no track")
+	check(NetConfig.track_usable(NetConfig.TRACK_SCENE), "a client can race the Bosphorus track")
+	check(NetConfig.track_usable(""), "a client can race the development circuit when the server uses it")
+	check(not NetConfig.track_usable("res://world/city_01/city_01.tscn"), "a client refuses a track off the allow-list")
 	var t: Track = NetTrack.instance(NetConfig.TRACK_SCENE)
 	check(t != null, "the Bosphorus scene instances as a Track")
 	if t != null:

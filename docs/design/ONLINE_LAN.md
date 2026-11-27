@@ -52,7 +52,8 @@ Packets above 64 KB are dropped.
   running: rejected.
 - Track: the race runs on the Bosphorus track (`res://world/istanbul_bogaz/istanbul_bogaz.tscn`). The server loads that scene
   for its racing line and grid, and names it in the start message (`track`). A client loads only an allow-listed name from
-  that message. If the scene does not load on the server, the server logs a warning and uses the development circuit (
+  that message; a client that cannot race the named track (off the allow-list or missing,
+  `NetConfig.track_usable`) leaves the race with `net.track_missing` instead of racing another road. If the scene does not load on the server, the server logs a warning and uses the development circuit (
   `track` is then "", the same on every machine). The log line `[net] track: ...` shows which one ran.
 - Start: when 2 or more players are ready the server sends start with a 3 s countdown. The race clock starts at GO on the server.
 - Live order: while racing, the server sends `order` rows (pid, place, lap, metres) 4 times a second, unreliable. Clients

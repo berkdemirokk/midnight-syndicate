@@ -34,6 +34,12 @@ static func track_for(path: String) -> String:
 	return path if TRACK_ALLOW.has(path) else ""
 
 
+## Client: false when the server names a track this client cannot race (not allow-listed or missing here). Racing
+## the development circuit instead would put this client on a different road from the server, so it must refuse.
+static func track_usable(path: String) -> bool:
+	return path == "" or (TRACK_ALLOW.has(path) and ResourceLoader.exists(path))
+
+
 ## True when the server may bind this address: loopback always, anything else only when given with --address.
 static func bind_allowed(address: String) -> bool:
 	if address == DEFAULT_BIND:

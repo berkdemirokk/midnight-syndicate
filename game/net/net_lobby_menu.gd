@@ -156,6 +156,13 @@ func _on_server_results(_rows: Array) -> void:
 
 
 func _on_race_starting(info: Dictionary) -> void:
+	var track: String = str(info.get("track", ""))
+	if not NetConfig.track_usable(track):
+		_session.call_deferred("close")  ## leaves the race (bye) instead of racing another road
+		_status.text = I18n.t("net.track_missing") % track
+		_ready_on = false
+		_refresh_buttons()
+		return
 	var cfg := RaceConfig.new()
 	cfg.net_hold_grid = true
 	cfg.opponent_count = 0

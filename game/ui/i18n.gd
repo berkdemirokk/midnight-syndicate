@@ -205,6 +205,7 @@ const DICT: Dictionary = {
 	"net.rejected": {"tr": "Reddedildi: %s", "en": "Rejected: %s"},
 	"net.race_done": {"tr": "Yarış bitti. Lobi yeniden açıldı.", "en": "Race done. Lobby reopened."},
 	"net.lost": {"tr": "Sunucuyla bağlantı koptu.", "en": "Lost the connection to the server."},
+	"net.track_missing": {"tr": "Sunucunun pisti bu oyunda yok: %s. Yarışa katılınmadı.", "en": "The server's track is not in this game: %s. Not joining the race."},
 	"net.not_in_race": {"tr": "Bu yarış sen olmadan başladı.", "en": "This race started without you."},
 }
 
