@@ -13,9 +13,10 @@ const TRACK_MASLAK: String = "res://world/istanbul_maslak/istanbul_maslak.tscn"
 const TRACK_BOGAZ: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 
 const EVENTS: Array[Dictionary] = [
-	# Showcase: the Ortakoy coast at night, open from the first start ("open": true) and easy enough for the starter car.
-	{"id": "ortakoy_night", "tod": "night", "laps": 2, "skills": [0.80, 0.78, 0.76], "level": 1, "mult": 1.5, "track": TRACK_BOGAZ, "place": "ortakoy", "open": true},
-	{"id": "wharf_sprint", "tod": "sunset", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true},
+	# Showcase and first race: the Ortakoy coast at night, open from the first start ("open": true). One lap of about a
+	# minute against street-class cars ("cls"): before, the seeded rival draw put a 352 km/h hypercar on this grid.
+	{"id": "ortakoy_night", "tod": "night", "laps": 1, "skills": [0.70, 0.68, 0.66], "level": 1, "mult": 1.5, "track": TRACK_BOGAZ, "place": "ortakoy", "open": true, "cls": "street"},
+	{"id": "wharf_sprint", "tod": "sunset", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true, "cls": "street"},
 	{"id": "neon_strip_circuit", "tod": "night", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true},
 	{"id": "midnight_time_trial", "tod": "night", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
 	{"id": "overpass_duel", "tod": "day", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
@@ -121,6 +122,7 @@ static func config_for(id: String) -> RaceConfig:
 	c.opponent_skills = skills
 	c.opponent_count = skills.size()
 	c.rival_mix = true
+	c.rival_class = str(ev.get("cls", ""))
 	c.traffic_enabled = bool(ev.get("traffic", false))
 	c.time_of_day = str(ev.get("tod", "night"))
 	return c

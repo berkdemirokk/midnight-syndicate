@@ -1,6 +1,7 @@
 class_name CaptureHarness
 extends Node
-## Screenshot and perf harness. Autoload "Capture". Inert unless the user args contain --capture=<scenario>.
+## Screenshot and perf harness. capture_boot.tscn puts one under the root (node "Capture"); not an autoload, because the
+## iOS export leaves devtools/ out. Inert unless the user args contain --capture=<scenario>.
 ## Only screenshots written here count as evidence.
 ## Usage (from the repo root):
 ##   Godot_v4.7.2-stable_win64_console.exe --path "game" --resolution 1920x1080 --position 40,40 res://devtools/capture_boot.tscn -- --capture=<scenario> [--size=WxH] [--preset=low|medium|high]

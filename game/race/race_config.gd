@@ -38,6 +38,7 @@ extends Resource
 @export_range(0.0, 80.0, 1.0) var car_rim_elevation_deg: float = 28.0
 @export var traffic_enabled: bool = false  ## ambient civilian traffic (TrafficSystem); career events switch it on
 @export var rival_mix: bool = false  ## rivals drive a mix of the available car models (CarCatalog), else the player's model
+@export var rival_class: String = ""  ## with rival_mix: only rival models of this catalog class ("street", ...); empty = every rival model
 @export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
 
 

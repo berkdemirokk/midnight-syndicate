@@ -366,7 +366,7 @@ func _spawn_cars() -> void:
 	var opponents: int = clampi(config_used.opponent_count, 0, MAX_OPPONENTS)
 	var rivals: Array[Dictionary] = []
 	if config_used.rival_mix:
-		rivals = CarCatalog.rival_models(opponents, hash(config_used.event_id))
+		rivals = CarCatalog.rival_models(opponents, hash(config_used.event_id), config_used.rival_class)
 	for i: int in opponents:
 		var r_scene: String = config_used.car_scene
 		var r_spec: CarSpec = spec
