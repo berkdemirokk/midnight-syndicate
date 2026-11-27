@@ -1,0 +1,3 @@
+# Integrated gameplay candidate — 2026-11-27
+
+Base: a4c30a1840ab4cd0d0562e9b8b808b8d4c4c85fe (includes concurrent graphics and early-race balancing work). Sources: PRs #1–#7. Existing asset files and shaders were not touched. Save protection and economy changes combined in game_state.gd; new career entries appended to the latest event catalog, preserving the revised Ortakoy/Wharf rules; player tuning inserted in latest race_scene.gd, preserving class-filtered rivals. PROGRESS.md retained exactly from the base. Pursuit rules are not active. All individual PRs had a successful CI run, but combined candidate must pass CI separately. Real UI, balancing, visual and iOS tests remain required. No release or merge to the active branch.
