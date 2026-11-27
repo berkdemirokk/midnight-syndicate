@@ -300,6 +300,16 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		m.albedo_color = Color(tuning.road_paint_albedo, tuning.road_paint_albedo, tuning.road_paint_albedo * 0.97)
 		m.roughness = tuning.road_paint_roughness
 		emit_strength = tuning.road_paint_glow
+		# Paint lies on the asphalt grain: the asphalt normal map in world metres keeps the start squares and lines
+		# from reading as flat stickers under the sun.
+		var paint_set: Dictionary = _cc0_set(ASPHALT_SET)
+		m.normal_enabled = true
+		m.normal_texture = _tex(paint_set["normal"])
+		m.normal_scale = 0.8
+		m.uv1_triplanar = true
+		m.uv1_world_triplanar = true
+		var k: float = 1.0 / maxf(tuning.asphalt_tile_m, 0.5)
+		m.uv1_scale = Vector3(k, k, k)
 	if emit_strength > 0.0:
 		m.emission_enabled = true
 		m.emission = r["emit"]

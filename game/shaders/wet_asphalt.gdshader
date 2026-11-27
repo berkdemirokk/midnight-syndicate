@@ -35,6 +35,10 @@ uniform float damp_reflectivity : hint_range(0.0, 1.0) = 0.55;
 uniform float dry_detail : hint_range(0.0, 1.0) = 1.0;
 // Share of the stock specular (0.5). TimeOfDay lowers it by day: dry asphalt mirrored the blue sky and facades.
 uniform float specular_scale : hint_range(0.0, 1.0) = 1.0;
+// Mirror colour: share of the reflection's saturation kept (1 = as the mirror sees it; neon sheets read less orange).
+uniform float reflection_saturation : hint_range(0.0, 1.0) = 0.85;
+// Damp road mirrors in metre-scale patches instead of one even sheet (0 = even).
+uniform float damp_patchiness : hint_range(0.0, 1.0) = 0.45;
 
 varying vec3 world_pos;
 
@@ -92,6 +96,8 @@ void fragment() {
 	float dd = dry_detail * (1.0 - 0.6 * wetness);
 	float macro = vnoise(wp / 14.0) * 0.6 + vnoise(wp / 4.5) * 0.3 + vnoise(wp / 1.3) * 0.1 - 0.5;
 	float tone = 1.0 + macro * 0.24 * dd;
+	// Wet patches in world metres: shared by the damp darkening and the mirror amount.
+	float wet_noise = smoothstep(0.38, 0.62, vnoise(wp / 7.0) * 0.65 + vnoise(wp / 2.2) * 0.35);
 	// Repair patches: one hashed rectangle per 8 m cell, about a third of the cells, tone shifted.
 	vec2 pc = wp / 8.0;
 	vec2 pcell = floor(pc);
@@ -113,7 +119,7 @@ void fragment() {
 	tone *= 1.0 - grate * (disc * (0.55 - 0.3 * bars) + 0.3 * rim);
 
 	// Damp asphalt: darker, a little glossy. Groove: darker and smoother.
-	float damp = wetness * (1.0 - puddle * 0.5);
+	float damp = wetness * mix(1.0 - damp_patchiness * 0.9, 1.0, wet_noise) * (1.0 - puddle * 0.5);
 	vec3 col = alb.rgb * tint.rgb * mix(1.0, 0.3, damp);
 	// Rubber laid on the racing groove (was a 7 % tint: invisible) and oil stains in the lanes.
 	float rubber = wear * (0.17 + 0.11 * vnoise(wp * 2.5)) * dd;
@@ -178,10 +184,13 @@ void fragment() {
 			wsum += w;
 		}
 		refl /= wsum;
+		float rl = dot(refl, vec3(0.2126, 0.7152, 0.0722));
+		refl = mix(vec3(rl), refl, reflection_saturation);
+		refl /= (1.0 + rl * 0.35);  // soft shoulder: clipped windows stay bright without a blown sheet
 		float ndv = clamp(dot(normalize(VIEW), NORMAL), 0.0, 1.0);
 		float fres = 0.04 + 0.96 * pow(1.0 - ndv, 5.0);
 		// The whole wet road reflects, puddles most. Dry road: nothing.
-		float amount = mix(damp_reflectivity, 1.0, puddle) * wetness;
+		float amount = mix(damp_reflectivity * mix(1.0 - damp_patchiness, 1.0, wet_noise), 1.0, puddle) * wetness;
 		EMISSION = refl * fres * amount * reflection_strength;
 	}
 }
