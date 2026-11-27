@@ -94,6 +94,9 @@ func _add_photo_walls() -> void:
 	_photo.set_shader_parameter("albedo_tex", load(PHOTO_WALL))
 	if ResourceLoader.exists(PHOTO_WALL_NIGHT):
 		_photo.set_shader_parameter("night_tex", load(PHOTO_WALL_NIGHT))
+	if ResourceLoader.exists(PHOTO_WALL.replace(".jpg", "_normal.png")):
+		_photo.set_shader_parameter("normal_tex", load(PHOTO_WALL.replace(".jpg", "_normal.png")))
+		_photo.set_shader_parameter("relief", 1.0)
 	var quad := QuadMesh.new()
 	quad.size = Vector2(HALL_HALF_M * 2.0, WALL_TOP_M)
 	quad.material = _photo

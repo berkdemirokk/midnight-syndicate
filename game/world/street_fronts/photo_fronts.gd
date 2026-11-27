@@ -100,6 +100,10 @@ func _load_groups(groups: Array) -> void:
 				var night_path: String = ATLAS_DIR + String(atlas_name) + "_night.jpg"
 				if ResourceLoader.exists(night_path):
 					facade.set_shader_parameter("night_tex", load(night_path))
+				var relief_path: String = ATLAS_DIR + String(atlas_name) + "_normal.png"
+				if ResourceLoader.exists(relief_path):  # relief derived from the picture: recesses and trim catch the light
+					facade.set_shader_parameter("normal_tex", load(relief_path))
+					facade.set_shader_parameter("relief", 1.0)
 				by_name[atlas_name] = _facades.size()
 				_facades.append(facade)
 			mats.append(int(by_name[atlas_name]))

@@ -12088,6 +12088,160 @@
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Day street panorama mirrored in the car paint (second pass). Generated on 2026-11-27 with ChatGPT image generation from a text prompt written for this project (no reference picture uploaded, no text or logos). Source PNG: assets_src/ai_generated/chatgpt/street_pano_day.png."
+    },
+    {
+      "id": "photo_front_facade_row_01_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/facade_row_01_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "facade_row_01_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 675185,
+      "sha256": "062892d5b1eef36374817a21bf72873e848b8bbd6fcab1ffb917c7d9a26e479e",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "photo_front_facade_row_02_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/facade_row_02_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "facade_row_02_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 722777,
+      "sha256": "40e0472b1500020f337eabe4dc78adb8d0aca5a6102bba1a29c8ff35788e0601",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "photo_front_market_row_01_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/market_row_01_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "market_row_01_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 789617,
+      "sha256": "6f686ae7c36be594fce4d3b6876caa9ffabe9b24c5f602d0da8ae848d064b1d0",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "photo_front_modern_row_01_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/modern_row_01_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "modern_row_01_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 683997,
+      "sha256": "9eed175a91e9691f27f7c29cd10d395c7f2a88948404947b3329008f55d4607f",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "photo_front_mosque_wall_01_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/mosque_wall_01_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "mosque_wall_01_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 730448,
+      "sha256": "74ea66b3a23887f238348800afd0cff18cf1ea77fd5954c9d8bbb8f97e67162d",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "photo_front_neon_row_01_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/neon_row_01_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "neon_row_01_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 741413,
+      "sha256": "41ada231b6def8aa0595bd8f4113799ab2933d03b6e6d18df55273e31d813007",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
+    },
+    {
+      "id": "photo_front_tower_row_01_normal",
+      "kind": "texture",
+      "path": "game/assets/world/kits/photo_fronts/tower_row_01_normal.png",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {
+        "tower_row_01_normal.png": [
+          1024,
+          512
+        ]
+      },
+      "material_count": 0,
+      "bytes": 711600,
+      "sha256": "1863dfe4dd3df32f2faf60358e73799065a8a53129cd831816aed6036f936d67",
+      "test_result": "pass",
+      "added": "2026-11-27",
+      "notes": "Relief (normal) map derived from the facade picture by assets_src/ai_generated/chatgpt/build_relief.py."
     }
   ]
 }
