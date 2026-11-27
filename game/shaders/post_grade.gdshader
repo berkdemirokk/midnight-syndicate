@@ -20,11 +20,13 @@ void fragment() {
 	if (blur > 0.001) {
 		// Weak above the horizon: the skyline, the bridge lights and the far shore must stay readable at speed.
 		float amt = blur * 0.024 * smoothstep(0.28, 0.85, r) * mix(0.3, 1.0, smoothstep(-0.2, 0.15, d.y));
-		vec3 acc = c;
-		for (int i = 1; i < 6; i++) {
-			acc += texture(screen_tex, uv - d * amt * float(i)).rgb;
+		if (amt > 0.0004) {
+			vec3 acc = c;
+			for (int i = 1; i < 6; i++) {
+				acc += texture(screen_tex, uv - d * amt * float(i)).rgb;
+			}
+			c = acc / 6.0;
 		}
-		c = acc / 6.0;
 	}
 	float l = dot(c, vec3(0.299, 0.587, 0.114));
 	c = mix(vec3(l), c, saturation);

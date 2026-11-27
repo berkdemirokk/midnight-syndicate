@@ -8,10 +8,14 @@ const BLUR_FROM_KMH: float = 110.0
 const BLUR_FULL_KMH: float = 260.0
 const NITRO_BLUR: float = 0.35  ## extra blur while the nitro burns
 const BLUR_RATE: float = 4.0  ## 1/s smoothing so the blur does not pop
+const BURST_PEAK: float = 0.5  ## blur added on the frame nitro ignites
+const BURST_DECAY: float = 6.0  ## 1/s, the ignition burst is gone in about half a second
 
 var _rect: ColorRect = ColorRect.new()
 var _blur: float = 0.0
 var _target: float = 0.0
+var _burst: float = 0.0  ## decaying ignition blur
+var _was_nitro: bool = false
 
 
 func _ready() -> void:
@@ -37,10 +41,14 @@ func _on_settings_changed(_section: String) -> void:
 
 func _process(delta: float) -> void:
 	_blur = lerpf(_blur, _target, 1.0 - exp(-BLUR_RATE * delta))
-	(_rect.material as ShaderMaterial).set_shader_parameter("blur", _blur)
+	_burst *= exp(-BURST_DECAY * delta)
+	(_rect.material as ShaderMaterial).set_shader_parameter("blur", clampf(_blur + _burst, 0.0, 1.0))
 
 
 func set_speed(kmh: float, nitro: bool) -> void:
+	if nitro and not _was_nitro:
+		_burst = BURST_PEAK
+	_was_nitro = nitro
 	_target = clampf(blur_for(kmh, nitro), 0.0, 1.0)
 
 
