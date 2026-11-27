@@ -197,7 +197,13 @@ func _build_stats(ins: Vector4, m: float) -> void:
 	var box := VBoxContainer.new()
 	box.name = "Stats"
 	box.add_theme_constant_override("separation", 14)
-	_place(box, 0.0, 0.0, 0.0, 0.0, ins.x + m, ins.y + m + 260.0, ins.x + m + 560.0, ins.y + m + 260.0)
+	# on a backing panel: bare labels were unreadable over a light car body (the wing hid "ACCELERATION")
+	var back := PanelContainer.new()
+	back.name = "StatsPanel"
+	back.add_theme_stylebox_override("panel", _opaque_box())
+	back.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_place(back, 0.0, 0.0, 0.0, 0.0, ins.x + m, ins.y + m + 244.0, ins.x + m + 470.0, ins.y + m + 244.0)
+	back.add_child(box)
 	for s: String in STATS:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 16)
@@ -280,6 +286,12 @@ func _build_panel(ins: Vector4, m: float) -> void:
 
 	_race_btn = _button("menu.race", Vector2(PANEL_W, 72.0))
 	_race_btn.name = "Race"
+	# the one primary action of the screen: filled, the rest stay outlined
+	_race_btn.add_theme_stylebox_override("normal", MSTheme.box(MSTheme.CYAN, MSTheme.CYAN))
+	_race_btn.add_theme_stylebox_override("hover", MSTheme.box(MSTheme.CYAN.lightened(0.25), MSTheme.CYAN))
+	_race_btn.add_theme_stylebox_override("pressed", MSTheme.box(MSTheme.CYAN.darkened(0.2), MSTheme.CYAN))
+	for c: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		_race_btn.add_theme_color_override(c, MSTheme.BG)
 	_race_btn.pressed.connect(func() -> void: race_pressed.emit())
 	col.add_child(_race_btn)
 

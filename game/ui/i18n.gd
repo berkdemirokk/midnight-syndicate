@@ -132,7 +132,7 @@ const DICT: Dictionary = {
 	"event.harbour_run.name": {"tr": "Liman Koşusu", "en": "Harbour Run"},
 	"event.syndicate_final.name": {"tr": "Sendika Finali", "en": "Syndicate Final"},
 	"garage.class_street": {"tr": "SOKAK SINIFI", "en": "STREET CLASS"},
-	"garage.hint": {"tr": "SÜRÜKLE: DÖNDÜR · TEKERLEK: YAKINLAŞ", "en": "DRAG: ORBIT · WHEEL: ZOOM"},
+	"garage.hint": {"tr": "ARABAYI DÖNDÜRMEK İÇİN SÜRÜKLE", "en": "DRAG TO ROTATE THE CAR"},
 	"garage.cash": {"tr": "NAKİT", "en": "CASH"},
 	"garage.money": {"tr": "%d TL", "en": "$%d"},
 	"garage.stat_speed": {"tr": "EN YÜKSEK HIZ", "en": "TOP SPEED"},
