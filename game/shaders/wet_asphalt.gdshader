@@ -33,6 +33,8 @@ uniform float reflection_grain : hint_range(0.0, 0.1) = 0.012;
 uniform float damp_reflectivity : hint_range(0.0, 1.0) = 0.55;
 // Daylight wear: macro tone, repair patches, drain grates, oil band and surface grain. 0 = flat.
 uniform float dry_detail : hint_range(0.0, 1.0) = 1.0;
+// Share of the stock specular (0.5). TimeOfDay lowers it by day: dry asphalt mirrored the blue sky and facades.
+uniform float specular_scale : hint_range(0.0, 1.0) = 1.0;
 
 varying vec3 world_pos;
 
@@ -125,6 +127,8 @@ void fragment() {
 	rough = mix(rough, 0.08, puddle);
 	rough *= mix(1.0, 0.6, wear * wetness);
 	rough *= (1.0 - 0.18 * rubber * 4.0) * (1.0 - 0.3 * oil);  // polished rubber and oil are smoother than the stone
+	// Dry road: roughness follows the macro tone and the polished racing groove, so the low sun shows patches, not a flat sheet.
+	rough = clamp(rough + macro * 0.18 * dd - wear * 0.08 * dd, 0.05, 1.0);
 
 	// World-space normal for a flat road: texture x -> world X, texture y -> world Z, up = Y.
 	// Puddles flatten it to up and carry ripples.
@@ -147,7 +151,7 @@ void fragment() {
 	ALBEDO = col;
 	ROUGHNESS = rough;
 	// Specular is left on: real lamp lights give long GGX streaks on the low-roughness puddles.
-	SPECULAR = 0.5;
+	SPECULAR = 0.5 * specular_scale;
 	METALLIC = 0.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(wn, 0.0)).xyz);
 
@@ -166,8 +170,9 @@ void fragment() {
 		// Per-pixel jitter of the taps (interleaved gradient noise): turns the visible stack of
 		// discrete copies into fine grain, which reads as wet asphalt texture.
 		float jit = fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715)))) - 0.5;
-		for (int i = -4; i <= 4; i++) {
-			float fi = float(i) + jit;
+		// 5 taps at double spacing cover the same +-4.5 step kernel as 9 (the jitter turns the gaps into grain).
+		for (int i = -2; i <= 2; i++) {
+			float fi = (float(i) + jit) * 2.0;
 			float w = exp(-fi * fi * 0.18);
 			refl += texture(planar_reflection, suv + vec2(0.0, fi * smear)).rgb * w;
 			wsum += w;

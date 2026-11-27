@@ -388,6 +388,7 @@ static func _asphalt() -> ShaderMaterial:
 	sm.set_shader_parameter("wetness", 1.0)
 	sm.set_shader_parameter("puddle_level", tuning.asphalt_puddle_level)
 	sm.set_shader_parameter("rain_intensity", tuning.asphalt_rain)
+	sm.set_shader_parameter("specular_scale", 1.0)  # authored, so TimeOfDay can scale it per hour
 	return sm
 
 
@@ -404,6 +405,8 @@ static func _paving(mat_name: String, r: Dictionary) -> ShaderMaterial:
 	sm.set_shader_parameter("stone_m", 1.0 if kerb else 0.4)
 	sm.set_shader_parameter("joints", 0.0 if kerb else 1.0)
 	sm.set_shader_parameter("roughness_value", float(r["roughness"]))
+	sm.set_shader_parameter("specular_scale", 1.0)  # authored values: TimeOfDay scales both per hour
+	sm.set_shader_parameter("wetness", 0.8)
 	return sm
 
 

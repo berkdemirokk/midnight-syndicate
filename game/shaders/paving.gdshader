@@ -11,6 +11,10 @@ uniform float stone_m : hint_range(0.2, 2.0) = 0.4;
 // 1 = joints between stones (paving), 0 = none (kerb).
 uniform float joints : hint_range(0.0, 1.0) = 1.0;
 uniform float roughness_value : hint_range(0.0, 1.0) = 0.7;
+// Share of the stock specular (0.35); TimeOfDay lowers it by day (dry kerbs mirrored the blue sky).
+uniform float specular_scale : hint_range(0.0, 1.0) = 1.0;
+// Wet film: darker stone, glossier, joints hold water. 0.8 is the authored night value.
+uniform float wetness : hint_range(0.0, 1.0) = 0.0;
 
 varying vec3 world_pos;
 varying vec3 world_nrm;
@@ -59,8 +63,9 @@ void fragment() {
 	col = mix(col, col * 0.55 * (0.8 + 0.4 * vnoise(uv * 22.0)), joint);
 	col *= 1.0 - 0.12 * bevel;
 
+	col *= mix(1.0, 0.55, wetness * (0.6 + 0.4 * joint));
 	ALBEDO = col;
-	ROUGHNESS = clamp(roughness_value + joint * 0.2, 0.0, 1.0);
-	SPECULAR = 0.35;
+	ROUGHNESS = clamp(mix(roughness_value, 0.28, wetness) + joint * 0.2, 0.0, 1.0);
+	SPECULAR = 0.35 * specular_scale;
 	METALLIC = 0.0;
 }
