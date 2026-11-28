@@ -12802,6 +12802,23 @@
       "test_result": "pass",
       "added": "2026-11-28",
       "notes": "STREET EMPIRE brand render (assets_src/branding/make_brand_assets.py, PIL, OFL fonts Anton/Manrope)"
+    },
+    {
+      "id": "ui_car_thumbs",
+      "kind": "generated",
+      "path": "game/assets/ui/car_thumbs",
+      "source": "generated:script",
+      "source_url": "",
+      "license": "project-owned",
+      "author": "project",
+      "tris": 0,
+      "texture_sizes": {},
+      "material_count": 0,
+      "bytes": 533927,
+      "sha256": "a3ead43ab6a9ab997f939f88dfccfc4df6a98f06b8c7b56567777525d09a38f7",
+      "test_result": "pass",
+      "added": "2026-11-28",
+      "notes": "Garage collection thumbnails rendered from the shipped car models by game/devtools/scenarios/ui_car_thumbs.gd (re-run after a model change)"
     }
   ]
 }

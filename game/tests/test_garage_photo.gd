@@ -29,5 +29,6 @@ func test_garage_scene_instantiates_with_the_studio() -> void:
 	await frames(3)
 	check(garage.find_children("Photo_*", "MeshInstance3D", true, false).is_empty(), "no workshop photo lining in the studio garage")
 	check(garage.find_child("Floor", true, false) is MeshInstance3D, "studio floor built")
-	check(garage.find_child("RedWash", true, false) is MeshInstance3D, "studio red wash built")
+	check(garage.find_child("CityView", true, false) is MeshInstance3D, "showroom city view built")
+	check(garage.find_child("TurntableGlow", true, false) is MeshInstance3D, "showroom turntable glow built")
 	await cleanup([garage])

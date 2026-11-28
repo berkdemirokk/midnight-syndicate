@@ -319,6 +319,11 @@ const DICT: Dictionary = {
 	"menu.one_lap": {"tr": "1 TUR", "en": "1 LAP"},
 	# --- street empire: hud ---
 	# --- street empire: garage ---
+	"garage.section": {"tr": "GARAJ", "en": "GARAGE"},
+	"garage.wallet": {"tr": "CÜZDAN", "en": "WALLET"},
+	"garage.color_pick": {"tr": "RENK SEÇİMİ", "en": "COLOUR"},
+	"garage.hue_only": {"tr": "TON", "en": "HUE"},
+	"garage.value_only": {"tr": "PARLAKLIK", "en": "BRIGHTNESS"},
 	"garage.race": {"tr": "YARIŞ", "en": "RACE"},
 	"garage.rep": {"tr": "İTİBAR", "en": "REP"},
 	"garage.chip_owned": {"tr": "SAHİP", "en": "OWNED"},
@@ -329,7 +334,7 @@ const DICT: Dictionary = {
 	"garage.unit_ms2": {"tr": "M/S²", "en": "M/S²"},
 	"garage.unit_grip": {"tr": "TUTUŞ", "en": "GRIP"},
 	"garage.unit_s": {"tr": "SN", "en": "S"},
-	"garage.collection": {"tr": "KOLEKSİYON", "en": "COLLECTION"},
+	"garage.collection": {"tr": "ARAÇ KOLEKSİYONU", "en": "CAR COLLECTION"},
 	"garage.confirm_title": {"tr": "SATIN ALMAYI ONAYLA", "en": "CONFIRM PURCHASE"},
 	"garage.confirm_level": {"tr": "SEVİYE %d", "en": "LEVEL %d"},
 	"garage.confirm_balance": {"tr": "KALAN NAKİT", "en": "BALANCE AFTER"},

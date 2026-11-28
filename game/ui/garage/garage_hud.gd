@@ -41,14 +41,14 @@ const PAGE_KEYS: Dictionary = {"paint": "garage.tab_paint", "rims": "garage.tab_
 const MARGIN_PX: float = 40.0
 const TOP_BAR_H: float = 64.0
 const LEFT_W: float = 440.0  ## identity and stats column, before MSTheme.px
-const PANEL_W: float = 560.0  ## right panel, before MSTheme.px
+const PANEL_W: float = 500.0  ## right panel, before MSTheme.px
 const PANEL_GAP_PX: float = 24.0  ## gap between the collection strip and the right panel
 const SWATCH_PX: float = 64.0
 const PIP_PX: float = 16.0
 const PIP_GAP_PX: float = 6.0
 const TOUCH_H: float = 88.0  ## BUY and car action buttons: touch targets at 1080 px (the test checks this value)
-const CARD_W: float = 232.0  ## collection card, before MSTheme.px
-const CARD_H: float = 124.0
+const CARD_W: float = 268.0  ## collection card, before MSTheme.px
+const CARD_H: float = 136.0
 const CAPTION_H: float = 22.0
 const BAR_PX: float = 6.0  ## stat bar height
 const GRADIENT_H: float = 40.0  ## hue and value strips: touch height (the drawn track is TRACK_H)
@@ -58,6 +58,11 @@ const VALUE_FLOOR: float = 0.1
 const SHAKE_S: float = 0.36
 const SHAKE_RAD: float = 0.035
 const MSG_HOLD_S: float = 1.6
+const ICON: Script = preload("res://ui/theme/ui_icon.gd")
+const THUMB_DIR: String = "res://assets/ui/car_thumbs/"  ## collection thumbnails (devtools/scenarios/ui_car_thumbs.gd)
+const STAT_ICONS: Dictionary = {"speed": "speed", "accel": "accel", "handling": "grip", "nitro": "nitro"}
+const PAGE_ICONS: Dictionary = {"paint": "brush", "rims": "rim", "upgrades": "upgrade"}
+const CLASS_LETTER: Dictionary = {"street": "S", "classic": "C", "hatch": "H", "muscle": "M", "gt": "GT", "sport": "SP", "super": "SS", "hyper": "HY"}
 const MSG_FADE_S: float = 0.4
 
 var _keyed: Array = []  ## [node, i18n key, prefix] for static text
@@ -66,6 +71,7 @@ var _msg_key: String = ""
 var _msg_error: bool = false
 var _car_name: Label
 var _car_class: Label
+var _class_badge: Label
 var _chip_box: PanelContainer
 var _chip: Label
 var _hint: Label
@@ -187,6 +193,7 @@ func build() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var ins: Vector4 = MSTheme.safe_insets()
+	_build_scrims()
 	_build_top_bar(ins)
 	_build_identity(ins)
 	_build_panel(ins)
@@ -196,6 +203,41 @@ func build() -> void:
 
 
 # --- layout ------------------------------------------------------------------
+
+## Graphite gradients behind the left column and the collection strip: type stays readable over the bright city view.
+func _build_scrims() -> void:
+	for side: String in ["left", "bottom"]:
+		var g := Gradient.new()
+		g.set_color(0, Color(MSTheme.GRAPHITE, 0.86 if side == "left" else 0.8))
+		g.set_color(1, Color(MSTheme.GRAPHITE, 0.0))
+		var gt := GradientTexture2D.new()
+		gt.gradient = g
+		gt.fill_from = Vector2.ZERO if side == "left" else Vector2(0.0, 1.0)
+		gt.fill_to = Vector2(1.0, 0.0) if side == "left" else Vector2.ZERO
+		var tr := TextureRect.new()
+		tr.name = "Scrim_" + side
+		tr.texture = gt
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_SCALE
+		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if side == "left":
+			tr.anchor_bottom = 1.0
+			tr.anchor_right = 0.4
+		else:
+			tr.anchor_top = 0.68
+			tr.anchor_right = 1.0
+			tr.anchor_bottom = 1.0
+		add_child(tr)
+
+
+## Section caption with the two red slashes of the brand ("GARAJ", "ARAC KOLEKSIYONU").
+func _section(key: String, px: int) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override("separation", MSTheme.GRID_PX)
+	row.add_child(ICON.new("slashes", float(px) * 0.9, MSTheme.RED))
+	row.add_child(_keyed_label(key, "tracked", px, MSTheme.PEARL))
+	return row
 
 func _bar_h() -> float:
 	return maxf(TOP_BAR_H, MSTheme.button_h())
@@ -228,12 +270,10 @@ func _build_top_bar(ins: Vector4) -> void:
 	var top: float = _top_y(ins)
 	_place(bar, 0.0, 0.0, 1.0, 0.0, ins.x + MARGIN_PX, top, -(ins.z + MARGIN_PX), top + _bar_h())
 
-	_back_btn = _button("common.back", Vector2(MSTheme.px(200.0), _bar_h()), "< ")
-	_back_btn.name = "Back"
-	_back_btn.theme_type_variation = &"GhostButton"
-	_back_btn.pressed.connect(func() -> void: back_pressed.emit())
-	_back_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	bar.add_child(_back_btn)
+	var logo := Logotype.new(0.42 * MSTheme.k(), true)
+	logo.name = "Logo"
+	logo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bar.add_child(logo)
 	bar.add_child(_spacer())
 
 	var views := HBoxContainer.new()
@@ -252,34 +292,6 @@ func _build_top_bar(ins: Vector4) -> void:
 	bar.add_child(views)  # quiet text row: the studio is dark, no plate needed
 	bar.add_child(_spacer())
 
-	var money := HBoxContainer.new()
-	money.name = "Money"
-	money.add_theme_constant_override("separation", MSTheme.GRID_PX * 3)
-	money.alignment = BoxContainer.ALIGNMENT_END
-	var rep_box := VBoxContainer.new()
-	rep_box.name = "Rep"
-	rep_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var rep_cap: Label = _keyed_label("garage.rep", "tracked", MSTheme.px(16), MSTheme.STEEL)
-	rep_cap.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	rep_box.add_child(rep_cap)
-	_rep_value = MSTheme.make_label("0", "digits", MSTheme.px(36), MSTheme.PEARL)
-	_rep_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	rep_box.add_child(_rep_value)
-	money.add_child(rep_box)
-
-	var cash := VBoxContainer.new()
-	cash.name = "Cash"
-	cash.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_cash_caption = _keyed_label("garage.cash", "tracked", MSTheme.px(16), MSTheme.STEEL)
-	_cash_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	cash.add_child(_cash_caption)
-	_cash_value = MSTheme.make_label("0", "digits", MSTheme.px(36), MSTheme.GOLD)
-	_cash_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	cash.add_child(_cash_value)
-	money.add_child(cash)
-	var money_plate: PanelContainer = _plate(money, "MoneyPlate")
-	money_plate.custom_minimum_size.x = MSTheme.px(PANEL_W)  # same column as the configurator panel under it
-	bar.add_child(money_plate)
 
 
 ## Dark plate behind top-bar text: the room's ceiling lights wash out bare labels.
@@ -300,11 +312,36 @@ func _build_identity(ins: Vector4) -> void:
 	var top: float = _content_y(ins)
 	_place(col, 0.0, 0.0, 0.0, 0.0, ins.x + MARGIN_PX, top, ins.x + MARGIN_PX + MSTheme.px(LEFT_W), top)
 
-	_car_name = MSTheme.make_label("", "display", MSTheme.px(64), MSTheme.PEARL)
+	_back_btn = _button("common.back", Vector2(MSTheme.px(180.0), MSTheme.px(48.0)))
+	_back_btn.name = "Back"
+	_back_btn.theme_type_variation = &"GhostButton"
+	_back_btn.icon = _icon_tex("back", MSTheme.px(22))
+	_back_btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_back_btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_back_btn.pressed.connect(func() -> void: back_pressed.emit())
+	col.add_child(_back_btn)
+	col.add_child(_section("garage.section", MSTheme.px(16)))
+	_car_name = MSTheme.make_label("", "slant", MSTheme.px(62), MSTheme.PEARL)
 	_car_name.clip_text = true
 	col.add_child(_car_name)
-	_car_class = MSTheme.make_label("", "tracked", MSTheme.px(20), MSTheme.TITANIUM)
-	col.add_child(_car_class)
+	var class_row := HBoxContainer.new()
+	class_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	class_row.add_theme_constant_override("separation", MSTheme.GRID_PX * 2)
+	var badge := PanelContainer.new()
+	var bsb: StyleBoxFlat = MSTheme.box(MSTheme.RED, MSTheme.RED, 0)
+	bsb.content_margin_left = MSTheme.px(10)
+	bsb.content_margin_right = MSTheme.px(10)
+	bsb.content_margin_top = 2.0
+	bsb.content_margin_bottom = 2.0
+	badge.add_theme_stylebox_override("panel", bsb)
+	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_class_badge = MSTheme.make_label("S", "slant", MSTheme.px(24), MSTheme.PEARL)
+	badge.add_child(_class_badge)
+	class_row.add_child(badge)
+	_car_class = MSTheme.make_label("", "tracked", MSTheme.px(18), MSTheme.TITANIUM)
+	_car_class.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	class_row.add_child(_car_class)
+	col.add_child(class_row)
 	_chip_box = PanelContainer.new()
 	_chip_box.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	_chip = MSTheme.make_label("", "tracked", MSTheme.px(18), MSTheme.PEARL)
@@ -336,13 +373,15 @@ func _build_stats(box: VBoxContainer) -> void:
 		var head := HBoxContainer.new()
 		head.add_theme_constant_override("separation", MSTheme.GRID_PX)
 		head.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var lab: Label = _keyed_label(STAT_KEYS[s], "tracked", MSTheme.px(18), MSTheme.TITANIUM)
+		head.add_child(ICON.new(STAT_ICONS[s], float(MSTheme.px(24)), MSTheme.TITANIUM))
+		var lab: Label = _keyed_label(STAT_KEYS[s], "tracked", MSTheme.px(17), MSTheme.TITANIUM)
 		lab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lab.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		head.add_child(lab)
 		var delta := MSTheme.make_label("", "digits", MSTheme.px(20), MSTheme.GO)
 		delta.size_flags_vertical = Control.SIZE_SHRINK_END
 		head.add_child(delta)
-		var value := MSTheme.make_label("", "digits", MSTheme.px(30), MSTheme.PEARL)
+		var value := MSTheme.make_label("", "slant", MSTheme.px(32), MSTheme.PEARL)
 		value.size_flags_vertical = Control.SIZE_SHRINK_END
 		head.add_child(value)
 		var unit: Label = _keyed_label(STAT_UNIT_KEYS[s], "tracked", MSTheme.px(16), MSTheme.TITANIUM)
@@ -366,7 +405,7 @@ func _build_stats(box: VBoxContainer) -> void:
 		bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		bar.add_theme_stylebox_override("background", StyleBoxEmpty.new())
-		bar.add_theme_stylebox_override("fill", _fill_box(MSTheme.PEARL))
+		bar.add_theme_stylebox_override("fill", _fill_box(MSTheme.RED))
 		holder.add_child(bar)
 		row.add_child(holder)
 		box.add_child(row)
@@ -385,9 +424,9 @@ func _build_strip(ins: Vector4) -> void:
 	wrap.add_theme_constant_override("separation", MSTheme.GRID_PX)
 	wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var bottom: float = -(ins.w + MARGIN_PX)
-	var strip_h: float = MSTheme.px(CARD_H) + CAPTION_H + MSTheme.GRID_PX
+	var strip_h: float = MSTheme.px(CARD_H) + MSTheme.px(CAPTION_H) + MSTheme.GRID_PX * 2
 	_place(wrap, 0.0, 1.0, 1.0, 1.0, ins.x + MARGIN_PX, bottom - strip_h, -(ins.z + MARGIN_PX + MSTheme.px(PANEL_W) + MSTheme.px(PANEL_GAP_PX)), bottom)
-	wrap.add_child(_keyed_label("garage.collection", "tracked", MSTheme.px(16), MSTheme.TITANIUM))
+	wrap.add_child(_section("garage.collection", MSTheme.px(17)))
 
 	var row := HBoxContainer.new()
 	row.name = "Carousel"
@@ -420,25 +459,48 @@ func _arrow(txt: String, node_name: String, dir: int) -> Button:
 	return b
 
 
+## Collection card: name and class top-left, the car's thumbnail render on the right, price / OWNED / SELECTED / LOCKED
+## at the bottom; the current car gets a red frame with a soft red glow.
 func _strip_card(id: String) -> void:
 	var spec: CarSpec = _spec_of(id)
 	var b := Button.new()
 	b.name = "Card_" + id
 	b.custom_minimum_size = Vector2(MSTheme.px(CARD_W), MSTheme.px(CARD_H))
 	b.focus_mode = Control.FOCUS_ALL
+	b.clip_contents = true
+	var thumb_path: String = THUMB_DIR + id + ".png"
+	if ResourceLoader.exists(thumb_path):
+		var tr := TextureRect.new()
+		tr.name = "Thumb"
+		tr.texture = load(thumb_path) as Texture2D
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tr.anchor_left = 0.3
+		tr.anchor_top = 0.24
+		tr.anchor_right = 1.0
+		tr.anchor_bottom = 1.0
+		tr.offset_right = -MSTheme.GRID_PX
+		tr.offset_bottom = -MSTheme.GRID_PX
+		b.add_child(tr)
 	var inner := VBoxContainer.new()
 	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	inner.alignment = BoxContainer.ALIGNMENT_CENTER
-	inner.add_theme_constant_override("separation", 2)
-	inner.offset_left = MSTheme.GRID_PX
-	inner.offset_right = -MSTheme.GRID_PX
+	inner.add_theme_constant_override("separation", 0)
+	inner.offset_left = MSTheme.px(14)
+	inner.offset_right = -MSTheme.px(12)
+	inner.offset_top = MSTheme.px(10)
+	inner.offset_bottom = -MSTheme.px(10)
 	var nm: String = spec.display_name if spec != null else id
-	var name_l := MSTheme.make_label(nm.to_upper(), "display", MSTheme.px(26), MSTheme.PEARL)
+	var name_l := MSTheme.make_label(nm, "slant", MSTheme.px(24), MSTheme.PEARL)
 	name_l.clip_text = true
 	inner.add_child(name_l)
-	inner.add_child(MSTheme.make_label(GarageText.t("garage.class_" + CarCatalog.class_id(id)), "tracked", MSTheme.px(14), MSTheme.STEEL))
-	var st := MSTheme.make_label("", "digits", MSTheme.px(18), MSTheme.PEARL)
+	inner.add_child(MSTheme.make_label(GarageText.t("garage.class_" + CarCatalog.class_id(id)), "tracked", MSTheme.px(12), MSTheme.STEEL))
+	var fill := Control.new()
+	fill.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(fill)
+	var st := MSTheme.make_label("", "bold", MSTheme.px(17), MSTheme.PEARL)
 	inner.add_child(st)
 	b.add_child(inner)
 	b.pressed.connect(_jump_to.bind(id))
@@ -458,12 +520,52 @@ func _build_panel(ins: Vector4) -> void:
 	col.add_theme_constant_override("separation", MSTheme.GRID_PX * 2)
 	panel.add_child(col)
 
+	var wallet := HBoxContainer.new()
+	wallet.name = "Wallet"
+	wallet.add_theme_constant_override("separation", MSTheme.GRID_PX * 2)
+	wallet.add_child(ICON.new("wallet", float(MSTheme.px(26)), MSTheme.TITANIUM))
+	var wl: Label = _keyed_label("garage.wallet", "tracked", MSTheme.px(16), MSTheme.TITANIUM)
+	wl.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	wallet.add_child(wl)
+	wallet.add_child(_spacer())
+	var money := HBoxContainer.new()
+	money.name = "Money"
+	money.add_theme_constant_override("separation", MSTheme.GRID_PX * 3)
+	money.alignment = BoxContainer.ALIGNMENT_END
+	var rep_box := VBoxContainer.new()
+	rep_box.name = "Rep"
+	rep_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var rep_cap: Label = _keyed_label("garage.rep", "tracked", MSTheme.px(16), MSTheme.STEEL)
+	rep_cap.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	rep_box.add_child(rep_cap)
+	_rep_value = MSTheme.make_label("0", "digits", MSTheme.px(36), MSTheme.PEARL)
+	_rep_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	rep_box.add_child(_rep_value)
+	money.add_child(rep_box)
+
+	var cash := VBoxContainer.new()
+	cash.name = "Cash"
+	cash.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_cash_caption = _keyed_label("garage.cash", "tracked", MSTheme.px(16), MSTheme.STEEL)
+	_cash_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	cash.add_child(_cash_caption)
+	_cash_value = MSTheme.make_label("0", "digits", MSTheme.px(36), MSTheme.GOLD)
+	_cash_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	cash.add_child(_cash_value)
+	money.add_child(cash)
+	wallet.add_child(money)
+	col.add_child(wallet)
+	var rule := ColorRect.new()
+	rule.color = MSTheme.tint(MSTheme.TITANIUM, 0.12)
+	rule.custom_minimum_size = Vector2(0.0, 1.0)
+	col.add_child(rule)
 	var tabs := HBoxContainer.new()
 	tabs.name = "Tabs"
-	tabs.add_theme_constant_override("separation", MSTheme.GRID_PX * 3)
+	tabs.add_theme_constant_override("separation", 4)
 	col.add_child(tabs)
 	for p: String in PAGES:
 		var b: Button = _tab_button(PAGE_KEYS[p])
+		b.icon = _icon_tex(PAGE_ICONS[p], MSTheme.px(22))
 		b.pressed.connect(_show_page.bind(p))
 		tabs.add_child(b)
 		_tabs[p] = b
@@ -482,41 +584,100 @@ func _build_panel(ins: Vector4) -> void:
 	_msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	col.add_child(_msg)
 
-	_race_btn = _button("garage.race", Vector2(MSTheme.px(PANEL_W), maxf(MSTheme.px(80.0), MSTheme.button_h())))
+	_race_btn = _button("garage.race", Vector2(MSTheme.px(PANEL_W), maxf(MSTheme.px(84.0), MSTheme.button_h())), "", "  »")
 	_race_btn.name = "Race"
 	_race_btn.theme_type_variation = &"PrimaryButton"  ## the one primary action on the screen
+	_race_btn.icon = _icon_tex("flag", MSTheme.px(40))
+	_race_btn.add_theme_font_override("font", MSTheme.font("slant"))
+	_race_btn.add_theme_font_size_override("font_size", MSTheme.px(40))
+	_race_btn.add_theme_constant_override("h_separation", MSTheme.px(16))
+	for fc: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
+		_race_btn.add_theme_color_override(fc, MSTheme.PEARL)
+	for st: String in ["normal", "hover", "pressed"]:
+		var sb: StyleBoxFlat = (MSTheme.build().get_stylebox(st, &"PrimaryButton") as StyleBoxFlat).duplicate() as StyleBoxFlat
+		sb.skew = Vector2(0.22, 0.0)  # racing lean, like the brand blade
+		_race_btn.add_theme_stylebox_override(st, sb)
 	_race_btn.pressed.connect(func() -> void: race_pressed.emit())
 	col.add_child(_race_btn)
 
 
-## Text tab: no box. The active tab gets a 3 px red underline and pearl text; hover does not look selected.
+## Segmented tab: graphite cell, the active one filled racing red (owner reference board), icon + label.
 func _tab_button(key: String) -> Button:
-	var b: Button = _button(key, Vector2(0.0, MSTheme.px(56.0)))
+	var b: Button = _button(key, Vector2(0.0, maxf(MSTheme.px(56.0), MSTheme.button_h() * 0.75)))
 	b.toggle_mode = true
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	b.theme_type_variation = &"GhostButton"
-	var none := StyleBoxEmpty.new()
-	var underline := StyleBoxFlat.new()
-	underline.bg_color = Color(0.0, 0.0, 0.0, 0.0)
-	underline.border_width_bottom = 3
-	underline.border_color = MSTheme.RED
+	var off: StyleBoxFlat = MSTheme.box(MSTheme.GRAPHITE_3, MSTheme.tint(MSTheme.TITANIUM, 0.12), 1)
+	off.content_margin_left = MSTheme.px(10)
+	off.content_margin_right = MSTheme.px(10)
+	var hov: StyleBoxFlat = off.duplicate() as StyleBoxFlat
+	hov.bg_color = MSTheme.tint(MSTheme.PEARL, 0.08)
+	var on: StyleBoxFlat = MSTheme.box(MSTheme.RED, MSTheme.RED, 0)
+	on.content_margin_left = off.content_margin_left
+	on.content_margin_right = off.content_margin_right
 	var ring := StyleBoxFlat.new()
 	ring.draw_center = false
 	ring.set_border_width_all(MSTheme.FOCUS_PX)
 	ring.border_color = MSTheme.PEARL
-	b.add_theme_stylebox_override("normal", none)
-	b.add_theme_stylebox_override("hover", none)
-	b.add_theme_stylebox_override("pressed", underline)
-	b.add_theme_stylebox_override("hover_pressed", underline)
+	b.add_theme_stylebox_override("normal", off)
+	b.add_theme_stylebox_override("hover", hov)
+	b.add_theme_stylebox_override("pressed", on)
+	b.add_theme_stylebox_override("hover_pressed", on)
 	b.add_theme_stylebox_override("focus", ring)
 	b.add_theme_font_override("font", MSTheme.font("bold"))
-	b.add_theme_font_size_override("font_size", MSTheme.px(22))
+	b.add_theme_font_size_override("font_size", MSTheme.px(17))
+	b.add_theme_constant_override("h_separation", MSTheme.px(8))
 	return b
+
+
+## Texture for Button.icon: the checkered flag from ui_icon.gd, or a line icon rasterised here.
+func _icon_tex(kind: String, px: int) -> Texture2D:
+	if kind == "flag":
+		return ICON.texture("flag", px, MSTheme.PEARL)
+	return _line_icon_texture(kind, px)
+
+
+## Rasterises a simple line icon (same shapes as ui_icon.gd) into an Image, pearl on transparent.
+static func _line_icon_texture(kind: String, px: int) -> ImageTexture:
+	var img := Image.create(px, px, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	var col := Color(0.957, 0.957, 0.957)
+	var w: int = maxi(2, px / 12)
+	var pts: Array = []
+	match kind:
+		"back":
+			pts = [[Vector2(0.62, 0.15), Vector2(0.28, 0.5), Vector2(0.62, 0.85)]]
+		"upgrade":
+			pts = [[Vector2(0.15, 0.55), Vector2(0.5, 0.25), Vector2(0.85, 0.55)], [Vector2(0.15, 0.85), Vector2(0.5, 0.55), Vector2(0.85, 0.85)]]
+		"brush":
+			pts = [[Vector2(0.88, 0.1), Vector2(0.45, 0.55)], [Vector2(0.42, 0.55), Vector2(0.2, 0.9)], [Vector2(0.3, 0.6), Vector2(0.14, 0.88)]]
+		"rim":
+			var ring: Array = []
+			for i in 33:
+				var a: float = TAU * float(i) / 32.0
+				ring.append(Vector2(0.5, 0.5) + Vector2(cos(a), sin(a)) * 0.42)
+			pts.append(ring)
+			for i in 5:
+				var a: float = -PI * 0.5 + TAU * float(i) / 5.0
+				pts.append([Vector2(0.5, 0.5) + Vector2(cos(a), sin(a)) * 0.12, Vector2(0.5, 0.5) + Vector2(cos(a), sin(a)) * 0.4])
+	for line in pts:
+		for k in (line as Array).size() - 1:
+			var a: Vector2 = (line[k] as Vector2) * float(px)
+			var b2: Vector2 = (line[k + 1] as Vector2) * float(px)
+			var steps: int = int(a.distance_to(b2)) + 1
+			for t in steps + 1:
+				var p: Vector2 = a.lerp(b2, float(t) / float(steps))
+				for oy in range(-w / 2, w / 2 + 1):
+					for ox in range(-w / 2, w / 2 + 1):
+						var q := Vector2i(int(p.x) + ox, int(p.y) + oy)
+						if q.x >= 0 and q.y >= 0 and q.x < px and q.y < px:
+							img.set_pixel(q.x, q.y, col)
+	return ImageTexture.create_from_image(img)
 
 
 func _build_paint_page() -> Control:
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", MSTheme.GRID_PX * 2)
+	page.add_child(_keyed_label("garage.color_pick", "tracked", MSTheme.px(15), MSTheme.TITANIUM))
 	var grid := GridContainer.new()
 	grid.columns = 6
 	grid.add_theme_constant_override("h_separation", MSTheme.GRID_PX)
@@ -526,17 +687,18 @@ func _build_paint_page() -> Control:
 		grid.add_child(b)
 		_swatch_buttons.append(b)
 	page.add_child(grid)
+	page.add_child(_keyed_label("garage.hue_only", "tracked", MSTheme.px(15), MSTheme.TITANIUM))
 	_hue_strip = GradientStrip.new()
 	_hue_strip.mode = "hue"
 	_hue_strip.changed.connect(_on_hue_changed)
 	_hue_strip.released.connect(_on_strip_released)
 	page.add_child(_hue_strip)
+	page.add_child(_keyed_label("garage.value_only", "tracked", MSTheme.px(15), MSTheme.TITANIUM))
 	_value_strip = GradientStrip.new()
 	_value_strip.mode = "value"
 	_value_strip.changed.connect(_on_value_changed)
 	_value_strip.released.connect(_on_strip_released)
 	page.add_child(_value_strip)
-	page.add_child(_keyed_label("garage.hue", "tracked", MSTheme.px(16), MSTheme.STEEL))
 	return page
 
 
@@ -823,7 +985,7 @@ func apply_language() -> void:
 		if node is Label:
 			(node as Label).text = I18n.t(key)
 		elif node is Button:
-			(node as Button).text = prefix + I18n.t(key)
+			(node as Button).text = prefix + I18n.t(key) + (str(pair[3]) if (pair as Array).size() > 3 else "")
 	if not _state.is_empty():
 		refresh(_state)
 	if not _msg_key.is_empty():
@@ -876,6 +1038,7 @@ func get_message() -> String:
 func _refresh_car(state: Dictionary) -> void:
 	var id: String = str(state.get("car_id", ""))
 	_car_class.text = GarageText.t("garage.class_" + str(state.get("class", "street")))
+	_class_badge.text = str(CLASS_LETTER.get(str(state.get("class", "street")), "S"))
 	var status: Array = _status(id, false)
 	var ink: Color = status[1] as Color
 	_chip.text = str(status[0])
@@ -1034,12 +1197,14 @@ func _sync_swatches(paint: Color) -> void:
 
 
 func _card_style(current: bool, hover: bool) -> StyleBoxFlat:
-	var bg: Color = MSTheme.GRAPHITE_3 if hover else MSTheme.GRAPHITE_2
-	var sb: StyleBoxFlat = MSTheme.card(bg, MSTheme.tint(MSTheme.TITANIUM, 0.18), 1)
+	var bg: Color = MSTheme.tint(MSTheme.GRAPHITE_3 if hover else MSTheme.GRAPHITE_2, 0.92)
+	var sb: StyleBoxFlat = MSTheme.box(bg, MSTheme.tint(MSTheme.TITANIUM, 0.18), 1)
+	sb.set_content_margin_all(0.0)
 	if current:
-		sb.set_border_width_all(0)
-		sb.border_width_top = MSTheme.px(3.0)
+		sb.set_border_width_all(2)
 		sb.border_color = MSTheme.RED
+		sb.shadow_color = MSTheme.tint(MSTheme.RED, 0.45)  # soft red glow round the current car
+		sb.shadow_size = MSTheme.px(8)
 	return sb
 
 
@@ -1120,12 +1285,12 @@ func _swatch(c: Color) -> Button:
 	return b
 
 
-func _button(key: String, min_size: Vector2 = Vector2.ZERO, prefix: String = "") -> Button:
+func _button(key: String, min_size: Vector2 = Vector2.ZERO, prefix: String = "", suffix: String = "") -> Button:
 	var b := Button.new()
 	b.custom_minimum_size = min_size if min_size != Vector2.ZERO else Vector2(MSTheme.BUTTON_MIN_W, MSTheme.BUTTON_MIN_H)
-	b.text = prefix + I18n.t(key)
+	b.text = prefix + I18n.t(key) + suffix
 	b.focus_mode = Control.FOCUS_ALL
-	_keyed.append([b, key, prefix])
+	_keyed.append([b, key, prefix, suffix])
 	return b
 
 

@@ -17,6 +17,7 @@ const TURN_EASE: float = 1.5  ## 1/s, how fast the turntable reaches its speed
 const KEY_ORBIT_RATE: float = 1.4  ## rad/s while steer keys are held
 const KEY_ZOOM_RATE: float = 0.6  ## fraction per second while accelerate or brake is held
 const STAGE_SCRIPT: Script = preload("res://ui/showroom/showroom_stage.gd")
+const GARAGE_ROOM: Script = preload("res://ui/showroom/garage_showroom.gd")  ## glass, city view, sign wall, ceiling panels
 const ORBIT_MIN_DIST: float = 4.6  ## studio has no walls: the orbit may pull back further than the old room allowed
 const ORBIT_MAX_DIST: float = 10.5
 const TURNTABLE_R: float = 2.85
@@ -332,7 +333,7 @@ func _build_showroom() -> void:
 	_set = ShowroomSet.new()
 	_set.name = "Showroom"
 	add_child(_set)
-	var built: Dictionary = STAGE_SCRIPT.build_studio(_set, "lite" if Settings.get_preset_id() == "low" else "full", false, false)
+	var built: Dictionary = STAGE_SCRIPT.build_studio(_set, "lite" if Settings.get_preset_id() == "low" else "full", false, false, false)
 	_env = built["env"]
 	var we: Node = _set.get_node("Environment")
 	we.reparent(self)  # the garage's WorldEnvironment lives at the scene root, as before ($Environment)
@@ -343,9 +344,11 @@ func _build_showroom() -> void:
 	_pivot.add_child(_set.contact_shadow)
 	_turntable = _make_turntable()
 	add_child(_turntable)
+	GARAGE_ROOM.build(_set, _set.floor_material, TURNTABLE_R, CAR_Y)
 
 
-## Dark glossy disc the car stands on (top at CAR_Y), with a thin racing-red edge; it turns with the car.
+## Satin black disc the car stands on (top at CAR_Y); it turns with the car. Its chrome lip and the red floor glow come
+## from garage_showroom.gd.
 func _make_turntable() -> Node3D:
 	var root := Node3D.new()
 	root.name = "Turntable"
@@ -357,29 +360,13 @@ func _make_turntable() -> Node3D:
 	cyl.radial_segments = 96
 	disc.mesh = cyl
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.045, 0.048, 0.056)
+	m.albedo_color = Color(0.03, 0.032, 0.038)
 	m.metallic = 0.0
-	m.roughness = 0.6  # satin: a glossy plate mirrored the key as a white smear in the rear views
-	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	m.roughness = 0.75  # matte black: any gloss mirrors the ceiling panels as a white patch in the rear views
 	disc.material_override = m
 	disc.position.y = CAR_Y * 0.5
 	disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(disc)
-	var ring := MeshInstance3D.new()
-	var tor := TorusMesh.new()
-	tor.inner_radius = TURNTABLE_R - 0.012
-	tor.outer_radius = TURNTABLE_R + 0.005
-	tor.rings = 96
-	tor.ring_segments = 6
-	ring.mesh = tor
-	var rm := StandardMaterial3D.new()
-	rm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	rm.albedo_color = MSTheme.RED * 0.8
-	ring.material_override = rm
-	ring.scale = Vector3(1.0, 0.5, 1.0)
-	ring.position.y = CAR_Y
-	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	root.add_child(ring)
 	return root
 
 

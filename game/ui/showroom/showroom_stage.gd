@@ -160,7 +160,7 @@ func show_car(id: String) -> void:
 ## the "full" tier, fill and rim spots when spots (plus a shadowed key spot when key_spot), three overhead strips and the
 ## red wash. The garage passes spots false: it lights the car with its own directional key and fill.
 ## Returns {"env", "floor_material", "planar", "floor"}. Every node is added to `parent`.
-static func build_studio(parent: Node3D, q: String, key_spot: bool, spots: bool = true) -> Dictionary:
+static func build_studio(parent: Node3D, q: String, key_spot: bool, spots: bool = true, decor: bool = true) -> Dictionary:
 	var e := Environment.new()
 	e.background_mode = Environment.BG_COLOR
 	e.background_color = BG
@@ -218,17 +218,18 @@ static func build_studio(parent: Node3D, q: String, key_spot: bool, spots: bool 
 		rim.name = "Rim"
 		rim.spot_range = 10.0  # rim only, no pool in front of the car
 
-	# Three long strips overhead along the car: the long highlights on the roof, bonnet and shoulders.
-	for i: int in 3:
-		var st: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(-1.5 + 1.5 * float(i), 6.2, 0.0), Vector2(0.35, 9.0), Vector3.DOWN, KEY_COLOUR, 2.6)
-		st.name = "Strip%d" % i
-		parent.add_child(st)
-	# The brand light: a broad, faint racing-red wash on the far wall behind the car (a backlit cyclorama), so the
-	# silhouette sits on red-tinted dark instead of a void. Mirrored softly by the floor.
-	var wash: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(0.0, 3.2, -16.0), Vector2(34.0, 9.0), Vector3.BACK, RED, 0.22)
-	wash.name = "RedWash"
-	wash.layers = SHOWROOM_SET.MIRROR_LAYER_BIT | 1
-	parent.add_child(wash)
+	if decor:  # the garage brings its own room (garage_showroom.gd)
+		# Three long strips overhead along the car: the long highlights on the roof, bonnet and shoulders.
+		for i: int in 3:
+			var st: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(-1.5 + 1.5 * float(i), 6.2, 0.0), Vector2(0.35, 9.0), Vector3.DOWN, KEY_COLOUR, 2.6)
+			st.name = "Strip%d" % i
+			parent.add_child(st)
+		# The brand light: a broad, faint racing-red wash on the far wall behind the car (a backlit cyclorama), so the
+		# silhouette sits on red-tinted dark instead of a void. Mirrored softly by the floor.
+		var wash: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(0.0, 3.2, -16.0), Vector2(34.0, 9.0), Vector3.BACK, RED, 0.22)
+		wash.name = "RedWash"
+		wash.layers = SHOWROOM_SET.MIRROR_LAYER_BIT | 1
+		parent.add_child(wash)
 	return {"env": e, "floor_material": fm, "planar": pl, "floor": mi}
 
 

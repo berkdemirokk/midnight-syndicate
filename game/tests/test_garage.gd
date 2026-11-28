@@ -68,8 +68,9 @@ func test_scene_instantiates() -> void:
 	check(directional == 2 and shadowed == 1, "one shadowed key and one shadowless fill, got %d lights, %d shadowed" % [directional, shadowed])
 	# STREET EMPIRE (2026-11-28): the workshop room was replaced by the studio set shared with the main menu.
 	check(g.get_node_or_null("Room") == null, "the retired workshop room is not loaded")
-	check(g.find_children("Strip*", "MeshInstance3D", true, false).size() >= 3, "studio: three overhead strips light the paint")
-	check(g.find_child("RedWash", true, false) != null, "studio: red wash behind the car")
+	check(g.find_children("CeilingPanel*", "MeshInstance3D", true, false).size() == 4, "showroom: four ceiling light panels light the paint")
+	check(g.find_child("CityView", true, false) != null, "showroom: the Istanbul skyline behind the glass")
+	check(g.find_child("BrandSign", true, false) is Label3D, "showroom: STREET EMPIRE sign on the wall")
 	check(g.find_child("Turntable", true, false) != null, "studio: the car stands on a turntable")
 	metric("omni_spot_lights", omni_spot)
 	await cleanup([g])
