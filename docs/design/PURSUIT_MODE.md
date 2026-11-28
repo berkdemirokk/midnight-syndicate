@@ -67,5 +67,16 @@ Not done in this package (owner decisions or later work):
 - Hiding spots and side streets with faster cooldown: not built. The tracks have no side-street data for this.
 - Siren audio: no siren sound exists in the repo, and no download is allowed. The light bar is the only cue.
 - Boxing or ramming at higher heat: police still only chase and use the bust rule; no ramming force is applied.
-- Survive and escape event payouts are the heat rule (200 cash per heat level), not the event `mult` used on the select preview.
-- Real bust captured in play: not captured. The bust shot uses the banner set directly.
+- Escape payout now uses the event `mult` (fixed in review). Pursuit race finish pay is the normal career table.
+- Real bust captured in play: not captured. The bust shot uses the banner set directly (`pm.state.phase = BUSTED`). Heat 5 is also forced (`pm.state.heat = 5`): those two shots show the HUD, not the rules reaching that state. Only the escape shot comes from the rules (police drivers switched off and moved 150 m back, the 8 s cooldown runs, ESCAPED at heat 5, reward 1000 = 200 x 5 x mult 1.0 on the demo's default config).
+- Phone size: the HUD scales with the screen, but no phone-size capture exists yet. Desktop 1920x1061 only.
+- Siren cue: not built (see above). The HUD and light bar are the only pursuit cues.
+- The before/after sheet compares base 0e37938 (no pursuit HUD) with this package. The change is in the HUD only (radar, pips, gauges). The world render is unchanged, so the sheet does not show a visual gain beyond the HUD.
+
+## Evidence (review fix)
+
+- `evidence/screens/pursuit_demo/`: pursuit_police_behind (heat 1), pursuit_roadblock and pursuit_roadblock_close (heat 3 roadblock, barriers 28 to 29 m ahead in frame), pursuit_heat_5 (forced), pursuit_escape (real rules), pursuit_bust (forced banner). PNG with JSON sidecars, 1920x1061, RTX 5060 Ti dev PC.
+- `evidence/screens/before_after_pursuit/`: BEFORE (base 0e37938, the three pre-package shots) | AFTER, JPG at half size. Only the three shots that exist on both sides.
+- Full suite on this commit: see `evidence/test_results.json` (477 tests, 0 failed).
+- Not run: GPU queue was shared with other sessions. Each capture was run once per attempt; the first run failed on a parse error in the scenario (fixed in c2ec624).
+
