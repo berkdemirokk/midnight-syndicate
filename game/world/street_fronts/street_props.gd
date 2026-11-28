@@ -9,18 +9,24 @@ extends Node3D
 const DIR: String = "res://assets/world/props_cc0/"
 const KERB_M: float = 7.0  ## the kerbs are 7 m from the centre line (StreetFronts)
 const CLEAR_M: float = 7.6  ## props stay this far from the centre line
-const CELL_M: float = 110.0
+const CELL_M: float = 60.0
 const LOD0_END_M: float = 45.0
 const LOD1_END_M: float = 80.0  ## measured: 120 m cost Neon Wharf night +63 draws and 468k primitives
 const FADE_M: float = 6.0
+const TREE_MIN_PAVEMENT_M: float = 1.6
+const TREE_SHARE: float = 0.7
+const TREE_TRUNK_CLEAR_M: float = 0.9  ## trunk this far behind the kerb; the small erguvan crown may lean over the gutter above car height
+const TREE_END_M: float = 260.0
+const TREE_CELL_M: float = 120.0
 ## Per track flavour (each kind costs a draw per surface per cell: kept to the props that read at speed): share of shops with tables outside, planters, and the kerb-side props that fit the district.
 const FLAVOUR: Dictionary = {
-	"istanbul_bogaz": {"cafe": 0.35, "planter": 0.45, "kerb": ["trash_can", "fire_hydrant", "potted_plant", "utility_box"]},
+	"istanbul_bogaz": {"trees": true, "cafe": 0.35, "planter": 0.45, "kerb": ["trash_can", "fire_hydrant", "potted_plant", "utility_box"]},
 	"istanbul_maslak": {"cafe": 0.12, "planter": 0.55, "kerb": ["trash_can", "utility_box_b", "fire_hydrant", "wooden_bench"]},
 	"city_01": {"cafe": 0.25, "planter": 0.25, "kerb": ["trash_can", "wooden_crate", "utility_box", "fire_hydrant"]},
 }
 
 var placed: Dictionary = {}  ## prop name -> instance count (tests, metrics)
+var trees: Array[Transform3D] = []  ## erguvan (Judas tree) photo cards on the Bogaz pavements
 var _cells: Dictionary = {}  ## Vector2i cell -> {prop name -> Array[Transform3D]}
 
 
@@ -52,11 +58,18 @@ func setup(track: Track, shops: Array, low_preset: bool = false) -> void:
 			var kind: String = "planter_box" if rng.randf() < 0.6 else "planter_box_b"
 			for s: float in [1.0, -1.0]:
 				_put(track, kind, xf, Vector3(s * (w / 2.0 - 0.7), 0.0, -0.45), PI / 2.0)
+		if flavour.get("trees", false) and pavement >= TREE_MIN_PAVEMENT_M and rng.randf() < TREE_SHARE:
+			# on the party-wall line between two houses, so the crown frames the shops instead of hiding a door
+			var tx: float = (w / 2.0) * (1.0 if rng.randf() < 0.5 else -1.0)
+			var tat: Vector3 = xf * Vector3(tx, 0.0, -(pavement - TREE_TRUNK_CLEAR_M - 0.05))  # trunk near the kerb: the crown fills the pavement
+			if absf(track.get_lateral_offset(tat)) >= KERB_M + TREE_TRUNK_CLEAR_M:
+				trees.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.95, 1.2)), tat))
 		if rng.randf() < 0.35:  # kerb side: one district prop, its back to the road
 			var kerb: Array = flavour["kerb"]
 			var kname: String = kerb[rng.randi() % kerb.size()]
 			_put(track, kname, xf, Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0.0, -(pavement - 0.55)), rng.randf_range(-0.2, 0.2))
 	_build(low_preset)
+	_build_trees(low_preset)
 
 
 func _put(track: Track, prop: String, xf: Transform3D, local: Vector3, yaw: float) -> void:
@@ -89,22 +102,57 @@ func _build(low_preset: bool) -> void:
 				if mesh == null:
 					continue
 				var xfs: Array = by[prop]
+				# the node sits at the cell centre: visibility ranges are measured to the node, and one node at the world
+				# origin hid every prop of a track far from it (Bogaz)
+				var centre := Vector3((float(cell.x) + 0.5) * CELL_M, (xfs[0] as Transform3D).origin.y, (float(cell.y) + 0.5) * CELL_M)
 				var mm := MultiMesh.new()
 				mm.transform_format = MultiMesh.TRANSFORM_3D
 				mm.mesh = mesh
 				mm.instance_count = xfs.size()
 				for j: int in xfs.size():
-					mm.set_instance_transform(j, xfs[j])
+					mm.set_instance_transform(j, (xfs[j] as Transform3D).translated(-centre))
 				var mmi := MultiMeshInstance3D.new()
 				mmi.name = "%s_%d_%d" % [key, cell.x, cell.y]
 				mmi.multimesh = mm
 				mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # shadow casters doubled the draws; small props read fine unshadowed
 				mmi.visibility_range_begin = 0.0 if (lod == 0 or low_preset) else LOD0_END_M
 				mmi.visibility_range_begin_margin = 0.0 if (lod == 0 or low_preset) else FADE_M
-				mmi.visibility_range_end = LOD1_END_M
+				mmi.visibility_range_end = LOD1_END_M + CELL_M * 0.71  # plus the half diagonal of the cell
 				mmi.visibility_range_end_margin = FADE_M
 				mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 				add_child(mmi)
+				mmi.position = centre
+
+
+func _build_trees(low_preset: bool) -> void:
+	if trees.is_empty():
+		return
+	var by_cell: Dictionary = {}
+	for t: Transform3D in trees:
+		var c := Vector2i(floori(t.origin.x / TREE_CELL_M), floori(t.origin.z / TREE_CELL_M))
+		if not by_cell.has(c):
+			by_cell[c] = []
+		(by_cell[c] as Array).append(t)
+	for c: Vector2i in by_cell:
+		var group: Array = by_cell[c]
+		var centre := Vector3((float(c.x) + 0.5) * TREE_CELL_M, (group[0] as Transform3D).origin.y, (float(c.y) + 0.5) * TREE_CELL_M)
+		var mm := MultiMesh.new()
+		mm.transform_format = MultiMesh.TRANSFORM_3D
+		mm.use_custom_data = true
+		mm.mesh = Greenery._photo_mesh("judas")
+		mm.instance_count = group.size()
+		for i: int in group.size():
+			mm.set_instance_transform(i, (group[i] as Transform3D).translated(-centre))
+			mm.set_instance_custom_data(i, Color(0.0, 0.0, 0.0, 0.0))
+		var mmi := MultiMeshInstance3D.new()
+		mmi.name = "Erguvan_%d_%d" % [c.x, c.y]
+		mmi.multimesh = mm
+		mmi.visibility_range_end = TREE_END_M + TREE_CELL_M * 0.71
+		mmi.visibility_range_end_margin = FADE_M
+		mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
+		mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF if low_preset else GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		add_child(mmi)
+		mmi.position = centre
 
 
 static func _mesh_of(path: String) -> Mesh:

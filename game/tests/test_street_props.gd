@@ -19,6 +19,11 @@ func test_every_track_gets_props_outside_the_corridor() -> void:
 		metric(path.get_file() + "_props", total)
 		metric(path.get_file() + "_kinds", pf.props.placed.keys().size())
 		check(total >= 40, "%s: only %d props" % [path.get_file(), total])
+		metric(path.get_file() + "_trees", pf.props.trees.size())
+		if path.contains("bogaz"):
+			check(pf.props.trees.size() >= 25, "Bogaz: only %d erguvan trees on the pavements" % pf.props.trees.size())
+		for t: Transform3D in pf.props.trees:
+			check(absf(track.get_lateral_offset(t.origin)) >= StreetProps.KERB_M + StreetProps.TREE_TRUNK_CLEAR_M - 0.01, "tree trunk at the kerb")
 		check(pf.props.get_child_count() > 0, "%s: no MultiMesh built" % path.get_file())
 		for cell: Vector2i in pf.props._cells:  # the headless renderer keeps no MultiMesh data: check the placement list
 			for prop: String in pf.props._cells[cell]:
