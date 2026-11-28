@@ -234,6 +234,7 @@ Files: `game/devtools/scenarios/draw_breakdown.gd` (track argument), `docs/perf/
 Recipe: run `draw_breakdown --track=bogaz` High/Medium/Low (GPU queue slot 3); if HUD > 20 or FirstRow LOD2 > 10, report
 to the lead instead of fixing; merge sign surfaces.
 Test: sign MultiMesh count halves; budgets still met. Evidence: the JSON per preset. Deps: none.
+**WP-B5 status: PARTIAL (2026-11-28).** Done: Bosphorus re-measure (`aafcaf41`, `docs/perf/DRAW_BREAKDOWN.md`). Not done: the sign merge. No test for the sign MultiMesh count exists. Halving the sign surfaces needs the neon colour materials merged, which changes the look, so it is not look-neutral. Pending lead decision: descope, or approve an atlas change with a look review. Until then WP-B5 is not complete.
 
 **WP-B6 Shader baker and export check.** Goal: faster first launch on iOS.
 Files: `game/export_presets.cfg` (iOS preset only).
