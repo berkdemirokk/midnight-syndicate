@@ -22,7 +22,7 @@ Every mutator (add_cash, buy_car, set_paint, upgrade, record_result, select_car,
 2. If the main file is readable, copy it to `save.json.bak.tmp`, check it, rename it to `save.json.bak`. A blocked or failed backup stops the save and keeps the primary.
 3. Rename `save.json.tmp` over `save.json`.
 
-A kill at any point leaves either the old main file or the new one whole, and a backup that is the save before it.
+A kill at any point leaves either the old main file or the new one whole, and a backup that is the last good save: one save behind the main file, or equal to it when the kill lands after step 2 and before step 3.
 
 ## How a load works
 
@@ -31,11 +31,13 @@ A kill at any point leaves either the old main file or the new one whole, and a 
 ## Proof
 
 - In-process: `game/tests/test_persistence_restart.gd` (full career round trip with exact cash 47720, a second restart, torn main falls back to backup, missing main falls back to backup, stale .tmp ignored, a recovered profile keeps a clean backup) and the existing `test_game_state.gd`.
-- Cross-process: `tools/restart_check.py` runs `game/tests/persist_restart_driver.gd` as separate Godot processes on a temporary save file. Process A starts the career, process B must load the identical snapshot, a process killed during a save must leave a whole main file and a backup one save behind, and a torn main file must load the backup. The real save is hashed before and after and must not change.
+- Cross-process: `tools/restart_check.py` runs `game/tests/persist_restart_driver.gd` as separate Godot processes on a temporary save file. Process A starts the career, process B must load the identical snapshot, a process killed during a save must leave a whole main file and a backup that is the last good save (equal to main or one behind), and a torn main file must load the backup. The real save is hashed before and after and must not change.
 
 Run:
 
     py -3.10 tools/restart_check.py
+
+Set the `GODOT` environment variable to the Godot 4.7 console executable if it is not at the default path in the script.
 
 ## Defect found and fixed
 

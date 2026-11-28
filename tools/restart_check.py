@@ -6,8 +6,9 @@
 #   1. setup  - process A starts a career (car, paint, rim, upgrades, event results, selection) and saves it.
 #   2. verify - process B loads the save; its snapshot must equal the setup snapshot. Cash is also checked
 #               against an independently computed 47720.
-#   3. crash  - process C saves in a loop and is killed mid-write. The main file must still parse, and the
-#               backup must hold the save before it. Then a verify run must load the main file.
+#   3. crash  - process C saves in a loop and is killed while save.json.tmp exists (retried up to 5 times).
+#               The main file must still parse, and the backup must be the last good save (equal to main
+#               or one behind). Then a verify run must load the main file.
 #   4. torn   - the main file is cut in half (what a torn write leaves). Verify must load the backup and
 #               report source=backup with the backup rep.
 # Exit 0 only when every check passes. The real save (APPDATA/Godot/app_userdata/Midnight Syndicate/save.json)
@@ -21,7 +22,7 @@ import sys
 import tempfile
 import time
 
-GODOT = r"C:\Users\berk\tools\godot\Godot_v4.7.2-stable_win64_console.exe"
+GODOT = os.environ.get("GODOT", r"C:\Users\berk\tools\godot\Godot_v4.7.2-stable_win64_console.exe")
 GAME = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "game"))
 DRIVER = "res://tests/persist_restart_driver.gd"
 REAL_SAVE = os.path.join(os.environ.get("APPDATA", ""), "Godot", "app_userdata", "Midnight Syndicate", "save.json")
@@ -104,20 +105,29 @@ def main():
         main_path = save
         bak_path = save + ".bak"
         tmp_path = save + ".tmp"
-        proc = subprocess.Popen(godot_args("loop", save, out("loop.json")),
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        deadline = time.time() + 60
-        while time.time() < deadline and not os.path.exists(bak_path) and proc.poll() is None:
-            time.sleep(0.01)
+        # The kill must land while save.json.tmp exists; retry a few times so exit 0 means it did.
         killed_mid_write = False
-        while time.time() < deadline and proc.poll() is None:
-            if os.path.exists(tmp_path):
-                killed_mid_write = True
+        for attempt in range(5):
+            proc = subprocess.Popen(godot_args("loop", save, out("loop.json")),
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            deadline = time.time() + 60
+            # Wait until process C itself has saved at least twice (main rep >= setup rep + 2), so the
+            # backup is one of C's saves and not the one process A left behind.
+            while time.time() < deadline and proc.poll() is None:
+                m = parse_file(main_path)
+                if m is not None and int(m.get("rep", 0)) >= expected["rep"] + 2:
+                    break
+                time.sleep(0.01)
+            while time.time() < deadline and proc.poll() is None:
+                if os.path.exists(tmp_path):
+                    killed_mid_write = True
+                    break
+            proc.kill()
+            proc.wait()
+            if killed_mid_write:
                 break
-        proc.kill()
-        proc.wait()
-        check(os.path.exists(bak_path), "crash run had saved at least twice before the kill")
-        print("  killed process C while a save was in progress: %s" % killed_mid_write)
+        check(os.path.exists(bak_path), "a backup exists after the kill")
+        check(killed_mid_write, "process C was killed while a save was in progress (.tmp present, attempt %d)" % (attempt + 1))
 
         main_after = parse_file(main_path)
         bak_after = parse_file(bak_path)
@@ -126,8 +136,8 @@ def main():
         if main_after is not None and bak_after is not None:
             rep_main, rep_bak = int(main_after["rep"]), int(bak_after["rep"])
             check(rep_bak in (rep_main - 1, rep_main),
-                  "backup rep %d is the save before main rep %d" % (rep_bak, rep_main))
-            check(rep_main >= expected["rep"], "saves after the kill keep progress (rep %d >= %d)" % (rep_main, expected["rep"]))
+                  "backup rep %d is the last good save (main rep %d or one before)" % (rep_bak, rep_main))
+            check(rep_bak >= expected["rep"] + 1, "process C saved at least twice before the kill (backup rep %d > setup rep %d)" % (rep_bak, expected["rep"]))
         rc = run("verify", save, out("actual2.json"))
         check(rc == 0, "process D (verify after kill) loads the file")
         actual2 = load(out("actual2.json"))
