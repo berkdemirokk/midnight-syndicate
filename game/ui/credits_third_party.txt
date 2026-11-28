@@ -31,3 +31,7 @@
 "Town Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Italianate Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Second Empire Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
+
+Fonts (SIL Open Font License 1.1, files and licence in game/assets/branding/fonts/):
+Anton, Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont).
+Manrope, Copyright 2019 The Manrope Project Authors (https://github.com/googlefonts/manrope).

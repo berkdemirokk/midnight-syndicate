@@ -9,7 +9,7 @@ const DICT: Dictionary = {
 	"menu.settings": {"tr": "AYARLAR", "en": "SETTINGS"},
 	"menu.quit": {"tr": "ÇIKIŞ", "en": "QUIT"},
 	"menu.version": {"tr": "SÜRÜM %s", "en": "VERSION %s"},
-	"menu.tagline": {"tr": "GECE SOKAK YARIŞI", "en": "NIGHT STREET RACING"},
+	"menu.tagline": {"tr": "ŞEHRE HÜKMET", "en": "RULE THE CITY"},
 	"menu.coming_soon": {"tr": "Yakında", "en": "Coming soon"},
 	"hud.lap": {"tr": "TUR", "en": "LAP"},
 	"hud.lap_of": {"tr": "%d / %d", "en": "%d / %d"},
@@ -169,7 +169,7 @@ const DICT: Dictionary = {
 	"event.midnight_time_trial.name": {"tr": "Gece Yarısı Zaman Turu", "en": "Midnight Time Trial"},
 	"event.overpass_duel.name": {"tr": "Üst Geçit Düellosu", "en": "Overpass Duel"},
 	"event.harbour_run.name": {"tr": "Liman Koşusu", "en": "Harbour Run"},
-	"event.syndicate_final.name": {"tr": "Sendika Finali", "en": "Syndicate Final"},
+	"event.syndicate_final.name": {"tr": "Arden Bay Finali", "en": "Arden Bay Final"},
 	"garage.class_street": {"tr": "SOKAK SINIFI", "en": "STREET CLASS"},
 	"garage.hint": {"tr": "ARABAYI DÖNDÜRMEK İÇİN SÜRÜKLE", "en": "DRAG TO ROTATE THE CAR"},
 	"garage.cash": {"tr": "NAKİT", "en": "CASH"},
@@ -278,6 +278,11 @@ const DICT: Dictionary = {
 	"pursuit.goal.survive": {"tr": "AYAKTA KAL %d:%02d", "en": "SURVIVE %d:%02d"},
 	"pursuit.gauge.bust": {"tr": "YAKALANMA", "en": "BUST"},
 	"pursuit.gauge.escape": {"tr": "KAÇIŞ", "en": "ESCAPE"},
+	# --- street empire: menu ---
+	# --- street empire: hud ---
+	# --- street empire: garage ---
+	# --- street empire: career ---
+	# --- street empire: screens ---
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}

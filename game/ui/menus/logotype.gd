@@ -1,69 +1,76 @@
 class_name Logotype
 extends Control
-## MIDNIGHT SYNDICATE wordmark painted in one _draw: the whole line is sheared as one shape (a per-glyph skew
-## made the baseline jump), with a magenta offset shadow, a cyan second line and a speed-line slash under it.
+## STREET EMPIRE wordmark painted in one _draw (docs/brand/BRAND_GUIDELINES.md): the two words in Anton leaning
+## 8 degrees as one sheared shape (a per-glyph skew makes the baseline jump), split by the racing-red blade, with the
+## tagline RULE THE CITY tracked in titanium under it. No glow, no outline, no gradient.
 
-const TOP_PX: int = 124
-const SUB_PX: int = 46
-const SHADOW_OFFSET: Vector2 = Vector2(6.0, 5.0)
-const SUB_GAP_PX: float = 4.0
-const BAR_H: float = 7.0
-const BAR_GAP_PX: float = 14.0
-const PAD_PX: float = 16.0
+const WORD_PX: int = 96
+const TAG_PX: int = 18
+const BLADE_W_EM: float = 0.16  ## blade width as a fraction of the word size
+const GAP_EM: float = 0.10  ## gap on each side of the blade
+const TAG_GAP_PX: float = 10.0
+const PAD_PX: float = 4.0
 
 var scale_k: float = 1.0
-var _top: String = "MIDNIGHT"
-var _sub: String = "SYNDICATE"
+var show_tagline: bool = true
+var word_a: String = "STREET"
+var word_b: String = "EMPIRE"
+var tagline: String = "RULE THE CITY"
 
 
-func _init(k: float = 1.0) -> void:
+func _init(k: float = 1.0, with_tagline: bool = true) -> void:
 	scale_k = k
+	show_tagline = with_tagline
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	custom_minimum_size = measure()
 
 
+func _word_px() -> int:
+	return roundi(WORD_PX * scale_k)
+
+
+func _tag_px() -> int:
+	return roundi(TAG_PX * scale_k)
+
+
 func measure() -> Vector2:
-	var f: Font = MSTheme.font("bold")
-	var tp: int = roundi(TOP_PX * scale_k)
-	var w: float = f.get_string_size(_top, HORIZONTAL_ALIGNMENT_LEFT, -1, tp).x
-	var h: float = f.get_height(tp) + (MSTheme.font("tracked").get_height(roundi(SUB_PX * scale_k))) + BAR_GAP_PX + BAR_H + PAD_PX
-	return Vector2(w + PAD_PX * 2.0 + 24.0 * scale_k, h)
+	var f: Font = MSTheme.font("display")
+	var wp: int = _word_px()
+	var w: float = f.get_string_size(word_a, HORIZONTAL_ALIGNMENT_LEFT, -1, wp).x \
+		+ f.get_string_size(word_b, HORIZONTAL_ALIGNMENT_LEFT, -1, wp).x \
+		+ float(wp) * (BLADE_W_EM + GAP_EM * 2.0)
+	var h: float = f.get_ascent(wp) * 0.98 + PAD_PX * 2.0
+	if show_tagline:
+		h += TAG_GAP_PX * scale_k + MSTheme.font("tracked").get_height(_tag_px())
+	return Vector2(ceilf(w + PAD_PX * 2.0 + f.get_ascent(wp) * MSTheme.SKEW_RATIO), ceilf(h))
 
 
-func _shear(baseline: float, x0: float) -> Transform2D:
-	return Transform2D(Vector2(1.0, 0.0), Vector2(-MSTheme.SKEW_RATIO, 1.0), Vector2(x0 + MSTheme.SKEW_RATIO * baseline, 0.0))
+func _shear(baseline: float) -> Transform2D:
+	return Transform2D(Vector2(1.0, 0.0), Vector2(-MSTheme.SKEW_RATIO, 1.0), Vector2(MSTheme.SKEW_RATIO * baseline, 0.0))
 
 
 func _draw() -> void:
-	var bold: Font = MSTheme.font("bold")
-	var tracked: Font = MSTheme.font("tracked")
-	var tp: int = roundi(TOP_PX * scale_k)
-	var sp: int = roundi(SUB_PX * scale_k)
-	var base_top: float = bold.get_ascent(tp) + 2.0
-	var width: float = bold.get_string_size(_top, HORIZONTAL_ALIGNMENT_LEFT, -1, tp).x
-
-	# Magenta shadow, then the white wordmark with a hairline cyan edge.
-	draw_set_transform_matrix(_shear(base_top, PAD_PX) * Transform2D(0.0, Vector2.ONE, 0.0, SHADOW_OFFSET))
-	draw_string(bold, Vector2.ZERO + Vector2(0.0, base_top), _top, HORIZONTAL_ALIGNMENT_LEFT, -1, tp, MSTheme.tint(MSTheme.MAGENTA, 0.95))
-	draw_set_transform_matrix(_shear(base_top, PAD_PX))
-	draw_string_outline(bold, Vector2(0.0, base_top), _top, HORIZONTAL_ALIGNMENT_LEFT, -1, tp, 2, MSTheme.tint(MSTheme.CYAN, 0.9))
-	draw_string(bold, Vector2(0.0, base_top), _top, HORIZONTAL_ALIGNMENT_LEFT, -1, tp, MSTheme.TEXT)
-
-	# SYNDICATE, tracked and cyan, sheared the same way.
-	var base_sub: float = base_top + bold.get_descent(tp) + SUB_GAP_PX + tracked.get_ascent(sp)
-	draw_set_transform_matrix(_shear(base_sub, PAD_PX + 6.0 * scale_k))
-	draw_string(tracked, Vector2(0.0, base_sub), _sub, HORIZONTAL_ALIGNMENT_LEFT, -1, sp, MSTheme.CYAN)
-	draw_set_transform_matrix(Transform2D.IDENTITY)
-
-	# Slash bar: a thick magenta parallelogram fading into speed lines.
-	var by: float = base_sub + tracked.get_descent(sp) + BAR_GAP_PX
-	var sk: float = BAR_H * MSTheme.SKEW_RATIO
-	var bar_w: float = width * 0.62
+	var f: Font = MSTheme.font("display")
+	var wp: int = _word_px()
+	var cap: float = f.get_ascent(wp) * 0.98  ## Anton capitals fill the ascent
+	var base: float = PAD_PX + cap
+	var x: float = PAD_PX
+	var wa: float = f.get_string_size(word_a, HORIZONTAL_ALIGNMENT_LEFT, -1, wp).x
+	draw_set_transform_matrix(_shear(base))
+	draw_string(f, Vector2(x, base), word_a, HORIZONTAL_ALIGNMENT_LEFT, -1, wp, MSTheme.PEARL)
+	x += wa + float(wp) * GAP_EM
+	# Blade: a red parallelogram from baseline to cap height, sheared with the type.
+	var bw: float = float(wp) * BLADE_W_EM
 	draw_colored_polygon(PackedVector2Array([
-		Vector2(PAD_PX + sk, by), Vector2(PAD_PX + bar_w, by),
-		Vector2(PAD_PX + bar_w - sk, by + BAR_H), Vector2(PAD_PX, by + BAR_H)]), MSTheme.MAGENTA)
-	for i: int in 3:
-		var x0: float = PAD_PX + bar_w + 14.0 + float(i) * 34.0
-		var len: float = (width * 0.38 - 14.0 - float(i) * 34.0) * (1.0 - 0.28 * float(i))
-		if len > 4.0:
-			draw_line(Vector2(x0, by + BAR_H * 0.5), Vector2(x0 + len, by + BAR_H * 0.5), MSTheme.tint(MSTheme.CYAN, 0.75 - 0.2 * float(i)), 2.0)
+		Vector2(x + bw * 0.55, base - cap), Vector2(x + bw * 1.0, base - cap),
+		Vector2(x + bw * 0.45, base), Vector2(x, base)]), MSTheme.RED)
+	x += bw + float(wp) * GAP_EM
+	draw_string(f, Vector2(x, base), word_b, HORIZONTAL_ALIGNMENT_LEFT, -1, wp, MSTheme.PEARL)
+	draw_set_transform_matrix(Transform2D.IDENTITY)
+	if show_tagline:
+		var tf: Font = MSTheme.font("tracked")
+		var tp: int = _tag_px()
+		var ty: float = base + TAG_GAP_PX * scale_k + tf.get_ascent(tp)
+		var rule_w: float = 28.0 * scale_k
+		draw_rect(Rect2(PAD_PX, ty - tf.get_ascent(tp) * 0.42, rule_w, maxf(2.0, 2.0 * scale_k)), MSTheme.RED)
+		draw_string(tf, Vector2(PAD_PX + rule_w + 12.0 * scale_k, ty), tagline, HORIZONTAL_ALIGNMENT_LEFT, -1, tp, MSTheme.TITANIUM)

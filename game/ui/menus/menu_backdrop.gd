@@ -1,6 +1,6 @@
 class_name MenuBackdrop
 extends ColorRect
-## Full-screen live night-city backdrop (menu_backdrop.gdshader). One quad, no textures, no 3D.
+## Full-screen graphite studio backdrop (menu_backdrop.gdshader): soft key light, floor seam, grain. One quad, no textures, no 3D.
 ## dim_left darkens the left side where the menu column sits; menus with a wide table use a larger value.
 
 const SHADER: String = "res://ui/menus/menu_backdrop.gdshader"
