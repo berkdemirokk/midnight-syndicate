@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-28T05:00:20"
+    "time": "2026-11-28T05:32:09"
   },
   "test_ai_churn.gd": {
     "test_closing_car_brakes_before_contact": {
@@ -767,6 +767,51 @@
       "pass": true
     }
   },
+  "test_car_validation.gd": {
+    "test_every_car_has_scene_lods_and_nodes": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_every_car_lod0_node_count_stays_within_20": {
+      "failures": [],
+      "metrics": {
+        "arden_bruiser_lod0_objects": 17,
+        "arden_bruiser_lod0_surfaces": 25,
+        "arden_havoc_lod0_objects": 17,
+        "arden_havoc_lod0_surfaces": 26,
+        "atmaca_modified_lod0_objects": 17,
+        "atmaca_modified_lod0_surfaces": 27,
+        "bosfor_yildirim_lod0_objects": 17,
+        "bosfor_yildirim_lod0_surfaces": 27,
+        "kestrel_gtr_lod0_objects": 17,
+        "kestrel_gtr_lod0_surfaces": 27,
+        "kestrel_marten_lod0_objects": 17,
+        "kestrel_marten_lod0_surfaces": 26,
+        "kestrel_vanta_lod0_objects": 17,
+        "kestrel_vanta_lod0_surfaces": 27,
+        "noctra_meridian_lod0_objects": 17,
+        "noctra_meridian_lod0_surfaces": 27,
+        "noctra_sable_lod0_objects": 17,
+        "noctra_sable_lod0_surfaces": 27,
+        "noctra_tayfun_lod0_objects": 17,
+        "noctra_tayfun_lod0_surfaces": 27,
+        "noctra_vela_lod0_objects": 17,
+        "noctra_vela_lod0_surfaces": 26
+      },
+      "pass": true
+    },
+    "test_every_car_spec_is_physical": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_every_car_wheels_sit_on_the_ground": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
   "test_car_vela.gd": {
     "test_vela_drives_a_straight_line": {
       "failures": [],
@@ -872,7 +917,7 @@
         "light_budget_log": 4,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1464.4,
+        "load_time_ms": 1520.2,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -938,7 +983,7 @@
         "8car_orderA_nitro100_race_time_s": 74.42,
         "8car_orderA_nitro100_stuck_events": 0,
         "8car_orderA_nitro100_stuck_worst_car": 0,
-        "8car_orderA_nitro100_wall_s": 4.8
+        "8car_orderA_nitro100_wall_s": 4.7
       },
       "pass": true
     },
@@ -974,7 +1019,7 @@
         "8car_orderB_nitro100_race_time_s": 80.98,
         "8car_orderB_nitro100_stuck_events": 3,
         "8car_orderB_nitro100_stuck_worst_car": 2,
-        "8car_orderB_nitro100_wall_s": 6.2
+        "8car_orderB_nitro100_wall_s": 6.3
       },
       "pass": true
     },
@@ -986,7 +1031,7 @@
         "8car_orderB_nitro140_race_time_s": 79.92,
         "8car_orderB_nitro140_stuck_events": 1,
         "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 5.2
+        "8car_orderB_nitro140_wall_s": 5.1
       },
       "pass": true
     },
@@ -1996,7 +2041,7 @@
         "race_time_s": 55.15,
         "stuck_total": 1,
         "stuck_worst_car": 1,
-        "wall_s": 2.1
+        "wall_s": 2.0
       },
       "pass": true
     },
@@ -2016,7 +2061,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 920.0,
+        "load_ms": 975.0,
         "prop_instances": 991,
         "second_row": 155,
         "track_length_m": 2205.4
@@ -2068,7 +2113,7 @@
         "race_time_s": 58.03,
         "stuck_total": 0,
         "stuck_worst_car": 0,
-        "wall_s": 2.1
+        "wall_s": 2.0
       },
       "pass": true
     },
@@ -2088,7 +2133,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 1071.0,
+        "load_ms": 1063.0,
         "prop_instances": 1252,
         "second_row": 102,
         "track_length_m": 2243.6

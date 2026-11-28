@@ -238,3 +238,21 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
    waterfront light. 2. M2 game loop: career, audio (needs CC0 download approval), onboarding.
 3. Owner decisions: export templates (Windows .exe), macOS/Xcode access for iOS.
+
+## Session 9 — night of 2026-11-27 to 28 (overnight release candidate)
+- Owner briefs: graphics first, then the overnight studio brief (docs/status/OVERNIGHT_MASTER.md) and the full-game override.
+  Lead Opus 5.5; workers Haiku 5.5 in their own worktrees; every package reviewed by a Haiku reviewer and an Opus lead
+  reviewer before the lead merged it. Branch `release/rc-2026-11-28`, draft PR https://github.com/berkdemirokk/midnight-syndicate/pull/9.
+- PR #8 (ChatGPT gameplay integration) verified (CI green, 355 tests locally) and merged once into the RC.
+- Lead: day/sunset look (ACES white 6, afternoon sun, 2-split shadow, depth fog, clear sky, dark lower sky, warm car
+  fill), dry/wet road per hour, patchy wet mirror, mirror 5 taps, rims/tyres, sea, plaster tone, before/after tooling.
+- Merged packages: drive telemetry, GPU pass, photo-row architecture, LAN online (+ in-game fixes by the lead), AI churn,
+  start-hitch attempts (findings only), net polish (Bosphorus, standings, TR/EN), UX, camera, pursuit, night diet +
+  Asphalt-style framing, roadblock barriers, soak, smooth dome, drift + elimination modes, private lobby code, escape
+  event, persistence check, onboarding + records, economy x4, touch survival, stone plinth, polish, release-review fixes
+  (7 verified defects), car validation.
+- Evidence: final full suite and checks in docs/status/RELEASE_CANDIDATE_2026-11-28.md; iOS compile check ios-check-5
+  green (no upload). Dev PC numbers only; no iPhone test.
+- Not done: 30 cars (owner approval for downloads), car LOD0 draw calls 59 vs budget 20 per car (needs a mesh/material
+  merge pass), real-device test, App Store submission, internet multiplayer, the ~40 s frame spike, human playtest of
+  modes/economy, sound by ear. Full list: docs/status/MASTER_CHECKLIST.md.
