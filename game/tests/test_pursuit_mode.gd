@@ -292,6 +292,40 @@ func test_chase_holds_and_heat_rises() -> void:
 	PursuitMode.ENABLED = was
 
 
+## Heat 1 and 2 place no roadblock; the step into heat 3 places exactly one, in the same step (no cooldown yet).
+func test_roadblock_spawns_on_heat_change_to_3() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.start()
+	pm.step(STEP_S)  # first police car spawns here
+	pm._spawn_t = INF  # no replacement spawns
+	scene.player.speed_kmh = 60.0  # above the bust limit: no bust
+	var seen_heat: int = pm.state.heat
+	var spawned_at_3: int = -1
+	var placed_below_3: bool = false
+	for i: int in 60 * 60:  # 60 s of chase: heat 1 -> 2 at 25 s, 2 -> 3 at 50 s
+		pm.step(STEP_S)
+		if pm.state.phase != PursuitState.Phase.CHASE:
+			break
+		if pm.state.heat < 3 and pm.roadblock != null:
+			placed_below_3 = true
+		if pm.state.heat == 3 and spawned_at_3 < 0 and seen_heat == 2:
+			spawned_at_3 = 1 if pm.roadblock != null else 0
+		seen_heat = pm.state.heat
+	check(not placed_below_3, "no roadblock at heat 1 or 2")
+	check(spawned_at_3 == 1, "a roadblock is placed on the step into heat 3 (got %d)" % spawned_at_3)
+	var count: int = 0
+	for n: Node in pm.get_children():
+		if n is Roadblock:
+			count += 1
+	check(count == 1, "exactly one roadblock stands at heat 3, got %d" % count)
+	await cleanup([scene])
+	PursuitMode.ENABLED = was
+
+
 func test_no_escape_without_police() -> void:
 	var was: bool = PursuitMode.ENABLED
 	PursuitMode.ENABLED = true

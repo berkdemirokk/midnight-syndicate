@@ -265,6 +265,19 @@ const DICT: Dictionary = {
 	"touch.brake": {"tr": "FREN", "en": "BRAKE"},
 	"touch.nitro": {"tr": "NİTRO", "en": "NITRO"},
 	"touch.drift": {"tr": "DRİFT", "en": "DRIFT"},
+	"event.pursuit_wharf_escape.name": {"tr": "Liman kaçışı", "en": "Harbour escape"},
+	"event.pursuit_wharf_survive.name": {"tr": "Liman: 150 sn ayakta kal", "en": "Harbour: survive 2.5 min"},
+	"event.pursuit_maslak_escape.name": {"tr": "Maslak kaçışı", "en": "Maslak escape"},
+	"event.pursuit_maslak_survive.name": {"tr": "Maslak: 150 sn ayakta kal", "en": "Maslak: survive 2.5 min"},
+	"event.pursuit_bogaz_survive.name": {"tr": "Boğaz: 150 sn ayakta kal", "en": "Bosphorus: survive 2.5 min"},
+	"event.pursuit_harbour_chase.name": {"tr": "Liman kovalamacası", "en": "Harbour chase"},
+	"event.pursuit_maslak_hunt.name": {"tr": "Maslak avı", "en": "Maslak hunt"},
+	"event.pursuit_bogaz_gauntlet.name": {"tr": "Boğaz geçidi", "en": "Bosphorus gauntlet"},
+	"pursuit.survived": {"tr": "AYAKTA KALDIN  +%d nakit", "en": "SURVIVED  +%d cash"},
+	"pursuit.goal.escape": {"tr": "KAÇ", "en": "ESCAPE"},
+	"pursuit.goal.survive": {"tr": "AYAKTA KAL %d:%02d", "en": "SURVIVE %d:%02d"},
+	"pursuit.gauge.bust": {"tr": "YAKALANMA", "en": "BUST"},
+	"pursuit.gauge.escape": {"tr": "KAÇIŞ", "en": "ESCAPE"},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}

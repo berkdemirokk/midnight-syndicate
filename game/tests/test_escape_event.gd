@@ -47,6 +47,9 @@ func test_other_events_do_not_opt_in() -> void:
 		if id == EVENT_ID:
 			continue
 		var cfg: RaceConfig = EventCatalog.config_for(id)
+		if bool(EventCatalog.find(id).get("pursuit", false)):  # pursuit events must opt in; their police are by design
+			check(cfg != null and cfg.pursuit and cfg.pursuit_event, "pursuit event opts in: " + id)
+			continue
 		check(cfg != null and not cfg.pursuit and not cfg.pursuit_event, "normal event is police-free: " + id)
 
 
