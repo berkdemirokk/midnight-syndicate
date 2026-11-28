@@ -1,8 +1,11 @@
 extends "res://tests/test_case.gd"
-## Engine band layers (audio/engine_layers.gd): equal-power crossfade at every rpm and throttle, the
-## dominant band's pitch stays inside the band window, and all 32 synthesised engine loops are registered and load.
+## Engine band layers (audio/engine_layers.gd): equal-power crossfade at every rpm and throttle; a band has weight
+## only inside its in-tune zone, so every audible loop plays at rpm / REF (no clamp, within 0.5 cents); at most two
+## adjacent bands are audible; and all 48 synthesised engine loops are registered and load.
 
 const ENGINES: Array[String] = ["i4", "v6", "v8", "hy"]
+const WEIGHT_EPS: float = 0.01  ## amplitude below which a loop counts as silent (-40 dB)
+const TOL_CENTS: float = 0.5
 
 
 func test_weights_equal_power() -> void:
@@ -20,26 +23,41 @@ func test_weights_equal_power() -> void:
 	check(worst < 1e-4, "band weights are not equal-power: error %f" % worst)
 
 
-func test_dominant_band_pitch_inside_window() -> void:
-	var lo: float = EngineLayers.REF_RPM[0] / EngineLayers.BAND_PITCH_MAX
-	var hi: float = EngineLayers.REF_RPM[EngineLayers.BANDS - 1] * EngineLayers.BAND_PITCH_MAX
-	var worst_ratio: float = 1.0
-	var rpm: float = lo
-	while rpm <= hi:
-		var b: int = EngineLayers.dominant_band(rpm)
-		var ratio: float = rpm / EngineLayers.REF_RPM[b]
-		var tol: float = 0.002
-		check(ratio >= 1.0 / EngineLayers.BAND_PITCH_MAX - tol and ratio <= EngineLayers.BAND_PITCH_MAX + tol,
-			"band %d pitch ratio %f out of window at %f rpm" % [b, ratio, rpm])
-		worst_ratio = maxf(worst_ratio, maxf(ratio, 1.0 / ratio))
-		rpm += 17.0
-	metric("worst_pitch_ratio", snappedf(worst_ratio, 0.001))
-	# band_pitch clamps everything, including idle and redline extremes
-	for b: int in EngineLayers.BANDS:
-		for r: float in [0.0, 800.0, 20000.0]:
-			var p: float = EngineLayers.band_pitch(r, b)
-			check(p >= 1.0 / EngineLayers.BAND_PITCH_MAX - 1e-4 and p <= EngineLayers.BAND_PITCH_MAX + 1e-4,
-				"band_pitch out of window: %f" % p)
+func test_zones_overlap_only_neighbours() -> void:
+	for b: int in EngineLayers.BANDS - 1:
+		check(EngineLayers.zone_hi(b) > EngineLayers.zone_lo(b + 1), "zones %d and %d do not overlap" % [b, b + 1])
+	for b: int in EngineLayers.BANDS - 2:
+		check(EngineLayers.REF_RPM[b + 2] / EngineLayers.REF_RPM[b] >= EngineLayers.BAND_PITCH_MAX * EngineLayers.BAND_PITCH_MAX,
+			"bands %d and %d overlap, so three layers could be audible" % [b, b + 2])
+
+
+func test_weighted_loops_are_in_tune() -> void:
+	var worst_cents: float = 0.0
+	var worst_outside: float = 0.0
+	var max_active: int = 0
+	var rpm: float = 1200.0  # idle floor: below it the outer band clamps (documented shortcut)
+	while rpm <= 9000.0:
+		for th: float in [0.0, 0.3, 0.7, 1.0]:
+			var w := EngineLayers.band_weights(rpm, th)
+			var active: Array[int] = []
+			for b: int in EngineLayers.BANDS:
+				var amp: float = maxf(w[b * 2], w[b * 2 + 1])
+				if amp <= WEIGHT_EPS:
+					continue
+				active.append(b)
+				if rpm < EngineLayers.zone_lo(b) or rpm > EngineLayers.zone_hi(b):
+					worst_outside = maxf(worst_outside, amp)
+				var played: float = EngineLayers.band_pitch(rpm, b)
+				var ideal: float = rpm / EngineLayers.REF_RPM[b]
+				worst_cents = maxf(worst_cents, absf(1200.0 * log(played / ideal) / log(2.0)))
+			max_active = maxi(max_active, active.size())
+			check(active.size() <= 2 and (active.size() < 2 or active[1] - active[0] == 1),
+				"non-adjacent or >2 bands audible at %f rpm" % rpm)
+		rpm += 7.0
+	metric("worst_pitch_error_cents", snappedf(worst_cents, 0.001))
+	metric("max_audible_bands", max_active)
+	check(worst_outside < 1e-6, "a band has weight outside its zone: %f" % worst_outside)
+	check(worst_cents < TOL_CENTS, "audible loop off pitch by %f cents" % worst_cents)
 
 
 func test_engine_loops_registered_and_load() -> void:

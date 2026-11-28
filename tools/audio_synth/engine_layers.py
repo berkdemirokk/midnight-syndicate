@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Layered engine loops: 4 engine types x 4 RPM bands x (on-load, off-load) = 32 seamless 1.0 s loops.
+"""Layered engine loops: 4 engine types x 6 RPM bands x (on-load, off-load) = 48 seamless 1.0 s loops.
 
 Synthesis is done in the frequency domain on an exact 1 s buffer (bin spacing = 1 Hz), so every firing
 harmonic and every noise bin is periodic: each loop is seamless by construction.
@@ -25,10 +25,10 @@ N = SR  # exactly one second
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.normpath(os.path.join(HERE, "..", "..", "game", "assets", "audio", "engine"))
 
-REF_RPM = (1500, 2700, 4500, 7200)  # band centres; neighbour ratio <= 1.8
-BANDS = ("b1", "b2", "b3", "b4")
-BAND_LEVEL = (0.55, 0.8, 1.0, 1.0)  # harmonic level per band (low rpm is softer)
-BAND_NOISE = (0.5, 0.7, 0.9, 1.0)   # intake/turbo noise grows with rpm
+REF_RPM = (1500, 2100, 2900, 4000, 5500, 7200)  # band centres; neighbour ratio <= 1.4 (must stay below BAND_PITCH_MAX**2 = 1.5625, see engine_layers.gd)
+BANDS = ("b1", "b2", "b3", "b4", "b5", "b6")
+BAND_LEVEL = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)  # harmonic level per band (low rpm is softer)
+BAND_NOISE = (0.4, 0.5, 0.6, 0.7, 0.85, 1.0)  # intake/turbo noise grows with rpm
 TARGET_RMS = 0.16
 LOADS = ("on", "off")
 
@@ -102,28 +102,27 @@ def write_wav(path, x):
 
 
 def evidence(out_dir, loops):
+    """One sheet per engine: 0-1500 Hz magnitude spectrum of each loop (1 Hz bins, loop is exactly 1 s)."""
     from PIL import Image, ImageDraw
     os.makedirs(out_dir, exist_ok=True)
-    win, hop = 2048, 512
-    win_fn = np.hanning(win)
-    tw, th = 320, 160
+    W, H = 300, 120
+    nb = len(REF_RPM)
     for eng in ENGINES:
-        sheet = Image.new("RGB", (tw * 2 + 10, (th + 22) * 4 + 10), (20, 20, 24))
+        sheet = Image.new("RGB", (2 * (W + 10) + 10, nb * (H + 26) + 30), (20, 20, 24))
         d = ImageDraw.Draw(sheet)
-        for band in range(4):
+        d.text((10, 8), f"{eng}: 0-1500 Hz magnitude spectrum, 1 Hz bins, 60 dB range, left on-load / right off-load", fill=(230, 230, 230))
+        for band in range(nb):
             for j, load in enumerate(LOADS):
                 x = loops[(eng, band, load)]
-                frames = [np.abs(np.fft.rfft(x[i:i + win] * win_fn)) for i in range(0, N - win, hop)]
-                s = np.array(frames[:60]).T[:360]  # 0..~7.7 kHz, first ~0.7 s
-                db = 20 * np.log10(s + 1e-6)
-                img = np.clip((db + 40) / 80.0, 0, 1)
-                arr = (img[::-1] * 255).astype(np.uint8)
-                im = Image.fromarray(arr).resize((tw, th)).convert("RGB")
-                x0 = j * (tw + 10)
-                y0 = band * (th + 22) + 20
-                sheet.paste(im, (x0, y0))
-                d.text((x0 + 4, y0 - 16), f"{eng} {BANDS[band]} {load}-load  f0={band_f0(eng, band)} Hz", fill=(230, 230, 230))
-        sheet.save(os.path.join(out_dir, f"spectrogram_{eng}.jpg"), quality=85)
+                db = 20 * np.log10(np.abs(np.fft.rfft(x))[:1501] + 1e-9)
+                db -= db.max()
+                x0 = 10 + j * (W + 10)
+                y0 = 30 + band * (H + 26)
+                d.rectangle([x0, y0, x0 + W, y0 + H], fill=(8, 8, 10))
+                pts = [(x0 + k * W / 1500.0, y0 + H - float(np.clip(db[k] + 60.0, 0.0, 60.0)) / 60.0 * H) for k in range(1501)]
+                d.line(pts, fill=(120, 220, 160), width=1)
+                d.text((x0 + 4, y0 - 14), f"{eng} {BANDS[band]} {load}-load  rpm ref {REF_RPM[band]}  f0={band_f0(eng, band)} Hz", fill=(230, 230, 230))
+        sheet.save(os.path.join(out_dir, f"spectrum_{eng}.jpg"), quality=85)
 
 
 def main(argv):
@@ -131,7 +130,7 @@ def main(argv):
     loops = {}
     manifest = {}
     for ei, eng in enumerate(ENGINES):
-        for band in range(4):
+        for band in range(len(REF_RPM)):
             for li, load in enumerate(LOADS):
                 rng = np.random.default_rng(20261128 + ei * 100 + band * 10 + li)
                 loops[(eng, band, load)] = synth(eng, band, load, rng)
