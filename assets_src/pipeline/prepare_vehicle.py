@@ -367,6 +367,8 @@ def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
             ov = by_obj_mat.get(o.name + "|" + src_mat, nodes_map.get(src_mat))
             if ov == "drop" or -f.center.y > drop_ahead.get(src_mat, math.inf):  # the nose is -Y
                 continue
+            if target == "M_Caliper":  # one surface per brake: the caliper colour is its vertex colour on M_BrakeDisc
+                target = "M_BrakeDisc"
             wheel_obj = o.name.startswith("Wheel_")
             if wheel_obj and target not in ("M_Tire", "M_BrakeDisc", "M_Caliper"):
                 target = cfg.get("wheel_fill_lod%d" % level, "M_Rim")  # wheel parts: tyre, rim, nuts, hub

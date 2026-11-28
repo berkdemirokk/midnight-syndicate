@@ -57,3 +57,59 @@ static func band_weights(rpm: float, throttle: float) -> PackedFloat32Array:
 ## Playback pitch multiplier for a loop of this band at this rpm (exact inside the band's zone).
 static func band_pitch(rpm: float, band: int) -> float:
 	return clampf(rpm / REF_RPM[band], 1.0 / BAND_PITCH_MAX, BAND_PITCH_MAX)
+
+## Engine types, in loop-file order (eng_<name>_b<band>_<on|off> in AudioLib.FILES).
+const ENGINE_NAMES: Array[String] = ["i4", "v6", "v8", "hy"]
+## Loop RMS as measured by tools/audio_synth (index: engine * 12 + band * 2 + load, load 0 = off, 1 = on).
+## The synth uses one global gain, so loudness differs by about 15 dB between loops; CarAudio scales each loop to TARGET_RMS.
+const LOOP_RMS: Array[float] = [
+	0.0278, 0.0526, 0.0408, 0.0661, 0.0418, 0.0811, 0.0491, 0.0984, 0.0604, 0.1232, 0.0700, 0.1169,
+	0.0373, 0.0604, 0.0480, 0.0742, 0.0588, 0.0960, 0.0556, 0.0939, 0.0633, 0.0924, 0.0730, 0.0980,
+	0.0342, 0.0785, 0.0452, 0.0857, 0.0458, 0.0822, 0.0569, 0.0904, 0.0553, 0.1014, 0.0623, 0.0937,
+	0.0515, 0.0903, 0.0598, 0.1087, 0.0789, 0.1274, 0.0866, 0.1321, 0.0974, 0.1410, 0.1263, 0.1600,
+]
+const TARGET_RMS: float = 0.10  ## RMS of one full-weight loop after normalising (about -20 dBFS); a level choice, not a listened one
+
+static var _loops_ok: int = -1  ## cache: 1 when all 48 loops load, 0 when any is missing, -1 not checked yet
+
+
+## AudioLib id of one engine loop. load 0 = off-load, 1 = on-load.
+static func loop_id(eng: int, band: int, load: int) -> StringName:
+	return StringName("eng_%s_b%d_%s" % [ENGINE_NAMES[eng], band + 1, "on" if load == 1 else "off"])
+
+
+## Gain that brings one loop to TARGET_RMS.
+static func loop_norm(eng: int, band: int, load: int) -> float:
+	return TARGET_RMS / LOOP_RMS[eng * BANDS * 2 + band * 2 + load]
+
+
+## True when all 48 engine loops load. Checked once; a missing loop sends CarAudio to the old single-loop path.
+static func loops_ready() -> bool:
+	if _loops_ok < 0:
+		_loops_ok = 1
+		for e: int in ENGINE_NAMES.size():
+			for b: int in BANDS:
+				for l: int in 2:
+					if AudioLib.get_stream(loop_id(e, b, l)) == null:
+						_loops_ok = 0
+	return _loops_ok == 1
+
+
+## Engine index (into ENGINE_NAMES) for a car spec. Optional override: spec meta "engine_type" = "i4" | "v6" | "v8" | "hy".
+## Otherwise by top speed, since specs carry no engine field. Shortcut: a car's real engine is not in its spec,
+## so this is a guess from top speed; add an engine_type meta to a spec to override it.
+static func engine_for_spec(spec: CarSpec) -> int:
+	if spec == null:
+		return 2
+	if spec.has_meta(&"engine_type"):
+		var k: int = ENGINE_NAMES.find(str(spec.get_meta(&"engine_type")))
+		if k >= 0:
+			return k
+	var kmh: float = spec.top_speed_kmh
+	if kmh <= 200.0:
+		return 0
+	if kmh <= 270.0:
+		return 1
+	if kmh <= 320.0:
+		return 2
+	return 3

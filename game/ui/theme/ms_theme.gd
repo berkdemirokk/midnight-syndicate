@@ -14,7 +14,7 @@ const RED: Color = Color(0.941, 0.267, 0.196)  ## #F04432 racing red: primary ac
 const RED_DEEP: Color = Color(0.722, 0.165, 0.110)  ## #B82A1C pressed red
 const TITANIUM: Color = Color(0.769, 0.784, 0.808)  ## #C4C8CE secondary text, hairlines, inactive icons
 const PEARL: Color = Color(0.957, 0.957, 0.957)  ## #F4F4F4 primary text, focus ring
-const STEEL: Color = Color(0.557, 0.580, 0.616)  ## #8E949D captions (5.9:1 on graphite)
+const STEEL: Color = Color(0.557, 0.580, 0.616)  ## #8E949D captions (6.1:1 on graphite)
 const GOLD: Color = Color(0.914, 0.722, 0.337)  ## #E9B856 currency, stars (sparingly)
 const GO: Color = Color(0.333, 0.780, 0.557)  ## #55C78E owned, gained, personal best
 

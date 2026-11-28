@@ -41,6 +41,8 @@ const EDGE_Y_PX: float = 56.0
 const BUTTON_GAP_PX: float = 16.0
 const ROW_PAD_Y: float = MSTheme.BUTTON_PAD_Y * 0.5
 const FOCUS_COL_PX: float = 2.0
+const CHIP_W: float = 12.0  ## car paint chip beside each driver name
+const BUTTON_MIN_H_PX: float = 88.0  ## footer buttons, desktop and phone (the phone height is larger)
 
 
 ## The single canvas item the screen paints into.
@@ -71,6 +73,8 @@ var _star_pop: Array[float] = [0.0, 0.0, 0.0]  ## 0..1 pop progress per star
 var _star_tw: Tween = null
 var _cash_val: HudText
 var _rep_val: HudText
+var _best_tag: HudText  ## NEW BEST, shown when the record improved
+var _row_paint: Array[Color] = []  ## per result row: the car's paint colour for its chip
 var _all_texts: Array[HudText] = []  ## sorted by pixel size, the order HudText.paint needs
 var _next_btn: Button
 var _retry_btn: Button
@@ -84,6 +88,7 @@ var _menu_btn: Button
 var _replay_btn: Button
 var _buttons: Array[Button] = []
 var _count_tw: Tween = null
+var _fade_tw: Tween = null  ## entrance fade of the board, killed before a new one starts
 var _text_nodes: Array = []  ## [node, i18n key]
 
 
@@ -129,6 +134,8 @@ func _ready() -> void:
 	_cash_val = _ptext("digits", REWARD_PX, MSTheme.GOLD)
 	_rep_caption = _ptext("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
 	_rep_val = _ptext("digits", REWARD_PX, MSTheme.TEXT)
+	_best_tag = _ptext("tracked", REWARD_LABEL_PX, MSTheme.GO)
+	_best_tag.set_text("")
 	_cash_val.set_text("0")
 	_rep_val.set_text("0")
 	for i: int in 5:
@@ -182,7 +189,7 @@ func _ptext(kind: String, px: int, col: Color) -> HudText:
 
 func _button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5 * (1.0 + (MSTheme.k() - 1.0) * 0.8), MSTheme.button_h())
+	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5 * (1.0 + (MSTheme.k() - 1.0) * 0.8), maxf(MSTheme.button_h(), BUTTON_MIN_H_PX))
 	b.set_meta("base_w", b.custom_minimum_size.x)  # the label may widen it (Turkish), never shrink it
 	b.pressed.connect(handler)
 	# The board paints the background; the button keeps only its label (same font, colours and size from the theme).
@@ -271,16 +278,26 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 	_mode = str(rewards.get("mode", RaceConfig.MODE_RACE))
 	_title.set_text(I18n.t("results.title") if _mode == RaceConfig.MODE_RACE else "%s · %s" % [I18n.t("results.title"), I18n.t("mode.%s" % _mode)])
 	_subtitle.set_text(I18n.t("results.won") if player_won else I18n.t("results.done"))
+	if int(rewards.get("evade_bonus", 0)) > 0:
+		_subtitle.set_text("%s  ·  %s" % [_subtitle.text, I18n.t("pursuit.evade") % int(rewards["evade_bonus"])])
 	for row: Array in _row_texts:
 		for t: HudText in row:
 			_all_texts.erase(t)
 	_row_texts.clear()
 	_row_player.clear()
+	_row_paint.clear()
 	for r: Dictionary in results:
 		_row_texts.append(_result_row(r, leader_time))
 		_row_player.append(bool(r.get("is_player", false)))
+		_row_paint.append(_paint_of(r))
 	_sort_texts()
 	_count_rewards(int(rewards.get("cash", 0)), int(rewards.get("rep", 0)))
+	_best_tag.set_text(I18n.t("results.new_best") if bool(rewards.get("new_best", false)) else "")
+	_board.modulate.a = 0.0  # entrance: the board fades in (one alpha tween, no per-frame cost)
+	if _fade_tw != null and _fade_tw.is_valid():
+		_fade_tw.kill()
+	_fade_tw = create_tween()
+	_fade_tw.tween_property(_board, "modulate:a", 1.0, 0.3)
 	var event_id: String = _current_event_id()
 	_show_stars = EventCatalog.index_of(event_id) >= 0
 	_stars = int(rewards.get("stars", 0))
@@ -301,6 +318,11 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 	_hero_suffix.color = MSTheme.GOLD if player_pos == 1 else MSTheme.TITANIUM
 	_pop_stars()
 	_board.queue_redraw()
+
+
+static func _paint_of(r: Dictionary) -> Color:
+	var p: Variant = r.get("paint")
+	return p if p is Color else Color.from_string(str(p), MSTheme.MUTED)
 
 
 func _result_row(r: Dictionary, leader_time: float) -> Array[HudText]:
@@ -445,6 +467,7 @@ func _paint_board(c: Control) -> void:
 	y += head_h
 	var highlight: Rect2 = Rect2()
 	var has_highlight: bool = false
+	var chips: Array[Rect2] = []
 	var row_slot: float = (table.end.y - MSTheme.BUTTON_PAD_Y - y) / maxf(float(_row_texts.size()), 1.0)
 	for ri: int in _row_texts.size():
 		var cells: Array = _row_texts[ri]
@@ -452,6 +475,8 @@ func _paint_board(c: Control) -> void:
 		for i: int in cells.size():
 			var t: HudText = cells[i]
 			t.pos = Vector2(_aligned_x(col_x[i], col_w[i], t.width(), i >= 2), y + (row_h - t.height()) * 0.5)
+		var name_h: float = (cells[1] as HudText).height()
+		chips.append(Rect2(col_x[1] - CHIP_W - 14.0, y + (row_h - name_h * 0.9) * 0.5, CHIP_W, name_h * 0.9))
 		if _row_player[ri]:
 			highlight = Rect2(inner_x, y, inner_w, row_h)
 			has_highlight = true
@@ -470,6 +495,7 @@ func _paint_board(c: Control) -> void:
 	_rep_caption.pos = Vector2(rx, ry)
 	ry += _rep_caption.height() + sep
 	_rep_val.pos = Vector2(rx, ry)
+	_best_tag.pos = Vector2(rx, ry + _rep_val.height() + sep * 0.5)
 	var star_r: float = STAR_R * minf(MSTheme.k(), PANEL_TEXT_MAX_K)
 	var star_step: float = STAR_STEP * minf(MSTheme.k(), PANEL_TEXT_MAX_K)
 	var star_y: float = rewards.end.y - MSTheme.BUTTON_PAD_Y * 2.0 - star_r * 1.5
@@ -481,6 +507,8 @@ func _paint_board(c: Control) -> void:
 	_fill_chamfer(c, rewards, MSTheme.PLATE_BG)
 	if has_highlight:
 		_fill_chamfer(c, highlight, MSTheme.tint(MSTheme.RED, 0.14))
+	for ci: int in chips.size():
+		c.draw_rect(chips[ci], _row_paint[ci])  # paint chip: a plain swatch
 	if _show_stars:
 		for i: int in GameState.MAX_STARS:
 			var cx: float = star_right - star_r - float(GameState.MAX_STARS - 1 - i) * star_step

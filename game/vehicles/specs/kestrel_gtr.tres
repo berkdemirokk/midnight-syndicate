@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://vehicles/car_spec.gd" id="1_spec"]
 
 [sub_resource type="Curve" id="Curve_force"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.92), 0.0, 0.0, 0, 0, Vector2(0.4, 0.75), 0.0, 0.0, 0, 0, Vector2(0.6, 0.5), 0.0, 0.0, 0, 0, Vector2(0.8, 0.33), 0.0, 0.0, 0, 0, Vector2(1, 0.21), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.92), 0.0, 0.0, 0, 0, Vector2(0.4, 0.75), 0.0, 0.0, 0, 0, Vector2(0.6, 0.5), 0.0, 0.0, 0, 0, Vector2(0.8, 0.42), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
 
 [resource]
 script = ExtResource("1_spec")
@@ -37,7 +37,7 @@ engine_brake = 1550.0
 gear_count = 6
 gear_dip_s = 0.15
 gear_dip_mult = 0.6
-drag = 0.4
+drag = 0.1200
 rolling_resistance = 210.0
 grip_front = 1.42
 grip_rear = 1.48

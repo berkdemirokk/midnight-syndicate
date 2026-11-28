@@ -406,7 +406,7 @@ func _arrow(txt: String, node_name: String, dir: int) -> Button:
 	var b := Button.new()
 	b.name = node_name
 	b.text = txt
-	b.custom_minimum_size = Vector2(MSTheme.px(72.0), MSTheme.px(CARD_H))
+	b.custom_minimum_size = Vector2(maxf(MSTheme.px(72.0), MSTheme.button_h()), MSTheme.px(CARD_H))
 	b.focus_mode = Control.FOCUS_ALL
 	b.pressed.connect(func() -> void: car_step_pressed.emit(dir))
 	return b

@@ -2,13 +2,14 @@ extends "res://tests/test_case.gd"
 ## Audio: every generated stream loads, loops are flagged and seamless, CarAudio reacts to car state.
 
 
-func _rig(is_player: bool = true) -> Array:
+func _rig(is_player: bool = true, layered: bool = false) -> Array:
 	var car := ArcadeCar.new()
 	add(car)
 	car.is_grounded = true
 	car.speed_kmh = 120.0
 	var ca := CarAudio.new()
 	ca.is_player = is_player
+	ca.layered_engine = layered  ## these checks read the old low/mid/high loops; the layered path has its own tests in test_audio_engine.gd
 	car.add_child(ca)
 	return [car, ca]
 

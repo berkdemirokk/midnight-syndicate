@@ -241,6 +241,13 @@ func start_race() -> void:
 
 
 ## District of an event: the Pursuit district for every pursuit event, else by "place" (no place = Arden Bay).
+## True where the ladder enters a new chapter (the first row and each row whose chapter differs from the row before;
+## the modes and pursuit tail, chapter 0, counts as its own). The district tabs replaced the flat list's chapter
+## headers; the detail panel names the chapter. Kept for the career tests and any chapter-aware caller.
+static func is_chapter_start(index: int) -> bool:
+	return index == 0 or EventCatalog.chapter_of(EventCatalog.id_at(index)) != EventCatalog.chapter_of(EventCatalog.id_at(index - 1))
+
+
 static func district_of(id: String) -> int:
 	var ev: Dictionary = EventCatalog.find(id)
 	if bool(ev.get("pursuit", false)):
@@ -665,11 +672,15 @@ func _refresh_detail() -> void:
 	var free: bool = EventCatalog.is_open(id)
 	_d_name.text = I18n.t(EventCatalog.name_key(id))
 	_d_meta.text = "%s  ·  %s" % [I18n.t(DISTRICT_KEYS[district_of(id)]), I18n.t("career.free" if free else "career.tag")]
+	if EventCatalog.is_boss(id):
+		_d_meta.text += "  ·  " + I18n.t("career.boss")
 	for c: Node in _d_body.get_children():
 		_d_body.remove_child(c)
 		c.queue_free()
 	if not open:
 		_d_body.add_child(_note(I18n.t("career.locked_by") % I18n.t(EventCatalog.name_key(EventCatalog.previous_id(id))), MSTheme.DANGER))
+	if EventCatalog.chapter_of(id) > 0:
+		_stat_row(_d_body, I18n.t("career.chapter_label"), _value(I18n.t(EventCatalog.chapter_name_key(EventCatalog.chapter_of(id)))))
 	_stat_row(_d_body, I18n.t("career.mode_label"), _value(I18n.t(mode_key(id))))
 	if EventCatalog.mode_of(id) == RaceConfig.MODE_DRIFT:
 		_stat_row(_d_body, I18n.t("event.time_limit"), _value(I18n.t("event.time_limit_value") % int(ev["time_limit"])))

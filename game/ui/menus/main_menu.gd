@@ -3,7 +3,7 @@ extends Control
 ## STREET EMPIRE main screen. The player's selected car stands in the 3D showroom (ui/showroom/showroom_stage.gd)
 ## and is the centrepiece; the UI frames it:
 ## - top: wordmark, then REP with the next real car unlock, cash and stars (opens the profile card);
-## - left: navigation (CAREER, GARAGE, RECORDS, ONLINE when enabled, SETTINGS, QUIT on desktop);
+## - left: navigation (CAREER, GARAGE, POLICE PURSUIT, RECORDS, ONLINE when enabled, SETTINGS, QUIT on desktop);
 ## - bottom left: district progress from real event stars (desktop; the career screen has it on phones);
 ## - bottom right: the featured event (next unfinished career event) and PLAY, which starts it directly;
 ## - bottom centre: the car's name and class; drag anywhere on the car to orbit it.
@@ -14,6 +14,7 @@ const EVENT_SELECT_SCENE: String = "res://ui/menus/event_select.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const RECORDS_SCENE: String = "res://ui/menus/records_screen.tscn"
+const PURSUIT_SELECT_SCENE: String = "res://race/pursuit/pursuit_select.tscn"
 const ONBOARDING_SCENE: String = "res://ui/menus/onboarding.tscn"
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const STAGE_SCRIPT: String = "res://ui/showroom/showroom_stage.gd"
@@ -23,7 +24,8 @@ const CAREER_SCREEN: Script = preload("res://ui/menus/event_select.gd")  ## one 
 const EDGE_PX: float = 88.0
 const EDGE_Y_PX: float = 56.0
 const NAV_W: float = 400.0
-const NAV_PX: int = 34
+const NAV_PX: int = 32
+const NAV_H_PX: float = 88.0  ## nav row height on desktop too: the release made 88 px the menu touch target
 const CARD_W: float = 520.0
 const PLAY_H: float = 92.0
 const TOAST_HOLD_S: float = 1.6
@@ -46,6 +48,7 @@ var _fg: Control
 var _race_btn: Button  ## PLAY: starts the featured event (kept name: tests and focus rules refer to it)
 var _career_btn: Button
 var _garage_btn: Button
+var _pursuit_btn: Button  ## police pursuit runs (the pursuit select screen)
 var _records_btn: Button
 var _settings_btn: Button
 var _quit_btn: Button
@@ -151,6 +154,8 @@ func _on_orbit_input(event: InputEvent) -> void:
 	if stage == null:
 		return
 	var mm: InputEventMouseMotion = event as InputEventMouseMotion
+	if mm != null and mm.device == InputEvent.DEVICE_ID_EMULATION:
+		return  # touch already arrives as InputEventScreenDrag: do not orbit twice
 	if mm != null and (mm.button_mask & MOUSE_BUTTON_MASK_LEFT) != 0:
 		stage.call("orbit_drag", mm.relative)
 		return
@@ -279,14 +284,15 @@ func _build_foreground() -> void:
 	# Left: navigation.
 	var navbox := VBoxContainer.new()
 	navbox.name = "Menu"
-	navbox.add_theme_constant_override("separation", MSTheme.px(6) if not MSTheme.phone else 10)
+	navbox.add_theme_constant_override("separation", 0 if not MSTheme.phone else 8)
 	navbox.anchor_top = 0.5
 	navbox.anchor_bottom = 0.5
 	navbox.offset_left = ex - MSTheme.px(16)
-	navbox.offset_top = -MSTheme.px(250) if not MSTheme.phone else -320.0
+	navbox.offset_top = -365.0 if not MSTheme.phone else -360.0
 	_fg.add_child(navbox)
 	_career_btn = _nav_button(navbox, "menu.career", _on_career)
 	_garage_btn = _nav_button(navbox, "menu.garage", _on_garage)
+	_pursuit_btn = _nav_button(navbox, "menu.pursuit", _on_pursuit)
 	_records_btn = _nav_button(navbox, "menu.records", _on_records)
 	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
 	if NetConfig.is_enabled():
@@ -299,7 +305,7 @@ func _build_foreground() -> void:
 	var dist := VBoxContainer.new()
 	dist.name = "Districts"
 	dist.visible = not MSTheme.phone
-	dist.add_theme_constant_override("separation", 8)
+	dist.add_theme_constant_override("separation", 6)
 	dist.anchor_top = 1.0
 	dist.anchor_bottom = 1.0
 	dist.grow_vertical = Control.GROW_DIRECTION_BEGIN
@@ -463,7 +469,7 @@ func _stat_box(parent: Container, cap_key: String) -> VBoxContainer:
 func _nav_button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
 	b.name = key.get_slice(".", 1).capitalize().replace(" ", "")
-	b.custom_minimum_size = Vector2(MSTheme.px(NAV_W) if not MSTheme.phone else 560.0, MSTheme.button_h())
+	b.custom_minimum_size = Vector2(MSTheme.px(NAV_W) if not MSTheme.phone else 560.0, maxf(NAV_H_PX, MSTheme.button_h()))
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.add_theme_font_override("font", MSTheme.font("display"))
 	b.add_theme_font_size_override("font_size", MSTheme.px(NAV_PX))
@@ -497,6 +503,8 @@ func _play_intro() -> void:
 	if not is_inside_tree():
 		return
 	await get_tree().process_frame
+	if not is_inside_tree():
+		return
 	for i: int in _intro_items.size():
 		var c: Control = _intro_items[i]
 		if not is_instance_valid(c):
@@ -516,7 +524,7 @@ func set_backdrop(node: Node) -> void:
 	for c: Node in _holder.get_children():
 		c.queue_free()
 	if node == null:
-		_backdrop.visible = true  # cheap under the showroom too; tests and set_backdrop callers expect it back
+		_backdrop.visible = _stage_box == null  # no shader pass under the opaque showroom
 		if _stage_box != null:
 			_stage_box.visible = true
 		return
@@ -736,8 +744,24 @@ func open_profile() -> void:
 	rec.custom_minimum_size = Vector2(0.0, MSTheme.button_h())
 	rec.pressed.connect(_on_records)
 	col.add_child(rec)
+	close.focus_neighbor_top = rec.get_path()
+	close.focus_neighbor_bottom = rec.get_path()
+	rec.focus_neighbor_top = close.get_path()
+	rec.focus_neighbor_bottom = close.get_path()
+	for b: Button in [close, rec]:
+		b.focus_neighbor_left = b.get_path()
+		b.focus_neighbor_right = b.get_path()
+	_set_background_focus(false)
 	_fill_profile()
 	close.grab_focus()
+
+
+## While the profile card is open, nothing behind it can take keyboard or gamepad focus.
+func _set_background_focus(on: bool) -> void:
+	var btns: Array[Button] = _nav_btns.duplicate()
+	btns.append_array([_race_btn, _profile_btn])
+	for b: Button in btns:
+		b.focus_mode = Control.FOCUS_ALL if on else Control.FOCUS_NONE
 
 
 func _fill_profile() -> void:
@@ -772,6 +796,7 @@ func _close_profile() -> void:
 	if _profile_card != null:
 		_profile_card.queue_free()
 		_profile_card = null
+		_set_background_focus(true)
 		_profile_btn.grab_focus()
 
 
@@ -791,6 +816,11 @@ func _on_career() -> void:
 
 func _on_garage() -> void:
 	_open(GARAGE_SCENE)
+
+
+## Police pursuit runs: the select screen lists the open pursuit runs.
+func _on_pursuit() -> void:
+	_open(PURSUIT_SELECT_SCENE)
 
 
 func _on_online() -> void:

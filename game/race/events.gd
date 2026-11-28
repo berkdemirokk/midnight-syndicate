@@ -8,6 +8,8 @@ extends RefCounted
 ## Drift events ("mode": "drift") run a timed solo session and earn stars from the drift score ("star_scores", 3/2/1 stars).
 ## Elimination events ("mode": "elimination") run cars - 1 laps; the last car out ends every lap, and the player's
 ## elimination ends the race with a placed result.
+## Chapters ("chapter" 1-4) are contiguous runs of the ladder order; "boss" marks the race that closes one.
+## "reverse": true runs the track the other way (Track.set_reversed); the event keeps its id, order and rewards.
 ## Tuning note: the autopilot laps the loop in about 64 s (TEST_RESULTS), so the star times below are a first guess for
 ## a good human lap and want a play test.
 
@@ -18,38 +20,38 @@ const TRACK_BOGAZ: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 const EVENTS: Array[Dictionary] = [
 	# Showcase and first race: the Ortakoy coast at night, open from the first start ("open": true). One lap of about a
 	# minute against street-class cars ("cls"): before, the seeded rival draw put a 352 km/h hypercar on this grid.
-	{"id": "ortakoy_night", "tod": "night", "laps": 1, "skills": [0.70, 0.68, 0.66], "level": 1, "mult": 1.5, "track": TRACK_BOGAZ, "place": "ortakoy", "open": true, "cls": "street"},
-	{"id": "wharf_sprint", "tod": "sunset", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true, "cls": "street"},
-	{"id": "neon_strip_circuit", "tod": "night", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true},
-	{"id": "midnight_time_trial", "tod": "night", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0]},
-	{"id": "overpass_duel", "tod": "day", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6},
-	{"id": "harbour_run", "tod": "sunset", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0},
-	{"id": "syndicate_final", "tod": "night", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 3.0},
+	{"id": "ortakoy_night", "tod": "night", "laps": 1, "skills": [0.70, 0.68, 0.66], "level": 1, "mult": 1.5, "track": TRACK_BOGAZ, "place": "ortakoy", "open": true, "cls": "street", "chapter": 1},
+	{"id": "wharf_sprint", "tod": "sunset", "laps": 1, "skills": [0.84, 0.82, 0.80], "level": 1, "mult": 1.0, "traffic": true, "cls": "street", "chapter": 1},
+	{"id": "neon_strip_circuit", "tod": "night", "laps": 2, "skills": [0.88, 0.86, 0.85, 0.83, 0.82], "level": 2, "mult": 1.3, "traffic": true, "reverse": true, "chapter": 1},
+	{"id": "midnight_time_trial", "tod": "night", "laps": 1, "skills": [], "level": 2, "mult": 1.2, "star_times": [72.0, 82.0, 100.0], "chapter": 1},
+	{"id": "overpass_duel", "tod": "day", "laps": 2, "skills": [0.96], "level": 3, "mult": 1.6, "reverse": true, "chapter": 1, "boss": true},
+	{"id": "harbour_run", "tod": "sunset", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 2.0, "chapter": 2},
+	{"id": "syndicate_final", "tod": "night", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 3.0, "chapter": 2},
 	# World Tour: Istanbul (unlocked after the Arden Bay final)
-	{"id": "maslak_sprint", "tod": "day", "laps": 1, "skills": [0.92, 0.90, 0.88], "level": 3, "mult": 3.2, "track": TRACK_MASLAK, "place": "maslak"},
-	{"id": "bogaz_circuit", "tod": "sunset", "laps": 2, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 3.5, "track": TRACK_BOGAZ, "place": "bogaz"},
-	{"id": "maslak_night", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak"},
-	{"id": "bogaz_final", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz"},
+	{"id": "maslak_sprint", "tod": "day", "laps": 1, "skills": [0.92, 0.90, 0.88], "level": 3, "mult": 3.2, "track": TRACK_MASLAK, "place": "maslak", "chapter": 2},
+	{"id": "bogaz_circuit", "tod": "sunset", "laps": 2, "skills": [0.94, 0.93, 0.92, 0.91, 0.90], "level": 3, "mult": 3.5, "track": TRACK_BOGAZ, "place": "bogaz", "reverse": true, "chapter": 2},
+	{"id": "maslak_night", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95, 0.94, 0.93], "level": 4, "mult": 4.0, "track": TRACK_MASLAK, "place": "maslak", "chapter": 2},
+	{"id": "bogaz_final", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "track": TRACK_BOGAZ, "place": "bogaz", "chapter": 2},
 	# Extended tour: existing event ids and order remain unchanged.
-	{"id": "maslak_time_trial", "tod": "day", "laps": 1, "skills": [], "level": 2, "mult": 2, "place": "maslak", "star_times": [75, 90, 110], "track": TRACK_MASLAK},
-	{"id": "bogaz_duel", "tod": "day", "laps": 1, "skills": [0.93], "level": 3, "mult": 2.5, "place": "bogaz", "track": TRACK_BOGAZ},
-	{"id": "wharf_return", "tod": "day", "laps": 2, "skills": [0.91, 0.9, 0.88], "level": 3, "mult": 2.5},
-	{"id": "maslak_rush", "tod": "sunset", "laps": 2, "skills": [0.93, 0.92, 0.91], "level": 3, "mult": 3, "place": "maslak", "traffic": true, "track": TRACK_MASLAK},
-	{"id": "bogaz_time_trial", "tod": "sunset", "laps": 1, "skills": [], "level": 3, "mult": 3, "place": "bogaz", "star_times": [75, 90, 110], "track": TRACK_BOGAZ},
-	{"id": "wharf_duel", "tod": "night", "laps": 2, "skills": [0.96], "level": 3, "mult": 3.2},
-	{"id": "maslak_endurance", "tod": "day", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.9], "level": 3, "mult": 3.5, "place": "maslak", "track": TRACK_MASLAK},
-	{"id": "bogaz_rush", "tod": "day", "laps": 2, "skills": [0.94, 0.92, 0.9], "level": 3, "mult": 3.5, "place": "bogaz", "traffic": true, "track": TRACK_BOGAZ},
-	{"id": "wharf_time_trial", "tod": "sunset", "laps": 1, "skills": [], "level": 3, "mult": 3.5, "star_times": [68, 78, 95]},
-	{"id": "maslak_duel", "tod": "night", "laps": 2, "skills": [0.97], "level": 4, "mult": 4, "place": "maslak", "track": TRACK_MASLAK},
-	{"id": "bogaz_blue_hour", "tod": "sunset", "laps": 3, "skills": [0.95, 0.94, 0.93, 0.92, 0.91], "level": 4, "mult": 4, "place": "bogaz", "track": TRACK_BOGAZ},
-	{"id": "wharf_endurance", "tod": "night", "laps": 3, "skills": [0.96, 0.95, 0.94, 0.93, 0.92], "level": 4, "mult": 4.2},
-	{"id": "maslak_elite", "tod": "sunset", "laps": 2, "skills": [0.98, 0.97, 0.96, 0.95, 0.94], "level": 4, "mult": 4.3, "place": "maslak", "track": TRACK_MASLAK},
-	{"id": "bogaz_night_duel", "tod": "night", "laps": 2, "skills": [0.98], "level": 4, "mult": 4.5, "place": "bogaz", "track": TRACK_BOGAZ},
-	{"id": "wharf_elite", "tod": "day", "laps": 2, "skills": [0.98, 0.97, 0.96, 0.95, 0.94], "level": 4, "mult": 4.5},
-	{"id": "maslak_master", "tod": "night", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.7, "place": "maslak", "track": TRACK_MASLAK},
-	{"id": "bogaz_master", "tod": "day", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.8, "place": "bogaz", "track": TRACK_BOGAZ},
-	{"id": "wharf_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5},
-	{"id": "istanbul_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.5, "place": "bogaz", "track": TRACK_BOGAZ},
+	{"id": "maslak_time_trial", "tod": "day", "laps": 1, "skills": [], "level": 2, "mult": 2, "place": "maslak", "star_times": [75, 90, 110], "track": TRACK_MASLAK, "chapter": 2},
+	{"id": "bogaz_duel", "tod": "day", "laps": 1, "skills": [0.93], "level": 3, "mult": 2.5, "place": "bogaz", "track": TRACK_BOGAZ, "reverse": true, "chapter": 2, "boss": true},
+	{"id": "wharf_return", "tod": "day", "laps": 2, "skills": [0.91, 0.9, 0.88], "level": 3, "mult": 2.5, "chapter": 3},
+	{"id": "maslak_rush", "tod": "sunset", "laps": 2, "skills": [0.93, 0.92, 0.91], "level": 3, "mult": 3, "place": "maslak", "traffic": true, "track": TRACK_MASLAK, "reverse": true, "chapter": 3},
+	{"id": "bogaz_time_trial", "tod": "sunset", "laps": 1, "skills": [], "level": 3, "mult": 3, "place": "bogaz", "star_times": [75, 90, 110], "track": TRACK_BOGAZ, "chapter": 3},
+	{"id": "wharf_duel", "tod": "night", "laps": 2, "skills": [0.96], "level": 3, "mult": 3.2, "reverse": true, "chapter": 3},
+	{"id": "maslak_endurance", "tod": "day", "laps": 3, "skills": [0.94, 0.93, 0.92, 0.91, 0.9], "level": 3, "mult": 3.5, "place": "maslak", "track": TRACK_MASLAK, "chapter": 3},
+	{"id": "bogaz_rush", "tod": "day", "laps": 2, "skills": [0.94, 0.92, 0.9], "level": 3, "mult": 3.5, "place": "bogaz", "traffic": true, "track": TRACK_BOGAZ, "chapter": 3},
+	{"id": "wharf_time_trial", "tod": "sunset", "laps": 1, "skills": [], "level": 3, "mult": 3.5, "star_times": [68, 78, 95], "chapter": 3},
+	{"id": "maslak_duel", "tod": "night", "laps": 2, "skills": [0.97], "level": 4, "mult": 4, "place": "maslak", "track": TRACK_MASLAK, "reverse": true, "chapter": 3, "boss": true},
+	{"id": "bogaz_blue_hour", "tod": "sunset", "laps": 3, "skills": [0.95, 0.94, 0.93, 0.92, 0.91], "level": 4, "mult": 4, "place": "bogaz", "track": TRACK_BOGAZ, "chapter": 4},
+	{"id": "wharf_endurance", "tod": "night", "laps": 3, "skills": [0.96, 0.95, 0.94, 0.93, 0.92], "level": 4, "mult": 4.2, "reverse": true, "chapter": 4},
+	{"id": "maslak_elite", "tod": "sunset", "laps": 2, "skills": [0.98, 0.97, 0.96, 0.95, 0.94], "level": 4, "mult": 4.3, "place": "maslak", "track": TRACK_MASLAK, "reverse": true, "chapter": 4},
+	{"id": "bogaz_night_duel", "tod": "night", "laps": 2, "skills": [0.98], "level": 4, "mult": 4.5, "place": "bogaz", "track": TRACK_BOGAZ, "reverse": true, "chapter": 4},
+	{"id": "wharf_elite", "tod": "day", "laps": 2, "skills": [0.98, 0.97, 0.96, 0.95, 0.94], "level": 4, "mult": 4.5, "chapter": 4},
+	{"id": "maslak_master", "tod": "night", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.7, "place": "maslak", "track": TRACK_MASLAK, "chapter": 4},
+	{"id": "bogaz_master", "tod": "day", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.8, "place": "bogaz", "track": TRACK_BOGAZ, "chapter": 4},
+	{"id": "wharf_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5, "chapter": 4},
+	{"id": "istanbul_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.5, "place": "bogaz", "track": TRACK_BOGAZ, "chapter": 4, "boss": true},
 	# Modes, appended after the championship so existing saves keep every unlock (the ladder unlocks in order).
 	# Provisional tuning: score thresholds and time limits want a human playtest.
 	{"id": "drift_harbour", "mode": "drift", "tod": "sunset", "laps": 1, "skills": [], "level": 2, "mult": 2.0, "time_limit": 60.0, "star_scores": [1000, 600, 250]},
@@ -60,12 +62,12 @@ const EVENTS: Array[Dictionary] = [
 	# them would unlock the first one at once). A survive run has laps x 60 s > survive_s: the race must not end first.
 	{"id": "pursuit_harbour_chase", "tod": "night", "laps": 3, "skills": [0.96, 0.95, 0.94], "level": 3, "mult": 2.5, "survive_s": 120.0, "traffic": true, "cls": "street", "pursuit": true},
 	{"id": "pursuit_maslak_hunt", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95], "level": 4, "mult": 2.75, "place": "maslak", "track": TRACK_MASLAK, "pursuit": true},
-	{"id": "pursuit_bogaz_gauntlet", "tod": "night", "laps": 4, "skills": [0.98, 0.97, 0.96], "level": 4, "mult": 3.25, "survive_s": 180.0, "place": "bogaz", "track": TRACK_BOGAZ, "pursuit": true},
+	{"id": "pursuit_bogaz_gauntlet", "tod": "sunset", "laps": 4, "skills": [0.98, 0.97, 0.96], "level": 4, "mult": 3.25, "survive_s": 180.0, "place": "bogaz", "track": TRACK_BOGAZ, "pursuit": true},
 	# Police chase on the Bosphorus at night: "open" (never locked, never gates the ladder), "pursuit" opts in to PursuitMode.
 	{"id": "bogaz_escape", "tod": "night", "laps": 2, "skills": [0.9, 0.88, 0.86], "level": 3, "mult": 3.0, "place": "bogaz", "track": TRACK_BOGAZ, "open": true, "pursuit": true, "cls": "street"},
 	# Pursuit runs, open: independent of the career ladder, on all three tracks. "survive_s" = the survive goal (chase time, no bust).
 	{"id": "pursuit_wharf_escape", "tod": "night", "laps": 2, "skills": [0.9, 0.88, 0.86], "level": 2, "mult": 1.5, "traffic": true, "cls": "street", "open": true, "pursuit": true},
-	{"id": "pursuit_wharf_survive", "tod": "night", "laps": 3, "skills": [0.92, 0.9, 0.88], "level": 2, "mult": 1.75, "survive_s": 150.0, "traffic": true, "cls": "street", "open": true, "pursuit": true},
+	{"id": "pursuit_wharf_survive", "tod": "sunset", "laps": 3, "skills": [0.92, 0.9, 0.88], "level": 2, "mult": 1.75, "survive_s": 150.0, "traffic": true, "cls": "street", "open": true, "pursuit": true},
 	{"id": "pursuit_maslak_escape", "tod": "day", "laps": 2, "skills": [0.92, 0.9, 0.88], "level": 3, "mult": 1.75, "place": "maslak", "track": TRACK_MASLAK, "open": true, "pursuit": true},
 	{"id": "pursuit_maslak_survive", "tod": "sunset", "laps": 3, "skills": [0.94, 0.92, 0.9], "level": 3, "mult": 2.0, "survive_s": 150.0, "place": "maslak", "track": TRACK_MASLAK, "open": true, "pursuit": true},
 	{"id": "pursuit_bogaz_survive", "tod": "night", "laps": 3, "skills": [0.94, 0.93, 0.92], "level": 3, "mult": 2.0, "survive_s": 150.0, "place": "bogaz", "track": TRACK_BOGAZ, "open": true, "pursuit": true},
@@ -127,7 +129,23 @@ static func next_id(id: String) -> String:
 
 ## Text key prefix, e.g. "event.wharf_sprint" (+ ".name").
 static func name_key(id: String) -> String:
+	if find(id).get("reverse", false):  # reverse variants carry their own "Ters yon" / "Reverse" names
+		return "event.%s.reverse.name" % id
 	return "event.%s.name" % id
+
+
+## Career chapter of an event (1-4), 0 for the tail (modes and pursuit runs, unchained to a chapter).
+static func chapter_of(id: String) -> int:
+	return int(find(id).get("chapter", 0))
+
+
+## True for the boss race that closes a chapter.
+static func is_boss(id: String) -> bool:
+	return bool(find(id).get("boss", false))
+
+
+static func chapter_name_key(chapter: int) -> String:
+	return "chapter.%d.name" % chapter
 
 
 static func is_time_event(id: String) -> bool:

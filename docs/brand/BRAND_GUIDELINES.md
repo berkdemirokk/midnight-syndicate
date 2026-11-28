@@ -28,7 +28,7 @@ hairlines, pearl type, real cars in real light.
 | RED_DEEP | #B82A1C | pressed primary |
 | TITANIUM | #C4C8CE | secondary text, hairlines, icons |
 | PEARL | #F4F4F4 | primary text, focus ring |
-| STEEL | #8E949D | captions (5.9:1 on graphite) |
+| STEEL | #8E949D | captions (6.1:1 on graphite) |
 | GOLD | #E9B856 | currency and stars only |
 | GO | #55C78E | owned, gained, personal best |
 | DANGER | #FF5440 | redline, wrong way, busted |
@@ -37,7 +37,7 @@ Rules: red is spent on one thing per screen region (the primary action or the cu
 graphite, never red. No neon cyan or magenta, no rainbow gradients, no glow on text. Old token names in code
 (`CYAN`, `MAGENTA`, `AMBER`) are aliases of RED, PEARL, GOLD so older screens follow the brand.
 
-Contrast (WCAG 2.2): PEARL on GRAPHITE 17.6:1, TITANIUM 11.0:1, STEEL 5.9:1, PEARL on RED 3.3:1 (large bold
+Contrast (WCAG 2.2, computed): PEARL on GRAPHITE 17.0:1, TITANIUM 11.2:1, STEEL 6.1:1, GOLD 10.2:1, RED 5.0:1, PEARL on RED 3.4:1 (large bold
 labels only, 24 px+ bold, which every primary button uses).
 
 ## Typography (commercially permitted, SIL OFL 1.1, in `game/assets/branding/fonts/`)

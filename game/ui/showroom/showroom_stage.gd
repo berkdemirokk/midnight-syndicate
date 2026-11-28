@@ -143,6 +143,8 @@ func show_car(id: String) -> void:
 	if not ResourceLoader.exists(path):
 		return
 	var packed: PackedScene = load(path) as PackedScene
+	if packed == null:
+		return
 	var node: Node = packed.instantiate()
 	car = node as Node3D
 	var setup: Dictionary = GameState.get_setup(id)
@@ -151,7 +153,7 @@ func show_car(id: String) -> void:
 		(node as CarLod).paint_colour = Color.from_string(str(setup["paint_color"]), CarMaterials.DEFAULT_PAINT)
 	_pivot.add_child(car)
 	CarMaterials.set_rim_color(car, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
-	CarMaterials.set_reflection(car, studio_pano(), 0.85, 1.4, 2.2)
+	CarMaterials.set_reflection(car, studio_pano(quality != "full"), 0.85, 1.4, 2.2)
 
 
 func _build_environment() -> void:
@@ -169,7 +171,7 @@ func _build_environment() -> void:
 	env.fog_light_color = BG
 	env.fog_density = 0.035
 	env.fog_sky_affect = 0.0
-	env.glow_enabled = true
+	env.glow_enabled = quality == "full"  # no full-screen glow pass on the phone / Low tier
 	env.glow_intensity = 0.45
 	env.glow_bloom = 0.0
 	env.glow_hdr_threshold = 1.4
@@ -188,6 +190,7 @@ func _build_floor() -> void:
 	mi.mesh = mesh
 	floor_material = SHOWROOM_SET.make_floor_material(4.2, 22.0)
 	floor_material.set_shader_parameter("fade_start", 6.0)
+	floor_material.set_shader_parameter("light_specular", 0.06)  # the key mirrored as a hot white blob in front of the car
 	mi.material_override = floor_material
 	mi.layers = SHOWROOM_SET.MIRROR_LAYER_BIT
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -220,9 +223,8 @@ func _spot(pos: Vector3, colour: Color, energy: float, angle: float, shadow: boo
 
 func _build_lights() -> void:
 	_spot(Vector3(0.6, 7.5, 1.2), KEY_COLOUR, 7.0, 34.0, quality == "full").name = "Key"
-	_spot(Vector3(-6.5, 2.6, 2.5), FILL_COLOUR, 3.2, 30.0, false).name = "FillL"
-	_spot(Vector3(5.5, 3.2, 4.5), FILL_COLOUR, 1.4, 24.0, false).name = "FillR"
-	_spot(Vector3(0.0, 2.2, -7.5), RIM_COLOUR, 5.5, 32.0, false).name = "Rim"
+	_spot(Vector3(-6.5, 2.6, 2.5), FILL_COLOUR, 3.2, 30.0, false).spot_range = 9.0  # stops at the car: no pool on the far floor
+	_spot(Vector3(0.0, 2.2, -7.5), RIM_COLOUR, 5.5, 32.0, false).spot_range = 10.0  # rim only, no pool in front of the car
 
 
 func _build_set() -> void:
@@ -241,15 +243,18 @@ func _build_set() -> void:
 
 ## Equirectangular studio panorama for the paint mirror (u: atan(x, z), v: 0 up .. 1 down; see car_reflection.gdshader).
 ## Bright strips overhead, two side panels, the red line low behind the car, dark floor. Made once per run.
-static func studio_pano() -> ImageTexture:
+## small: quarter the pixels (lite tier), the paint mirror is blurred anyway; builds in a quarter of the time.
+static func studio_pano(small: bool = false) -> ImageTexture:
 	if _pano != null:
 		return _pano
-	var img := Image.create(PANO_W, PANO_H, false, Image.FORMAT_RGB8)
-	for y: int in PANO_H:
-		var v: float = (float(y) + 0.5) / float(PANO_H)
+	var pw: int = PANO_W / 2 if small else PANO_W
+	var ph: int = PANO_H / 2 if small else PANO_H
+	var img := Image.create(pw, ph, false, Image.FORMAT_RGB8)
+	for y: int in ph:
+		var v: float = (float(y) + 0.5) / float(ph)
 		var elev: float = (0.5 - v) * PI  ## +pi/2 up
-		for x: int in PANO_W:
-			var u: float = (float(x) + 0.5) / float(PANO_W)
+		for x: int in pw:
+			var u: float = (float(x) + 0.5) / float(pw)
 			var az: float = (u - 0.5) * TAU  ## 0 = +Z (front of the car), +-pi = behind
 			var c := Color(0.020, 0.021, 0.025)
 			if elev > 0.0:
