@@ -134,6 +134,10 @@ func start_countdown() -> void:
 	set_physics_process(true)
 
 
+func player_finished() -> bool:  ## true once the player's car has crossed the finish; the rest of the race may run on
+	return _finish_deadline >= 0.0
+
+
 func get_position(car: ArcadeCar) -> int:  ## 1-based, 0 for a car not in the race
 	var r: Racer = _racer_of(car)
 	return r.place if r != null else 0

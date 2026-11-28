@@ -43,6 +43,7 @@ var escape_reward: int = 0
 var last_spawn_hidden: bool = false  ## the last police spawn was out of the camera view (best effort, see the doc)
 
 var _track: Track = null
+var _race: RaceManager = null  ## the race whose finish ends the chase
 var _cars: Array[ArcadeCar] = []  ## the race cars, player included: avoidance and spawn clearance
 var _hud: PursuitHud = null
 var _red: StandardMaterial3D = null
@@ -78,6 +79,9 @@ func setup(track: Track, race_player: ArcadeCar, race_cars: Array[ArcadeCar], ra
 	add_child(_hud)
 	if race != null and not race.race_started.is_connected(start):
 		race.race_started.connect(start)
+	_race = race
+	if race != null and not race.race_finished.is_connected(_on_race_finished):
+		race.race_finished.connect(_on_race_finished)
 
 
 ## Begins the chase at heat 1. The first police car is spawned on the next step. Called on GO.
@@ -98,6 +102,9 @@ func _physics_process(delta: float) -> void:
 ## One simulation step. Public so tests can drive the rules without waiting for physics frames.
 func step(delta: float) -> void:
 	if not _active or _track == null or player == null:
+		return
+	if _race != null and _race.player_finished():
+		_stop_chase()  # the player crossed the line: no more bust or escape; the rest of the race runs on
 		return
 	_spawn_t = maxf(_spawn_t - delta, 0.0)
 	_roadblock_cd = maxf(_roadblock_cd - delta, 0.0)
@@ -217,12 +224,20 @@ func try_roadblock() -> bool:
 	return false
 
 
-func _finish() -> void:
+func _stop_chase() -> void:
 	_active = false
 	for c: ArcadeCar in police:
 		var drv: AIDriver = c.get_node_or_null(DRIVER_NAME) as AIDriver
 		if drv != null:
 			drv.enabled = false
+
+
+func _on_race_finished(_results: Array[Dictionary]) -> void:
+	_stop_chase()
+
+
+func _finish() -> void:
+	_stop_chase()
 	if state.phase == PursuitState.Phase.ESCAPED:
 		escape_reward = ESCAPE_REWARD_PER_HEAT * state.heat
 		GameState.add_cash(escape_reward)
