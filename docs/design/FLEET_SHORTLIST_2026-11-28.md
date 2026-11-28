@@ -17,7 +17,6 @@ Triangle counts are the Sketchfab listing figures (before decimation). Licence w
 | 4 | olliej08_lowpoly_car | Low poly car, untextured, separate wheel material | olliej08 | https://sketchfab.com/3d-models/low-poly-car-1d04ecda030944b78a4445bcafbd6c25 | Creative Commons Attribution | 3400 | street | Wheels separate so they can spin; repaintable colours | No PBR, untextured look, no real make named |
 | 5 | genbrugge_ringland_car | Car (Ringland) | Bastien Genbrugge (@bastienBGR) | https://sketchfab.com/3d-models/car-ringland-ecc2f9e9e9c840bf92ada8ca14b89a03 | Creative Commons Attribution | 2300 | street | Used in an animation, so it has a usable real-world-scaled body | No PBR stated, 424 downloads, check materials |
 | 6 | leoskateman_old_car_toy | Old car toy | Léonard_Doye / Leoskateman (@leoskateman) | https://sketchfab.com/3d-models/old-car-toy-ec1fb397fc014edd8690c7da168a80d1 | Creative Commons Attribution | 3700 | classic | Substance-textured, so likely real texture maps | Tagged "chevrolet": check no badges or grille logos remain; reads as a toy, not a realistic classic |
-| 7 | rysky_low_poly_sports (dup, see 3) | — | — | — | — | — | — | — | Counted once above; not a second car |
 
 Ranked fit is only as good as the verified data. Rank 1 is the best cheap generic street car. Rank 6 is the only one with texture maps stated; the others are untextured or unstated.
 
