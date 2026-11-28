@@ -25,6 +25,9 @@ const DEFAULT_CARS: Array[Dictionary] = [
 	{"id": "arden_ramjet", "class": "muscle", "price": 12000, "rep": 450, "rival": true},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "arden_shaker", "class": "muscle", "price": 14000, "rep": 600, "rival": true},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "noctra_meridian", "class": "gt", "price": 28000, "rep": 700, "rival": true},
+	{"id": "noctra_sovereign", "class": "sport", "price": 20000, "rep": 500},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "noctra_volta", "class": "gt", "price": 26000, "rep": 650},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "noctra_titan", "class": "super", "price": 40000, "rep": 1000},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "bosfor_yildirim", "class": "hyper", "price": 90000, "rep": 2500, "rival": true},
 ]
 
