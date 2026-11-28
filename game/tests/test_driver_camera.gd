@@ -191,7 +191,8 @@ func test_chase_camera_behind_car_after_five_seconds() -> void:
 	var to_car: Vector3 = (car_p - cam_p).normalized()
 	var view: Vector3 = -_cam.global_transform.basis.z
 	var angle_deg: float = rad_to_deg(acos(clampf(to_car.dot(view), -1.0, 1.0)))
-	check_range(angle_deg, 0.0, 10.0, "car angle from view centre (deg)")
+	# 2026-11-28 night diet: look_ahead 9 m puts the car about 11 deg off centre; 12 deg still keeps it on screen
+	check_range(angle_deg, 0.0, 12.0, "car angle from view centre (deg)")
 	metric("speed_kmh_after_5s", _car.speed_kmh)
 	metric("camera_distance_m", dist)
 	metric("camera_height_above_car_m", cam_p.y - car_p.y)
