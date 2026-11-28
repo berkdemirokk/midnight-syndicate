@@ -46,7 +46,7 @@ func _run_event(id: String, on_racing: Callable = Callable()) -> RaceScene:
 # --- ladder and configs -----------------------------------------------------
 
 func test_mode_events_are_on_the_ladder() -> void:
-	check(EventCatalog.count() == 35, "30 events, four mode events and the Bosphorus escape (merged 2026-11-28), got %d" % EventCatalog.count())
+	check(EventCatalog.count() == 43, "30 events, four mode events, the Bosphorus escape and eight pursuit events, got %d" % EventCatalog.count())
 	check(EventCatalog.previous_id("drift_harbour") == "istanbul_championship", "drift_harbour must follow the championship")
 	check(EventCatalog.mode_of("drift_harbour") == RaceConfig.MODE_DRIFT and EventCatalog.is_score_event("drift_harbour"), "drift_harbour mode")
 	check(EventCatalog.mode_of("drift_bogaz") == RaceConfig.MODE_DRIFT, "drift_bogaz mode")

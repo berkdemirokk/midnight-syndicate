@@ -29,6 +29,8 @@ var _go_seen: bool = false
 
 
 func run() -> void:
+	GameState.open_profile("user://pursuit_capture_save.json")  # the escape pays out: keep the real profile out of it
+	GameState.reset_profile()
 	PursuitMode.ENABLED = true
 	var cfg := RaceConfig.new()
 	cfg.use_garage_paint = false
@@ -122,3 +124,24 @@ func run() -> void:
 	cam2.look_at(mid + Vector3.UP * 0.4, Vector3.UP)
 	await cap.wait_frames(2)
 	await cap.shot("pursuit_roadblock_close")
+	# Heat 5: the top of the ladder (police cap 3, all five pips lit, the radar with every car).
+	pm.state.heat = 5
+	await cap.wait_seconds(1.0)
+	await cap.shot("pursuit_heat_5")
+	# Escape, real rules: every police car 150 m back, out of sensing range, so the 8 s cooldown runs and the chase ends.
+	var fwd: Vector3 = _scene.track.get_tangent_at(_scene.track.get_progress(_scene.player.global_position))
+	for c: ArcadeCar in pm.police:
+		c.global_transform = Transform3D(Basis.looking_at(fwd, Vector3.UP), _scene.player.global_position - fwd * 150.0 + Vector3(0.0, PursuitMode.SPAWN_HEIGHT_M, 0.0))
+	waited = 0.0
+	while pm.state.phase != PursuitState.Phase.ESCAPED and pm.state.phase != PursuitState.Phase.BUSTED and waited < 15.0:
+		await cap.wait_frames(1)
+		waited += WAIT_STEP_S
+	print("PURSUIT_DEMO escape phase=%d heat=%d reward=%d waited=%.1f" % [pm.state.phase, pm.state.heat, pm.escape_reward, waited])
+	await cap.wait_seconds(0.5)
+	await cap.shot("pursuit_escape")
+	# Bust banner: shown from the bust state (set directly, the chase is stopped so no reward is paid).
+	pm._active = false
+	pm.state.phase = PursuitState.Phase.BUSTED
+	pm._update_hud()
+	await cap.wait_frames(3)
+	await cap.shot("pursuit_bust")

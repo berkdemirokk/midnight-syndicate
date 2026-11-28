@@ -58,6 +58,16 @@ const EVENTS: Array[Dictionary] = [
 	{"id": "elim_maslak", "mode": "elimination", "tod": "sunset", "laps": 4, "skills": [0.95, 0.94, 0.93, 0.92], "level": 3, "mult": 4.0, "place": "maslak", "track": TRACK_MASLAK},
 	# Police chase on the Bosphorus at night: "open" (never locked, never gates the ladder), "pursuit" opts in to PursuitMode.
 	{"id": "bogaz_escape", "tod": "night", "laps": 2, "skills": [0.9, 0.88, 0.86], "level": 3, "mult": 3.0, "place": "bogaz", "track": TRACK_BOGAZ, "open": true, "pursuit": true, "cls": "street"},
+	# Pursuit runs, open: independent of the career ladder, on all three tracks. "survive_s" = the survive goal (chase time, no bust).
+	{"id": "pursuit_wharf_escape", "tod": "night", "laps": 2, "skills": [0.9, 0.88, 0.86], "level": 2, "mult": 2.0, "traffic": true, "cls": "street", "open": true, "pursuit": true},
+	{"id": "pursuit_wharf_survive", "tod": "night", "laps": 3, "skills": [0.92, 0.9, 0.88], "level": 2, "mult": 2.5, "survive_s": 150.0, "traffic": true, "cls": "street", "open": true, "pursuit": true},
+	{"id": "pursuit_maslak_escape", "tod": "day", "laps": 2, "skills": [0.92, 0.9, 0.88], "level": 3, "mult": 2.5, "place": "maslak", "track": TRACK_MASLAK, "open": true, "pursuit": true},
+	{"id": "pursuit_maslak_survive", "tod": "sunset", "laps": 3, "skills": [0.94, 0.92, 0.9], "level": 3, "mult": 3.0, "survive_s": 150.0, "place": "maslak", "track": TRACK_MASLAK, "open": true, "pursuit": true},
+	{"id": "pursuit_bogaz_survive", "tod": "night", "laps": 3, "skills": [0.94, 0.93, 0.92], "level": 3, "mult": 3.0, "survive_s": 150.0, "place": "bogaz", "track": TRACK_BOGAZ, "open": true, "pursuit": true},
+	# Career pursuit events (ladder order, after the open runs above): the ladder unlocks them in turn.
+	{"id": "pursuit_harbour_chase", "tod": "night", "laps": 2, "skills": [0.96, 0.95, 0.94], "level": 3, "mult": 3.5, "survive_s": 120.0, "traffic": true, "cls": "street", "pursuit": true},
+	{"id": "pursuit_maslak_hunt", "tod": "night", "laps": 2, "skills": [0.97, 0.96, 0.95], "level": 4, "mult": 4.0, "place": "maslak", "track": TRACK_MASLAK, "pursuit": true},
+	{"id": "pursuit_bogaz_gauntlet", "tod": "night", "laps": 3, "skills": [0.98, 0.97, 0.96], "level": 4, "mult": 5.0, "survive_s": 240.0, "place": "bogaz", "track": TRACK_BOGAZ, "pursuit": true},
 ]
 
 

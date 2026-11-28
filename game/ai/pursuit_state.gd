@@ -3,6 +3,8 @@ extends RefCounted
 ## Deterministic, opt-in pursuit rules. No scene, AI driver, reward or UI side effects.
 ## A future police controller supplies the distance to the nearest active police vehicle.
 ## Distances in metres, player speed in km/h, elapsed time in seconds.
+## Two goals: escape (survive_s == 0: a full cooldown ends in ESCAPED) or survive (survive_s > 0: that much chase
+## time without a bust ends in ESCAPED, shown as SURVIVED by the HUD). A bust always wins.
 
 enum Phase { INACTIVE, CHASE, COOLDOWN, ESCAPED, BUSTED }
 
@@ -18,21 +20,26 @@ const ROADBLOCK_HEAT: int = 3
 
 var phase: Phase = Phase.INACTIVE
 var heat: int = 0
-var chase_s: float = 0.0
+var chase_s: float = 0.0  ## chase time since the last heat step (resets at each step and at max heat)
+var total_s: float = 0.0  ## chase time in total, cooldown excluded: the survive goal reads this
 var cooldown_s: float = 0.0
 var bust_s: float = 0.0
+var survive_s: float = 0.0  ## 0 = escape goal; > 0 = survive this many seconds of chase
 
-func start(initial_heat: int = 1) -> void:
+func start(initial_heat: int = 1, survive_for_s: float = 0.0) -> void:
 	reset()
 	heat = clampi(initial_heat, 1, MAX_HEAT)
+	survive_s = maxf(survive_for_s, 0.0)
 	phase = Phase.CHASE
 
 func reset() -> void:
 	phase = Phase.INACTIVE
 	heat = 0
 	chase_s = 0.0
+	total_s = 0.0
 	cooldown_s = 0.0
 	bust_s = 0.0
+	survive_s = 0.0
 
 ## Negative or invalid distance is ignored, not treated as a nearby officer.
 ## INF means no active police is within sensing range.
@@ -54,6 +61,7 @@ func tick(delta: float, nearest_police_m: float, player_speed_kmh: float) -> voi
 			phase = Phase.ESCAPED
 		return
 	chase_s += delta
+	total_s += delta
 	while chase_s >= HEAT_INTERVAL_S and heat < MAX_HEAT:
 		chase_s -= HEAT_INTERVAL_S
 		heat += 1
@@ -65,6 +73,8 @@ func tick(delta: float, nearest_police_m: float, player_speed_kmh: float) -> voi
 			phase = Phase.BUSTED
 	else:
 		bust_s = 0.0
+	if phase == Phase.CHASE and survive_s > 0.0 and total_s >= survive_s:
+		phase = Phase.ESCAPED
 
 ## This is eligibility only. No roadblock is spawned by the rule model.
 func can_request_roadblock() -> bool:

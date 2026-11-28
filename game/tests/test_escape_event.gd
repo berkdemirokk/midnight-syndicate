@@ -44,7 +44,7 @@ func test_event_is_reachable_and_localized() -> void:
 func test_other_events_do_not_opt_in() -> void:
 	for i: int in EventCatalog.count():
 		var id: String = EventCatalog.id_at(i)
-		if id == EVENT_ID:
+		if id == EVENT_ID or bool(EventCatalog.find(id).get("pursuit", false)):  # pursuit events opt in by design
 			continue
 		var cfg: RaceConfig = EventCatalog.config_for(id)
 		check(cfg != null and not cfg.pursuit and not cfg.pursuit_event, "normal event is police-free: " + id)

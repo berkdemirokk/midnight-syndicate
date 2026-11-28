@@ -55,6 +55,7 @@ var _roadblock_cd: float = 0.0
 var _flash_t: float = 0.0
 var _hints: Dictionary = {}  ## police car -> last track progress, search hint
 var _had_police: bool = false  ## a police car existed in this chase: no cooldown or escape before that
+var _survive_s: float = 0.0  ## survive goal of this race (EventCatalog "survive_s"); 0 = escape goal
 
 
 ## Police cars allowed at a heat level: 1 / 2 / 2 / 3 / 3 for heat 1..5, none at heat 0.
@@ -82,12 +83,13 @@ func setup(track: Track, race_player: ArcadeCar, race_cars: Array[ArcadeCar], ra
 	_race = race
 	if race != null and not race.race_finished.is_connected(_on_race_finished):
 		race.race_finished.connect(_on_race_finished)
+	_survive_s = _event_survive_s()
 
 
 ## Begins the chase at heat 1. The first police car is spawned on the next step. Called on GO.
 func start() -> void:
 	_active = true
-	state.start(1)
+	state.start(1, _survive_s)
 	_spawn_t = 0.0
 	_roadblock_cd = 0.0
 	_had_police = false
@@ -253,9 +255,42 @@ func _update_hud() -> void:
 	if state.phase == PursuitState.Phase.BUSTED:
 		_hud.set_banner(I18n.t("pursuit.busted"))
 	elif state.phase == PursuitState.Phase.ESCAPED:
-		_hud.set_banner(I18n.t("pursuit.escaped") % escape_reward)
+		_hud.set_banner(I18n.t("pursuit.survived" if _survive_s > 0.0 else "pursuit.escaped") % escape_reward)
 	else:
 		_hud.set_banner("")
+	_hud.set_goal(_goal_text())
+	var bust: float = state.bust_s / PursuitState.BUST_TIME_S
+	var escape: float = state.cooldown_s / PursuitState.ESCAPE_TIME_S if state.phase == PursuitState.Phase.COOLDOWN else 0.0
+	_hud.set_gauges(bust, escape, _radar_points())
+
+
+## Survive goal of the event this race runs. The race scene keeps the RaceConfig; walk up to it (no RaceScene edit).
+func _event_survive_s() -> float:
+	var n: Node = get_parent()
+	while n != null and not (n is RaceScene):
+		n = n.get_parent()
+	if n == null or (n as RaceScene).config_used == null:
+		return 0.0
+	return float(EventCatalog.find((n as RaceScene).config_used.event_id).get("survive_s", 0.0))
+
+
+func _goal_text() -> String:
+	if _survive_s <= 0.0:
+		return I18n.t("pursuit.goal.escape")
+	var left: int = ceili(maxf(_survive_s - state.total_s, 0.0))
+	return I18n.t("pursuit.goal.survive") % [left / 60, left % 60]
+
+
+## Police positions in the player's frame: x = metres to the right, y = metres ahead (negative = behind).
+func _radar_points() -> PackedVector2Array:
+	var out := PackedVector2Array()
+	if player == null:
+		return out
+	var inv: Basis = player.global_transform.basis.inverse()
+	for c: ArcadeCar in police:
+		var rel: Vector3 = inv * (c.global_position - player.global_position)
+		out.append(Vector2(rel.x, -rel.z))
+	return out
 
 
 func _process(delta: float) -> void:

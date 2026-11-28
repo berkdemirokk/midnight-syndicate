@@ -36,7 +36,7 @@ func _wipe() -> void:
 
 
 func test_catalog_shape() -> void:
-	check(EventCatalog.count() == 35, "original eleven events, nineteen extended tour events, four mode events and the Bosphorus escape")
+	check(EventCatalog.count() == 43, "original eleven events, nineteen extended tour events, four mode events, the Bosphorus escape and eight pursuit events")
 	for id: String in ["maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]:
 		var c: RaceConfig = EventCatalog.config_for(id)
 		check(c != null and ResourceLoader.exists(c.track_scene) and c.track_scene.contains("istanbul"), "%s races on an Istanbul track" % id)

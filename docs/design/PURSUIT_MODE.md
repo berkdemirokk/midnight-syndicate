@@ -49,3 +49,21 @@ Status: opt-in. `PursuitMode.ENABLED` is `false` in every build, and `RaceConfig
 - The roadblock is a barrier line, not a navigation or AI avoidance problem. The AI is not tuned to avoid it.
 - `ENABLED` is a static var rather than a const, so tests and capture can flip it for one run. Normal builds leave it false.
 - On BUSTED only the RaceManager stops (race clock and lap counting) and the autopilot is switched off; the car body is not frozen, so it coasts (or a human player can still steer) behind the banner and the results screen, as after a normal finish. Not covered by a test.
+
+## Update: survive goal, pursuit events, HUD gauges and radar (wp/pursuit)
+
+- Goals. `PursuitState.start(heat, survive_for_s)`. With `survive_s == 0` the goal is escape: a full cooldown ends in ESCAPED (ESCAPED on the HUD). With `survive_s > 0` the goal is survive: that much chase time (`PursuitState.total_s`, cooldown not counted) without a bust ends in ESCAPED, shown as SURVIVED. A bust always wins. The survive time comes from the event (`"survive_s"` in `EventCatalog`), read by `PursuitMode` through the race scene's `config_used.event_id`.
+- Pursuit events in `game/race/events.gd` (pursuit section, after `bogaz_escape`): five open runs on all three tracks (`pursuit_wharf_escape`, `pursuit_wharf_survive`, `pursuit_maslak_escape`, `pursuit_maslak_survive`, `pursuit_bogaz_survive`; Bosphorus escape is `bogaz_escape`) and three career runs (`pursuit_harbour_chase` 120 s survive, `pursuit_maslak_hunt` escape, `pursuit_bogaz_gauntlet` 240 s survive). The career runs follow the ladder order. Their previous event is `bogaz_escape`, which is open, so they unlock at once in this build; the ladder order does not gate them yet. `EventCatalog.count()` is now 43. Test counts in `test_events.gd` and `test_modes.gd` were updated for that.
+- No "Pursuit" section header exists in event select: the pursuit runs are rows in the normal event list. A dedicated entry belongs to the menu redesign package.
+- HUD (`game/race/pursuit/pursuit_hud.gd`): heat pips (five, filled to the heat level), a goal line (ESCAPE, or SURVIVE m:ss counting down), a bust gauge (red, fills while a police car is within 8 m and the player is stopped) and an escape gauge (cyan, fills during cooldown), and a radar on the left (police cars in the player's frame, 120 m range, rim when further). Strings: `pursuit.goal.escape`, `pursuit.goal.survive`, `pursuit.survived`, `pursuit.gauge.bust`, `pursuit.gauge.escape`.
+- Tests: `game/tests/test_pursuit_heat.gd` (heat steps at 25, 50, 75, 100 s; roadblock eligible only from heat 3 in chase; start heat clamped), `game/tests/test_pursuit_survive.gd` (survive goal ends in ESCAPED at 60 s; cooldown is not chase time; bust wins over the survive goal; escape goal never ends by timer; reset; event catalog consistency and translations). `test_escape_event.gd` skips every pursuit event in its "normal events are police-free" check.
+- Capture: `pursuit_demo` now also writes `pursuit_heat_5` (real heat 5 HUD, radar with police), `pursuit_escape` (real escape: police moved 150 m back, the 8 s cooldown runs, the payout goes to a temp profile) and `pursuit_bust` (the BUST banner set directly, not reached by play).
+
+Not done in this package (owner decisions or later work):
+- Spike strips at heat 4+: not built. They need a new prop, a tyre-deflation effect and handling tuning on real cars; no existing system does this.
+- Evade bonus and heat cash multipliers beyond 200 cash per heat level on escape: not built.
+- Hiding spots and side streets with faster cooldown: not built. The tracks have no side-street data for this.
+- Siren audio: no siren sound exists in the repo, and no download is allowed. The light bar is the only cue.
+- Boxing or ramming at higher heat: police still only chase and use the bust rule; no ramming force is applied.
+- Survive and escape event payouts are the heat rule (200 cash per heat level), not the event `mult` used on the select preview.
+- Real bust captured in play: not captured. The bust shot uses the banner set directly.
