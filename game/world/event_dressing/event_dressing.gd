@@ -64,7 +64,6 @@ const CROWD_LOD0_M: float = 45.0  ## retired with the 3D figures (their LOD0 ran
 const CROWD_LOD1_M: float = 160.0  ## photo cards are drawn out to here, then nothing
 const RANGE_FLAG_M: float = 300.0
 const RANGE_CAFE_M: float = 220.0
-const FADE_M: float = 6.0  ## dither band at the end of each range (a hard end was a visible pop)
 
 ## Per time of day: lit (bulbs, cables, light pools built), spectator tone, bulb emission, pool strength, awning glow.
 const TOD: Dictionary = {
@@ -337,8 +336,6 @@ func _add(node_name: String, mesh: Mesh, xf: Array, range_m: float, custom: Arra
 	mmi.multimesh = mm
 	mmi.visibility_range_begin = begin_m
 	mmi.visibility_range_end = range_m
-	mmi.visibility_range_end_margin = FADE_M
-	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if skip_mirror:
 		mmi.layers = (mmi.layers & ~1) | (1 << 4)  # not drawn by the wet-road mirror (layer 1 is the mirror's pass)

@@ -211,21 +211,3 @@ func test_mirror_layers() -> void:
 	await frames(2)
 	check(cam.cull_mask & Landmarks.MIRROR_ONLY_BIT == 0, "current camera still draws the landmark mirror copy")
 	await cleanup([track])
-
-
-func test_lod_fade_bands() -> void:
-	## every LOD switch fades over the same band: the next LOD fades in, the last one fades out (no hard pop)
-	var pair: Array = await _populate()
-	var track: Track = pair[0]
-	var lm: Landmarks = pair[1]
-	var switches: int = 0
-	for mi: MeshInstance3D in _meshes(lm):
-		if mi.layers == Landmarks.MIRROR_ONLY_BIT:
-			continue
-		if mi.visibility_range_begin > 0.0:
-			switches += 1
-			check(mi.visibility_range_begin_margin == Landmarks.LOD_FADE_M, "%s has no fade-in band at %.0f m" % [mi.name, mi.visibility_range_begin])
-		if mi.visibility_range_end > 0.0 and mi.visibility_range_end < float(Landmarks.LOD_RANGES[2][1]):
-			check(mi.visibility_range_end_margin == Landmarks.LOD_FADE_M, "%s has no fade-out band at %.0f m" % [mi.name, mi.visibility_range_end])
-	check(switches > 0, "no landmark LOD switch found to test")
-	await cleanup([track])

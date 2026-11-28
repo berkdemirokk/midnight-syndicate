@@ -243,10 +243,6 @@ func test_lod_switching_by_distance() -> void:
 	check(car.lod_for_distance(69.9) == 1 and car.lod_for_distance(70.1) == 2, "LOD1/LOD2 boundary not at 70 m")
 	var lod0_mi: MeshInstance3D = car.get_node("LOD0").find_child("body", true, false) as MeshInstance3D
 	check(is_equal_approx(lod0_mi.visibility_range_end, 22.0), "LOD0 body range end is %.2f, expected 22" % lod0_mi.visibility_range_end)
-	for lod_root: Node3D in [car.get_node("LOD1") as Node3D, car.get_node("LOD2") as Node3D]:
-		for n: Node in lod_root.find_children("*", "MeshInstance3D", true, false):
-			var fade_mi: MeshInstance3D = n as MeshInstance3D
-			check(is_equal_approx(fade_mi.visibility_range_begin_margin, car.fade_margin_m), "%s begin margin %.2f, expected the fade band" % [fade_mi.get_path(), fade_mi.visibility_range_begin_margin])
 	await cleanup(_spawned)
 	_spawned.clear()
 	var cam_nodes: Array[Node] = [cam]

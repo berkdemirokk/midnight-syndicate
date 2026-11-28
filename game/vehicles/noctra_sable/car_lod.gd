@@ -126,16 +126,13 @@ func _apply_ranges() -> void:
 		var begin: float = 0.0 if i == 0 else (lod1_start_m if i == 1 else lod2_start_m)
 		var end: float = lod1_start_m if i == 0 else (lod2_start_m if i == 1 else 0.0)
 		var margin: float = fade_margin_m if i < 2 else 0.0
-		var begin_margin: float = fade_margin_m if i > 0 else 0.0  ## the next LOD fades in over the band the last one fades out
 		if forced:
 			begin = 0.0
 			end = 0.0
 			margin = 0.0
-			begin_margin = 0.0
 		for n: Node in lod.find_children("*", "MeshInstance3D", true, false):
 			var mi: MeshInstance3D = n as MeshInstance3D
 			mi.visibility_range_begin = begin
-			mi.visibility_range_begin_margin = begin_margin
 			mi.visibility_range_end = end
 			mi.visibility_range_end_margin = margin
 			mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
