@@ -88,6 +88,7 @@ func test_city_trees_off_road_and_city_mix() -> void:
 			lods += 1
 			var mmi: MultiMeshInstance3D = n
 			check(mmi.visibility_range_end > mmi.visibility_range_begin, "%s has no visibility range" % mmi.name)
+			check(mmi.visibility_range_end_margin > 0.0, "%s has a hard end, no fade band" % mmi.name)
 			check(mmi.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF, "%s casts a shadow" % mmi.name)
 	check(lods >= 4, "expected LOD and blob nodes, got %d" % lods)
 	metric("city_multimesh_nodes", lods)

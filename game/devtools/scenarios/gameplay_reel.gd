@@ -4,7 +4,7 @@ extends "res://devtools/capture_scenario.gd"
 ## race_bogaz / race_maslak, with traffic on (parked and AI cars are what the LOD switches are judged on).
 ## Run through the capture harness, under the GPU lock:
 ##   godot --path game --audio-driver Dummy --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=gameplay_reel --track=bogaz --side --timeout=240
-## Args (after --): --track=bogaz|city|maslak, --fps=8, --seconds=20, --side (static camera 9 m beside the player's car
+## Args (after --): --track=bogaz|city|maslak, --tod=night|day|sunset (default night), --fps=8, --seconds=20, --side (static camera 9 m beside the player's car
 ## at GO, so the field passes it; default is the chase camera).
 ## Output: evidence/screens/gameplay_reel/<track>_<side|chase>/frame_NNNN.jpg + reel_meta.json, and one real PNG shot.
 
@@ -27,6 +27,7 @@ var _track_key: String = "bogaz"
 var _fps: float = 8.0
 var _seconds: float = 20.0
 var _side: bool = false
+var _tod: String = "night"
 
 
 func run() -> void:
@@ -44,11 +45,11 @@ func run() -> void:
 	cfg.car_spec_path = CAR_SPEC
 	cfg.traffic_enabled = true
 	cfg.rival_mix = false
-	cfg.time_of_day = "night"
+	cfg.time_of_day = _tod
 	var scene: RaceScene = (load(RACE_SCENE) as PackedScene).instantiate() as RaceScene
 	scene.config = cfg
 	tree.root.add_child(scene)
-	var out_dir: String = ProjectSettings.globalize_path("res://").path_join(OUT_REL + "%s_%s" % [_track_key, "side" if _side else "chase"]).simplify_path()
+	var out_dir: String = ProjectSettings.globalize_path("res://").path_join(OUT_REL + "%s_%s_%s" % [_track_key, "side" if _side else "chase", _tod]).simplify_path()
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	var meta: Array = []
 	var cam: Camera3D = null
@@ -87,7 +88,7 @@ func run() -> void:
 	await cap.shot("reel_end")
 	var data: Dictionary = {"machine": "Windows 11 dev PC, NVIDIA RTX 5060 Ti 8 GB, Godot 4.7.2. Not a phone.",
 		"track": _track_key, "side_camera": _side, "fps": _fps, "frame_size": [OUT_W, OUT_H],
-		"time_of_day": "night", "frames": meta.size(), "fields": ["t_s", "player_speed_kmh"], "rows": meta}
+		"time_of_day": _tod, "frames": meta.size(), "fields": ["t_s", "player_speed_kmh"], "rows": meta}
 	var f: FileAccess = FileAccess.open(out_dir + "/reel_meta.json", FileAccess.WRITE)
 	if f == null:
 		cap.fail("gameplay_reel: cannot write %s/reel_meta.json (error %d)" % [out_dir, FileAccess.get_open_error()])
@@ -105,5 +106,7 @@ func _parse_args() -> void:
 			_fps = a.trim_prefix("--fps=").to_float()
 		elif a.begins_with("--seconds="):
 			_seconds = a.trim_prefix("--seconds=").to_float()
+		elif a.begins_with("--tod="):
+			_tod = a.trim_prefix("--tod=")
 		elif a == "--side":
 			_side = true

@@ -40,8 +40,9 @@ const ROOF_CHECK_M: float = 9.0  ## overpass or tunnel roof above the tree disqu
 const GRADE_TOL_M: float = 1.0  ## the tree must stand on the same grade as the racing line
 const BLOB_LIFT_M: float = 0.04
 const BLOB_RANGE_M: float = 220.0
-## LOD distances, metres from the camera. Pops are hard: no fade margins (shortcut: fade needs the dither shader).
+## LOD distances, metres from the camera. Each switch fades over FADE_M (dither), so the next LOD takes over smoothly.
 const LOD_RANGES: Array = [[0.0, 60.0], [60.0, 150.0], [150.0, 320.0]]
+const FADE_M: float = 6.0  ## dither band at each switch: the hard pops at 60, 150 and 320 m were the visible ones
 
 ## Blob diameter in metres and per-tree scale range. Species geometry is built in assets_src/world/kit_trees.
 const SPECIES: Dictionary = {
@@ -280,7 +281,10 @@ func _add_multimesh(xforms: Array, mesh: Mesh, vis: Array, node_name: String) ->
 	mmi.name = node_name
 	mmi.multimesh = mm
 	mmi.visibility_range_begin = vis[0]
+	mmi.visibility_range_begin_margin = FADE_M if vis[0] > 0.0 else 0.0
 	mmi.visibility_range_end = vis[1]
+	mmi.visibility_range_end_margin = FADE_M
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mmi)
 
@@ -307,6 +311,8 @@ func _add_photo_multimesh(group: Array, species: String, node_name: String) -> v
 	mmi.multimesh = mm
 	mmi.visibility_range_begin = LOD_RANGES[0][0]
 	mmi.visibility_range_end = LOD_RANGES[2][1]
+	mmi.visibility_range_end_margin = FADE_M
+	mmi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if CROWN_SHADOW else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mmi)
 

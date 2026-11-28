@@ -10,6 +10,7 @@ const DIR: String = "res://assets/world/kits/landmarks/"
 const SHADER: Shader = preload("res://world/landmarks/landmark.gdshader")
 const LOD_FILES: PackedStringArray = ["landmark_mosque_lod0.glb", "landmark_mosque_lod1.glb", "landmark_mosque_lod2.glb"]
 const LOD_RANGES: Array = [[0.0, 120.0], [120.0, 320.0], [320.0, 1400.0]]  ## metres from the camera
+const LOD_FADE_M: float = 6.0  ## dither band at each LOD switch and at the photo wall end: a hard switch was the visible pop
 const PLACE_S_M: float = 300.0  ## metres along the racing line: the straight with open water on the left
 const EDGE_LAT_M: float = -13.0  ## lateral of the quay's landward edge: the seaside railing (sea side is negative)
 const CC0_DIR: String = "res://assets/textures/cc0/"
@@ -108,6 +109,7 @@ func _add_photo_walls() -> void:
 		wall.name = "PhotoWall%d" % k
 		wall.mesh = quad
 		wall.visibility_range_end = PHOTO_END_M
+		wall.visibility_range_end_margin = LOD_FADE_M
 		add_child(wall)
 		wall.transform = Transform3D(basis, Vector3(HALL_CENTRE_LOCAL.x, WALL_TOP_M / 2.0, HALL_CENTRE_LOCAL.z) + basis.z * (HALL_HALF_M + PHOTO_OFF_M))
 
@@ -120,7 +122,10 @@ func hall_centre() -> Vector3:
 func _style(mi: MeshInstance3D, lod: int) -> void:
 	mi.mesh = smooth_dome_mesh(mi.mesh)  ## a new mesh for this instance only: the cached GLB stays as shipped
 	mi.visibility_range_begin = float(LOD_RANGES[lod][0])
+	mi.visibility_range_begin_margin = LOD_FADE_M if lod > 0 else 0.0
 	mi.visibility_range_end = float(LOD_RANGES[lod][1])
+	mi.visibility_range_end_margin = LOD_FADE_M if lod < 2 else 0.0
+	mi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
 	if lod == 0:
 		mi.layers = (mi.layers & ~1) | MIRROR_SKIP_BIT  ## the wet-road mirror leaves the near LOD0 out
 	for i: int in mi.mesh.get_surface_count():
