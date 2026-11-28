@@ -21,6 +21,7 @@ Room source: `assets_src/world/garage/` (not edited here). Layout, materials and
 ## HUD (`garage_hud.gd`, `garage_stats.gd`)
 - Header: BACK, car name, class, hint. Cash at top right.
 - Stat bars (top speed, acceleration, handling, nitro) from `GarageStats.compute(CarSpec, upgrade levels)`.
+- Upgrade preview: touching or hovering a BUY row (`preview_requested`) draws the gain of one more level as a violet ghost on the stat bars (`GarageStats.preview_next`). Capture: `ui_garage_preview`. Maxed parts preview nothing.
 - Right panel: PAINT (12 swatches, hue and value strips, live preview, saved on release or swatch press), RIMS (6 finishes), UPGRADES (engine, tyres, nitro, weight: one row each: name, 4 level pips (filled = owned), price in `garage.money` ($ or TL), BUY). Short cash shows a wiggle and an error line.
 - Tabs: only the pressed tab is cyan; hover does not look selected. Head and panel backgrounds are near opaque so the room sign does not show through the text.
 - Preset buttons at bottom centre. RACE at the foot of the panel.

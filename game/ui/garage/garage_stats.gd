@@ -31,6 +31,13 @@ static func compute(spec: CarSpec, upgrades: Dictionary) -> Dictionary:
 	}
 
 
+## Stats after one more level of part, for the upgrade preview. A maxed part returns the current stats.
+static func preview_next(spec: CarSpec, upgrades: Dictionary, part: String) -> Dictionary:
+	var next: Dictionary = upgrades.duplicate()
+	next[part] = mini(int(upgrades.get(part, 0)) + 1, GameState.MAX_UPGRADE_LEVEL)
+	return compute(spec, next)
+
+
 ## A private copy for the player. Never edit the shared CarSpec loaded by rivals or the resource cache.
 static func tuned_spec(spec: CarSpec, upgrades: Dictionary) -> CarSpec:
 	var out: CarSpec = spec.duplicate() as CarSpec
