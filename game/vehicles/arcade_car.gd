@@ -251,12 +251,13 @@ func _physics_process(delta: float) -> void:
 		_drift_exit_t = 0.0
 		drift_started.emit()
 
-	# Grip turn: the push arms when a turn above the drift entry speed ends (yaw rate falls below the threshold).
+	# Grip turn: the push arms when a turn above the drift entry speed ends. Arm above the yaw threshold,
+	# release only when the wheel is centred and yaw is under half the threshold (hysteresis: a held steer never arms).
 	if is_drifting or kmh <= spec.drift_entry_speed_kmh:
 		_turning = false
 	elif absf(w.dot(up)) > GRIP_TURN_YAW_RAD_S:
 		_turning = true
-	elif _turning:
+	elif _turning and absf(steer_in) < 0.1 and absf(w.dot(up)) < GRIP_TURN_YAW_RAD_S * 0.5:
 		_turning = false
 		_exit_push_t = EXIT_PUSH_TIME_S
 
@@ -433,6 +434,16 @@ func reset_to(xf: Transform3D, refill_nitro: bool = true) -> void:
 
 
 ## While frozen the car holds its place on the grid and ignores input (engine may still rev).
+## Read-only: true while the exit push boost runs (a drift or grip turn just ended above the entry speed).
+func is_exit_push_active() -> bool:
+	return _exit_push_t > 0.0
+
+
+## Read-only: true while a grip turn above the yaw threshold is in progress.
+func is_grip_turning() -> bool:
+	return _turning
+
+
 func set_frozen_for_grid(frozen: bool) -> void:
 	_frozen = frozen
 	freeze = frozen
