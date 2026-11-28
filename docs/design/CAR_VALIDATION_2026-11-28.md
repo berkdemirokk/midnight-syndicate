@@ -57,3 +57,35 @@ Every capture is a still frame, so a pop between frames cannot be seen. No LOD a
 - Studio and race checks were made on contact sheets (480 to 960 px tiles), with spot checks at full size for tayfun lights_on and the tayfun race car34 shot.
 - The lod2 studio shots at 100 m are almost black in the dark studio and were not judged.
 - No small defects were found, so game/vehicles/** is unchanged.
+
+## Draw-call pass (carmerge, 2026-11-28): status and blocker
+
+Result: the render budget is NOT met. No model was rebuilt, no material was merged, no capture was made, so there is no before/after and no visual change. The budget stays an open FAIL. The test now ratchets the surface count so it cannot grow.
+
+Measured (existing studio perf JSON, RTX 5060 Ti, Vulkan, Mobile, 1920x1061; dev PC, not phone):
+
+| Car | LOD0 surfaces (prepare stats) | Wheel surfaces (4 wheels) | Brake surfaces (4 discs) | Studio objects, car | Studio objects, empty | Incremental |
+|---|---|---|---|---|---|---|
+| noctra_tayfun | 27 | 8 | 8 | 59 | 20 | 39 |
+| noctra_sable | 27 | 8 | 8 | 59 | 20 | 39 |
+| atmaca_modified | 27 | 8 | 8 | 59 | 20 | 39 |
+| noctra_vela | 26 | 8 | 8 | 59 | 20 | 39 |
+| arden_bruiser | 25 | 8 | 8 | 59 | 20 | 39 |
+| kestrel_gtr | 27 | 8 | 8 | 59 | 20 | 39 |
+| kestrel_vanta | 27 | 8 | 8 | 59 | 20 | 39 |
+| arden_havoc | 26 | 8 | 8 | 59 | 20 | 39 |
+| kestrel_marten | 26 | 8 | 8 | 59 | 20 | 39 |
+| noctra_meridian | 27 | 8 | 8 | 59 | 20 | 39 |
+| bosfor_yildirim | 27 | 8 | 8 | 59 | 20 | 39 |
+
+Source: game/assets/vehicles/<car>/<car>_prepare_stats.json (lod0.surfaces, slots_by_node); studio JSON in evidence/screens/car_studio*/front34.json (atmaca: modified_front34.json). Target was <= 20 incremental.
+
+Why the target is not reached by a small change:
+- Wheels and brakes alone are 16 of the 27 surfaces. Each wheel carries M_Rim and M_Tire, each brake carries M_BrakeDisc and M_Caliper. Keeping one surface per wheel and per brake (8 draws) would need those pairs merged into one material each.
+- The pairs differ in metallic and roughness (rim: metal 0.75, anisotropic; tyre: rubber, matte, tyre picture by projection). A vertex colour cannot carry those, so a merge needs a baked or packed material per wheel. That is a visible material change and needs a before/after review.
+- Even with wheels and brakes at one surface each, the body side (paint, glass, rear lamps, front lamps and lens, plate, trim, chrome, interior, underbody) has about 12 surfaces. That is 20 only if every part of that list merges as well.
+- The studio gap is 39 objects but the stats name 27 surfaces. The other 12 draws are not explained by the surface list. This was not traced; it needs a draw breakdown per node before any merge is planned.
+
+Owner decision needed: approve a material-merge pass for the car model (wheel material set per wheel with packed metal/rubber channels, brake disc and caliper as one material, body trim/chrome/underbody as one vertex-coloured material with packed roughness and metal). Estimated work: one Blender bake per car and a visual review of 4 cars. Until then the budget stays a known FAIL.
+
+Test: game/tests/test_car_validation.gd now asserts LOD0_SURFACES_MAX per car (the current counts above). It is a ratchet, not the target. Full suite: 467 tests, 0 failed.

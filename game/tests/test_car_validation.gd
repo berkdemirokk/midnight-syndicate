@@ -12,6 +12,12 @@ const REQUIRED: PackedStringArray = [
 const LOD0_NODES_MAX: int = 20
 const WHEEL_Y_TOL_M: float = 0.03
 const TRACK_MAX_SPEED_KMH: float = 252.0  ## Track.max_speed: a rival slower than this falls off the grid
+## Surface ratchet (carmerge, 2026-11-28): LOD0 visible surfaces per car may not grow above what the shipped model has.
+## These are the current counts, not the target: the draw-call target (<= 20 per car) needs a material merge that is not done yet.
+const LOD0_SURFACES_MAX: Dictionary = {
+	"arden_bruiser": 25, "arden_havoc": 26, "atmaca_modified": 27, "bosfor_yildirim": 27, "kestrel_gtr": 27, "kestrel_marten": 26,
+	"kestrel_vanta": 27, "noctra_meridian": 27, "noctra_sable": 27, "noctra_tayfun": 27, "noctra_vela": 26,
+}
 
 
 func _ids() -> Array[String]:
@@ -115,4 +121,5 @@ func test_every_car_lod0_node_count_stays_within_20() -> void:
 			metric("%s_lod0_objects" % id, n)
 			metric("%s_lod0_surfaces" % id, surfaces)
 			check(n <= LOD0_NODES_MAX, "%s: LOD0 has %d visible mesh nodes, limit %d" % [id, n, LOD0_NODES_MAX])
+			check(surfaces <= int(LOD0_SURFACES_MAX.get(id, 0)), "%s: LOD0 has %d visible surfaces, ratchet %d" % [id, surfaces, int(LOD0_SURFACES_MAX.get(id, 0))])
 		await cleanup([car])
