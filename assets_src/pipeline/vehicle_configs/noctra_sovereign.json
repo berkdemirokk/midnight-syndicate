@@ -222,6 +222,7 @@
       "interior": 0.02
     }
   },
+  "front_plate_material": "M_Trim",
   "tail_cell": 5,
   "tail_pipes": [
     [

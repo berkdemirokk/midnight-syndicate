@@ -2,7 +2,7 @@
  "car_id": "noctra_volta",
  "source": "assets_src/third_party/vinish_cars/incoming2/electric-sports-saloon.glb",
  "lod0": {
-  "tris": 88185,
+  "tris": 88184,
   "tris_by_node": {
    "body": 25298,
    "brake_FL": 1236,
@@ -15,8 +15,8 @@
    "interior": 11444,
    "lights_front": 1054,
    "lights_rear": 1519,
-   "plate_rear": 4,
-   "trim": 13772,
+   "plate_rear": 2,
+   "trim": 13773,
    "underbody": 1698,
    "wheel_FL": 5152,
    "wheel_FR": 5152,

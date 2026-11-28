@@ -220,6 +220,7 @@
       "default": 0.12
     }
   },
+  "front_plate_material": "M_Trim",
   "tail_cell": 5,
   "tail_pipes": [
     [

@@ -2,7 +2,7 @@
  "car_id": "noctra_titan",
  "source": "assets_src/third_party/vinish_cars/incoming2/super-suv.glb",
  "lod0": {
-  "tris": 67089,
+  "tris": 67087,
   "tris_by_node": {
    "body": 17412,
    "brake_FL": 1084,
@@ -15,7 +15,7 @@
    "interior": 8262,
    "lights_front": 996,
    "lights_rear": 2470,
-   "plate_rear": 4,
+   "plate_rear": 2,
    "trim": 9280,
    "underbody": 1851,
    "wheel_FL": 3317,

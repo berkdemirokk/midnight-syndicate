@@ -78,22 +78,10 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.45, "front_r": 0.345, "rear_r": 0.36, "wheelbase": 2.9,
 	},
 	{
-		"id": "noctra_regent", "scene": "res://vehicles/noctra_regent/noctra_regent.tscn",
-		"spec": "res://vehicles/specs/noctra_regent.tres", "name": "Noctra Regent",
-		"len": 4.811, "width": 2.105, "height": 1.453,  # source GLB bounding box (metres), four-door-super-saloon.glb
-		"axle": 1.43, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.86,
-	},
-	{
 		"id": "noctra_sovereign", "scene": "res://vehicles/noctra_sovereign/noctra_sovereign.tscn",
 		"spec": "res://vehicles/specs/noctra_sovereign.tres", "name": "Noctra Sovereign",
 		"len": 4.811, "width": 2.105, "height": 1.453,  # source GLB bounding box (metres), super-saloon.glb
 		"axle": 1.425, "front_r": 0.345, "rear_r": 0.355, "wheelbase": 2.85,
-	},
-	{
-		"id": "noctra_monarch", "scene": "res://vehicles/noctra_monarch/noctra_monarch.tscn",
-		"spec": "res://vehicles/specs/noctra_monarch.tres", "name": "Noctra Monarch",
-		"len": 4.783, "width": 2.075, "height": 1.327,  # source GLB bounding box (metres), v12-grand-tourer.glb
-		"axle": 1.40, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.8,
 	},
 	{
 		"id": "noctra_titan", "scene": "res://vehicles/noctra_titan/noctra_titan.tscn",

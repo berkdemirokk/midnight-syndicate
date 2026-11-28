@@ -2,7 +2,7 @@
  "car_id": "noctra_sovereign",
  "source": "assets_src/third_party/vinish_cars/incoming2/super-saloon.glb",
  "lod0": {
-  "tris": 77828,
+  "tris": 77827,
   "tris_by_node": {
    "body": 20195,
    "brake_FL": 2280,
@@ -15,8 +15,8 @@
    "interior": 6955,
    "lights_front": 1424,
    "lights_rear": 1106,
-   "plate_rear": 4,
-   "trim": 11138,
+   "plate_rear": 2,
+   "trim": 11139,
    "underbody": 1710,
    "wheel_FL": 4411,
    "wheel_FR": 4411,

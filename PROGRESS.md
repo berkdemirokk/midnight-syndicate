@@ -267,3 +267,10 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - Economy: NOT applied. Five cars are not in car_catalog.gd. tools/economy_sim.py currently gives 1.56 (10 buyable cars); the
   +five-car estimate was 2.04 against a 1.5-2.0 band. Owner decision needed (see BLOCKERS B13).
 - Quality: titan proportions fail (B14), volta front red glow open (B15). Studio renders refreshed: evidence/screens/car_studio_{volta,regent,sovereign,monarch,titan}/.
+- Lead review (Opus), 2026-11-28: dropped noctra_regent (same vinish.dev body as noctra_sovereign, only the wing differs)
+  and noctra_monarch (same body as the catalogued noctra_meridian) with all their files and records. Front plates of
+  volta, sovereign and titan were mirrored or clipped, so they are blanked like the other cars (front_plate_material
+  M_Trim) and the three cars were rebuilt. Godot tris volta 88094/25196/6855, sovereign 77737/25089/6420,
+  titan 66997/19141/6797. Studio renders of the three re-captured (16 shots each, errors=0) and looked at; a titan
+  race capture on the city track was looked at (rear plate legible, reads as an SUV). B14 and B15 closed. Full suite
+  555 tests, 0 failed. asset_factory validate: 682 records, 0 failing. Economy and catalog entries still wait on B13.
