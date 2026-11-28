@@ -18,6 +18,7 @@ const LOD0_SURFACES_MAX: Dictionary = {
 	"arden_bruiser": 21, "arden_havoc": 22, "atmaca_modified": 23, "bosfor_yildirim": 23, "kestrel_gtr": 23, "kestrel_marten": 22,
 	"kestrel_vanta": 23, "noctra_meridian": 23, "noctra_sable": 23, "noctra_tayfun": 23, "noctra_vela": 22,
 	"bosfor_kivilcim": 22, "bosfor_serce": 22, "arden_ramjet": 21, "arden_shaker": 21,
+	"bosfor_kartal": 23, "bosfor_lale": 23, "bosfor_galata": 23, "bosfor_moda": 23, "bosfor_pera": 23, "bosfor_sahil": 22,
 	"noctra_volta": 23, "noctra_sovereign": 23, "noctra_titan": 22,
 	"police_patrol": 23, "police_interceptor": 23, "police_suv": 23,
 }
