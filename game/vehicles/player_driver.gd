@@ -54,6 +54,7 @@ var _tilt_calibrated: bool = false
 var _track: Track = null  ## for assist mode, found once by _find_track
 var _track_searched: bool = false
 var _track_s: float = -1.0  ## track progress hint for assist mode (-1 = search the whole line)
+var assist_steer_last: float = 0.0  ## assist steer applied this physics tick, -1..1 (read-only for tests and HUD)
 
 
 func _ready() -> void:
@@ -78,8 +79,8 @@ func _physics_process(delta: float) -> void:
 	var throttle: float = 0.0
 	if brake_in <= 0.0:
 		throttle = 1.0 if _auto_accelerate() else Input.get_action_strength("accelerate")
-	if _setting_str("steering_mode", steering_mode_fallback) == MODE_ASSIST:
-		var sp: Vector2 = _assist_speed()  # without it a zero-input lap ends in the walls at top speed
+	if _setting_str("steering_mode", steering_mode_fallback) == MODE_ASSIST and Input.get_action_strength("accelerate") <= 0.0 and brake_in <= 0.0:
+		var sp: Vector2 = _assist_speed()  # no pedal held: without it a zero-input lap ends in the walls at top speed; a held pedal stays manual
 		throttle = minf(throttle, sp.x)
 		brake_in = maxf(brake_in, sp.y)
 	vi.throttle = throttle
@@ -127,7 +128,8 @@ func _update_steer(delta: float) -> float:
 		return steer
 	var manual: float = _manual_steer(delta)
 	if mode == MODE_ASSIST:
-		return clampf(manual + _assist_steer(), -1.0, 1.0)  # steer keeps the manual value only (ramp state)
+		assist_steer_last = _assist_steer()
+		return clampf(manual + assist_steer_last, -1.0, 1.0)  # steer keeps the manual value only (ramp state)
 	return manual
 
 

@@ -11,7 +11,7 @@ const SETTLE_FRAMES: int = 60
 const TIME_TOL: float = 0.15
 const MAX_HITS: int = 2
 const EVIDENCE_PATH: String = "../evidence/handling/steer_assist.json"
-const DRIVE_ACTIONS: PackedStringArray = ["accelerate", "brake", "steer_left", "steer_right", "handbrake", "nitro"]
+const DRIVE_ACTIONS: PackedStringArray = ["accelerate", "brake", "steer_left", "steer_right", "handbrake", "nitro", "reset_car"]
 
 var _hits: int = 0
 
@@ -75,7 +75,7 @@ func _lap(track: CityBuilder, use_assist: bool) -> Dictionary:
 		dist += step
 		last_s = s
 		if pd != null:
-			max_assist = maxf(max_assist, absf(pd._assist_steer()))
+			max_assist = maxf(max_assist, absf(pd.assist_steer_last))
 	if settings != null and use_assist:
 		settings.set("steering_mode", saved_mode)
 		settings.set("auto_accelerate", saved_auto)
@@ -101,8 +101,15 @@ func test_steer_assist_laps_near_the_autopilot() -> void:
 	check(bool(assist_lap["finished"]), "assist lap did not finish in %.0f s" % LAP_LIMIT_S)
 	check(ratio <= 1.0 + TIME_TOL, "assist lap %.1f s is %.1f %% over the autopilot's %.1f s" % [float(assist_lap["s"]), (ratio - 1.0) * 100.0, float(ai_lap["s"])])
 	check(int(assist_lap["hits"]) <= MAX_HITS, "assist lap made %d body contacts, limit %d" % [int(assist_lap["hits"]), MAX_HITS])
+	if failures.is_empty():  # a failing run must not overwrite the committed evidence
+		_write_evidence(ai_lap, assist_lap, ratio)
+	var nodes: Array[Node] = [track]
+	await cleanup(nodes)
+
+
+func _write_evidence(ai_lap: Dictionary, assist_lap: Dictionary, ratio: float) -> void:
 	var ev: Dictionary = {
-		"track": "istanbul_bogaz", "car": "noctra_sable", "assist_cap_deg": 6.0, "look_ahead_m": 30.0,
+		"track": "istanbul_bogaz", "car": "noctra_sable", "assist_cap_deg": 6.0, "look_ahead_m": PlayerDriver.ASSIST_LOOK_M,
 		"machine": "dev PC, Windows 11, RTX 5060 Ti 8 GB, Godot 4.7.2 (headless, no GPU render)",
 		"autopilot_lap_s": snappedf(float(ai_lap["s"]), 0.01), "assist_lap_s": snappedf(float(assist_lap["s"]), 0.01),
 		"assist_over_autopilot": snappedf(ratio, 0.001), "assist_body_contacts": int(assist_lap["hits"]),
@@ -114,5 +121,23 @@ func test_steer_assist_laps_near_the_autopilot() -> void:
 	if f != null:
 		f.store_string(JSON.stringify(ev, "\t"))
 		f.close()
-	var nodes: Array[Node] = [track]
+
+
+## The race scene does not call set_track(): the shipped driver must find the race's track by itself.
+func test_fallback_finds_the_tree_track() -> void:
+	var track: CityBuilder = (load(SCENE_PATH) as PackedScene).instantiate() as CityBuilder
+	add(track)
+	await frames(2)
+	var car := ArcadeCar.new()
+	car.spec = load(SPEC_PATH) as CarSpec
+	add(car)
+	car.global_transform = track.get_grid_transform(0)
+	var pd := PlayerDriver.new()
+	pd.name = "PlayerDriver"
+	pd.enabled = false
+	car.add_child(pd)
+	await frames(1)
+	check(pd._ensure_track(), "fallback found no track in the tree")
+	check(pd._track != null and pd._track.scene_file_path == SCENE_PATH, "fallback picked a track that is not the race track")
+	var nodes: Array[Node] = [car, track]
 	await cleanup(nodes)
