@@ -74,7 +74,7 @@ func run() -> void:
 			var now: float = float(Time.get_ticks_msec()) - go_ms
 			if now >= next_ms:
 				await RenderingServer.frame_post_draw
-				var img: Image = get_viewport().get_texture().get_image()
+				var img: Image = tree.root.get_texture().get_image()
 				img.resize(OUT_W, OUT_H, Image.INTERPOLATE_BILINEAR)
 				img.save_jpg("%s/frame_%04d.jpg" % [out_dir, meta.size()], JPG_QUALITY)
 				meta.append([snappedf(now / 1000.0, 0.01), snappedf(scene.player.speed_kmh, 0.1)])
