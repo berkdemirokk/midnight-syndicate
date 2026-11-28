@@ -69,6 +69,7 @@ func _ready() -> void:
 	_build()
 	if _target.is_empty():
 		return
+	PipelineWarmup.run(self)  ## first-use draws while the card is up
 	var err: Error = ResourceLoader.load_threaded_request(_target)
 	if err != OK:
 		push_warning("LoadingScreen: no background load for %s, Router loads it directly" % _target)  # status reads INVALID: _process hands over
@@ -160,6 +161,7 @@ func _finish() -> void:
 	set_progress(1.0)
 	if ResourceLoader.load_threaded_get_status(_target) == ResourceLoader.THREAD_LOAD_LOADED:
 		_packed = ResourceLoader.load_threaded_get(_target) as PackedScene  # releases the loader task; without it the scene stays pinned
+	PerfCard.begin_session(get_tree())  ## the race starts here; the card is off in headless runs
 	nav.call(_target, _next)
 
 

@@ -343,3 +343,28 @@ No change when hidden: car LOD LOD2 (all cars incl. player); car lights (headlig
 | 2D only remainder (absolute, 3D off; peak includes the mirror SubViewport) | 11 | 11 | 308 |
 
 No change when hidden: cars: all rivals (not player); car LOD LOD1 (all cars incl. player); car LOD LOD2 (all cars incl. player); car lights (headlights etc, all cars); city: FirstRow buildings LOD1; city: FirstRow buildings LOD2; dressing props (Dressing); parked cars (ParkedCars); lights: city (Lighting, non-directional); lights: ALL Light3D in scene (incl. moon, cars, cam fill/rim); lights: camera fill/rim only; lights: moon (directional) hidden; reflection probes; overlay (pause + results CanvasLayer); env: glow off; env: sky off (background -> colour); env: fog off.
+
+## Bosphorus re-measure (WP-B5, 2026-11-28)
+
+Command: `--capture=draw_breakdown --track=bogaz --moments=grid,pack --preset=high|medium|low` (new `--track=` argument; City 01 stays the default). RTX 5060 Ti 8 GB, Godot 4.7.2 Mobile, 1920x1061 viewport, desktop numbers only. Raw data: `evidence/screens/draw_breakdown/bogaz_<preset>_<moment>.json`. Budgets: High 500, Medium 350, Low 250 draws (peak).
+
+| preset / moment | baseline peak (min) draws | prims peak | mirror (d) | HUD (d) | Props (d) | sign-named nodes (d) | budget |
+|---|---:|---:|---:|---:|---:|---:|---|
+| high / grid | 366 (277) | 361,170 | 89 | 18 | 37 | 10 | met |
+| high / pack | 378 (295) | 391,456 | 83 | 18 | 50 | 8 | met |
+| medium / grid | 277 (277) | 280,526 | n/a | 18 | 28 | 6 | met |
+| medium / pack | 294 (294) | 324,426 | n/a | 18 | 40 | 6 | met |
+| low / grid | 225 (225) | 209,967 | n/a | 18 | 15 | 0 | met |
+| low / pack | 246 (246) | 270,622 | n/a | 18 | 27 | 2 | met (4 draws margin) |
+
+Reading:
+- The Bosphorus top sinks are the mirror (High only, about 85 draws), the props MultiMeshes (15 to 50) and the cars. HUD is 18 draws, below the 20 threshold, so the HUD cut stays closed.
+- FirstRow LOD0/LOD1/LOD2 rows read 0 on this track: the building children are not named as on City 01 (the scene log shows 474 MeshInstance3D under Geometry/FirstRow). The FirstRow LOD2 threshold cannot be tested here and the 10-draw gate was not evaluated on this track.
+- Sign-named nodes cost 0 to 10 draws on Bosphorus, against 122 sign draws measured on City 01 above. The sign cut is worth far less on this track than the City numbers suggest.
+- Sign surfaces were NOT merged in this pass. A same-material join (brackets + plate, lattice + legs + catwalk) saves one or two surfaces per blade or billboard sign, a few draws on Bosphorus. Halving the sign MultiMesh count needs neon colour materials merged, which changes the look. Not done, no GLB rebuilt.
+- Not measured: `results` and `replay_orbit` moments on Bosphorus.
+
+## Open items (WP-B5 review, 2026-11-28)
+
+- FirstRow LOD2 gate (10 draws) is NOT evaluated on Bosphorus: the building nodes are not named as on City 01, so the FirstRow LOD rows read 0. Open until the lead names those nodes or accepts this as an open item.
+- Sign surfaces are not merged (see the Bosphorus re-measure). Sign MultiMesh count test does not exist. WP-B5 stays partial.

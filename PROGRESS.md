@@ -274,6 +274,12 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
   titan 66997/19141/6797. Studio renders of the three re-captured (16 shots each, errors=0) and looked at; a titan
   race capture on the city track was looked at (rear plate legible, reads as an SUV). B14 and B15 closed. Full suite
   555 tests, 0 failed. asset_factory validate: 682 records, 0 failing. Economy and catalog entries still wait on B13.
+## WP-B6 Shader Baker (wp/b6baker)
+- Changed: `game/export_presets.cfg` iOS preset `shader_baker/enabled=true` (3c3720d4); new test `game/tests/test_export_shader_baker.gd` (a4008e03) checks the key is on for iOS and nowhere else.
+- Key confirmed as a string in the Godot 4.7.2 binary. Effect on first launch: not measured (headless export may skip the bake).
+- CI iOS compile check: OPEN, no run id (build-ios.yml runs on `ios-check-*` tags only; the worker did not push).
+- Lead review (Opus): key `shader_baker/enabled` found 4x in Godot_v4.7.2-stable_win64.exe. Local headless `--export-release "iOS"` with a dummy team id (as CI's sed does) finished with warnings only (`.ipa` needs macOS; pre-existing boot_splash warning), no Shader Baker error, so the CI headless export is not broken by the key; the bake itself is likely skipped headless. Full suite 572 tests, 0 failed, exit 0. Preset edit approved by the lead.
+
 
 ## Session 10 — 2026-11-28 (STREET EMPIRE brand and UI overhaul, separate UI studio session)
 - Owner brief: rename the product to **STREET EMPIRE — RULE THE CITY** and redesign every player-facing screen.

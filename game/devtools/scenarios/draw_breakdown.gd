@@ -4,10 +4,13 @@ extends "res://devtools/capture_scenario.gd"
 ## hidden in turn (restored after) and re-measured with PerfProbe (peak and min over PROBE_FRAMES).
 ## Moments: grid_intro (countdown camera mid-move), grid (fixed grid camera), pack (~10 s after GO, rivals in view),
 ## results, replay_orbit (finish orbit of the replay). Pick a subset with --moments=pack,results.
-## Output: evidence/screens/draw_breakdown/<preset>_<moment>.json, one baseline shot per moment, rows on stdout.
+## --track=city|bogaz (default city). Output: evidence/screens/draw_breakdown/<preset>_<moment>.json, one baseline shot per moment, rows on stdout.
 
 const SCENE: String = "res://race/race_scene.tscn"
-const CITY_SCENE: String = "res://world/city_01/city_01.tscn"
+const TRACKS: Dictionary = {
+	"city": "res://world/city_01/city_01.tscn",
+	"bogaz": "res://world/istanbul_bogaz/istanbul_bogaz.tscn",
+}
 const CAR_SCENE: String = "res://vehicles/noctra_sable/noctra_sable.tscn"
 const CAR_SPEC: String = "res://vehicles/specs/noctra_sable.tres"
 const OPPONENTS: int = 5
@@ -28,6 +31,7 @@ const ALL_MOMENTS: PackedStringArray = ["grid_intro", "grid", "pack", "results",
 var _scene: RaceScene
 var _probe: PerfProbe = PerfProbe.new()
 var _moments: PackedStringArray = ALL_MOMENTS
+var _track_key: String = "city"
 var _tick_three: bool = false
 var _go_ms: int = 0
 var _rows: Array[Dictionary] = []
@@ -35,12 +39,15 @@ var _rows: Array[Dictionary] = []
 
 func run() -> void:
 	_parse_moments()
+	if not TRACKS.has(_track_key):
+		cap.fail("draw_breakdown: unknown --track=" + _track_key)
+		return
 	var cfg := RaceConfig.new()
 	cfg.use_garage_paint = false
 	cfg.autopilot = true
 	cfg.laps = LAPS
 	cfg.opponent_count = OPPONENTS
-	cfg.track_scene = CITY_SCENE
+	cfg.track_scene = TRACKS[_track_key]
 	cfg.car_scene = CAR_SCENE
 	cfg.car_spec_path = CAR_SPEC
 	_scene = (load(SCENE) as PackedScene).instantiate() as RaceScene
@@ -105,12 +112,15 @@ func _since(t0_ms: int) -> float:
 
 func _parse_moments() -> void:
 	for arg: String in OS.get_cmdline_user_args():
+		if arg.begins_with("--track="):
+			_track_key = arg.trim_prefix("--track=")
 		if arg.begins_with("--moments="):
 			_moments = arg.trim_prefix("--moments=").split(",")
 
 
 func _preset() -> String:
-	return Settings.get_preset_id()
+	## City keeps the old file names; other tracks are prefixed (e.g. bogaz_high_pack.json).
+	return Settings.get_preset_id() if _track_key == "city" else _track_key + "_" + Settings.get_preset_id()
 
 
 func _replay_orbit() -> void:

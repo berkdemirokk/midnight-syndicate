@@ -141,6 +141,8 @@ Recipe: 0.3 s at 1.15x engine force when a drift ends above `drift_entry_speed_k
 with yaw rate above a threshold at the same speed.
 Test: speed 2 s after exit, drift vs grip, within 5 % on Sable and Vela; no change on straight-line acceleration tests.
 Evidence: `evidence/handling/exit_push.json`. Deps: WP-A2 done (do not tune both at once).
+Built with 3 constants (`EXIT_PUSH_TIME_S`, `EXIT_PUSH_MULT`, `GRIP_TURN_YAW_RAD_S`), not 2. Status: **implemented, NOT accepted**:
+5 % parity fails on Sable and Vela (`"accepted": false` in the evidence). Tuning is a separate step.
 
 **WP-A4 Steer assist mode.** Goal: a phone player who never steers finishes a lap.
 Files: `game/vehicles/player_driver.gd` (new `MODE_ASSIST` branch only; WP-A1 merges first), `game/core/settings.gd`
@@ -149,6 +151,11 @@ Recipe: target heading = racing line point 12 m ahead; assist steer capped at 6 
 nitro stay manual. Settings label TR/EN.
 Test: headless zero-input lap on `istanbul_bogaz` within 15 % of the autopilot lap, ≤ 2 wall hits.
 Evidence: probe JSON. Deps: WP-A1 merged.
+Implemented deviations (approved by the lead review, 2026-11-28): look-ahead 0.6 s x speed, 12..45 m (a fixed 12 m gave
+21 contacts, a fixed 30 m 2 to 20: the 30 m result flipped with tiny Jolt contact differences, which is why the full suite
+failed and the solo run passed; it was not a leaked state). Speed hold at 0.9 x the autopilot line speed, and only while no
+accelerate or brake input is held, so manual pedal input is not capped. Dev PC: 53.8 s vs 52.38 s (1.027), 0 contacts,
+the same in 6 of 6 runs with and without race scenes run first.
 
 **WP-A5 Tyre audio and mix guard.** Goal: drifts sound like drifts; nothing clips.
 Files: new `game/audio/tyre_audio.gd`, `game/audio/car_audio.gd` (hook only), `game/tests/test_audio_layers.gd`.
@@ -156,6 +163,13 @@ Recipe: 4 per-wheel voices (`max_polyphony` 1), rolling vs sliding by slip ratio
 crossfade, pitch +8 % at high slip, gain clamped 0..1. No per-frame allocation.
 Test: monotonic sweep 0 to 1.5, silence under 0.2, ≤ 4 voices; 20 s mix peak ≤ 0.891.
 Evidence: `evidence/audio/race20_player_mix.wav` stats. Deps: none. (Bus limiter and ducking: lead, section 4.)
+Scope reduction (pending owner sign-off): no rolling layer and no three per-range layers. ArcadeCar exposes no
+longitudinal slip ratio, and three layers per wheel would need 12 voices, over the 4-voice budget. Slip ranges are
+one equal-power pitch crossfade on each wheel's voice (`tyre_audio.gd` header).
+OPEN: the 20 s peak criterion is not measured. `evidence/audio/race20_player_mix.wav` does not exist. A real-time
+capture of the Master bus (Dummy driver) came back silent, so the capture path is not yet proven. Also seen: the
+`Engine` bus that `Settings.ensure_audio_buses` creates printed an empty send, so the engine layers may not reach
+Master in the game (lead to check on a real run).
 
 **WP-A6 Perf card and warm-up.** Goal: the next iPhone session returns numbers; no first-use hitches.
 Files: new `game/ui/hud/perf_card.gd`, new `game/core/pipeline_warmup.gd`, the loading screen script (hook only),
@@ -191,13 +205,22 @@ Recipe: add a UV2 unwrap to each road GLB if it has none; Cycles AO bake, 1024 p
 GLBs get vertex AO the same way the Ortakoy kit did.
 Test: the road material has an AO texture; the ASSET_MANIFEST validator passes (`py -3.10 tools/asset_factory.py validate`).
 Evidence: `tod_tracks` day (section 6). Deps: none. GPU queue slot 2.
+Status (2026-11-28, partial): road AO done. The GLB's own kerbs and walls occlude, and every layout building (196, 313 and 249 boxes)
+is a bake-only occluder. Kit vertex AO is not done: split into WP-B2b. Road GLB sizes: City 01 10.5 -> 14.1 MB, Bogaz 11.2 -> 15.1 MB,
+Maslak 10.8 -> 14.7 MB (UV2 and tangents; not in the iOS budget check yet). Look: `tod_tracks` day checked (city, bogaz, maslak).
+
+**WP-B2b Kit vertex AO.** Goal: the Ortakoy-style vertex AO on the track kit GLBs (the part of WP-B2 left out).
+Files: `assets_src/pipeline/bake_vertex_ao.py`, the kit GLBs it names, their `game/assets` copies, `ASSET_MANIFEST.json`.
+Recipe: run the existing vertex AO bake on each kit GLB with the layout occluders, ship the GLBs, no shader change.
+Test: kit GLBs carry COLOR_0 AO; the ASSET_MANIFEST validator passes. Evidence: `tod_tracks` day. Deps: WP-B2. GPU queue slot 2.
 
 **WP-B3 Foliage diet.** Goal: same pink mass, less fill.
-Files: `assets_src/world/kit_trees/prepare_licensed_trees.py`, `game/assets/world/kits/trees_photo/**`,
+Files: `assets_src/world/kit_trees/prepare_licensed_trees.py`, `assets_src/ai_generated/chatgpt/prepare_photo_trees.py` (added: real generator of `trees_photo/**`), `game/assets/world/kits/trees_photo/**`,
 `game/world/greenery/greenery.gd` (LOD2 card count only), `game/tests/test_greenery.gd`.
-Recipe: atlases 512 (LOD0) / 256 (LOD1, LOD2), power of two; LOD2 2-3 crossed cards; assert no tree material uses
-alpha blend. Do not touch `LOD_RANGES` or the sway.
-Test: atlas sizes and transparency mode asserted. Evidence: `tod_tracks` bogaz day + sunset (section 6). Deps: none.
+Recipe: leaf atlases 512 px cells for LOD0 and LOD1 (LOD1 shares the LOD0 leaf texture; a separate 256 LOD1 atlas needs a
+`greenery.gd` change outside the list above, so it is out of this sprint), impostor 512x256 (two 256 px LOD2 crossed cards),
+photo cells 512 px (cypress 256 wide), all power of two; assert no tree material uses alpha blend. Do not touch `LOD_RANGES` or the sway.
+Test: sizes asserted exactly (`test_atlas_sizes_power_of_two`); transparency mode asserted by the existing foliage and photo shader contract tests. Evidence: `tod_tracks` bogaz day + sunset (section 6). Deps: none.
 
 **WP-B4 Rival lamp pools.** Goal: rivals light the wet road without real lights.
 Files: `game/fx/headlights.gd`, `game/fx/car_fx.gd` (hook), new `game/tests/test_lamp_pools.gd`.
@@ -211,11 +234,13 @@ Files: `game/devtools/scenarios/draw_breakdown.gd` (track argument), `docs/perf/
 Recipe: run `draw_breakdown --track=bogaz` High/Medium/Low (GPU queue slot 3); if HUD > 20 or FirstRow LOD2 > 10, report
 to the lead instead of fixing; merge sign surfaces.
 Test: sign MultiMesh count halves; budgets still met. Evidence: the JSON per preset. Deps: none.
+**WP-B5 status: PARTIAL (2026-11-28).** Done: Bosphorus re-measure (`aafcaf41`, `docs/perf/DRAW_BREAKDOWN.md`). Not done: the sign merge. No test for the sign MultiMesh count exists. Halving the sign surfaces needs the neon colour materials merged, which changes the look, so it is not look-neutral. Pending lead decision: descope, or approve an atlas change with a look review. Until then WP-B5 is not complete.
 
 **WP-B6 Shader baker and export check.** Goal: faster first launch on iOS.
 Files: `game/export_presets.cfg` (iOS preset only).
 Recipe: enable Shader Baker in the iOS preset; touch nothing else.
 Test: the CI iOS compile check stays green. Evidence: run id. Deps: lead approval of the preset edit.
+Status (wp/b6baker, a4008e03): local test `test_export_shader_baker` passes (reads the preset file; iOS only). CI run: OPEN, no run id. build-ios.yml runs only on tags `ios-check-*` / `ios-release-*`, and the worker may not push. The owner or lead must push a tag from wp/b6baker to get the run id. Lead approval of the preset edit: given in the task brief.
 
 ### Order and batching
 

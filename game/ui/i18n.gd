@@ -83,6 +83,7 @@ const DICT: Dictionary = {
 	"settings.steering": {"tr": "DİREKSİYON", "en": "STEERING"},
 	"settings.steer_buttons": {"tr": "DÜĞMELER", "en": "BUTTONS"},
 	"settings.steer_tilt": {"tr": "EĞME", "en": "TILT"},
+	"settings.steer_assist": {"tr": "YARDIM", "en": "ASSIST"},
 	"settings.auto_accel": {"tr": "OTOMATİK GAZ", "en": "AUTO ACCELERATE"},
 	"settings.haptics": {"tr": "TİTREŞİM", "en": "HAPTICS"},
 	"settings.camera_shake": {"tr": "KAMERA SARSINTISI", "en": "CAMERA SHAKE"},

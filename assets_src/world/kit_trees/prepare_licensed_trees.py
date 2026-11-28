@@ -10,7 +10,7 @@ Writes into game/assets/world/kits/trees/:
   tree_<sp>_lod2.glb  one surface, two crossed cards (4 tris) UV-mapped into impostor_<sp>.png
   leaf_<sp>.png       the model's own leaf texture, alpha kept (magnolia: blossom and leaf side by side)
   bark_<sp>.png       the model's own bark texture (tiled UVs; the engine material samples it)
-  impostor_<sp>.png   1024x512: LOD0 rendered unlit from -Y (left half) and from -X (right half), alpha kept
+  impostor_<sp>.png   512x256: LOD0 rendered unlit from -Y (left half) and from -X (right half), alpha kept
 Vertex colour RGB = baked ambient occlusion (dark under and inside the crown). The LICENSED_TREE line feeds greenery.gd.
 """
 import bmesh
@@ -29,7 +29,7 @@ REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 SRC_DIR = os.path.join(REPO, "assets_src", "third_party", "vinish_env")
 OUT_DIR = os.path.join(REPO, "game", "assets", "world", "kits", "trees")
 TRI_LIMIT = {0: 3500, 1: 900, 2: 4}
-RENDER_PX = 512
+RENDER_PX = 256  # impostor cell: 256 per crossed card (was 512)
 
 SPECIES = {
     # target_h: height in metres after scaling (greenery draws 0.9-1.15 x around the plant's street size)

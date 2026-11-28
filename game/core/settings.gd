@@ -9,8 +9,9 @@ const SECTION_AUDIO: String = "audio"
 const SECTION_CONTROLS: String = "controls"
 const SECTION_GENERAL: String = "general"
 const PRESET_IDS: PackedStringArray = ["low", "medium", "high"]
-const STEERING_MODES: PackedStringArray = ["buttons", "tilt"]
+const STEERING_MODES: PackedStringArray = ["buttons", "tilt", "assist"]
 const LANGUAGES: PackedStringArray = ["tr", "en"]
+const REDUCED_MOTION_LEVELS: PackedStringArray = ["off", "low", "high"]
 ## Frame rate caps offered in the settings screen (Engine.max_fps).
 const FPS_CAPS: PackedInt32Array = [30, 60]
 ## Settings key -> AudioServer bus name. Missing buses are created at startup.
@@ -35,7 +36,11 @@ var steering_mode: String = "buttons"
 var auto_accelerate: bool = true
 var haptics: bool = true
 var camera_shake: float = 0.6
+var reduced_motion: String = "high"  ## off: no speed blur, speed shake or nitro FOV kick; low: half shake and kick, 3 blur taps
 var language: String = "en"
+## Frame-time card (ui/hud/perf_card.gd). Default on only in TestFlight builds (export feature "testflight").
+## No settings-screen row yet: set [general] perf_card in settings.cfg to turn it on elsewhere.
+var perf_card: bool = OS.has_feature("testflight")
 
 var _presets: Dictionary = {}
 var _preset_id: String = "medium"
@@ -239,12 +244,25 @@ func set_camera_shake(amount: float) -> void:
 	_changed(SECTION_CONTROLS)
 
 
+func set_reduced_motion(level: String) -> bool:
+	if not REDUCED_MOTION_LEVELS.has(level):
+		return false
+	reduced_motion = level
+	_changed(SECTION_CONTROLS)
+	return true
+
+
 func set_language(lang: String) -> bool:
 	if not LANGUAGES.has(lang):
 		return false
 	language = lang
 	_changed(SECTION_GENERAL)
 	return true
+
+
+func set_perf_card(on: bool) -> void:
+	perf_card = on
+	_changed(SECTION_GENERAL)
 
 
 ## Emits changed, and writes config_path first unless autosave is off or a load is in progress.
@@ -267,7 +285,9 @@ func save_settings() -> bool:
 	cfg.set_value(SECTION_CONTROLS, "auto_accelerate", auto_accelerate)
 	cfg.set_value(SECTION_CONTROLS, "haptics", haptics)
 	cfg.set_value(SECTION_CONTROLS, "camera_shake", camera_shake)
+	cfg.set_value(SECTION_CONTROLS, "reduced_motion", reduced_motion)
 	cfg.set_value(SECTION_GENERAL, "language", language)
+	cfg.set_value(SECTION_GENERAL, "perf_card", perf_card)
 	var ok: bool = cfg.save(config_path) == OK
 	if not ok:
 		push_warning("Settings: cannot write %s" % config_path)
@@ -290,7 +310,9 @@ func load_settings() -> bool:
 	auto_accelerate = _read_bool(cfg, SECTION_CONTROLS, "auto_accelerate", auto_accelerate)
 	haptics = _read_bool(cfg, SECTION_CONTROLS, "haptics", haptics)
 	camera_shake = _read_float(cfg, SECTION_CONTROLS, "camera_shake", camera_shake, 0.0, 1.0)
+	reduced_motion = _read_string(cfg, SECTION_CONTROLS, "reduced_motion", reduced_motion, REDUCED_MOTION_LEVELS)
 	language = _read_string(cfg, SECTION_GENERAL, "language", language, LANGUAGES)
+	perf_card = _read_bool(cfg, SECTION_GENERAL, "perf_card", perf_card)
 	_loading = false
 	for section: String in [SECTION_GRAPHICS, SECTION_AUDIO, SECTION_CONTROLS, SECTION_GENERAL]:
 		changed.emit(section)
