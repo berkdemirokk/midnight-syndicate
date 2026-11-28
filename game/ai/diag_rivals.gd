@@ -166,9 +166,15 @@ func _start() -> void:
 	var skills: PackedFloat32Array = PackedFloat32Array([1.0, 0.97, 0.94, 0.91, 0.88, 0.85])
 	var laps: int = 1
 	var sets: PackedStringArray = PackedStringArray()
+	var tsets: PackedStringArray = PackedStringArray()
+	var reverse: bool = false
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--set="):
 			sets.append(a.trim_prefix("--set="))
+		if a.begins_with("--tset="):
+			tsets.append(a.trim_prefix("--tset="))
+		if a == "--reverse":
+			reverse = true
 		if a.begins_with("--track="):
 			track_key = a.trim_prefix("--track=")
 		if a.begins_with("--seed="):
@@ -181,7 +187,11 @@ func _start() -> void:
 				skills.append(float(p))
 	var n: int = skills.size()
 	var city: Track = (load(TRACKS[track_key]) as PackedScene).instantiate() as Track
+	for kv: String in tsets:
+		city.set(kv.get_slice("=", 0), kv.get_slice("=", 1).to_float())
 	root.add_child(city)
+	if reverse:
+		city.set_reversed(true)
 	var manager := RaceManager.new()
 	manager.total_laps = laps
 	root.add_child(manager)

@@ -9,8 +9,8 @@ extends Node3D
 const UNSET_HINT: float = -1.0  ## get_progress without a hint searches the whole line
 const CURVATURE_FLOOR: float = 1e-4  ## 1/m, radius 10 km; keeps divisions finite
 const PROFILE_LAPS: int = 2  ## the closed-loop speed passes run this many laps around
-const LINE_GAIN: float = 150.0  ## m of apex offset per 1/m of curvature (radius 50 m gives 3 m)
-const LINE_LOOK_M: float = 25.0  ## m, the outside entry and exit of a bend sit this far before and after its apex
+var line_gain: float = 150.0  ## m of apex offset per 1/m of curvature (radius 50 m gives 3 m); a var so diag_rivals can sweep it
+var line_look_m: float = 25.0  ## m, the outside entry and exit of a bend sit this far before and after its apex
 const LINE_MARGIN_M: float = 1.5  ## m, the racing line keeps this far inside the road edges
 const LINE_SMOOTH: int = 2  ## samples either side averaged before the line offset is taken (shortcut: fixed box, not a spline fit)
 
@@ -106,10 +106,10 @@ func _build_apex_line() -> void:
 		for d: int in range(-LINE_SMOOTH, LINE_SMOOTH + 1):
 			sum += _curv[posmod(i + d, _count)]
 		k[i] = sum / float(2 * LINE_SMOOTH + 1)
-	var m: int = maxi(1, roundi(LINE_LOOK_M / _ds))
+	var m: int = maxi(1, roundi(line_look_m / _ds))
 	_line_off.resize(_count)
 	for i: int in _count:
-		var raw: float = LINE_GAIN * (k[i] - 0.5 * (k[posmod(i - m, _count)] + k[(i + m) % _count]))
+		var raw: float = line_gain * (k[i] - 0.5 * (k[posmod(i - m, _count)] + k[(i + m) % _count]))
 		var span: Vector2 = get_road_span(float(i) * _ds)
 		_line_off[i] = clampf(raw, span.x + LINE_MARGIN_M, span.y - LINE_MARGIN_M)
 	_build_line_speed()
