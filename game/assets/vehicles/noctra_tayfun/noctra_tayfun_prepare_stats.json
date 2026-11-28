@@ -28,20 +28,16 @@
     "M_Paint"
    ],
    "brake_FL": [
-    "M_BrakeDisc",
-    "M_Caliper"
+    "M_BrakeDisc"
    ],
    "brake_FR": [
-    "M_BrakeDisc",
-    "M_Caliper"
+    "M_BrakeDisc"
    ],
    "brake_RL": [
-    "M_BrakeDisc",
-    "M_Caliper"
+    "M_BrakeDisc"
    ],
    "brake_RR": [
-    "M_BrakeDisc",
-    "M_Caliper"
+    "M_BrakeDisc"
    ],
    "col_body": [],
    "exhaust": [
@@ -87,10 +83,9 @@
     "M_Tire"
    ]
   },
-  "surfaces": 27,
+  "surfaces": 23,
   "materials": [
    "M_BrakeDisc",
-   "M_Caliper",
    "M_Carbon",
    "M_Chrome",
    "M_Glass",
@@ -104,7 +99,7 @@
    "M_Tire",
    "M_Trim"
   ],
-  "material_count": 14,
+  "material_count": 13,
   "box": [
    [
     -1.013262152671814,

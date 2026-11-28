@@ -10,9 +10,11 @@ const LAUNCH_CAP_TICKS: int = 60 * 60
 const SPEC_NAMES: Array[String] = ["noctra_sable", "noctra_vela", "noctra_tayfun", "kestrel_gtr", "arden_bruiser", "atmaca_stock"]
 ## 0-100 km/h bands per class (dev PC, headless, 60 Hz): each class keeps its own pull.
 const LAUNCH_BAND: Dictionary = {"noctra_sable": [3.6, 4.4], "noctra_vela": [3.6, 4.6], "noctra_tayfun": [3.0, 3.8], "kestrel_gtr": [3.0, 3.9], "arden_bruiser": [4.2, 5.3], "atmaca_stock": [8.0, 10.0]}
-## 90 % of top speed from rest (s), pinned to about +-8 % of the measured 2026-11-28 value. These are measured, not targets:
-## Sable (21.7 s) and Kestrel GT (20.8 s) approach slowly. A tuning pass moves these bands on purpose (HANDLING doc, follow-up).
-const TIME90_BAND: Dictionary = {"noctra_sable": [20.0, 23.4], "noctra_vela": [13.9, 16.3], "noctra_tayfun": [15.4, 18.0], "kestrel_gtr": [19.1, 22.5], "arden_bruiser": [13.7, 16.0], "atmaca_stock": [15.2, 17.8]}
+## 90 % of top speed from rest (s), pinned to about +-8 % of the 2026-11-28 speed-feel tune (HANDLING doc, "Speed feel").
+## Street cars must stay within STREET_TIME90_MAX_S (13 s). A tuning pass moves these bands on purpose.
+const TIME90_BAND: Dictionary = {"noctra_sable": [11.9, 13.9], "noctra_vela": [10.5, 12.3], "noctra_tayfun": [11.3, 13.2], "kestrel_gtr": [13.5, 15.8], "arden_bruiser": [11.3, 13.2], "atmaca_stock": [11.8, 13.8]}
+## Street cars (all but the Kestrel GT) must also reach 90 % of top speed within the brief target of 13 s.
+const STREET_TIME90_MAX_S: float = 13.0
 
 
 func _spawn(spec_name: String, x: float, z: float = 0.0, y: float = 0.47) -> ArcadeCar:
@@ -67,6 +69,8 @@ func test_feel_launch_per_class() -> void:
 		check_range(t100, band[0], band[1], spec_name + " 0-100 km/h (s)")
 		var band90: Array = TIME90_BAND[spec_name]
 		check_range(t90, band90[0], band90[1], spec_name + " time to 90 % of top (s)")
+		if spec_name != "kestrel_gtr":
+			check(t90 > 0.0 and t90 <= STREET_TIME90_MAX_S, "%s time to 90 %% of top %.2f s, want <= %.1f" % [spec_name, t90, STREET_TIME90_MAX_S])
 		_say(spec_name + "_90pct_top_s", t90)
 		_say(spec_name + "_top_kmh", top)
 		await cleanup([car])

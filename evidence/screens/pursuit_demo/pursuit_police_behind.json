@@ -9,25 +9,25 @@
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
     "draw_calls": 439,
-    "draw_calls_min": 331,
+    "draw_calls_min": 332,
     "driver": "vulkan",
-    "fps": 217.077,
-    "frame_ms_avg": 4.607,
-    "frame_ms_p95": 6.914,
-    "frame_ms_p99": 7.45,
+    "fps": 202.291,
+    "frame_ms_avg": 4.943,
+    "frame_ms_p95": 7.033,
+    "frame_ms_p99": 9.574,
     "frames": 60,
-    "objects": 19369,
+    "objects": 19334,
     "os": "Windows",
-    "primitives": 439722,
+    "primitives": 447982,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 684.056,
+    "video_mem_mb": 716.847,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit/evidence/screens/pursuit_demo/pursuit_police_behind.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit2/evidence/screens/pursuit_demo/pursuit_police_behind.png",
   "preset": "high",
   "scenario": "pursuit_demo"
 }

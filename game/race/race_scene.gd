@@ -893,6 +893,9 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 	for r: Dictionary in results:
 		if _car_paint.has(r.get("car")):
 			r["paint"] = _car_paint[r["car"]]  # the chip beside each driver name
+	var pursuit_node: PursuitMode = _world.get_node_or_null("PursuitMode") as PursuitMode
+	if pursuit_node != null and pursuit_node.evade_bonus() > 0:
+		rewards["evade_bonus"] = pursuit_node.evade_bonus()  # cash already paid on ESCAPED: shown, not added again
 	if player_ai != null:
 		player_ai.set_racing(false)
 	if camera != null:

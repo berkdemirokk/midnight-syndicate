@@ -477,7 +477,7 @@ func test_nitro_ignition_kicks_camera_back_and_eases_out() -> void:
 	await _finish()
 
 
-func test_speed_lowers_camera_and_adds_shake_above_180() -> void:
+func test_speed_lowers_camera_and_adds_shake_above_150() -> void:
 	_rig(true)
 	await _settle()
 	await frames(2)
@@ -502,7 +502,7 @@ func test_speed_lowers_camera_and_adds_shake_above_180() -> void:
 	mean /= SHAKE_SAMPLES
 	metric("speed_shake_mean_m", mean)
 	metric("speed_shake_peak_m", peak)
-	check(mean > 0.002, "speed shake is visible above 180 km/h without trauma")
+	check(mean > 0.002, "speed shake is visible above 150 km/h without trauma")
 	check(peak <= _cam.speed_shake_m * 1.2 + 0.0005, "speed shake stays subtle (peak %.4f m)" % peak)
 	await _finish()
 

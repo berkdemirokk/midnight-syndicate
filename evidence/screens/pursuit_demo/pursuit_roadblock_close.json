@@ -8,26 +8,26 @@
   "name": "pursuit_roadblock_close",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 437,
-    "draw_calls_min": 326,
+    "draw_calls": 446,
+    "draw_calls_min": 330,
     "driver": "vulkan",
-    "fps": 265.105,
-    "frame_ms_avg": 3.772,
-    "frame_ms_p95": 5.579,
-    "frame_ms_p99": 6.915,
+    "fps": 144.332,
+    "frame_ms_avg": 6.928,
+    "frame_ms_p95": 8.797,
+    "frame_ms_p99": 9.008,
     "frames": 60,
-    "objects": 18789,
+    "objects": 19532,
     "os": "Windows",
-    "primitives": 401785,
+    "primitives": 446678,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 686.839,
+    "video_mem_mb": 719.784,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit/evidence/screens/pursuit_demo/pursuit_roadblock_close.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit2/evidence/screens/pursuit_demo/pursuit_roadblock_close.png",
   "preset": "high",
   "scenario": "pursuit_demo"
 }
