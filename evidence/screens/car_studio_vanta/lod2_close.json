@@ -8,26 +8,26 @@
   "name": "lod2_close",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 40,
+    "draw_calls": 46,
     "draw_calls_min": 40,
     "driver": "vulkan",
-    "fps": 700.149,
-    "frame_ms_avg": 1.428,
-    "frame_ms_p95": 3.312,
-    "frame_ms_p99": 4.938,
+    "fps": 1169.249,
+    "frame_ms_avg": 0.855,
+    "frame_ms_p95": 0.872,
+    "frame_ms_p99": 0.887,
     "frames": 60,
-    "objects": 40,
+    "objects": 46,
     "os": "Windows",
-    "primitives": 14376,
+    "primitives": 20246,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 513.56,
+    "video_mem_mb": 493.428,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/car_studio_vanta/lod2_close.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-cars/evidence/screens/car_studio_vanta/lod2_close.png",
   "preset": "high",
   "scenario": "car_studio_vanta"
 }

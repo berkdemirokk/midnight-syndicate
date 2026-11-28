@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.964,
+  "luma_max": 0.965,
   "luma_min": 0.0,
   "name": "side",
   "perf": {
@@ -11,23 +11,23 @@
     "draw_calls": 49,
     "draw_calls_min": 49,
     "driver": "vulkan",
-    "fps": 803.342,
-    "frame_ms_avg": 1.245,
-    "frame_ms_p95": 2.466,
-    "frame_ms_p99": 3.203,
+    "fps": 963.979,
+    "frame_ms_avg": 1.037,
+    "frame_ms_p95": 1.061,
+    "frame_ms_p99": 1.095,
     "frames": 60,
     "objects": 49,
     "os": "Windows",
     "primitives": 158262,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 513.518,
+    "video_mem_mb": 493.386,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/car_studio_tayfun/side.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-cars/evidence/screens/car_studio_tayfun/side.png",
   "preset": "high",
   "scenario": "car_studio_tayfun"
 }
