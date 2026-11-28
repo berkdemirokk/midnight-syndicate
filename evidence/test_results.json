@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-28T05:32:09"
+    "time": "2026-11-28T11:17:36"
   },
   "test_ai_churn.gd": {
     "test_closing_car_brakes_before_contact": {
@@ -917,7 +917,7 @@
         "light_budget_log": 4,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1520.2,
+        "load_time_ms": 1923.9,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -983,7 +983,7 @@
         "8car_orderA_nitro100_race_time_s": 74.42,
         "8car_orderA_nitro100_stuck_events": 0,
         "8car_orderA_nitro100_stuck_worst_car": 0,
-        "8car_orderA_nitro100_wall_s": 4.7
+        "8car_orderA_nitro100_wall_s": 4.9
       },
       "pass": true
     },
@@ -995,7 +995,7 @@
         "8car_orderA_nitro140_race_time_s": 74.57,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 4.7
+        "8car_orderA_nitro140_wall_s": 4.8
       },
       "pass": true
     },
@@ -1007,7 +1007,7 @@
         "8car_orderA_nitro0_race_time_s": 78.98,
         "8car_orderA_nitro0_stuck_events": 1,
         "8car_orderA_nitro0_stuck_worst_car": 1,
-        "8car_orderA_nitro0_wall_s": 5.6
+        "8car_orderA_nitro0_wall_s": 5.7
       },
       "pass": true
     },
@@ -1019,7 +1019,7 @@
         "8car_orderB_nitro100_race_time_s": 80.98,
         "8car_orderB_nitro100_stuck_events": 3,
         "8car_orderB_nitro100_stuck_worst_car": 2,
-        "8car_orderB_nitro100_wall_s": 6.3
+        "8car_orderB_nitro100_wall_s": 6.5
       },
       "pass": true
     },
@@ -1031,7 +1031,7 @@
         "8car_orderB_nitro140_race_time_s": 79.92,
         "8car_orderB_nitro140_stuck_events": 1,
         "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 5.1
+        "8car_orderB_nitro140_wall_s": 5.3
       },
       "pass": true
     },
@@ -1043,7 +1043,7 @@
         "8car_orderB_nitro0_race_time_s": 79.57,
         "8car_orderB_nitro0_stuck_events": 3,
         "8car_orderB_nitro0_stuck_worst_car": 1,
-        "8car_orderB_nitro0_wall_s": 5.9
+        "8car_orderB_nitro0_wall_s": 6.2
       },
       "pass": true
     },
@@ -1066,7 +1066,7 @@
         "6car_nitro100_race_time_s": 73.8,
         "6car_nitro100_stuck_events": 0,
         "6car_nitro100_stuck_worst_car": 0,
-        "6car_nitro100_wall_s": 3.2
+        "6car_nitro100_wall_s": 3.3
       },
       "pass": true
     },
@@ -1078,7 +1078,7 @@
         "6car_nitro140_race_time_s": 73.8,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.2
+        "6car_nitro140_wall_s": 3.3
       },
       "pass": true
     },
@@ -1090,7 +1090,7 @@
         "6car_nitro0_race_time_s": 73.58,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 3.3
+        "6car_nitro0_wall_s": 3.4
       },
       "pass": true
     }
@@ -2041,7 +2041,7 @@
         "race_time_s": 55.15,
         "stuck_total": 1,
         "stuck_worst_car": 1,
-        "wall_s": 2.0
+        "wall_s": 2.3
       },
       "pass": true
     },
@@ -2061,7 +2061,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 975.0,
+        "load_ms": 1095.0,
         "prop_instances": 991,
         "second_row": 155,
         "track_length_m": 2205.4
@@ -2113,7 +2113,7 @@
         "race_time_s": 58.03,
         "stuck_total": 0,
         "stuck_worst_car": 0,
-        "wall_s": 2.0
+        "wall_s": 2.2
       },
       "pass": true
     },
@@ -2133,7 +2133,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 1063.0,
+        "load_ms": 1104.0,
         "prop_instances": 1252,
         "second_row": 102,
         "track_length_m": 2243.6
@@ -2552,6 +2552,23 @@
       "pass": true
     }
   },
+  "test_pursuit_heat.gd": {
+    "test_heat_steps_every_25_seconds_of_chase": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_roadblock_eligible_only_from_heat_3_in_chase": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_started_at_higher_heat_is_clamped": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
   "test_pursuit_mode.gd": {
     "test_bust_when_parked_next_to_police": {
       "failures": [],
@@ -2645,6 +2662,11 @@
       },
       "pass": true
     },
+    "test_roadblock_spawns_on_heat_change_to_3": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
     "test_spawn_counts_per_heat": {
       "failures": [],
       "metrics": {},
@@ -2663,6 +2685,38 @@
       "pass": true
     },
     "test_pursuit_inactive_and_heat_limit": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_pursuit_survive.gd": {
+    "test_bust_wins_over_survive_goal": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_escape_goal_never_ends_by_timer": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_pursuit_events_are_consistent": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_reset_clears_survive_goal": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_survive_goal_does_not_count_cooldown": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_survive_goal_ends_in_escaped_after_chase_time": {
       "failures": [],
       "metrics": {},
       "pass": true
@@ -3119,7 +3173,7 @@
     "test_i18n_keys_complete_and_used": {
       "failures": [],
       "metrics": {
-        "i18n_keys": 260,
+        "i18n_keys": 273,
         "i18n_keys_used": 90
       },
       "pass": true
@@ -3132,7 +3186,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@27461"
+        "main_menu_focus": "@Button@27760"
       },
       "pass": true
     },
