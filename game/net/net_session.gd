@@ -53,9 +53,11 @@ var rtt_min_ms: float = -1.0
 var _rtt_sum_ms: float = 0.0
 var _rtt_n: int = 0
 var last_reject_key: String = ""  ## client: NetProtocol.REJECT_* key of the last reject, "" for other reasons
+var _rejected: bool = false  ## client: the server refused this connect; the disconnect that follows is not a lost link
 var _join_code: String = ""  ## server: the join code every hello must carry (never sent to clients or logged)
 var _hello_code: String = ""  ## client: the join code sent in the hello
 var _hello_limit: NetHelloLimiter = NetHelloLimiter.new()  ## server: hello attempts per remote address
+var _unjoined: Dictionary = {}  ## server: peer key -> [connect time on the sim clock, peer], until its hello is accepted
 
 
 ## The session node under the scene root, created on first use.
@@ -79,6 +81,8 @@ func _process(delta: float) -> void:
 		if kind == ENetConnection.EVENT_NONE:
 			break
 		var peer: ENetPacketPeer = ev[1] as ENetPacketPeer
+		if kind == ENetConnection.EVENT_CONNECT and peer != null and role == ROLE_SERVER:
+			_unjoined[_peer_key(peer)] = [_sim_t, peer]
 		if kind == ENetConnection.EVENT_CONNECT and peer != null and role == ROLE_CLIENT:
 			_send(peer, {"t": NetProtocol.MSG_HELLO, "v": NetConfig.PROTOCOL_VERSION, "name": my_name, "code": _hello_code})
 		if kind == ENetConnection.EVENT_RECEIVE and peer != null:
@@ -104,7 +108,8 @@ func start_server(bind_address: String, port: int, laps: int, track_scene: Strin
 	elif not NetProtocol.code_valid(code):
 		return "refused: the join code is %d characters from %s" % [NetConfig.CODE_LEN, NetConfig.CODE_ALPHABET]
 	_host = ENetConnection.new()
-	var err: int = _host.create_host_bound(bind_address, port, NetConfig.MAX_PLAYERS)
+	# Extra slots past the 8 players: a connection that never sends hello must not hold a player's seat.
+	var err: int = _host.create_host_bound(bind_address, port, NetConfig.MAX_PLAYERS + 4)
 	if err != OK:
 		_host = null
 		return "could not open %s:%d (error %d)" % [bind_address, port, err]
@@ -134,6 +139,8 @@ func connect_to_server(address: String, port: int, player_name: String, join_cod
 		return "could not create a client socket"
 	_server_link = _host.connect_to_host(address, port, 1, 0)
 	role = ROLE_CLIENT
+	_rejected = false
+	last_reject_key = ""
 	my_name = player_name.strip_edges()
 	_hello_code = NetProtocol.normalize_code(join_code)
 	# The hello goes out on EVENT_CONNECT: ENet drops sends made before the link is up.
@@ -182,6 +189,7 @@ func close() -> void:
 	_join_code = ""
 	_hello_code = ""
 	_hello_limit = NetHelloLimiter.new()
+	_unjoined.clear()
 	if _track != null:
 		_track.queue_free()
 		_track = null
@@ -196,8 +204,18 @@ func lobby_players() -> Array:
 	return _lobby.snapshot()
 
 
+## True when a connection that opened at connected_at_s has gone past NetConfig.HELLO_DEADLINE_S without a hello.
+static func hello_overdue(connected_at_s: float, now_s: float) -> bool:
+	return now_s - connected_at_s > NetConfig.HELLO_DEADLINE_S
+
+
 func _tick_server(delta: float) -> void:
 	_sim_t += delta
+	for key: String in _unjoined.keys():
+		var entry: Array = _unjoined[key]
+		if hello_overdue(float(entry[0]), _sim_t):
+			_unjoined.erase(key)
+			(entry[1] as ENetPacketPeer).peer_disconnect_later()
 	if _state == STATE_COUNTDOWN:
 		_countdown_t -= delta
 		if _countdown_t <= 0.0:
@@ -255,6 +273,7 @@ func _server_message(peer: ENetPacketPeer, t: String, d: Dictionary) -> void:
 
 
 func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
+	_unjoined.erase(key)
 	if _pid_of.has(key):
 		return
 	var player_name: String = str(d.get("name", "")).strip_edges()
@@ -351,10 +370,16 @@ func _end_race() -> void:
 
 func _on_disconnect(peer: ENetPacketPeer) -> void:
 	if role != ROLE_SERVER:
-		last_message = LOST_MESSAGE
-		connection_lost.emit(last_message)
+		# A rejected client leaves the server's lobby by disconnect too: free the role so Join works again, and keep
+		# the reject text instead of replacing it with the lost-connection message.
+		var was_rejected: bool = _rejected
+		close()
+		if not was_rejected:
+			last_message = LOST_MESSAGE
+			connection_lost.emit(last_message)
 		return
 	var key: String = _peer_key(peer)
+	_unjoined.erase(key)
 	if not _pid_of.has(key):
 		return
 	var pid: int = _pid_of[key]
@@ -378,6 +403,7 @@ func _client_message(t: String, d: Dictionary) -> void:
 		NetProtocol.MSG_REJECT:
 			last_message = str(d.get("reason", "rejected"))
 			last_reject_key = str(d.get("key", ""))
+			_rejected = true
 			rejected.emit(last_message)
 		NetProtocol.MSG_LOBBY:
 			lobby_changed.emit(d.get("players", []))

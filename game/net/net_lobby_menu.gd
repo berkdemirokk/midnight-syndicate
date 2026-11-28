@@ -153,7 +153,7 @@ func _on_rejected(reason: String) -> void:
 		shown = I18n.t("net.reject_rate")
 	_status.text = I18n.t("net.rejected") % shown
 	_ready_on = false
-	_refresh_buttons()
+	_ready_btn.visible = false  ## the server refused us: no Ready until a new Join (no lost-connection event follows)
 
 
 func _on_lost(reason: String) -> void:
