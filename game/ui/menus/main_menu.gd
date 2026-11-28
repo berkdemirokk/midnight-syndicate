@@ -1,7 +1,8 @@
 class_name MainMenu
 extends Control
-## Title screen: wordmark, RACE / GARAGE / SETTINGS / QUIT over a live night-city backdrop (menu_backdrop shader),
-## and a career strip (stars, cash, rep). set_backdrop() can still swap in a real 3D scene behind the UI.
+## Title screen: wordmark and CAREER / QUICK RACE / POLICE PURSUIT / GARAGE / SETTINGS / RECORDS / QUIT over a live
+## night-city backdrop (menu_backdrop shader), the selected car on a slow sway at the right, and a career strip
+## (stars, cash, rep). set_backdrop() can still swap in a real 3D scene behind the UI.
 ## Keyboard, gamepad and touch all reach the buttons through Godot's focus navigation.
 
 const EVENT_SELECT_SCENE: String = "res://ui/menus/event_select.tscn"
@@ -9,6 +10,13 @@ const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const RECORDS_SCENE: String = "res://ui/menus/records_screen.tscn"
 const PURSUIT_SELECT_SCENE: String = "res://race/pursuit/pursuit_select.tscn"
+const RACE_SCENE: String = "res://race/race_scene.tscn"
+const HERO_SPLIT: float = 0.45  ## the car stage takes the right part of the screen, from this fraction of the width
+const HERO_FOV: float = 34.0
+const HERO_DIST_M: float = 8.0
+const HERO_SWAY_RAD: float = 0.5  ## the car turns this far each way on a slow sway
+const HERO_SWAY_S: float = 9.0  ## seconds for one swing
+const PAIR_W: float = (460.0 - 14.0) / 2.0  ## MENU_W split into the RECORDS / SETTINGS pair
 const MENU_TOUCH_H: float = 88.0  ## every menu button is at least this tall (touch target)
 const RACE_H: float = 104.0  ## the primary RACE button is the tallest: one clear entry point
 const SWEEP_S: float = 3.2  ## light sweep across the backdrop: travel time, then a pause before the next pass
@@ -33,7 +41,10 @@ var _holder: Control
 var _sweep: LightSweep
 var _backdrop: MenuBackdrop
 var _race_btn: Button
+var _quick_btn: Button
 var _garage_btn: Button
+var _hero_car: Node3D = null
+var _hero_pivot: Node3D = null
 var _pursuit_btn: Button
 var _records_btn: Button
 var nav: Callable = Router.goto  ## scene change; tests swap in a recorder so the runner scene stays
@@ -61,6 +72,7 @@ func _ready() -> void:
 	_holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_holder)
+	_build_hero()
 	_sweep = LightSweep.new()
 	add_child(_sweep)
 	_sweep.run()
@@ -117,19 +129,21 @@ func _build_foreground() -> void:
 	menu.name = "Menu"
 	menu.add_theme_constant_override("separation", int(MENU_GAP_PX * (1.4 if MSTheme.phone else 1.0)))
 	col.add_child(menu)
-	_race_btn = _menu_button(menu, "menu.race", _on_race)
+	_race_btn = _menu_button(menu, "menu.career", _on_race)
 	_race_btn.theme_type_variation = &"PrimaryButton"
 	_race_btn.custom_minimum_size.y = maxf(RACE_H, MSTheme.button_h())
-	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
+	_quick_btn = _menu_button(menu, "menu.quick_race", _on_quick_race)
 	_pursuit_btn = _menu_button(menu, "menu.pursuit", _on_pursuit)
-	_records_btn = _menu_button(menu, "menu.records", _on_records)
-	_settings_btn = _menu_button(menu, "menu.settings", _on_settings)
+	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
 	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
 	if NetConfig.is_enabled():
-		var online := Button.new()
-		online.text = I18n.t("net.menu_button")
-		online.pressed.connect(_on_online)
-		menu.add_child(online)
+		_menu_button(menu, "net.menu_button", _on_online)
+	# RECORDS and SETTINGS share one row; QUIT sits below them, and is hidden on iOS / Android.
+	var pair := HBoxContainer.new()
+	pair.add_theme_constant_override("separation", int(MENU_GAP_PX))
+	menu.add_child(pair)
+	_records_btn = _menu_button(pair, "menu.records", _on_records, PAIR_W)
+	_settings_btn = _menu_button(pair, "menu.settings", _on_settings, PAIR_W)
 	_quit_btn = _menu_button(menu, "menu.quit", _on_quit)
 	_quit_btn.visible = not (OS.has_feature("ios") or OS.has_feature("android"))
 
@@ -188,9 +202,9 @@ func _stat(parent: Container, ink: Color, cap_key: String) -> Label:
 	return val
 
 
-func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
+func _menu_button(parent: Container, key: String, handler: Callable, width: float = MENU_W) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(MENU_W, maxf(MENU_TOUCH_H, MSTheme.button_h()))
+	b.custom_minimum_size = Vector2(width, maxf(MENU_TOUCH_H, MSTheme.button_h()))
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.pressed.connect(func() -> void: UiSounds.click())
 	b.pressed.connect(handler)
@@ -201,13 +215,78 @@ func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 
 ## The column slides in from the left, button by button (skipped when the tree is not running a real frame loop).
 func _play_intro() -> void:
-	var items: Array[Control] = [_race_btn, _garage_btn, _pursuit_btn, _records_btn, _settings_btn, _quit_btn]
+	var items: Array[Control] = [_race_btn, _quick_btn, _pursuit_btn, _garage_btn, _records_btn, _settings_btn, _quit_btn]
 	for i: int in items.size():
 		var b: Control = items[i]
 		b.modulate.a = 0.0
 		var tw: Tween = create_tween()
 		tw.tween_interval(INTRO_STAGGER_S * float(i))
 		tw.tween_property(b, "modulate:a", 1.0, INTRO_S).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+## The selected car on a slow sway, lit by a key, a fill and a rim light, drawn over the live backdrop.
+## The viewport is transparent, so only the car is painted over the night city.
+func _build_hero() -> void:
+	var car_id: String = CarCatalog.race_car_id()
+	var packed: PackedScene = load(CarCatalog.scene_path(car_id)) as PackedScene
+	if packed == null:
+		return
+	var box := SubViewportContainer.new()
+	box.name = "Hero"
+	box.stretch = true
+	box.anchor_left = HERO_SPLIT
+	box.anchor_right = 1.0
+	box.anchor_bottom = 1.0
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(box)
+	var vp := SubViewport.new()
+	vp.transparent_bg = true
+	vp.handle_input_locally = false
+	box.add_child(vp)
+	var env := Environment.new()
+	env.background_mode = Environment.BG_CLEAR_COLOR
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.2, 0.22, 0.3)
+	env.ambient_light_energy = 0.6
+	env.tonemap_mode = Environment.TONE_MAPPER_ACES
+	Settings.apply_to_environment(env)
+	var we := WorldEnvironment.new()
+	we.environment = env
+	vp.add_child(we)
+	var cam := Camera3D.new()
+	cam.fov = HERO_FOV
+	cam.position = Vector3(0.0, 1.6, HERO_DIST_M)
+	vp.add_child(cam)
+	cam.current = true
+	cam.look_at_from_position(cam.position, Vector3(0.0, 0.6, 0.0))
+	var key := DirectionalLight3D.new()
+	key.light_color = Color(1.0, 0.96, 0.92)
+	key.light_energy = 2.2
+	key.rotation_degrees = Vector3(-40.0, -35.0, 0.0)
+	vp.add_child(key)
+	var fill := DirectionalLight3D.new()
+	fill.light_color = Color(0.9, 0.95, 1.0)
+	fill.light_energy = 1.1
+	fill.rotation_degrees = Vector3(-25.0, 150.0, 0.0)
+	vp.add_child(fill)
+	var rim := OmniLight3D.new()
+	rim.light_color = MSTheme.CYAN
+	rim.light_energy = 3.0
+	rim.omni_range = 12.0
+	rim.position = Vector3(-3.0, 2.4, -3.5)
+	vp.add_child(rim)
+	_hero_pivot = Node3D.new()
+	vp.add_child(_hero_pivot)
+	var car := packed.instantiate() as CarLod
+	car.force_lod0 = true
+	var setup: Dictionary = GameState.get_setup(car_id)
+	car.paint_colour = Color.from_string(str(setup["paint_color"]), CarMaterials.DEFAULT_PAINT)
+	_hero_pivot.add_child(car)
+	CarMaterials.set_rim_color(car, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
+	_hero_car = car
+	var sway := create_tween().set_loops()
+	sway.tween_property(_hero_pivot, "rotation:y", HERO_SWAY_RAD, HERO_SWAY_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	sway.tween_property(_hero_pivot, "rotation:y", -HERO_SWAY_RAD, HERO_SWAY_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 ## Replaces the live backdrop with a 3D scene rendered through a SubViewport behind the UI.
@@ -259,6 +338,32 @@ func _on_race() -> void:
 
 func _on_garage() -> void:
 	_open(GARAGE_SCENE)
+
+
+## QUICK RACE: the first unlocked ladder race not yet won (else the first unlocked one), straight to the loading card.
+func _on_quick_race() -> void:
+	var id: String = quick_race_id()
+	var cfg: RaceConfig = EventCatalog.config_for(id) if id != "" else null
+	if cfg == null:
+		_show_toast(I18n.t("menu.coming_soon"))
+		return
+	nav.call(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, {RaceScene.CONFIG_PARAM: cfg}))
+
+
+## Id of the race QUICK RACE starts, or "" when none is unlocked. Pursuit runs and showcase events are skipped.
+static func quick_race_id() -> String:
+	var fallback: String = ""
+	for i: int in EventCatalog.count():
+		var id: String = EventCatalog.id_at(i)
+		if EventCatalog.is_open(id) or not GameState.is_event_unlocked(id):
+			continue
+		if bool(EventCatalog.find(id).get("pursuit", false)):
+			continue
+		if GameState.event_stars(id) == 0:
+			return id
+		if fallback == "":
+			fallback = id
+	return fallback
 
 
 ## Police pursuit runs: the select screen lists the open pursuit runs.

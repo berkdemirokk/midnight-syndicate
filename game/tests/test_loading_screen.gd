@@ -32,6 +32,37 @@ func test_card_names_the_place_and_the_event() -> void:
 	await cleanup([card as Node])
 
 
+func test_threaded_load_of_a_real_race_scene_hands_over_to_the_router_target() -> void:
+	var cfg: RaceConfig = EventCatalog.config_for(EVENT_ID)
+	var card: LoadingScreen = LoadingScreen.new() as LoadingScreen
+	card.configure(RACE, {RaceScene.CONFIG_PARAM: cfg}, 0)
+	var calls: Array = []
+	card.nav = func(scene: String, params: Dictionary) -> void: calls.append([scene, params])
+	add(card)
+	var statuses: Array = []  ## distinct ResourceLoader statuses, in the order the worker reported them
+	var shown: Array = []  ## distinct bar values the card showed on the way
+	var ticks: int = 0  ## physics frames waited (--fixed-fps makes wall-clock time meaningless here)
+	while calls.is_empty() and ticks < 3600:
+		await frames(1)
+		ticks += 1
+		var st: int = ResourceLoader.load_threaded_get_status(RACE)
+		if statuses.is_empty() or statuses.back() != st:
+			statuses.append(st)
+		var p: float = snappedf(float(card.get("_progress")), 0.01)
+		if shown.is_empty() or shown.back() != p:
+			shown.append(p)
+	check(calls.size() == 1 and calls[0][0] == RACE, "the card hands over to the race scene exactly once")
+	if calls.size() == 1:
+		check(((calls[0][1] as Dictionary)[RaceScene.CONFIG_PARAM] as RaceConfig) == cfg, "the race config reaches the race scene")
+	check(is_equal_approx(float(card.get("_progress")), 1.0), "the bar reads 100 percent at hand-over")
+	check(float(card.get("_elapsed")) >= LoadingScreen.MIN_SHOW_S, "the card stays up at least MIN_SHOW_S")
+	check(ResourceLoader.load_threaded_get_status(RACE) == ResourceLoader.THREAD_LOAD_LOADED, "the race scene is loaded on the thread")
+	metric("loading_frames", ticks)
+	metric("loading_statuses", statuses)
+	metric("loading_bar_values", shown)
+	await cleanup([card as Node])
+
+
 func test_progress_is_clamped_and_shown_as_a_percentage() -> void:
 	var card: LoadingScreen = add(LoadingScreen.new()) as LoadingScreen
 	card.configure("", {}, 0)

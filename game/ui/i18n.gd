@@ -280,6 +280,8 @@ const DICT: Dictionary = {
 	"pursuit.gauge.escape": {"tr": "KAÇIŞ", "en": "ESCAPE"},
 	"menu.pursuit": {"tr": "POLİS TAKİBİ", "en": "POLICE PURSUIT"},
 	"menu.loading": {"tr": "YÜKLENİYOR", "en": "LOADING"},
+	"menu.career": {"tr": "KARİYER", "en": "CAREER"},
+	"menu.quick_race": {"tr": "HIZLI YARIŞ", "en": "QUICK RACE"},
 	"menu.tip_1": {"tr": "Virajdan önce hızını düşür, çıkışta gazı kademeli aç.", "en": "Scrub speed before the corner, then open the throttle gently on exit."},
 	"menu.tip_2": {"tr": "Polis takibinde temiz bir çizgi, ham hızdan daha çok işe yarar.", "en": "In a police chase, a clean line beats raw speed."},
 	"menu.tip_3": {"tr": "Yıldız almak için bitirmek yetmez; süreye de bak.", "en": "Stars need more than a finish: check the time target too."},

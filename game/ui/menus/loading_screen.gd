@@ -17,6 +17,7 @@ const LABEL_PX: int = 20
 const BAR_H_PX: float = 14.0
 const EDGE_PX: float = 96.0
 const EDGE_Y_PX: float = 72.0
+const TIP_BAR_GAP_PX: float = 22.0  ## air between the tip line and the progress bar
 
 var _target: String = ""
 var _next: Dictionary = {}
@@ -29,6 +30,7 @@ var _pct: Label
 var _track: Label
 var _event: Label
 var _tip_label: Label
+var nav: Callable = Router.goto  ## the hand-over; tests swap in a recorder
 
 
 ## Set before the node enters the tree (tests, captures). Without this, _ready reads the params from Router.
@@ -96,6 +98,9 @@ func _build() -> void:
 	_tip_label.name = "Tip"
 	_tip_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	col.add_child(_tip_label)
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0.0, TIP_BAR_GAP_PX)
+	col.add_child(gap)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 24)
 	col.add_child(row)
@@ -151,7 +156,7 @@ func _finish() -> void:
 		return
 	_done = true
 	set_progress(1.0)
-	Router.goto(_target, _next)
+	nav.call(_target, _next)
 
 
 ## Thin progress bar: a dim track and a magenta fill, drawn in one pass.
