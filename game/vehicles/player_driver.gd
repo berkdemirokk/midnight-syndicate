@@ -20,6 +20,8 @@ const MIN_DIV: float = 0.0001  ## divisor floor, not a tunable
 @export var turn_rate_high: float = 2.2  ## steer units per second at speed_norm_kmh and above
 @export var centre_rate_mult: float = 2.5  ## returning to centre is this many times faster than turning in
 @export var speed_norm_kmh: float = 286.0  ## speed at which turn_rate_high applies
+@export_group("Touch steering")
+@export var touch_turn_rate: float = 14.0  ## steer units per second toward a touch zone, the same at every speed
 @export_group("Stick")
 @export var stick_deadzone: float = 0.15
 @export var stick_exponent: float = 1.6
@@ -110,6 +112,8 @@ func _update_steer(delta: float) -> float:
 			- (1.0 if Input.is_action_pressed("steer_left") else 0.0)
 	var high: float = clampf(_car.speed_kmh / maxf(speed_norm_kmh, MIN_DIV), 0.0, 1.0)
 	var rate: float = lerpf(turn_rate_low, turn_rate_high, high)
+	if touch_steer != 0.0:
+		rate = touch_turn_rate  # no speed cap: touch must reach lock fast at every speed
 	if target == 0.0:
 		rate *= centre_rate_mult
 	steer = move_toward(steer, target, rate * delta)
