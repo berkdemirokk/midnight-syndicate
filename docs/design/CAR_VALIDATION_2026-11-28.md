@@ -105,3 +105,18 @@ Re-scope requested from the owner before any merge work:
 3. Decide on the 12-draw gap first (shadow pass test above). If it is shadow-pass, the budget may be reached by reducing shadow casters on wheels and brakes, which costs no look change; this is cheaper than the material merge and should be tried first.
 
 Sharing materials between the four wheels does not reduce draws: Godot issues one draw per surface whatever the material, so only mesh merging lowers the count.
+
+### Lead review (Opus, 2026-11-28): what the 39 actually is
+
+Verdict on the package: carmerge is NOT done and stays open. What merges is this section and the surface ratchet only.
+
+Checked against the existing studio perf JSON (same dev PC, RTX 5060 Ti; not phone):
+- The 39 studio increment is not the LOD0 surface cost. Every car reads 59 at front34 although LOD0 has 25 to 27 surfaces (bruiser 25 still reads 59). The forced LOD1 shot (14 surfaces) reads 63 and the forced LOD2 shot (8 surfaces) reads 33 (bruiser and tayfun, evidence/screens/car_studio_<car>/lod1.json, lod2.json). So the studio frame also counts other passes of the car.
+- Two such passes are in the code: the ShowroomSet planar mirror floor re-draws the car's mirror copy (CarLod.build_mirror_lod, LOD1Mirror/LOD2Mirror, game/vehicles/noctra_sable/car_lod.gd), and the directional shadow draws the shadow casters (body, underbody, trim, 4 wheels = 11 surfaces, SHADOW_CASTERS in game/vehicles/noctra_sable/car_materials.gd). The exact split is not traced, and not every pass sees every surface in a given frame.
+- The real LOD0 main-pass cost is the surface count the test measures: 25 to 27 per car, 17 visible mesh nodes (headless suite, 467 tests, 0 failed).
+
+Consequence for the owner decision (smaller than the rounds above say):
+- LOD0 <= 20 surfaces needs 5 to 7 surfaces less, not a merge of every body part. The body side is 9 to 11 surfaces (total minus 16 wheel and brake surfaces), not about 12.
+- The cheapest step: brake disc and caliper as one surface per brake saves 4 surfaces on every car. The brakes sit mostly behind the rims, so a single baked or vertex-coloured metal material changes little that a player sees. Adding plate and exhaust into M_Trim (vertex colour) saves 2 more, which reaches 20 or 21.
+- Rim and tyre can stay separate. They are the most visible material pair on the car.
+- The studio draw total also drops if the mirror copy or the shadow casters get fewer surfaces. That is a separate, look-neutral lever. Measure it before any bake.
