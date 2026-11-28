@@ -174,7 +174,7 @@ func reset_player() -> void:
 
 ## Touch pause button: opens or closes the pause menu. Nothing pauses after the finish.
 func _on_touch_pause() -> void:
-	if pause_menu == null or race == null or race.state == RaceManager.State.FINISHED:
+	if pause_menu == null or race == null or race.state == RaceManager.State.FINISHED or _pursuit_busted:
 		return
 	if pause_menu.is_paused_menu_open():
 		pause_menu.resume()
@@ -186,7 +186,7 @@ func _on_touch_pause() -> void:
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_APPLICATION_FOCUS_OUT and what != NOTIFICATION_APPLICATION_PAUSED and what != NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		return
-	if pause_menu != null and race != null and race.state != RaceManager.State.FINISHED and not pause_menu.is_paused_menu_open():
+	if pause_menu != null and race != null and race.state != RaceManager.State.FINISHED and not _pursuit_busted and not pause_menu.is_paused_menu_open():
 		pause_menu.pause()
 
 

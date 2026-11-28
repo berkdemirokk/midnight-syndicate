@@ -301,16 +301,12 @@ func save_profile() -> bool:
 		# Stage the backup without deleting the last known-good backup or primary.
 		var g_bak_tmp: String = g_bak + ".tmp"
 		if DirAccess.dir_exists_absolute(g_bak) or DirAccess.dir_exists_absolute(g_bak_tmp):
-			push_warning("GameState: backup path blocked for %s; keeping primary" % save_path)
-			DirAccess.remove_absolute(g_tmp)
-			return false
+			push_warning("GameState: backup path blocked for %s; saving without a new backup" % save_path)
 		var copied: bool = DirAccess.copy_absolute(g_main, g_bak_tmp) == OK
 		if not copied or _read_file(bak_path + ".tmp") == null or DirAccess.rename_absolute(g_bak_tmp, g_bak) != OK:
-			push_warning("GameState: backup of %s failed; keeping primary" % save_path)
+			push_warning("GameState: backup of %s failed; saving without a new backup" % save_path)
 			if FileAccess.file_exists(bak_path + ".tmp"):
 				DirAccess.remove_absolute(g_bak_tmp)
-			DirAccess.remove_absolute(g_tmp)
-			return false
 	# Godot supports replacing an existing file by rename. Do not remove the primary first.
 	var renamed: bool = DirAccess.rename_absolute(g_tmp, g_main) == OK
 	if not renamed:

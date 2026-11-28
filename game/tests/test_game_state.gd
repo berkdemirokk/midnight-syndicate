@@ -218,7 +218,7 @@ func test_record_result_keeps_best_time() -> void:
 	_wipe(path)
 
 
-## A blocked backup path must never cause a valid primary to be replaced.
+## A blocked backup path skips the backup but still commits the verified new save.
 func test_blocked_backup_preserves_primary() -> void:
 	var path := _path("blocked_backup")
 	var blocked: String = ProjectSettings.globalize_path(path + ".bak")
@@ -230,13 +230,13 @@ func test_blocked_backup_preserves_primary() -> void:
 	var original: String = FileAccess.get_file_as_string(path)
 	check(DirAccess.make_dir_absolute(blocked) == OK, "backup obstruction created")
 	gs.profile["rep"] = 99
-	check(not gs.save_profile(), "save reports failure when backup is blocked")
-	check(FileAccess.get_file_as_string(path) == original, "valid primary remains byte-for-byte unchanged")
-	check(not FileAccess.file_exists(path + ".tmp"), "failed save removes its staging file")
+	check(gs.save_profile(), "save succeeds when the backup path is blocked")
+	check(FileAccess.get_file_as_string(path) != original, "primary holds the new save")
+	check(not FileAccess.file_exists(path + ".tmp"), "save moves its staging file into place")
 	check(DirAccess.dir_exists_absolute(blocked), "backup obstruction is not deleted")
 	_close(gs)
 	var restored: Node = _open(path)
-	check(restored.get_rep() == 7, "last valid primary is still readable")
+	check(restored.get_rep() == 99, "new save is readable after reload")
 	_close(restored)
 	DirAccess.remove_absolute(blocked)
 	_wipe(path)
@@ -257,8 +257,8 @@ func test_blocked_backup_stage_preserves_both_copies() -> void:
 	check(not original.is_empty() and not backup.is_empty(), "both valid copies exist")
 	check(DirAccess.make_dir_absolute(blocked) == OK, "backup staging obstruction created")
 	gs.profile["rep"] = 99
-	check(not gs.save_profile(), "save reports failure when backup staging is blocked")
-	check(FileAccess.get_file_as_string(path) == original, "primary unchanged")
+	check(gs.save_profile(), "save succeeds when backup staging is blocked")
+	check(FileAccess.get_file_as_string(path) != original, "primary holds the new save")
 	check(FileAccess.get_file_as_string(path + ".bak") == backup, "previous backup unchanged")
 	_close(gs)
 	DirAccess.remove_absolute(blocked)

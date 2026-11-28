@@ -31,6 +31,7 @@ const CODE_LEN: int = 6  ## join code length, chosen by the host (random unless 
 const CODE_ALPHABET: String = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  ## no look-alikes: 0, O, 1, I, L are left out
 const HELLO_WINDOW_S: float = 10.0  ## server: hello attempts are counted per remote address over this window
 const HELLO_MAX: int = 5  ## server: hello attempts allowed per address in the window (wrong codes count too)
+const HELLO_DEADLINE_S: float = 5.0  ## server: a connection must send a valid hello within this many seconds
 
 
 ## The track scene a start message names when it is allow-listed, else "" (the development circuit).

@@ -341,3 +341,52 @@ func test_escape_pays_cash() -> void:
 	await cleanup([scene])
 	_restore_profile(old)
 	PursuitMode.ENABLED = was
+
+
+## The player crossed the line: the chase stops, so a parked police car next to the finished car cannot bust it.
+func test_finished_player_cannot_be_busted() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.start()
+	pm.top_up()
+	check(pm.police.size() == 1, "one police car for the chase, got %d" % pm.police.size())
+	var hits: Array = []
+	pm.busted.connect(func() -> void: hits.append(true))
+	var car: ArcadeCar = pm.police[0]
+	scene.race._finish(scene.race._racer_of(scene.player))
+	check(scene.race.player_finished(), "the race reports the player finished")
+	car.global_position = scene.player.global_position + Vector3(0.0, 0.0, 2.0)
+	for i: int in 300:
+		pm.step(STEP_S)
+	check(hits.is_empty(), "a finished player must not be busted")
+	check(pm.state.phase != PursuitState.Phase.BUSTED, "finished player: phase must not be BUSTED, got %d" % pm.state.phase)
+	check(pm.escape_reward == 0, "finishing pays no escape reward, got %d" % pm.escape_reward)
+	check(not pm._active, "the chase stops at the finish")
+	var drv: AIDriver = car.get_node_or_null(PursuitMode.DRIVER_NAME) as AIDriver
+	check(drv != null and not drv.enabled, "police driver stops at the finish")
+	await cleanup([scene])
+	PursuitMode.ENABLED = was
+
+
+## race_finished stops the chase and the police drivers, and pays nothing and busts nobody.
+func test_race_finished_stops_the_chase() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.start()
+	pm.top_up()
+	var hits: Array = []
+	pm.busted.connect(func() -> void: hits.append(true))
+	var empty: Array[Dictionary] = []
+	pm._on_race_finished(empty)
+	check(not pm._active, "race_finished ends the chase")
+	var drv: AIDriver = pm.police[0].get_node_or_null(PursuitMode.DRIVER_NAME) as AIDriver
+	check(drv != null and not drv.enabled, "race_finished disables the police drivers")
+	check(hits.is_empty() and pm.escape_reward == 0, "race_finished neither busts nor pays")
+	await cleanup([scene])
+	PursuitMode.ENABLED = was
