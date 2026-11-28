@@ -17,6 +17,7 @@ const TRACK_MAX_SPEED_KMH: float = 252.0  ## Track.max_speed: a rival slower tha
 const LOD0_SURFACES_MAX: Dictionary = {
 	"arden_bruiser": 21, "arden_havoc": 22, "atmaca_modified": 23, "bosfor_yildirim": 23, "kestrel_gtr": 23, "kestrel_marten": 22,
 	"kestrel_vanta": 23, "noctra_meridian": 23, "noctra_sable": 23, "noctra_tayfun": 23, "noctra_vela": 22,
+	"noctra_volta": 23, "noctra_regent": 23, "noctra_sovereign": 23, "noctra_monarch": 23, "noctra_titan": 22,
 }
 
 

@@ -71,6 +71,36 @@ const CARS: Array[Dictionary] = [
 		"len": 4.652, "width": 2.096, "height": 1.40,  # source GLB bounding box (metres), electric-super-gt.glb
 		"axle": 1.46, "front_r": 0.345, "rear_r": 0.345, "wheelbase": 2.92,
 	},
+	{
+		"id": "noctra_volta", "scene": "res://vehicles/noctra_volta/noctra_volta.tscn",
+		"spec": "res://vehicles/specs/noctra_volta.tres", "name": "Noctra Volta",
+		"len": 4.6, "width": 2.096, "height": 1.4,  # source GLB bounding box (metres), electric-sports-saloon.glb
+		"axle": 1.45, "front_r": 0.345, "rear_r": 0.36, "wheelbase": 2.9,
+	},
+	{
+		"id": "noctra_regent", "scene": "res://vehicles/noctra_regent/noctra_regent.tscn",
+		"spec": "res://vehicles/specs/noctra_regent.tres", "name": "Noctra Regent",
+		"len": 4.811, "width": 2.105, "height": 1.453,  # source GLB bounding box (metres), four-door-super-saloon.glb
+		"axle": 1.43, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.86,
+	},
+	{
+		"id": "noctra_sovereign", "scene": "res://vehicles/noctra_sovereign/noctra_sovereign.tscn",
+		"spec": "res://vehicles/specs/noctra_sovereign.tres", "name": "Noctra Sovereign",
+		"len": 4.811, "width": 2.105, "height": 1.453,  # source GLB bounding box (metres), super-saloon.glb
+		"axle": 1.425, "front_r": 0.345, "rear_r": 0.355, "wheelbase": 2.85,
+	},
+	{
+		"id": "noctra_monarch", "scene": "res://vehicles/noctra_monarch/noctra_monarch.tscn",
+		"spec": "res://vehicles/specs/noctra_monarch.tres", "name": "Noctra Monarch",
+		"len": 4.783, "width": 2.075, "height": 1.327,  # source GLB bounding box (metres), v12-grand-tourer.glb
+		"axle": 1.40, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.8,
+	},
+	{
+		"id": "noctra_titan", "scene": "res://vehicles/noctra_titan/noctra_titan.tscn",
+		"spec": "res://vehicles/specs/noctra_titan.tres", "name": "Noctra Titan",
+		"len": 4.965, "width": 2.354, "height": 1.848,  # source GLB bounding box (metres), super-suv.glb
+		"axle": 1.5, "front_r": 0.38, "rear_r": 0.39, "wheelbase": 3.0,
+	},
 ]
 const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
