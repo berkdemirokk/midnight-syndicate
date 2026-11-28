@@ -9038,13 +9038,13 @@
       "tris": 0,
       "texture_sizes": {
         "impostor_plane.png": [
-          1024,
-          512
+          512,
+          256
         ]
       },
       "material_count": 0,
-      "bytes": 551075,
-      "sha256": "4426a42ae86b723ddc3fc90456687c03b6d74d0d0c0775c36af37da029037c8a",
+      "bytes": 152164,
+      "sha256": "6ca4251b652996d3c427f7e5168ab7164aa9053949cdd4c7ff29b890783fde03",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Plane Tree\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified: impostor rendered from the LOD0 model."
@@ -9111,13 +9111,13 @@
       "tris": 0,
       "texture_sizes": {
         "impostor_judas.png": [
-          1024,
-          512
+          512,
+          256
         ]
       },
       "material_count": 0,
-      "bytes": 569889,
-      "sha256": "77d454837abf7d4111e51f4ac95f69a3682efc53ce0305af0df7a3cde89c7d4a",
+      "bytes": 156339,
+      "sha256": "c676f403a9f184e5673fc0be786514d0c46c47cc530e208d60bc74d74baf0d5f",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Magnolia Tree\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified: impostor rendered from the LOD0 model."
@@ -9184,13 +9184,13 @@
       "tris": 0,
       "texture_sizes": {
         "impostor_cypress.png": [
-          1024,
-          512
+          512,
+          256
         ]
       },
       "material_count": 0,
-      "bytes": 318607,
-      "sha256": "678d1a92f4d3a576b39ac975f61e0c8ac8f8431d712d9ec3d7bf4df2e1760019",
+      "bytes": 86560,
+      "sha256": "cc9e5f54f08b1200610c2810ee82774e9071570e4f7b59215c68dc0ee3fd190a",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Italian Cypress\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified: impostor rendered from the LOD0 model."
@@ -9257,13 +9257,13 @@
       "tris": 0,
       "texture_sizes": {
         "impostor_street.png": [
-          1024,
-          512
+          512,
+          256
         ]
       },
       "material_count": 0,
-      "bytes": 383448,
-      "sha256": "b94c0caed496010b6298bd4cb6ed9701aa9e5ac3848c8adcb058d223e8773d91",
+      "bytes": 103991,
+      "sha256": "5e345fbb6e76d46e22a689c4703afeb774a9fc7ad81b90593cd36727eae3b3a6",
       "test_result": "pass",
       "added": "2026-11-26",
       "notes": "\"Young Staked Tree\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified: impostor rendered from the LOD0 model."
@@ -11968,13 +11968,13 @@
       "tris": 0,
       "texture_sizes": {
         "plane_atlas.png": [
-          2048,
-          1024
+          1024,
+          512
         ]
       },
       "material_count": 0,
-      "bytes": 3312607,
-      "sha256": "6de825fd311db19f1a6c9b0b616ec618a4772c07e49830e854062e0eb228da05",
+      "bytes": 918781,
+      "sha256": "b7299b7262aa45cdc38b4c30ed1805457041182f8532cf006afa7aea843eb35e",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Two large plane trees side by side (1024 px each), photo albedo with alpha for the street plane cards. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/plane_a_day.png and assets_src/ai_generated/chatgpt/plane_b_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (left half plane_a_day, right half plane_b_day, alpha cleaned)."
@@ -11990,13 +11990,13 @@
       "tris": 0,
       "texture_sizes": {
         "plane_atlas_night.jpg": [
-          2048,
-          1024
+          1024,
+          512
         ]
       },
       "material_count": 0,
-      "bytes": 425175,
-      "sha256": "c09ff48b9ad21465e28f7dcf3d7548cbbec981f3ef61b98899ba2ee365cddddd",
+      "bytes": 122243,
+      "sha256": "41684a0ff2a3199bd3b1f2fcc450a19b1f557bf0331762646e38b9fb1bd8ab34",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Night pictures of the same two plane trees, pixel-aligned with plane_atlas.png: lit crowns on black, used as the glow map. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/plane_a_night.png and assets_src/ai_generated/chatgpt/plane_b_night.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (same layout as plane_atlas.png)."
@@ -12013,12 +12013,12 @@
       "texture_sizes": {
         "cypress.png": [
           256,
-          1024
+          512
         ]
       },
       "material_count": 0,
-      "bytes": 353339,
-      "sha256": "e07613218590ace8c35f7de6afa708c3403bd8f8907691c503c98f421b3f51b8",
+      "bytes": 94854,
+      "sha256": "968f0c8a6be899c76595fd39e417c2515e594e24f9c2ee1b0036fb5c17a4be6d",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Tall slim Italian cypress, photo albedo with alpha, 256 x 1024 px. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/cypress_c_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (cropped to the tree, alpha cleaned)."
@@ -12034,13 +12034,13 @@
       "tris": 0,
       "texture_sizes": {
         "judas.png": [
-          1024,
-          1024
+          512,
+          512
         ]
       },
       "material_count": 0,
-      "bytes": 1672889,
-      "sha256": "a892818e3f518178ea20cec043fcc10afd4a12a7854ff98c0c753109322383d4",
+      "bytes": 475496,
+      "sha256": "50385b8c2b0b47e186dfc37f2df86871cce701942d3a92343cfea96939196389",
       "test_result": "pass",
       "added": "2026-11-27",
       "notes": "Blossoming judas tree (pink-purple), photo albedo with alpha. Generated on 2026-11-27 with ChatGPT image generation from text prompts written for this project (no reference picture uploaded, no text or logos in the image). Source PNG: assets_src/ai_generated/chatgpt/judas_d_day.png. Built by assets_src/ai_generated/chatgpt/prepare_photo_trees.py (cropped to the tree, alpha cleaned)."
