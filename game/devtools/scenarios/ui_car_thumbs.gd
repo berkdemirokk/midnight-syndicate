@@ -66,7 +66,8 @@ func run() -> void:
 		car.queue_free()
 		await cap.wait_frames(2)
 	# one harness shot so the run counts: a contact sheet of the thumbnails on graphite
-	var sheet := Image.create(W * 4, H * 3, false, Image.FORMAT_RGBA8)
+	var rows: int = maxi(1, ceili(float(CarCatalog.available_ids().size()) / 4.0))  # the roster grows: the sheet grows with it
+	var sheet := Image.create(W * 4, H * rows, false, Image.FORMAT_RGBA8)
 	sheet.fill(MSTheme.GRAPHITE)
 	var i: int = 0
 	for id: String in CarCatalog.available_ids():

@@ -1,0 +1,205 @@
+{
+  "car_id": "bosfor_lale",
+  "display_name": "Bosfor Lale",
+  "source_title": "Vintage Roadster",
+  "copyright": "\"Vintage Roadster\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified",
+  "plate_text": "34 BA 616",
+  "front_plate_material": "M_Trim",
+  "plate_image": "game/assets/vehicles/bosfor_lale/bosfor_lale_plate_base.png",
+  "lods": [
+    0,
+    1,
+    2
+  ],
+  "materials": {
+    "Paint_Cream": "M_Paint",
+    "Paint_Red": "M_Trim",
+    "Canvas": "M_Trim",
+    "Chrome": "M_Chrome",
+    "Chassis": "M_Trim",
+    "Spring": "M_Chrome",
+    "Exhaust": "M_Chrome",
+    "Under": "M_Trim",
+    "Gap": "M_Trim",
+    "Grille_Dark": "M_Trim",
+    "Glass": "M_Glass",
+    "Trim": "M_Trim",
+    "Board_Rubber": "M_Interior",
+    "Tyre": "M_Tire",
+    "Whitewall": "M_Tire",
+    "Lamp_Glass": "M_LightFront",
+    "Lens_Red": "M_LightRear",
+    "Leather_Red": "M_Interior",
+    "Dash_Wood": "M_Interior",
+    "Dial": "M_Interior",
+    "Wheel_Rim": "M_Rim",
+    "Column": "M_Interior",
+    "Plate_Added": "M_Plate",
+    "Brake_Added": "M_BrakeDisc"
+  },
+  "nodes": {
+    "Under": "underbody",
+    "Arch": "underbody",
+    "Glass": "glass",
+    "Frit": "glass",
+    "Chassis": "drop",
+    "Spring": "drop",
+    "Damper": "drop",
+    "Plate_Back": "drop"
+  },
+  "nodes_by_object": {},
+  "materials_by_object": {},
+  "by_object_material": {},
+  "materials_lod1": {
+    "Lens": "M_LightFront",
+    "Reflector": "M_Trim",
+    "Carbon": "M_Trim",
+    "Chrome": "M_Trim",
+    "Alu": "M_Trim",
+    "Steel": "M_Trim",
+    "Cast": "M_Trim",
+    "Exhaust": "M_Trim",
+    "Caliper_Red": "M_Trim",
+    "Caliper_Yellow": "M_Trim",
+    "Pad": "M_Trim",
+    "Disc": "M_Rim",
+    "Disc_Hat": "M_Rim",
+    "Alloy": "M_Trim",
+    "Mesh_Chrome": "M_Trim",
+    "Projector": "M_LightFront",
+    "Mirror": "M_Trim"
+  },
+  "nodes_lod1": {
+    "Disc": "drop",
+    "Disc_Hat": "drop",
+    "Pad": "drop",
+    "Caliper_Red": "drop",
+    "Caliper_Yellow": "drop",
+    "Plate": "drop",
+    "Under": "trim",
+    "Arch": "trim",
+    "Chrome": "trim",
+    "Alu": "trim",
+    "Steel": "trim",
+    "Cast": "trim",
+    "Exhaust": "trim",
+    "Carbon": "trim",
+    "Alloy": "trim",
+    "Mesh_Chrome": "trim",
+    "Caliper_Black": "drop"
+  },
+  "by_object_material_lod1": {},
+  "nodes_lod2": {
+    "Disc": "drop",
+    "Disc_Hat": "drop",
+    "Pad": "drop",
+    "Caliper_Red": "drop",
+    "Caliper_Yellow": "drop",
+    "Lens": "drop",
+    "LED": "drop",
+    "Projector": "drop",
+    "Skin": "drop",
+    "Carpet": "drop",
+    "Headliner_Dark": "drop",
+    "Seat": "drop",
+    "Seat_Insert": "drop",
+    "Screens": "drop",
+    "Screen_Edge": "drop",
+    "Speaker": "drop",
+    "Belt": "drop",
+    "Belt_Red": "drop",
+    "Pedal": "drop",
+    "Steel": "drop",
+    "Mesh_Hex": "drop",
+    "Grille_Frame": "drop",
+    "Mirror": "drop",
+    "Mirror_Case": "drop",
+    "Chrome": "drop",
+    "Exhaust": "drop",
+    "Alu": "drop",
+    "Cap": "drop",
+    "Bolt": "drop",
+    "Under": "trim",
+    "Arch": "trim",
+    "Carbon": "trim",
+    "Plate": "drop",
+    "Reflector": "drop",
+    "Alloy": "drop",
+    "Mesh_Chrome": "drop",
+    "Caliper_Black": "drop",
+    "Seat_Tan": "drop",
+    "Seat_Insert_Tan": "drop",
+    "Seat_Cream": "drop",
+    "Seat_Insert_Cream": "drop",
+    "Headliner": "drop",
+    "Wood": "drop"
+  },
+  "materials_lod2": {
+    "Carbon": "M_Trim"
+  },
+  "nodes_by_object_lod2": {},
+  "by_object_material_lod2": {},
+  "wheel_fill_lod2": "M_Tire",
+  "decimate": {
+    "0": {
+      "wheel": 1.0,
+      "trim": 0.85,
+      "interior": 0.6,
+      "underbody": 1.0
+    },
+    "1": {
+      "body": 0.25,
+      "wheel": 0.12,
+      "interior": 0.3,
+      "trim": 0.22,
+      "glass": 0.2,
+      "default": 0.5
+    },
+    "2": {
+      "body": 0.08,
+      "wheel": 0.06,
+      "trim": 0.06,
+      "glass": 0.1,
+      "default": 0.12
+    }
+  },
+  "tail_cell": null,
+  "tail_pipes": [
+    [
+      0.1,
+      0.33,
+      -2.2
+    ],
+    [
+      -0.1,
+      0.33,
+      -2.2
+    ]
+  ],
+  "source_file": "assets_src/third_party/vinish_cars/incoming3/vintage-roadster.glb",
+  "add_plate": true,
+  "_dims": {
+    "len": 4.28,
+    "width": 1.728,
+    "height": 1.372,
+    "wheelbase": 2.75,
+    "track": 1.47,
+    "wheel_radius": 0.36
+  },
+  "add_brakes": true,
+  "source_colours": {
+    "Brake_Added": [
+      0.1,
+      0.1,
+      0.11
+    ],
+    "Paint_Red": [
+      0.018,
+      0.018,
+      0.02
+    ]
+  },
+  "lens_scale": {
+    "Lens_Red": 2.2
+  }
+}

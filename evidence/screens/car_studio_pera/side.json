@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.961,
+  "luma_min": 0.0,
+  "name": "side",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 52,
+    "draw_calls_min": 52,
+    "driver": "vulkan",
+    "fps": 1245.589,
+    "frame_ms_avg": 0.803,
+    "frame_ms_p95": 0.816,
+    "frame_ms_p99": 0.87,
+    "frames": 60,
+    "objects": 52,
+    "os": "Windows",
+    "primitives": 56928,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 461.532,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetF/evidence/screens/car_studio_pera/side.png",
+  "preset": "high",
+  "scenario": "car_studio_pera"
+}

@@ -17,6 +17,12 @@ const DEFAULT_CARS: Array[Dictionary] = [
 	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
 	{"id": "bosfor_kivilcim", "class": "hatch", "price": 1500, "rep": 0},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "bosfor_serce", "class": "hatch", "price": 2500, "rep": 0},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_kartal", "class": "classic", "price": 9000, "rep": 300},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_lale", "class": "classic", "price": 7000, "rep": 200},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_galata", "class": "classic", "price": 5500, "rep": 150},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_moda", "class": "classic", "price": 6000, "rep": 200},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_pera", "class": "classic", "price": 3000, "rep": 0},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_sahil", "class": "classic", "price": 4000, "rep": 50},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300, "rival": true},
 	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800, "rival": true},
 	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200, "rival": true},
