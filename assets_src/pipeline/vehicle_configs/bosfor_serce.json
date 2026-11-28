@@ -4,6 +4,7 @@
   "source_title": "Pocket Rocket Hatch",
   "copyright": "\"Pocket Rocket Hatch\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0, modified",
   "plate_text": "34 BS 226",
+  "front_plate_material": "M_Trim",
   "plate_image": "game/assets/vehicles/bosfor_serce/bosfor_serce_plate_base.png",
   "lods": [
     0,

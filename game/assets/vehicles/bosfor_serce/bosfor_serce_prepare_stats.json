@@ -2,7 +2,7 @@
  "car_id": "bosfor_serce",
  "source": "assets_src/third_party/vinish_cars/incoming2/pocket-rocket-hatch.glb",
  "lod0": {
-  "tris": 78139,
+  "tris": 78137,
   "tris_by_node": {
    "body": 16288,
    "brake_FL": 1236,
@@ -15,7 +15,7 @@
    "interior": 8919,
    "lights_front": 1228,
    "lights_rear": 1387,
-   "plate_rear": 4,
+   "plate_rear": 2,
    "trim": 9701,
    "underbody": 1491,
    "wheel_FL": 4577,
