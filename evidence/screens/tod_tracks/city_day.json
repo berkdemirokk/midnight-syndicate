@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 1.0,
+  "luma_max": 0.998,
   "luma_min": 0.0,
   "name": "city_day",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 382,
-    "draw_calls_min": 372,
+    "draw_calls": 400,
+    "draw_calls_min": 385,
     "driver": "vulkan",
-    "fps": 191.228,
-    "frame_ms_avg": 5.229,
-    "frame_ms_p95": 8.144,
-    "frame_ms_p99": 8.6,
+    "fps": 210.867,
+    "frame_ms_avg": 4.742,
+    "frame_ms_p95": 6.465,
+    "frame_ms_p99": 6.705,
     "frames": 60,
-    "objects": 18689,
+    "objects": 18374,
     "os": "Windows",
-    "primitives": 363159,
+    "primitives": 403112,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 729.132,
+    "video_mem_mb": 896.833,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/fable-graphics-visual-quality-105c41/evidence/screens/tod_tracks/city_day.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-b2ao/evidence/screens/tod_tracks/city_day.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }
