@@ -68,7 +68,7 @@ func _run() -> void:
 		data["renderer"] = RenderingServer.get_current_rendering_method()
 		data["screen_refresh_hz"] = DisplayServer.screen_get_refresh_rate()
 		data["run_minutes_target"] = _minutes
-		data["vsync_note"] = "default vsync, no fps cap change; frame times are real frame deltas"
+		data["vsync_note"] = "frame cap is project run/max_fps=60 (project.godot), not vsync; vsync left at project default; frame times are real frame deltas"
 		data.merge(await _render_soak())
 	else:
 		data["races"] = await _sim_soak()

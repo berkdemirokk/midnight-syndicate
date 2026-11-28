@@ -592,6 +592,6 @@
   "screen_refresh_hz": 180.061004638672,
   "time_of_day": "night",
   "track": "istanbul_bogaz.tscn",
-  "vsync_note": "default vsync, no fps cap change; frame times are real frame deltas",
+  "vsync_note": "frame cap is project run/max_fps=60 (project.godot line 12), not vsync (screen 180 Hz); vsync left at project default; frame times are real frame deltas. Note corrected in lead review after the run, data unchanged",
   "wall_seconds": 1045.5
 }
