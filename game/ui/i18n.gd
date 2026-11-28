@@ -243,7 +243,7 @@ const DICT: Dictionary = {
 	"onboard.lang_body": {"tr": "Dilini seç. Ayarlardan sonra da değiştirebilirsin.", "en": "Pick your language. You can change it later in Settings."},
 	"onboard.continue": {"tr": "DEVAM", "en": "CONTINUE"},
 	"onboard.controls_title": {"tr": "DOKUNMA KONTROLLERİ", "en": "TOUCH CONTROLS"},
-	"onboard.controls_body": {"tr": "Sol altta direksiyon (< ve >). Sağ altta fren. Freninin üstünde nitro ve drift.", "en": "Bottom left: steering (< and >). Bottom right: brake. Above the brake: nitro and drift."},
+	"onboard.controls_body": {"tr": "Sol altta direksiyon (< ve >). Sağ altta fren. Frenin solunda nitro, onun üstünde drift.", "en": "Bottom left: steering (< and >). Bottom right: brake. Left of the brake: nitro, with drift above it."},
 	"onboard.start": {"tr": "İLK YARIŞA BAŞLA", "en": "START FIRST RACE"},
 	"hint.steer": {"tr": "Direksiyon: sağa ve sola yönel", "en": "Steer: turn left and right"},
 	"hint.steer_touch": {"tr": "Direksiyon: sol alttaki < ve >", "en": "Steer: the < and > at the bottom left"},
