@@ -256,3 +256,28 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - Not done: 30 cars (owner approval for downloads), car LOD0 draw calls 59 vs budget 20 per car (needs a mesh/material
   merge pass), real-device test, App Store submission, internet multiplayer, the ~40 s frame spike, human playtest of
   modes/economy, sound by ear. Full list: docs/status/MASTER_CHECKLIST.md.
+
+## Session 10 — 2026-11-28 (STREET EMPIRE brand and UI overhaul, separate UI studio session)
+- Owner brief: rename the product to **STREET EMPIRE — RULE THE CITY** and redesign every player-facing screen.
+  Branch `feature/street-empire-ui-overhaul` (own worktree), draft PR https://github.com/berkdemirokk/midnight-syndicate/pull/10.
+  Lead Opus 5.5; Haiku workers (HUD, garage, career, remaining screens) with lead review rounds and one independent
+  Haiku code review (findings fixed). UI only: no physics, AI, race, network, world or save changes.
+- Brand: `docs/brand/BRAND_GUIDELINES.md` (graphite/racing red/titanium/pearl), Anton + Manrope (SIL OFL 1.1, local
+  copies, no download; asset_factory accepts OFL fonts), wordmark, SE icon, splash, Router loading card. All screens
+  restyle through `MSTheme` (old token names aliased).
+- Main menu: real 3D showroom with the selected car (`game/ui/showroom/showroom_stage.gd`), lite tier for phones/Low,
+  PLAY starts the next unfinished career event, real REP/cash/stars/district progress, profile card.
+- Career district tabs, garage configurator with purchase confirmation and rebranded room sign, broadcast-style race
+  and pursuit HUD, pause/results/settings/records/onboarding/lobby/pursuit select in the brand.
+- Merged release/rc-2026-11-28 (career2 chapters, pursuit2, uiresults) into the branch; conflicts resolved, see the
+  merge commit.
+- Evidence (dev PC RTX 5060 Ti; not iPhone numbers): full suite 561 tests, 0 failed (merged tree); asset manifest 677
+  records, 0 failing; captures of every UI scenario and 63 before/after sheets in
+  `evidence/screens/street_empire_before_after/`.
+- Not done / blockers: lead-owned name changes (project.godot, export presets) listed in `docs/brand/INTEGRATION.md`;
+  App Store name "Street Empire" may be taken (a "Street Empire Life Simulator" exists, `docs/brand/NAME_CHECK.md`);
+  no rival crews/district control/player level in the game (UI shows only real data; requirements in INTEGRATION.md);
+  world signage still says "MIDNIGHT ISTANBUL" on event barriers (world assets, other session); touch pads sit in the
+  middle band in the 2532x1170 captures (pre-existing, same before the overhaul); pursuit_demo capture fails at the
+  release's new hiding-spot step (gameplay, not UI); never run on an iPhone.
+- Commits: f231cb2, 3c5d95d, 1cab86f, 206d45e, bc0c684 and the commit that carries this entry.
