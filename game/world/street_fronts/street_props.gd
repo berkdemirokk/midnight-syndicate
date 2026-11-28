@@ -9,15 +9,15 @@ extends Node3D
 const DIR: String = "res://assets/world/props_cc0/"
 const KERB_M: float = 7.0  ## the kerbs are 7 m from the centre line (StreetFronts)
 const CLEAR_M: float = 7.6  ## props stay this far from the centre line
-const CELL_M: float = 70.0
+const CELL_M: float = 110.0
 const LOD0_END_M: float = 45.0
-const LOD1_END_M: float = 120.0
+const LOD1_END_M: float = 80.0  ## measured: 120 m cost Neon Wharf night +63 draws and 468k primitives
 const FADE_M: float = 6.0
-## Per track flavour: share of shops with tables outside, planters, and the kerb-side props that fit the district.
+## Per track flavour (each kind costs a draw per surface per cell: kept to the props that read at speed): share of shops with tables outside, planters, and the kerb-side props that fit the district.
 const FLAVOUR: Dictionary = {
 	"istanbul_bogaz": {"cafe": 0.35, "planter": 0.45, "kerb": ["trash_can", "fire_hydrant", "potted_plant", "utility_box"]},
-	"istanbul_maslak": {"cafe": 0.12, "planter": 0.55, "kerb": ["trash_can", "utility_box_b", "fire_hydrant", "street_seating"]},
-	"city_01": {"cafe": 0.25, "planter": 0.25, "kerb": ["trash_can", "wooden_crate", "plastic_crate", "trash_bag", "utility_box", "fire_hydrant"]},
+	"istanbul_maslak": {"cafe": 0.12, "planter": 0.55, "kerb": ["trash_can", "utility_box_b", "fire_hydrant", "wooden_bench"]},
+	"city_01": {"cafe": 0.25, "planter": 0.25, "kerb": ["trash_can", "wooden_crate", "utility_box", "fire_hydrant"]},
 }
 
 var placed: Dictionary = {}  ## prop name -> instance count (tests, metrics)
@@ -30,7 +30,7 @@ func setup(track: Track, shops: Array, low_preset: bool = false) -> void:
 	for key: String in FLAVOUR:
 		if track.scene_file_path.contains(key):
 			flavour = FLAVOUR[key]
-	if flavour.is_empty() or shops.is_empty():
+	if flavour.is_empty() or shops.is_empty() or "--no-street-props" in OS.get_cmdline_user_args():  # A/B cost runs
 		return
 	var rng := RandomNumberGenerator.new()
 	for i: int in shops.size():
@@ -52,7 +52,7 @@ func setup(track: Track, shops: Array, low_preset: bool = false) -> void:
 			var kind: String = "planter_box" if rng.randf() < 0.6 else "planter_box_b"
 			for s: float in [1.0, -1.0]:
 				_put(track, kind, xf, Vector3(s * (w / 2.0 - 0.7), 0.0, -0.45), PI / 2.0)
-		if rng.randf() < 0.45:  # kerb side: one district prop, its back to the road
+		if rng.randf() < 0.35:  # kerb side: one district prop, its back to the road
 			var kerb: Array = flavour["kerb"]
 			var kname: String = kerb[rng.randi() % kerb.size()]
 			_put(track, kname, xf, Vector3(rng.randf_range(-w * 0.35, w * 0.35), 0.0, -(pavement - 0.55)), rng.randf_range(-0.2, 0.2))
@@ -98,7 +98,7 @@ func _build(low_preset: bool) -> void:
 				var mmi := MultiMeshInstance3D.new()
 				mmi.name = "%s_%d_%d" % [key, cell.x, cell.y]
 				mmi.multimesh = mm
-				mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF if low_preset else GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+				mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF  # shadow casters doubled the draws; small props read fine unshadowed
 				mmi.visibility_range_begin = 0.0 if (lod == 0 or low_preset) else LOD0_END_M
 				mmi.visibility_range_begin_margin = 0.0 if (lod == 0 or low_preset) else FADE_M
 				mmi.visibility_range_end = LOD1_END_M
