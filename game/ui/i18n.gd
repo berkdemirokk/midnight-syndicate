@@ -310,6 +310,7 @@ const DICT: Dictionary = {
 	"chapter.4.name": {"tr": "Bölüm 4: İstanbul Finalleri", "en": "Chapter 4: Istanbul Finals"},
 	"chapter.0.name": {"tr": "Modlar ve Kovalama", "en": "Modes and Pursuit"},
 	"event.boss": {"tr": "PATRON DÜELLO", "en": "BOSS DUEL"},
+	"hud.elim_in": {"tr": "SON ELEME %d sn", "en": "LAST OUT IN %d s"},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}
