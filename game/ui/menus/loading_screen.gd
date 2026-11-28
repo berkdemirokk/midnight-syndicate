@@ -25,6 +25,7 @@ var _tip: int = 0
 var _progress: float = 0.0
 var _elapsed: float = 0.0
 var _done: bool = false
+var _packed: PackedScene = null  ## the loaded target, held until Router's change_scene_to_file finds it in the cache
 var _bar: LoadingBar
 var _pct: Label
 var _track: Label
@@ -70,7 +71,7 @@ func _ready() -> void:
 		return
 	var err: Error = ResourceLoader.load_threaded_request(_target)
 	if err != OK:
-		_finish()  # cannot load in the background: Router loads it directly
+		push_warning("LoadingScreen: no background load for %s, Router loads it directly" % _target)  # status reads INVALID: _process hands over
 
 
 func _build() -> void:
@@ -144,9 +145,10 @@ func _process(delta: float) -> void:
 	var prog: Array = []
 	var status: ResourceLoader.ThreadLoadStatus = ResourceLoader.load_threaded_get_status(_target, prog)
 	set_progress(float(prog[0]) if not prog.is_empty() else _progress)
-	if status == ResourceLoader.THREAD_LOAD_LOADED and _elapsed >= MIN_SHOW_S:
-		_finish()
-	elif status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+	var loaded: bool = status == ResourceLoader.THREAD_LOAD_LOADED and _elapsed >= MIN_SHOW_S
+	var failed: bool = status == ResourceLoader.THREAD_LOAD_FAILED or status == ResourceLoader.THREAD_LOAD_INVALID_RESOURCE
+	# Router ignores goto() while it is still fading this card in (a long first frame can outrun the fade).
+	if (loaded or failed) and not Router._busy:
 		_finish()
 
 
@@ -156,6 +158,8 @@ func _finish() -> void:
 		return
 	_done = true
 	set_progress(1.0)
+	if ResourceLoader.load_threaded_get_status(_target) == ResourceLoader.THREAD_LOAD_LOADED:
+		_packed = ResourceLoader.load_threaded_get(_target) as PackedScene  # releases the loader task; without it the scene stays pinned
 	nav.call(_target, _next)
 
 

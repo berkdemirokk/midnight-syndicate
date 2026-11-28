@@ -13,8 +13,9 @@ const PURSUIT_SELECT_SCENE: String = "res://race/pursuit/pursuit_select.tscn"
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const HERO_SPLIT: float = 0.45  ## the car stage takes the right part of the screen, from this fraction of the width
 const HERO_FOV: float = 34.0
-const HERO_DIST_M: float = 8.0
-const HERO_SWAY_RAD: float = 0.5  ## the car turns this far each way on a slow sway
+const HERO_DIST_M: float = 9.0
+const HERO_YAW_RAD: float = 0.6  ## three-quarter front view: the key-art angle, not a flat head-on shot
+const HERO_SWAY_RAD: float = 0.3  ## the car turns this far each way around HERO_YAW_RAD on a slow sway
 const HERO_SWAY_S: float = 9.0  ## seconds for one swing
 const PAIR_W: float = (460.0 - 14.0) / 2.0  ## MENU_W split into the RECORDS / SETTINGS pair
 const MENU_TOUCH_H: float = 88.0  ## every menu button is at least this tall (touch target)
@@ -258,7 +259,7 @@ func _build_hero() -> void:
 	cam.position = Vector3(0.0, 1.6, HERO_DIST_M)
 	vp.add_child(cam)
 	cam.current = true
-	cam.look_at_from_position(cam.position, Vector3(0.0, 0.6, 0.0))
+	cam.look_at_from_position(cam.position, Vector3(0.0, 1.1, 0.0))  # aim above the car so it sits low, on the road
 	var key := DirectionalLight3D.new()
 	key.light_color = Color(1.0, 0.96, 0.92)
 	key.light_energy = 2.2
@@ -276,6 +277,7 @@ func _build_hero() -> void:
 	rim.position = Vector3(-3.0, 2.4, -3.5)
 	vp.add_child(rim)
 	_hero_pivot = Node3D.new()
+	_hero_pivot.rotation.y = HERO_YAW_RAD - HERO_SWAY_RAD
 	vp.add_child(_hero_pivot)
 	var car := packed.instantiate() as CarLod
 	car.force_lod0 = true
@@ -285,8 +287,8 @@ func _build_hero() -> void:
 	CarMaterials.set_rim_color(car, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
 	_hero_car = car
 	var sway := create_tween().set_loops()
-	sway.tween_property(_hero_pivot, "rotation:y", HERO_SWAY_RAD, HERO_SWAY_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	sway.tween_property(_hero_pivot, "rotation:y", -HERO_SWAY_RAD, HERO_SWAY_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	sway.tween_property(_hero_pivot, "rotation:y", HERO_YAW_RAD + HERO_SWAY_RAD, HERO_SWAY_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	sway.tween_property(_hero_pivot, "rotation:y", HERO_YAW_RAD - HERO_SWAY_RAD, HERO_SWAY_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 ## Replaces the live backdrop with a 3D scene rendered through a SubViewport behind the UI.
