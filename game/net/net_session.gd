@@ -300,7 +300,7 @@ func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
 		reason = "wrong join code"
 		reason_key = NetProtocol.REJECT_CODE
 	if reason == "" and _state != STATE_LOBBY:
-		var seat: int = _resume_seat(player_name)
+		var seat: int = _resume_seat(player_name, peer.get_remote_address())
 		if seat >= 0:
 			_resume(peer, key, seat)
 			return
@@ -323,17 +323,32 @@ func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
 
 
 ## Server: the seat a hello of this name resumes during a race: a held seat inside the grace period, or the active
-## seat of the same name (the old connection has not timed out yet). -1 when there is none.
-func _resume_seat(player_name: String) -> int:
-	if _race == null:
+## seat of the same name when the hello comes from the same remote address as the old connection (it has not timed
+## out yet). A different address cannot take a live racer's seat. Trust assumption: a held seat is claimed by name
+## plus the join code. -1 when there is none, and none during the countdown (the other cars are not moving yet).
+func _resume_seat(player_name: String, address: String) -> int:
+	if _race == null or _state == STATE_COUNTDOWN:
 		return -1
 	var seat: int = _seats.claim(player_name, _sim_t)
 	if seat >= 0:
 		return seat
 	for other: int in _peer_of:
-		if _race.is_racing(other) and _race.driver(other).display_name == player_name:
+		if _race.is_racing(other) and _race.driver(other).display_name == player_name and _pid_has_address(other, address):
 			return other
 	return -1
+
+
+## Server: true when a live connection of pid comes from address.
+func _pid_has_address(pid: int, address: String) -> bool:
+	for key: String in _pid_of:
+		if _pid_of[key] == pid and address_of_key(key) == address:
+			return true
+	return false
+
+
+## The remote address part of a peer key ("address:port"; IPv6 addresses contain colons, so cut at the last one).
+static func address_of_key(key: String) -> String:
+	return key.substr(0, key.rfind(":"))
 
 
 ## Server: the player gets its seat back: same pid, the car's last accepted state (the client resumes from it and
@@ -413,6 +428,9 @@ func _begin_countdown() -> void:
 
 
 func _end_race() -> void:
+	# A seat still held at the end is a car that dropped and never came back: DNF with its reason, not a time limit.
+	for seat: int in _seats.pids():
+		_race.mark_dnf(seat, "disconnected")
 	var rows: Array[Dictionary] = _race.results()
 	print("[net] results: %s" % str(rows))
 	print("[net] accepted states per pid: %s, rate limited: %d" % [str(_accepted_by_pid), int(stats["rate_limited"])])

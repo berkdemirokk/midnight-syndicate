@@ -46,7 +46,7 @@ func test_duplicate_and_reordered_states_refused() -> void:
 	check(NetProtocol.validate_state(first, newer, 0.05) == "", "a later state is accepted")
 
 
-func test_state_timeout_is_not_a_teleport() -> void:
+func test_long_gap_allowance_is_not_a_teleport() -> void:
 	## A state that arrives after a long gap (lost packets) is not a teleport by itself: the allowance grows with dt.
 	var xf0 := Transform3D(Basis.IDENTITY, Vector3(0, 0, 0))
 	var xf1 := Transform3D(Basis.IDENTITY, Vector3(40.0, 0, 0))
@@ -54,3 +54,21 @@ func test_state_timeout_is_not_a_teleport() -> void:
 	var st: Dictionary = NetProtocol.make_state(2, xf1, Vector3(40.0, 0, 0), 0.0)
 	check(NetProtocol.validate_state(prev, st, 1.0) == "", "40 m in 1 s at 40 m/s is allowed after a 1 s gap")
 	check(NetProtocol.validate_state(prev, st, 0.05).begins_with("teleport"), "40 m in 50 ms is refused")
+
+
+func test_held_seats_are_listed_for_the_end_of_race() -> void:
+	var seats := NetReconnect.new()
+	seats.reserve(2, "Bo", 0.0)
+	seats.reserve(3, "Cy", 0.0)
+	var held: Array[int] = seats.pids()
+	held.sort()
+	check(held == [2, 3], "both held seats are listed (got %s)" % str(held))
+	seats.claim("Bo", 1.0)
+	var left: Array[int] = seats.pids()
+	check(left == [3], "a claimed seat is no longer listed (got %s)" % str(left))
+
+
+func test_live_takeover_needs_the_same_address() -> void:
+	check(NetSession.address_of_key("192.168.1.5:9999") == "192.168.1.5", "IPv4 key splits into address and port")
+	check(NetSession.address_of_key("::1:4242") == "::1", "IPv6 key is cut at the last colon")
+	check(NetSession.address_of_key("10.0.0.2:5") != NetSession.address_of_key("10.0.0.9:5"), "another address does not match the seat")

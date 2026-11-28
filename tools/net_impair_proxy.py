@@ -23,6 +23,15 @@ import threading
 import time
 
 
+def no_reset(sock):
+    """Windows: stop UDP connection-reset reports (ICMP port unreachable from an exited client) on this socket."""
+    if hasattr(socket, "SIO_UDP_CONNRESET"):
+        try:
+            sock.ioctl(socket.SIO_UDP_CONNRESET, False)
+        except OSError:
+            pass
+
+
 class Relay:
     def __init__(self, listen, server, rtt_ms, jitter_ms, loss, dup, seed):
         self.listen = listen
@@ -43,6 +52,7 @@ class Relay:
         self.max_queue = 0
         self.front = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.front.bind(listen)
+        no_reset(self.front)
         self.front.settimeout(0.2)
 
     def _delay(self):
@@ -76,6 +86,7 @@ class Relay:
             if sock is None:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sock.bind((self.server[0], 0))  # same address family and route as the server (LAN IP or loopback)
+                no_reset(sock)
                 sock.settimeout(0.2)
                 self.clients[client] = sock
                 threading.Thread(target=self._pump_back, args=(client, sock), daemon=True).start()
@@ -87,6 +98,8 @@ class Relay:
                 data, src = sock.recvfrom(65535)
             except socket.timeout:
                 continue
+            except ConnectionResetError:
+                continue  # a client that has exited answers with ICMP; that must not stop the relay
             except OSError:
                 return
             if src == self.server:
@@ -98,6 +111,8 @@ class Relay:
                 data, src = self.front.recvfrom(65535)
             except socket.timeout:
                 continue
+            except ConnectionResetError:
+                continue  # Windows reports a client that has exited on the next recv of the shared socket
             except OSError:
                 return
             self._schedule("to_server", self._upstream(src), data, self.server)

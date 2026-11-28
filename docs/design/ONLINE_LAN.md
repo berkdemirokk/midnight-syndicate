@@ -134,7 +134,7 @@ Earlier runs (not used as evidence):
   The cause is unknown; the earlier log is not kept as evidence.
 
 Unit tests: `game/tests/test_net_protocol.gd`, `test_net_race.gd`, `test_net_polish.gd`: 17 tests, 0 failed.
-Full suite: 383 tests, 0 failed (`evidence/test_results.json`).
+Full suite at the time: 383 tests, 0 failed (current count: see the results section) (`evidence/test_results.json`).
 
 ## Not done, risky
 - Not internet multiplayer. No NAT traversal, no encryption, no authentication, no anti-cheat beyond the checks above.
@@ -156,53 +156,79 @@ Full suite: 383 tests, 0 failed (`evidence/test_results.json`).
 
 ## Impairment and reconnect results (wp/net, dev PC, not a real network)
 
-Status: partial. Measured on this PC only (Windows 11, Godot 4.7.2 headless, loopback, Python 3.10 relay).
-No second physical device was available, so the LAN bind was not tested from another machine.
+Status: sweep done on the dev PC (Windows 11, RTX 5060 Ti PC, Godot 4.7.2 headless, loopback plus one bind to the
+PC's Wi-Fi LAN address). Not a phone, not a second device, not internet. Two racers, not three (see limits).
 
-### What was built
-- `tools/net_impair_proxy.py`: UDP relay between clients and server. Per direction: one-way delay = RTT/2 with
-  uniform jitter, loss, duplication, seeded. Stats per direction in JSON. `--selftest` checks echo and total loss.
-  Self-test on this PC: median 125 ms for a 100 ms RTT (about 12 ms overshoot per relay hop, Python and Windows
-  scheduling). The added delay therefore runs slightly high; treat RTT labels as +/- 25 ms.
-- `tools/net_impair_run.py`: one race = server + clients (Godot headless) behind the relay, with scenarios
-  `plain`, `kill_rejoin` (kill a client mid-race, relaunch with the same name and code) and `leave_gone`
-  (clean BYE, no return). `--direct` runs without the relay (baseline). Writes `evidence/net_impair/<run>/summary.json`.
-- `game/net/net_reconnect.gd` (NetReconnect): grace seats for a player who drops in a race (`NetConfig.RECONNECT_GRACE_S` = 20 s).
-- `game/net/net_session.gd`: a hello that carries the name and code of a held seat, or of a live racer with the same
-  name (the old connection has not timed out yet), takes the seat back. The welcome carries the car's last accepted
-  state (`resume`), the start message is sent again with countdown 0 and `resume: true`. A held seat that is not
-  claimed in time becomes DNF "disconnected". Disconnects are matched by peer object, not by reading a dead peer's address
-  (that read raised errors in Godot 4.7).
-- `game/net/net_lan_smoke.gd`: headless client/server driver with `--address`, `--wait-players`, `--leave-after`, resume.
-- Tests: `game/tests/test_net_reconnect.gd` (5 tests: grace takes seat, wrong name or late refused, expiry reported once,
-  duplicate and reordered states refused, state timeout is not a teleport). Existing net tests still pass
-  (join 3, protocol 7, race 7, polish 3, reject 3, reconnect 5, all 0 failed).
+### What was built and changed in this pass
+- `tools/net_impair_proxy.py`: UDP relay. Per direction: one-way delay = RTT/2 with uniform jitter, loss and
+  duplication, seeded. Fixed in this pass: on Windows a client that exits makes the shared socket raise
+  ConnectionResetError on the next recv, which killed the relay's client-to-server thread. The other clients then
+  went silent and timed out. Now the reset is ignored and the reset report is switched off on the relay sockets
+  (`SIO_UDP_CONNRESET`). The first leave_gone and kill_rejoin runs (`evidence/net_impair/wp2_*`) show the bug.
+- `tools/net_impair_run.py`: kill_rejoin no longer requires the killed process to report results (the check now
+  asks only for Ada and for the resumed Bo).
+- Rejoin (`game/net/net_session.gd`):
+  - A live racer's seat is taken over by the same name only from the same remote address as the old connection.
+    Another address cannot kick a racer. Held seats after a drop are still claimed by name plus join code (trust
+    assumption; no reconnect token yet).
+  - No resume during the countdown (the other cars are not moving yet).
+  - A seat still held when the race ends is marked DNF "disconnected" before the results are computed.
+  - The rendered client (`game/net/net_lobby_menu.gd`) refuses a resume start and leaves the race. Reason: it does
+    not restore the car from the resume state yet (`game/net/net_race_glue.gd`), so the car would be stuck or refused.
+    The headless smoke client (`game/net/net_lan_smoke.gd`) resumes and is the only client that rejoins.
+    So rejoin into the game is NOT available. Owner decision needed before it is enabled.
+- Tests (full suite 474 tests, 0 failed): reconnect grace and expiry, held-seat listing for the race end, same-address
+  rule for live takeover (`game/tests/test_net_reconnect.gd`); duplicate, reordered and timeout-gap states
+  (`test_net_reconnect.gd`, renamed `test_long_gap_allowance_is_not_a_teleport`); hello deadline
+  (`game/tests/test_net_reject.gd::test_hello_deadline`, existing). The server-side DNF after grace and the hello
+  overdue disconnect in `_tick_server` have no dedicated unit test; they are covered by the leave_gone run below.
 
-### Measured (2 racers, Ada and Bo, 1 lap, server and clients on 127.0.0.1)
-| run | impairment | result | Ada / Bo time | server rejects | Ada sent / accepted | RTT measured (min / avg) |
+### Measured runs (2 racers, 1 lap, Ada and Bo, through the relay unless marked)
+Finish times are the server clock from GO. "Lost" is the relay's count of dropped datagrams, to the server / to the
+clients. "Accepted" is the server's count of accepted car states for that racer. Server rejects: 0 in every run.
+Client RTT is the average of both clients (ping/pong).
+
+| run | impairment | result | Ada / Bo finish (s) | lost (to server / to clients) | accepted Ada / Bo | client RTT avg (ms) |
 |---|---|---|---|---|---|---|
-| plain (wp_plain_v3) | none, via relay | PASS, order agrees | 47.55 s / 47.94 s | 0 | - | - |
-| r_rtt80_fg | 80 ms RTT | PASS, order agrees | 47.68 s / 48.11 s | 0 | 932 / 921 | 83.6 / 105 ms |
+| wp5_rtt0 | relay only, 0 ms | PASS, order agrees | 47.56 / 47.93 | 0 / 0 | 921 / 929 | 17.0 / 17.0 |
+| wp5_rtt80 | 80 ms RTT | PASS, order agrees | 47.45 / 47.85 | 0 / 0 | 921 / 929 | 102.9 / 103.0 |
+| wp5_rtt150 | 150 ms RTT | PASS, order agrees | 47.66 / 48.06 | 0 / 0 | 921 / 929 | 167.7 / 169.5 |
+| wp5_rtt250 | 250 ms RTT | PASS, order agrees | 47.62 / 47.98 | 0 / 0 | 916 / 917 | 274.5 / 275.4 |
+| wp5_loss2 | 80 ms, 2 % loss | PASS, order agrees | 47.50 / 47.88 | 44 of 2330 / 66 of 2653 | 904 / 908 | 101.4 / 104.0 |
+| wp5_loss5 | 80 ms, 5 % loss | PASS, order agrees | 47.64 / 48.06 | 132 of 2296 / 116 of 2596 | 865 / 876 | 100.9 / 99.4 |
+| wp5_loss10 | 80 ms, 10 % loss | PASS, order agrees | 47.61 / 48.31 | 243 of 2319 / 265 of 2523 | 834 / 826 | 104.2 / 104.3 |
+| wp5_combo | 150 ms, 10 ms jitter, 5 % loss, 0.5 % duplication | PASS, order agrees (Bo 1st, Ada 2nd) | 48.40 / 47.68 | 114 of 2282 / 152 of 2595 (duplicates 12 / 9) | 877 / 880 | 174.4 / 172.5 |
+| wp5_lan_rtt80 | 80 ms; server and clients on LAN address 192.168.111.15 | PASS, order agrees | 47.63 / 48.01 | 0 / 0 | 921 / 928 | 106.5 / 102.4 |
+| wp4_kill_rejoin | 80 ms; Bo killed 12 s after GO, relaunched with same name and code | PASS | 47.68 / 51.60 (Bo resumed) | 0 / 0 | 921 / 957 | not summarised |
+| wp3_leave_gone | 80 ms; Bo sends BYE 12 s after GO, never returns | PASS: Ada finishes 48.82 s, Bo DNF after the 20 s grace | 48.82 / DNF | 0 / 0 | Bo 240, Ada 929 (Bo was pid 1 in this run) | not summarised |
+| wp_plain_v3 (earlier) | relay only | PASS | 47.53 / 47.93 | 0 / 0 | 921 / 929 | not summarised |
 
-Summaries: `evidence/net_impair/wp_plain_v3/summary.json`, `evidence/net_impair/r_rtt80_fg/summary.json`.
-At 80 ms the relay delivered every packet (0 lost, 0 duplicated), so the 11 unaccepted states of Ada are not loss;
-they are the states sent after the car finished or while the race clock was ending (dropped silently by design).
+Pre-fix failures kept as evidence: `evidence/net_impair/wp2_kill_rejoin` and `wp2_leave_gone` (the relay died when a
+client exited; the other client then timed out). `r_rtt80_fg` is the earlier 80 ms foreground run.
 
-### Not done (honest limits)
-- The sweep was NOT completed: RTT 0/150/250 ms, loss 2/5/10 %, duplication, the combined run, the kill-and-rejoin
-  run and the leave-without-return run were not measured. A first sweep run started from a background shell
-  (rtt 0, loss 0) sent no states after GO and timed out. The same settings passed in the foreground. Cause not found.
-  The sweep must be re-run in the foreground, one run at a time.
-- Three racers did not start together: the start rule begins the countdown at 2 ready, so a third client that readies
-  a moment later is refused "a race is running". A lobby window before the countdown would fix it. Not changed (game rule).
-- Position error and rubber-banding are not measured. The client is authoritative for its own car, so there is no
-  ground truth on the server; the rejects by reason (teleport, sequence) are the only proxy and were 0 in the runs above.
-- Killed clients: ENet does not report a killed process at once (the server sends unreliable state, so timeouts do not
-  fire quickly). The rejoin path works through the same-name takeover; a kill without rejoin is resolved by the
-  race time limit, not by the grace expiry. The grace expiry itself is covered only by unit tests.
-- Rendered in-game client (`game/net/net_race_glue.gd`, `devtools/scenarios/net_client.gd`) does not yet resume its car
-  from the `resume` state; the headless driver does.
-- LAN bind: the server binds only what `--address` names (`NetConfig.bind_allowed`). This PC has 192.168.111.15 (Wi-Fi)
-  and 172.25.224.1 (WSL vEthernet). The LAN run was not started; Windows may show a firewall prompt on the first
-  non-loopback bind, which needs the owner. No port was opened to the outside.
-- Not internet multiplayer. No NAT traversal, no encryption, no authentication.
+Reading the numbers:
+- The clients sent about 930 states each over the race (20 Hz). Under 10 % loss the server accepted about 830 of
+  them. Lost states are not accepted, and no state was rejected as a teleport or a sequence error: loss costs
+  states, not validity.
+- Snapshots received fall with loss (about 735 to 750 of 930 at 10 %). The interpolation delay
+  (`NetConfig.INTERP_DELAY_S` = 0.1 s) covers one lost snapshot at 20 Hz. Visible stutter at 5 % or 10 % loss was not
+  judged by eye (no rendered run with an impaired link).
+- The relay adds about 2 to 12 ms to the configured RTT (ping/pong), so treat the RTT labels as +/- 15 ms.
+- The finish-time gap between the two racers was 0.3 to 0.9 s in every run. It says nothing about position error.
+- kill_rejoin: Bo finished 3.9 s after Ada. The car does not drive while its client is down, so most of that gap is
+  probably the time the seat was empty. Not measured separately.
+
+### Not measured or not done (honest limits)
+- Position error and rubber-banding are NOT measured. The server has no ground truth for a client's own car. The
+  rejects by reason (teleport, sequence, projection) are the only proxy: 0 in every run.
+- Three racers were not run. The start rule begins the countdown when 2 players are ready, so a third client that
+  readies a moment later is refused "a race is running". A lobby window before the countdown would fix it.
+  OWNER DECISION: the window length, and whether the game rule changes.
+- Second physical device: not available. The LAN run was from this PC to its own Wi-Fi address. No port was opened to
+  the outside; the PC is not reachable from the internet. No firewall prompt was seen in these runs.
+- Rendered in-game rejoin: not run live, and it is refused (see above). Enabling it needs a live kill-and-rejoin run
+  with the real client.
+- The live leave_gone and kill_rejoin runs use the headless smoke client, not the rendered race scene.
+- The late-drop case (grace still running when the race ends) is marked DNF "disconnected" in code. No live run hit it.
+- Not run: duplication-only, RTT above 250 ms, loss above 10 %, jitter-only.
+- Not internet multiplayer. No NAT traversal, no encryption, no authentication, no hosting.

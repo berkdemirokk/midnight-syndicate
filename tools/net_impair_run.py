@@ -183,7 +183,7 @@ def main():
         }
     # Who must receive the results: everyone, except the client that left for good (leave_gone) and the killed
     # process (kill_rejoin, whose results come from the resumed process).
-    must_result = {"plain": CLIENTS, "leave_gone": ["Ada"], "kill_rejoin": ["Ada", "Bo"]}[a.scenario]
+    must_result = {"plain": CLIENTS, "leave_gone": ["Ada"], "kill_rejoin": ["Ada"]}[a.scenario]
     for n in must_result:
         checks["%s_results" % n.lower()] = len(per_client[n]["results"]) == 2
     if a.scenario == "kill_rejoin":

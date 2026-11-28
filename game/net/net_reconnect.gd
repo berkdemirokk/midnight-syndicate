@@ -33,6 +33,14 @@ func expire(now_s: float) -> Array[int]:
 	return out
 
 
+## The pids that hold a seat now (the end of a race marks them disconnected before it clears the table).
+func pids() -> Array[int]:
+	var out: Array[int] = []
+	for pid: int in _seats:
+		out.append(pid)
+	return out
+
+
 func holds(pid: int) -> bool:
 	return _seats.has(pid)
 

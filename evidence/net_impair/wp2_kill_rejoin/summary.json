@@ -1,0 +1,87 @@
+{
+  "run": "wp2_kill_rejoin",
+  "scenario": "kill_rejoin",
+  "address": "127.0.0.1",
+  "impairment": {
+    "rtt_ms": 80.0,
+    "jitter_ms": 0.0,
+    "loss": 0.0,
+    "dup": 0.0,
+    "seed": 1
+  },
+  "checks": {
+    "server_exit_0": true,
+    "joins_2": true,
+    "start_2_racers": true,
+    "server_go": true,
+    "server_results_2_rows": true,
+    "ada_results": false,
+    "bo_results": false,
+    "server_resumed_bo": false,
+    "bo_resumed_go": false,
+    "bo_resumed_results": false,
+    "finish_order_agrees": false,
+    "a_car_finished": false
+  },
+  "passed": false,
+  "server_results": [
+    {
+      "pid": 1,
+      "name": "Ada",
+      "position": 1,
+      "finished": false,
+      "dnf": true,
+      "time_s": -1.0
+    },
+    {
+      "pid": 2,
+      "name": "Bo",
+      "position": 2,
+      "finished": false,
+      "dnf": true,
+      "time_s": -1.0
+    }
+  ],
+  "server_rejects_by_reason": {},
+  "server_accepted_by_pid": {
+    "2": 244,
+    "1": 244
+  },
+  "proxy_directions": {
+    "to_server": {
+      "in": 623,
+      "sent": 623,
+      "lost": 0,
+      "duplicated": 0,
+      "bytes_in": 107640
+    },
+    "to_client": {
+      "in": 888,
+      "sent": 888,
+      "lost": 0,
+      "duplicated": 0,
+      "bytes_in": 166294
+    }
+  },
+  "clients": {
+    "Ada": {
+      "sent": null,
+      "sent_hz": null,
+      "snapshots": null,
+      "snapshot_hz": null,
+      "client_rejected": null,
+      "rtt_ms_last_min_avg": null,
+      "results": []
+    },
+    "Bo": {
+      "sent": null,
+      "sent_hz": null,
+      "snapshots": null,
+      "snapshot_hz": null,
+      "client_rejected": null,
+      "rtt_ms_last_min_avg": null,
+      "results": []
+    }
+  },
+  "finish_order_agrees": {}
+}
