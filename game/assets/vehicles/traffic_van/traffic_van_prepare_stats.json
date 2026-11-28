@@ -1,0 +1,177 @@
+{
+ "car_id": "traffic_van",
+ "source": "assets_src/third_party/vinish_cars/incoming2/city-van.glb",
+ "lod1": {
+  "tris": 21482,
+  "tris_by_node": {
+   "body": 5351,
+   "col_body": 90,
+   "exhaust": 888,
+   "glass": 318,
+   "interior": 2788,
+   "lights_front": 554,
+   "lights_rear": 528,
+   "trim": 6461,
+   "wheel_FL": 1126,
+   "wheel_FR": 1126,
+   "wheel_RL": 1126,
+   "wheel_RR": 1126
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 16,
+  "materials": [
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 10,
+  "box": [
+   [
+    -1.1584734916687012,
+    -2.1963553428649902,
+    -0.003385990858078003
+   ],
+   [
+    1.1592357158660889,
+    2.120000123977661,
+    2.1240227222442627
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
+ },
+ "lod2": {
+  "tris": 6049,
+  "tris_by_node": {
+   "body": 1712,
+   "col_body": 90,
+   "exhaust": 212,
+   "glass": 159,
+   "interior": 169,
+   "lights_front": 69,
+   "lights_rear": 148,
+   "trim": 1367,
+   "wheel_FL": 531,
+   "wheel_FR": 530,
+   "wheel_RL": 531,
+   "wheel_RR": 531
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 11,
+  "materials": [
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 8,
+  "box": [
+   [
+    -1.0100407600402832,
+    -2.199725389480591,
+    -0.0184859037399292
+   ],
+   [
+    1.009780764579773,
+    2.1152000427246094,
+    2.1240227222442627
+   ]
+  ],
+  "stray_verts_moved": {
+   "body": 5,
+   "exhaust": 2,
+   "trim": 41,
+   "wheel_FL": 1,
+   "wheel_FR": 5,
+   "wheel_RL": 4,
+   "wheel_RR": 4
+  },
+  "tail_pipes": 0
+ }
+}

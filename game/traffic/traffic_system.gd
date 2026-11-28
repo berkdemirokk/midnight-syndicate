@@ -88,7 +88,8 @@ func setup(track_in: Track, player_in: Node3D, race_cars_in: Array[ArcadeCar]) -
 		c.cruise = _rng.randf_range(CRUISE_MIN_MS, CRUISE_MAX_MS)
 		c.hit_cb = _on_car_hit
 		add_child(c)
-		c.build_visual(_rng.randi_range(0, TrafficModels.paint_count() - 1))
+		var model: int = _rng.randi_range(0, TrafficModels.model_count() - 1)
+		c.build_visual(_rng.randi_range(0, TrafficModels.paint_count() - 1), model)
 		c.set_headlights(headlights)
 		cars.append(c)
 
