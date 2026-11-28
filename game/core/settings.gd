@@ -9,7 +9,7 @@ const SECTION_AUDIO: String = "audio"
 const SECTION_CONTROLS: String = "controls"
 const SECTION_GENERAL: String = "general"
 const PRESET_IDS: PackedStringArray = ["low", "medium", "high"]
-const STEERING_MODES: PackedStringArray = ["buttons", "tilt"]
+const STEERING_MODES: PackedStringArray = ["buttons", "tilt", "assist"]
 const LANGUAGES: PackedStringArray = ["tr", "en"]
 ## Frame rate caps offered in the settings screen (Engine.max_fps).
 const FPS_CAPS: PackedInt32Array = [30, 60]

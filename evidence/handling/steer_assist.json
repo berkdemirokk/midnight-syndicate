@@ -1,0 +1,12 @@
+{
+	"assist_body_contacts": 2,
+	"assist_cap_deg": 6.0,
+	"assist_lap_s": 50.67,
+	"assist_max_steer_units": 0.184,
+	"assist_over_autopilot": 0.967,
+	"autopilot_lap_s": 52.38,
+	"car": "noctra_sable",
+	"look_ahead_m": 12.0,
+	"machine": "dev PC, Windows 11, RTX 5060 Ti 8 GB, Godot 4.7.2 (headless, no GPU render)",
+	"track": "istanbul_bogaz"
+}
