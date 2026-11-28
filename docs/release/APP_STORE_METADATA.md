@@ -42,7 +42,7 @@ Suggested answers (owner confirms each in App Store Connect; the form wording ma
 | Prolonged graphic or sadistic violence | None | No gore. |
 | Fear or horror themes | None | Night setting is atmosphere only. |
 | Simulated gambling, real gambling, contests | None | No wagers, no real-money play. Cash is earned by racing. |
-| Unrestricted web access | No | No network code runs in the 1.0 build (LAN online is off by default, net/net_config.gd). |
+| Unrestricted web access | No | No web view or browser. LAN online code exists but stays off unless `NetConfig.ENABLED` is true or the app is launched with `--experimental-online` (net/net_config.gd); iOS users cannot pass that flag. |
 | User-generated content, messaging, ads, IAP, loot boxes | No | None in 1.0. |
 | Profanity, sexual content, alcohol, tobacco, drugs, medical | None | None found in i18n strings or assets. Owner confirms. |
 
@@ -64,7 +64,7 @@ Additional facts from the dry export (see docs/release/IOS_EXPORT_NOTES.md, sect
 ## 5. Export compliance
 
 `ITSAppUsesNonExemptEncryption` = false is written by the Godot template in the exported Info.plist (verified in the
-dry export). The game has no network code and no custom cryptography, so it uses no non-exempt encryption (verify on the exported project). Owner confirms this in App Store
+dry export). The game has no custom cryptography and its LAN code is off in 1.0 (see section 3), so it uses no non-exempt encryption (verify on the exported project). Owner confirms this in App Store
 Connect's export compliance questions (RELEASE_CHECKLIST.md step 32).
 
 ## 6. Owner checks before any of this is entered

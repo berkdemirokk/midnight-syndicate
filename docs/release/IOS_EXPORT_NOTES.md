@@ -120,7 +120,7 @@ optional [E]. A no-IAP build avoids StoreKit entirely.
 ## 7. Verified 2026-11-28: dry export on Windows (supersedes the unverified notes in sections 2 and 3)
 
 Method: `Godot_v4.7.2-stable_win64_console.exe --headless --export-debug "iOS" <scratch>/MidnightSyndicate.ipa` with the
-installed iOS export template (ios.zip). `application/export_project_only=true`, so no signing and no .ipa. The
+installed iOS export template (ios.zip). Post-fix run: scratch ios_export2 (ios_export1 is the pre-fix run with the duplicate key). `application/export_project_only=true`, so no signing and no .ipa. The
 temporary Team ID used for the dry run was reverted; the committed preset keeps it empty.
 
 Results:
@@ -143,12 +143,13 @@ Results:
   boot splash images.
 - Orientation: landscape left and right only, from `display/window/handheld/orientation` = sensor landscape.
 - Permission strings: NSCameraUsageDescription, NSMicrophoneUsageDescription and NSPhotoLibraryUsageDescription are
-  written EMPTY by Godot. The game uses none of those APIs. Apple does not review empty strings for unused APIs, but
-  remove them on the Mac if App Store validation complains.
+  written EMPTY by Godot. The game uses none of those APIs. Whether App Store validation accepts empty strings for unused APIs is
+  unverified; check on the Mac and remove the three keys there if validation complains. Do not invent usage text.
 - UIRequiredDeviceCapabilities = iphone-ipad-minimum-performance-a12 is written even though the preset flag
   `capabilities/performance_a12` is false. The owner must confirm the minimum device class (A12 = iPhone XS and later).
 - Engine warning: "Property not found: application/boot_splash/fullsize" (project.godot). Harmless; lead to clean up.
-- LAN online: off by default (net/net_config.gd). The shipped build has no local-network UI, so no
+- LAN online: off by default (net/net_config.gd: `ENABLED` false; the `--experimental-online` launch flag also turns it on,
+  which an iOS user cannot pass). The shipped build has no local-network UI, so no
   NSLocalNetworkUsageDescription is set. Add it when NetConfig.ENABLED becomes true.
 
 Reason codes: taken from the engine's option list (present in the Godot 4.7.2 binary) and written into the export as shown

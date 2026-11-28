@@ -117,6 +117,6 @@ use a separate TEST build for this:
   critical) with their minute, from Xcode's Instruments or the debugger. Optionally add an external thermometer reading
   on the case at minutes 0, 10 and 20, and say it is external.
 - Memory: peak resident memory and any growth per minute from Xcode's memory gauge or Instruments (Allocations).
-  Keep the soak's MEMORY_STATIC value from the JSON too.
+  Keep the soak JSON's `static_mb` (MEMORY_STATIC) values too.
 - Write the results into GRAPHICS_BENCHMARK.md with the device name, iOS version and build number. Report p95 frame
   time as the headline figure.
