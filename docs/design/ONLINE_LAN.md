@@ -153,3 +153,56 @@ Full suite: 383 tests, 0 failed (`evidence/test_results.json`).
 - The online race uses the Bosphorus track when it loads; the development circuit is only the fallback.
 - ENet over WAN has not been tested. LAN or localhost only.
 - Projection failures are counted per car but a cap of 200 is a guess, not measured on real play.
+
+## Impairment and reconnect results (wp/net, dev PC, not a real network)
+
+Status: partial. Measured on this PC only (Windows 11, Godot 4.7.2 headless, loopback, Python 3.10 relay).
+No second physical device was available, so the LAN bind was not tested from another machine.
+
+### What was built
+- `tools/net_impair_proxy.py`: UDP relay between clients and server. Per direction: one-way delay = RTT/2 with
+  uniform jitter, loss, duplication, seeded. Stats per direction in JSON. `--selftest` checks echo and total loss.
+  Self-test on this PC: median 125 ms for a 100 ms RTT (about 12 ms overshoot per relay hop, Python and Windows
+  scheduling). The added delay therefore runs slightly high; treat RTT labels as +/- 25 ms.
+- `tools/net_impair_run.py`: one race = server + clients (Godot headless) behind the relay, with scenarios
+  `plain`, `kill_rejoin` (kill a client mid-race, relaunch with the same name and code) and `leave_gone`
+  (clean BYE, no return). `--direct` runs without the relay (baseline). Writes `evidence/net_impair/<run>/summary.json`.
+- `game/net/net_reconnect.gd` (NetReconnect): grace seats for a player who drops in a race (`NetConfig.RECONNECT_GRACE_S` = 20 s).
+- `game/net/net_session.gd`: a hello that carries the name and code of a held seat, or of a live racer with the same
+  name (the old connection has not timed out yet), takes the seat back. The welcome carries the car's last accepted
+  state (`resume`), the start message is sent again with countdown 0 and `resume: true`. A held seat that is not
+  claimed in time becomes DNF "disconnected". Disconnects are matched by peer object, not by reading a dead peer's address
+  (that read raised errors in Godot 4.7).
+- `game/net/net_lan_smoke.gd`: headless client/server driver with `--address`, `--wait-players`, `--leave-after`, resume.
+- Tests: `game/tests/test_net_reconnect.gd` (5 tests: grace takes seat, wrong name or late refused, expiry reported once,
+  duplicate and reordered states refused, state timeout is not a teleport). Existing net tests still pass
+  (join 3, protocol 7, race 7, polish 3, reject 3, reconnect 5, all 0 failed).
+
+### Measured (2 racers, Ada and Bo, 1 lap, server and clients on 127.0.0.1)
+| run | impairment | result | Ada / Bo time | server rejects | Ada sent / accepted | RTT measured (min / avg) |
+|---|---|---|---|---|---|---|
+| plain (wp_plain_v3) | none, via relay | PASS, order agrees | 47.55 s / 47.94 s | 0 | - | - |
+| r_rtt80_fg | 80 ms RTT | PASS, order agrees | 47.68 s / 48.11 s | 0 | 932 / 921 | 83.6 / 105 ms |
+
+Summaries: `evidence/net_impair/wp_plain_v3/summary.json`, `evidence/net_impair/r_rtt80_fg/summary.json`.
+At 80 ms the relay delivered every packet (0 lost, 0 duplicated), so the 11 unaccepted states of Ada are not loss;
+they are the states sent after the car finished or while the race clock was ending (dropped silently by design).
+
+### Not done (honest limits)
+- The sweep was NOT completed: RTT 0/150/250 ms, loss 2/5/10 %, duplication, the combined run, the kill-and-rejoin
+  run and the leave-without-return run were not measured. A first sweep run started from a background shell
+  (rtt 0, loss 0) sent no states after GO and timed out. The same settings passed in the foreground. Cause not found.
+  The sweep must be re-run in the foreground, one run at a time.
+- Three racers did not start together: the start rule begins the countdown at 2 ready, so a third client that readies
+  a moment later is refused "a race is running". A lobby window before the countdown would fix it. Not changed (game rule).
+- Position error and rubber-banding are not measured. The client is authoritative for its own car, so there is no
+  ground truth on the server; the rejects by reason (teleport, sequence) are the only proxy and were 0 in the runs above.
+- Killed clients: ENet does not report a killed process at once (the server sends unreliable state, so timeouts do not
+  fire quickly). The rejoin path works through the same-name takeover; a kill without rejoin is resolved by the
+  race time limit, not by the grace expiry. The grace expiry itself is covered only by unit tests.
+- Rendered in-game client (`game/net/net_race_glue.gd`, `devtools/scenarios/net_client.gd`) does not yet resume its car
+  from the `resume` state; the headless driver does.
+- LAN bind: the server binds only what `--address` names (`NetConfig.bind_allowed`). This PC has 192.168.111.15 (Wi-Fi)
+  and 172.25.224.1 (WSL vEthernet). The LAN run was not started; Windows may show a firewall prompt on the first
+  non-loopback bind, which needs the owner. No port was opened to the outside.
+- Not internet multiplayer. No NAT traversal, no encryption, no authentication.
