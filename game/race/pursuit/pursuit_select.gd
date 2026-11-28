@@ -7,6 +7,7 @@ const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
 const EDGE_PX: float = 96.0
 const EDGE_Y_PX: float = 56.0
 const ROW_W: float = 640.0
+const ROW_W_CARD: float = 920.0  ## run cards: name, place, time of day, goal, reward multiplier
 const ROW_GAP_PX: float = 14.0
 const TITLE_PX: int = 56
 const SUB_PX: int = 18
@@ -53,10 +54,10 @@ func _ready() -> void:
 	for id: String in run_ids():
 		var b := Button.new()
 		b.name = "Run_" + id
-		b.custom_minimum_size = Vector2(ROW_W, maxf(TOUCH_H, MSTheme.button_h()))
+		b.custom_minimum_size = Vector2(MSTheme.px(ROW_W_CARD), maxf(TOUCH_H, MSTheme.button_h()) * 1.15)
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		b.text = "%s   x%.2f" % [I18n.t(EventCatalog.name_key(id)), EventCatalog.reward_multiplier(id)]
 		b.disabled = not GameState.is_event_unlocked(id)
+		_fill_card(b, id)
 		b.set_meta("event_id", id)
 		b.pressed.connect(func() -> void: UiSounds.click())
 		b.pressed.connect(start_run.bind(id))
@@ -73,6 +74,38 @@ func _ready() -> void:
 		(_list.get_child(0) as Button).grab_focus()
 	else:
 		_back.grab_focus()
+
+
+## STREET EMPIRE run card: the name in the UI face, a meta line (place, time of day, goal) and the reward
+## multiplier on the right in gold. The labels ignore the mouse, so the button underneath takes the press.
+func _fill_card(b: Button, id: String) -> void:
+	var ev: Dictionary = EventCatalog.find(id)
+	var row := HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.offset_left = MSTheme.px(24)
+	row.offset_right = -MSTheme.px(24)
+	b.add_child(row)
+	var col := VBoxContainer.new()
+	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_theme_constant_override("separation", 2)
+	row.add_child(col)
+	var name_l: Label = MSTheme.make_label(I18n.t(EventCatalog.name_key(id)), "bold", MSTheme.px(22), MSTheme.PEARL)
+	name_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(name_l)
+	var goal: String = I18n.t("pursuit.goal.escape")
+	if ev.has("survive_s"):
+		goal = I18n.t("pursuit.goal.survive") % [int(ev["survive_s"]) / 60, int(ev["survive_s"]) % 60]
+	var meta: String = "%s  ·  %s  ·  %s" % [I18n.t("place." + str(ev.get("place", "arden"))), I18n.t("tod." + str(ev.get("tod", "night"))), goal]
+	var meta_l: Label = MSTheme.make_label(meta, "tracked", MSTheme.px(13), MSTheme.STEEL)
+	meta_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(meta_l)
+	var mult_l: Label = MSTheme.make_label("x%.2f" % EventCatalog.reward_multiplier(id), "display", MSTheme.px(30), MSTheme.GOLD)
+	mult_l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mult_l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(mult_l)
 
 
 ## Starts one pursuit run through Router with its config (no config for a locked run).
