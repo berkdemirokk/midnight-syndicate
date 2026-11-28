@@ -234,7 +234,7 @@ func _mirror_slot(xf: Transform3D) -> Transform3D:
 	var c: Vector3 = get_point_at(d)
 	var t: Vector3 = get_tangent_at(d)
 	var origin: Vector3 = c + Vector3(-t.z, 0.0, t.x) * lat
-	origin.y = xf.origin.y
+	origin.y = c.y + (xf.origin.y - get_point_at(s).y)  # keep the slot's height above the line, not its absolute height
 	return Transform3D(Basis.looking_at(-t, Vector3.UP), origin)
 
 

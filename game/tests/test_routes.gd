@@ -75,12 +75,16 @@ func test_reverse_grid_faces_new_direction() -> void:
 	var auth_s := PackedFloat32Array()
 	var auth_lat := PackedFloat32Array()
 	var auth_mirror_pt: Array[Vector3] = []
+	var auth_dy := PackedFloat32Array()  # slot height above the line at its own progress
+	var auth_line_y := PackedFloat32Array()
 	var fwd_ok: int = 0
 	for xf: Transform3D in _grid_transforms(track):
 		var s: float = track.get_progress(xf.origin)
 		auth_s.append(s)
 		auth_lat.append(track.get_lateral_offset(xf.origin))
 		auth_mirror_pt.append(track.get_point_at(fposmod(-s, len)))
+		auth_dy.append(xf.origin.y - track.get_point_at(s).y)
+		auth_line_y.append(track.get_point_at(s).y)
 		if (-xf.basis.z).dot(track.get_tangent_at(s)) > FACE_DOT_MIN:
 			fwd_ok += 1
 	check(fwd_ok == slots, "authored grid: only %d of %d slots face the line" % [fwd_ok, slots])
@@ -90,6 +94,8 @@ func test_reverse_grid_faces_new_direction() -> void:
 	var rev_ok: int = 0
 	var progress_worst: float = 0.0
 	var mirror_worst: float = 0.0
+	var height_worst: float = 0.0
+	var line_dy_worst: float = 0.0
 	var i: int = 0
 	for xf: Transform3D in _grid_transforms(track):
 		var s: float = track.get_progress(xf.origin)
@@ -100,11 +106,16 @@ func test_reverse_grid_faces_new_direction() -> void:
 		var c: Vector3 = auth_mirror_pt[i]
 		var planar: float = Vector2(xf.origin.x - c.x, xf.origin.z - c.z).length()
 		mirror_worst = maxf(mirror_worst, absf(planar - absf(auth_lat[i])))
+		height_worst = maxf(height_worst, absf(xf.origin.y - (c.y + auth_dy[i])))
+		line_dy_worst = maxf(line_dy_worst, absf(c.y - auth_line_y[i]))  # how far the old absolute-height copy was off
 		if (-xf.basis.z).dot(track.get_tangent_at(s)) > FACE_DOT_MIN:
 			rev_ok += 1
 		i += 1
 	metric("reverse_grid_progress_error_max_m", snappedf(progress_worst, 0.01))
 	metric("reverse_grid_mirror_error_max_m", snappedf(mirror_worst, 0.01))
+	metric("reverse_grid_height_error_max_m", snappedf(height_worst, 0.01))
+	metric("grid_line_elevation_delta_max_m", snappedf(line_dy_worst, 0.01))
+	check(height_worst < 0.05, "reversed slots are %.2f m off their height above the line" % height_worst)
 	check(rev_ok == slots, "reversed grid: only %d of %d slots face the new direction" % [rev_ok, slots])
 	check(progress_worst < GRID_TOL_M, "reversed slots moved %.2f m of progress" % progress_worst)
 	check(mirror_worst < GRID_TOL_M, "reversed slots are %.2f m off the mirror of the authored grid" % mirror_worst)
@@ -160,3 +171,34 @@ func test_ai_cars_finish_one_lap_reversed() -> void:
 	for car: ArcadeCar in cars:
 		nodes.append(car)
 	await cleanup(nodes)
+
+
+## Every shipped loop reverses cleanly: each reversed slot faces the new direction, stays on the road and keeps its
+## height above the line (City 01 and Maslak have no reverse lap test yet; this guards their grids).
+func test_reverse_grid_on_every_track() -> void:
+	for path: String in ["res://world/city_01/city_01.tscn", BOGAZ, "res://world/istanbul_maslak/istanbul_maslak.tscn"]:
+		var track: Track = (load(path) as PackedScene).instantiate() as Track
+		add(track)
+		await frames(1)
+		var slots: int = track.get_node("StartGrid").get_child_count()
+		var dy: PackedFloat32Array = PackedFloat32Array()
+		for xf: Transform3D in _grid_transforms(track):
+			dy.append(xf.origin.y - track.get_point_at(track.get_progress(xf.origin)).y)
+		track.set_reversed(true)
+		var ok: int = 0
+		var lat_worst: float = 0.0
+		var dy_worst: float = 0.0
+		var i: int = 0
+		for xf: Transform3D in _grid_transforms(track):
+			var s: float = track.get_progress(xf.origin)
+			if (-xf.basis.z).dot(track.get_tangent_at(s)) > FACE_DOT_MIN:
+				ok += 1
+			lat_worst = maxf(lat_worst, absf(track.get_lateral_offset(xf.origin)))
+			dy_worst = maxf(dy_worst, absf(xf.origin.y - track.get_point_at(s).y - dy[i]))
+			i += 1
+		var key: String = path.get_file().get_basename()
+		metric("reverse_grid_lateral_max_m_" + key, snappedf(lat_worst, 0.01))
+		check(slots > 0 and ok == slots, "%s reversed: %d of %d slots face the new direction" % [key, ok, slots])
+		check(lat_worst < track.width * 0.5, "%s reversed: a slot is %.1f m off the line (road half width %.1f)" % [key, lat_worst, track.width * 0.5])
+		check(dy_worst < 0.05, "%s reversed: slot height above the line off by %.2f m" % [key, dy_worst])
+		await cleanup([track])

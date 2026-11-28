@@ -273,6 +273,7 @@ func _build_race() -> void:
 	add_child(_world)
 	track = _load_track()
 	_world.add_child(track)
+	track.set_reversed(config_used.reverse_route)  ## route variant: line and grid run the other way
 	_collect_road()
 	_tag_mirror_skipped()
 	_ensure_environment()
