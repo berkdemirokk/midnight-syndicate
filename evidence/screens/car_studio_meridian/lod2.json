@@ -11,23 +11,23 @@
     "draw_calls": 33,
     "draw_calls_min": 33,
     "driver": "vulkan",
-    "fps": 1967.858,
-    "frame_ms_avg": 0.508,
-    "frame_ms_p95": 0.582,
-    "frame_ms_p99": 2.049,
+    "fps": 2359.511,
+    "frame_ms_avg": 0.424,
+    "frame_ms_p95": 0.456,
+    "frame_ms_p99": 0.495,
     "frames": 60,
     "objects": 33,
     "os": "Windows",
     "primitives": 7501,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 513.532,
+    "video_mem_mb": 493.4,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/car_studio_meridian/lod2.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-cars/evidence/screens/car_studio_meridian/lod2.png",
   "preset": "high",
   "scenario": "car_studio_meridian"
 }

@@ -11,23 +11,23 @@
     "draw_calls": 48,
     "draw_calls_min": 48,
     "driver": "vulkan",
-    "fps": 624.831,
-    "frame_ms_avg": 1.6,
-    "frame_ms_p95": 1.746,
-    "frame_ms_p99": 1.795,
+    "fps": 676.682,
+    "frame_ms_avg": 1.478,
+    "frame_ms_p95": 1.512,
+    "frame_ms_p99": 1.519,
     "frames": 60,
     "objects": 48,
     "os": "Windows",
     "primitives": 163771,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 512.836,
+    "video_mem_mb": 492.704,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/car_studio_havoc/cabin_closeup.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-cars/evidence/screens/car_studio_havoc/cabin_closeup.png",
   "preset": "high",
   "scenario": "car_studio_havoc"
 }
