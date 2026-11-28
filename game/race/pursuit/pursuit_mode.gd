@@ -38,6 +38,7 @@ const BOXERS_HEAT: int = 4  ## from this heat, the first two police cars box the
 const BOX_AHEAD_M: float = 12.0  ## m in front of the player the boxing cars hold
 const RAM_HEAT: int = 5  ## from this heat, a police car directly behind may ram
 const RAM_RANGE_M: float = 6.0  ## a police car this close behind the player can ram
+const RAM_LATERAL_M: float = 2.5  ## and no further than one car width to the side: an adjacent lane does not ram
 const RAM_COOLDOWN_S: float = 6.0
 const RAM_DELTA_V_MS: float = 3.0  ## a ram adds this much speed to the player's car, as an impulse (no teleport)
 
@@ -63,6 +64,7 @@ var _hints: Dictionary = {}  ## police car -> last track progress, search hint
 var _had_police: bool = false  ## a police car existed in this chase: no cooldown or escape before that
 var _survive_s: float = 0.0  ## survive goal of this race (EventCatalog "survive_s"); 0 = escape goal
 var _ram_cd: float = 0.0  ## s until the next ram is allowed
+var _box: Array[ArcadeCar] = [null, null]  ## boxing cars [left, right], by reference: a cull on one side keeps the other
 
 
 ## Police cars allowed at a heat level: 1 / 2 / 2 / 3 / 3 for heat 1..5, none at heat 0.
@@ -89,9 +91,10 @@ static func boxer_side(heat: int, index: int) -> int:
 	return -1 if index == 0 else 1
 
 
-## A ram needs heat 5, the cooldown done, the car directly behind the player (behind = true) and within RAM_RANGE_M.
-static func can_ram(heat: int, cooldown_s: float, dist_m: float, behind: bool) -> bool:
-	return heat >= RAM_HEAT and cooldown_s <= 0.0 and behind and dist_m > 0.0 and dist_m <= RAM_RANGE_M
+## A ram needs heat 5, the cooldown done, the car directly behind the player (behind = true), within RAM_RANGE_M and
+## within RAM_LATERAL_M to the side (lateral_m = metres off the player's centre line).
+static func can_ram(heat: int, cooldown_s: float, dist_m: float, behind: bool, lateral_m: float) -> bool:
+	return heat >= RAM_HEAT and cooldown_s <= 0.0 and behind and dist_m > 0.0 and dist_m <= RAM_RANGE_M and absf(lateral_m) <= RAM_LATERAL_M
 
 
 func setup(track: Track, race_player: ArcadeCar, race_cars: Array[ArcadeCar], race: RaceManager) -> void:
@@ -118,6 +121,7 @@ func start() -> void:
 	_ram_cd = 0.0
 	_roadblock_cd = 0.0
 	_had_police = false
+	_box = [null, null]
 	_update_hud()
 
 
@@ -152,16 +156,15 @@ func step(delta: float) -> void:
 	if state.phase == PursuitState.Phase.BUSTED or state.phase == PursuitState.Phase.ESCAPED:
 		_finish()
 		return
-	var k: int = 0
+	_assign_boxers()
 	for c: ArcadeCar in police:
 		var drv: PoliceDriver = c.get_node_or_null(DRIVER_NAME) as PoliceDriver
 		if drv != null:
 			drv.heat = state.heat
 			drv.skill = SKILL_BASE + SKILL_PER_HEAT * float(state.heat)
 			drv.player_s = _player_s
-			drv.box_side = boxer_side(state.heat, k)
+			drv.box_side = _box_side_of(c)
 			drv.box_ahead_m = BOX_AHEAD_M
-		k += 1
 	_try_ram()
 	if roadblock != null and _wrap(_player_s - roadblock.progress) > ROADBLOCK_PASSED_M:
 		roadblock.queue_free()
@@ -169,6 +172,27 @@ func step(delta: float) -> void:
 	if state.can_request_roadblock() and roadblock == null and _roadblock_cd <= 0.0:
 		try_roadblock()
 	_update_hud()
+
+
+## Keeps the boxing cars: a left and a right car while heat allows, each kept until it leaves the chase. A new car
+## fills only an empty side, so removing one car never moves the other one to the other side.
+func _assign_boxers() -> void:
+	var need: int = boxers_for_heat(state.heat)
+	for i: int in 2:
+		if i >= need or _box[i] == null or not is_instance_valid(_box[i]) or not police.has(_box[i]):
+			_box[i] = null
+	for c: ArcadeCar in police:
+		if _box[0] == null and need > 0 and c != _box[1]:
+			_box[0] = c
+		elif _box[1] == null and need > 1 and c != _box[0]:
+			_box[1] = c
+
+
+## Box side of a police car from its boxing slot: -1 left, +1 right, 0 chases.
+func _box_side_of(c: ArcadeCar) -> int:
+	if c == _box[0] and c != null:
+		return -1
+	return 1 if c == _box[1] and c != null else 0
 
 
 ## Spawns police until the heat cap is reached (no interval). Returns how many were spawned.
@@ -238,6 +262,8 @@ func cull() -> int:
 		if absf(_wrap(_progress_of(c) - _player_s)) > DESPAWN_M:
 			police.remove_at(i)
 			_hints.erase(c)
+			if _box.has(c):
+				_box[_box.find(c)] = null
 			c.queue_free()
 			removed += 1
 	return removed
@@ -264,10 +290,12 @@ func _try_ram() -> void:
 		return
 	var fwd: Vector3 = -player.global_transform.basis.z
 	fwd.y = 0.0
+	var right: Vector3 = player.global_transform.basis.x
+	right.y = 0.0
 	for c: ArcadeCar in police:
 		var off: Vector3 = player.global_position - c.global_position
 		var flat: Vector3 = Vector3(off.x, 0.0, off.z)
-		if can_ram(state.heat, _ram_cd, flat.length(), flat.dot(fwd) > 0.0):
+		if can_ram(state.heat, _ram_cd, flat.length(), flat.dot(fwd) > 0.0, absf(flat.dot(right.normalized()))):
 			player.apply_central_impulse(flat.normalized() * player.mass * RAM_DELTA_V_MS)
 			_ram_cd = RAM_COOLDOWN_S
 			return

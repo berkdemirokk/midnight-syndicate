@@ -27,13 +27,77 @@ func test_box_throttle_pushes_behind_holds_past_and_idles_at_the_point() -> void
 	check(PoliceDriver.box_throttle(12.0, 12.0) == 0.0, "on the box point: no override")
 
 
-func test_ram_needs_heat_5_cooldown_done_behind_and_range() -> void:
-	check(not PursuitMode.can_ram(4, 0.0, 3.0, true), "no ram at heat 4")
-	check(PursuitMode.can_ram(5, 0.0, 3.0, true), "heat 5, behind, in range, cooldown done: ram")
-	check(not PursuitMode.can_ram(5, 2.0, 3.0, true), "cooldown still running: no ram")
-	check(not PursuitMode.can_ram(5, 0.0, 3.0, false), "a car ahead does not ram")
-	check(not PursuitMode.can_ram(5, 0.0, PursuitMode.RAM_RANGE_M + 1.0, true), "too far to ram")
-	check(not PursuitMode.can_ram(5, 0.0, 0.0, true), "no ram from zero distance (no direction)")
+func test_ram_needs_heat_5_cooldown_done_behind_range_and_lane() -> void:
+	check(not PursuitMode.can_ram(4, 0.0, 3.0, true, 0.0), "no ram at heat 4")
+	check(PursuitMode.can_ram(5, 0.0, 3.0, true, 0.0), "heat 5, behind, in range, cooldown done: ram")
+	check(not PursuitMode.can_ram(5, 2.0, 3.0, true, 0.0), "cooldown still running: no ram")
+	check(not PursuitMode.can_ram(5, 0.0, 3.0, false, 0.0), "a car ahead does not ram")
+	check(not PursuitMode.can_ram(5, 0.0, PursuitMode.RAM_RANGE_M + 1.0, true, 0.0), "too far to ram")
+	check(not PursuitMode.can_ram(5, 0.0, 0.0, true, 0.0), "no ram from zero distance (no direction)")
+	check(not PursuitMode.can_ram(5, 0.0, 4.0, true, 3.5), "a car in the next lane (3.5 m to the side) does not ram")
+	check(PursuitMode.can_ram(5, 0.0, 4.0, true, -2.0), "a car one car width to the side still rams")
+
+
+func test_ram_wiring_impulse_and_cooldown_once_per_window() -> void:
+	var pm := PursuitMode.new()
+	var player := ArcadeCar.new()
+	var behind := ArcadeCar.new()
+	var lane := ArcadeCar.new()
+	add(player)
+	add(behind)
+	add(lane)
+	player.global_position = Vector3.ZERO
+	behind.global_position = Vector3(0.0, 0.0, 4.0)  # forward is -Z, so this car is directly behind
+	lane.global_position = Vector3(3.5, 0.0, 4.0)  # the adjacent lane, same distance back
+	pm.player = player
+	pm.state.heat = 5
+	var only_lane: Array[ArcadeCar] = [lane]
+	pm.police = only_lane
+	pm._try_ram()
+	check(pm._ram_cd == 0.0, "an adjacent-lane car never starts the ram cooldown")
+	var only_behind: Array[ArcadeCar] = [behind]
+	pm.police = only_behind
+	pm._try_ram()
+	check(is_equal_approx(pm._ram_cd, PursuitMode.RAM_COOLDOWN_S), "a car directly behind starts the cooldown")
+	pm._ram_cd = 1.0
+	pm._try_ram()
+	check(is_equal_approx(pm._ram_cd, 1.0), "no second ram while the cooldown runs")
+	pm.free()
+	player.free()
+	behind.free()
+	lane.free()
+
+
+func test_boxers_keep_their_side_when_a_car_leaves() -> void:
+	var pm := PursuitMode.new()
+	pm.state.heat = 4
+	var cars: Array[ArcadeCar] = []
+	for i: int in 3:
+		var c := ArcadeCar.new()
+		c.add_child(PoliceDriver.new())
+		c.get_child(0).name = PursuitMode.DRIVER_NAME
+		cars.append(c)
+	pm.police = cars.duplicate()
+	pm._assign_boxers()
+	check(pm._box_side_of(cars[0]) == -1 and pm._box_side_of(cars[1]) == 1, "first two cars box left and right")
+	check(pm._box_side_of(cars[2]) == 0, "the third car chases")
+	var rest: Array[ArcadeCar] = [cars[1], cars[2]]
+	pm.police = rest
+	pm._assign_boxers()
+	check(pm._box_side_of(cars[1]) == 1, "the right boxer keeps the right after the left one is gone")
+	check(pm._box_side_of(cars[2]) == -1, "the chaser fills the empty left side")
+	pm.state.heat = 3
+	pm._assign_boxers()
+	check(pm._box_side_of(cars[1]) == 0 and pm._box_side_of(cars[2]) == 0, "no boxing at heat 3")
+	pm.free()
+	for c: ArcadeCar in cars:
+		c.free()
+
+
+func test_hint_is_empty_without_a_track() -> void:
+	var pm := PursuitMode.new()
+	check(pm._hint_text() == "", "no hint without a track")
+	pm.free()
 
 
 func test_hiding_spot_doubles_the_escape_cooldown_out_of_sight() -> void:
