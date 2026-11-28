@@ -1,0 +1,48 @@
+{
+	"cruise_kmh": 100.0,
+	"hz": 60.0,
+	"push_mult": 1.15,
+	"push_s": 0.3,
+	"rows": [
+		{
+			"car": "sable",
+			"drift": {
+				"armed": true,
+				"drift": true,
+				"gain_kmh": -6.70957717895509,
+				"seen": true,
+				"v_2s_kmh": 96.0406951904297,
+				"v_exit_kmh": 102.750272369385
+			},
+			"grip": {
+				"armed": true,
+				"drift": false,
+				"gain_kmh": 44.1802345275879,
+				"seen": true,
+				"v_2s_kmh": 148.047019958496,
+				"v_exit_kmh": 103.866785430908
+			}
+		},
+		{
+			"car": "vela",
+			"drift": {
+				"armed": true,
+				"drift": true,
+				"gain_kmh": -27.9505233764648,
+				"seen": true,
+				"v_2s_kmh": 71.7909713745117,
+				"v_exit_kmh": 99.7414947509766
+			},
+			"grip": {
+				"armed": true,
+				"drift": false,
+				"gain_kmh": 21.7328796386719,
+				"seen": true,
+				"v_2s_kmh": 110.817176055908,
+				"v_exit_kmh": 89.0842964172363
+			}
+		}
+	],
+	"tolerance": 0.05,
+	"window_s": 2.0
+}

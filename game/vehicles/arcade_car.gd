@@ -31,6 +31,10 @@ const BODY_BOUNCE: float = 0.1
 ## keeps steer_return_speed). Not a CarSpec field because car_spec.gd is outside this package.
 const STEER_TURN_IN_LOW_MULT: float = 1.35  ## shortcut: one curve for every class, upgrade to a CarSpec field
 const STEER_TURN_IN_HIGH_MULT: float = 0.8
+## Exit push: a drift or a grip turn that ends above drift_entry_speed_kmh gets a short engine-force boost.
+const EXIT_PUSH_TIME_S: float = 0.3
+const EXIT_PUSH_MULT: float = 1.15
+const GRIP_TURN_YAW_RAD_S: float = 0.6  ## yaw rate that counts as a grip turn (the push arms when it falls below)
 
 @export var spec: CarSpec
 
@@ -65,6 +69,8 @@ var _distance: PackedFloat32Array = PackedFloat32Array()  ## mount to ground alo
 var _compression: PackedFloat32Array = PackedFloat32Array()  ## spring compression in m, positive = squashed
 var _spring: PackedFloat32Array = PackedFloat32Array()  ## spring normal force in N after clamps
 var _drift_exit_t: float = 0.0
+var _exit_push_t: float = 0.0  ## seconds of exit push left
+var _turning: bool = false  ## a grip turn above the threshold is in progress
 var _gear_dip_t: float = 0.0
 var _shift_t: float = 0.0
 var _since_shift: float = 10.0
@@ -236,12 +242,23 @@ func _physics_process(delta: float) -> void:
 			_drift_exit_t = 0.0
 		if _drift_exit_t >= spec.drift_exit_time or kmh < spec.drift_entry_speed_kmh * spec.drift_stop_fraction:
 			is_drifting = false
+			if kmh > spec.drift_entry_speed_kmh:
+				_exit_push_t = EXIT_PUSH_TIME_S
 			drift_ended.emit(drift_score)
 	elif grounded >= 2 and kmh > spec.drift_entry_speed_kmh and (handbrake or absf(slip) > spec.drift_entry_slip_deg):
 		is_drifting = true
 		drift_score = 0.0
 		_drift_exit_t = 0.0
 		drift_started.emit()
+
+	# Grip turn: the push arms when a turn above the drift entry speed ends (yaw rate falls below the threshold).
+	if is_drifting or kmh <= spec.drift_entry_speed_kmh:
+		_turning = false
+	elif absf(w.dot(up)) > GRIP_TURN_YAW_RAD_S:
+		_turning = true
+	elif _turning:
+		_turning = false
+		_exit_push_t = EXIT_PUSH_TIME_S
 
 	# 4. Steering: speed-sensitive lock, first-order follow, counter-steer assist while drifting.
 	var over: float = 0.0
@@ -274,6 +291,7 @@ func _physics_process(delta: float) -> void:
 		nitro_amount = minf(1.0, nitro_amount + refill * delta)
 
 	# 6. Longitudinal demand on the rear axle (drive, reverse) and the body (brake, engine brake).
+	_exit_push_t = maxf(0.0, _exit_push_t - delta)
 	var eng: float = 0.0
 	var brake_total: float = 0.0
 	if throttle > 0.0:
@@ -286,6 +304,8 @@ func _physics_process(delta: float) -> void:
 				eng = spec.engine_force * spec.engine_force_curve.sample(ratio) * throttle
 			if nitro_active:
 				eng *= spec.nitro_force_mult
+			if _exit_push_t > 0.0:
+				eng *= EXIT_PUSH_MULT
 	elif brake > 0.0 and v_long < spec.reverse_engage_ms:
 		if -v_long < spec.reverse_speed_kmh / KMH_PER_MS:
 			eng = -spec.engine_force * spec.reverse_force_share * brake
@@ -407,6 +427,8 @@ func reset_to(xf: Transform3D, refill_nitro: bool = true) -> void:
 	_shift_t = 0.0
 	_brake_applied = 0.0
 	_rear_scale = 1.0
+	_exit_push_t = 0.0
+	_turning = false
 	gear = 1
 
 
