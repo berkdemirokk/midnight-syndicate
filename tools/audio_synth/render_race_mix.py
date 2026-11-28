@@ -104,13 +104,13 @@ def spectrogram_png(x, path, title):
     S = np.array(frames).T  # freq x time
     db = 20 * np.log10(S + 1e-9)
     db = db - db.max()
-    db = np.clip(db, -80, 0)
+    db = np.clip(db, -70, 0)  # 70 dB range, linear ramps: the harmonics stay distinct instead of going white
     fmax_bin = int(1500 / (SR_OUT / n_fft))
     img = db[:fmax_bin][::-1]  # low at the bottom
-    norm = (img + 80.0) / 80.0
-    r = np.clip(3 * norm - 1, 0, 1)
-    g = np.clip(3 * norm - 0.8, 0, 1)
-    b = np.clip(1.6 * norm, 0, 1)
+    t = (img + 70.0) / 70.0
+    r = t
+    g = t * t
+    b = 1.0 - t
     rgb = (np.stack([r, g, b], axis=-1) * 255).astype(np.uint8)
     im = Image.fromarray(rgb, "RGB").resize((1200, 420), Image.NEAREST)
     canvas = Image.new("RGB", (1260, 480), (20, 20, 24))
