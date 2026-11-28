@@ -200,7 +200,7 @@ Same machine and rules as attempts 1 to 3 (Ryzen 5 7600, RTX 5060 Ti 8 GB, Godot
 ## Verdict
 
 - **No fix.** The spike at about 40 s is not reproduced in a usable way in this session, and no cause is identified. There is no 6 of 6 result, so no fix is claimed.
-- **Resource loads are ruled out as the cause of the 40 s spike.** `Performance.OBJECT_RESOURCE_COUNT` rises by one or two in the first 12 s of the race, then by one more in each run at 32 to 40 s after GO, at a track point away from the spike (see below). Those late creations do not line up with the spike frames.
+- **Resource loads are ruled out as the cause of the 40 s spike.** `Performance.OBJECT_RESOURCE_COUNT` rises by 6 to 7 from the countdown to 12 s after GO (setup), then by one more in each run at 32 to 40 s after GO, at a track point away from the spike (see below). Those late creations do not line up with the spike frames.
 - **The baseline is contaminated.** Five of six runs had sustained frame times of 25 to 35 ms over the whole race. That is not the attempt 2 picture (0 frames over 25 ms in the first 5 s in 15 runs). The GPU lock was queued behind other sessions, and the desktop CPU load was about 43 % (Chrome, Claude, Codex and other Godot processes from other worktrees). Only run 1 is close to the attempt 2 picture. Its numbers are the only clean ones.
 
 ## Baseline runs (6 x 60 s, one loop, unique names `spike2/a4/base_r1..6`)
@@ -219,7 +219,7 @@ Machine state from the loop log (`godot_procs_before` counts processes named God
 Notes on these numbers:
 - The "frames over 25 ms" counts include the cluster echo described in attempt 2. The clusters of 25 to 35 ms frames run through the whole race, so the counts are not spike counts. Counting cluster starts only gives 202 to 334 clusters in runs 2 to 6.
 - r1 is the only run without a sustained slowdown. It has no frame over 25 ms in 36 to 44 s, and one frame over 25 ms in the whole race (at about 58 s). That is one clean run with no spike in the window. It cannot pin the rate on its own.
-- Run 4 had the 40 s band of 25 to 35 ms frames, and one 564 ms frame at 44.6 s (not at 40 s). Run 5 had one 247 ms frame at about 2.7 s. Run 2 had 513 ms and run 3 had 342 ms (times not checked against the events). The 36 to 44 s window is inside the contamination in runs 2 to 6, so the "spike near 40 s" of attempt 2 cannot be counted in this batch.
+- Run 4 had the 40 s band of 25 to 35 ms frames, and one 564 ms frame at 44.6 s (not at 40 s). Run 5 had one 247 ms frame at about 2.7 s. Run 2's large frames are a regular stall of 497 to 513 ms every 0.5 s from 25.6 to 29.9 s after GO (10 frames), and run 3 has 316 to 342 ms frames every few seconds from 8 to 56 s (lead review, recomputed from the raw JSON). Neither pattern is at 40 s; both look like the process being starved by the machine, not a one-off engine event. The 36 to 44 s window is inside the contamination in runs 2 to 6, so the "spike near 40 s" of attempt 2 cannot be counted in this batch.
 - Node count is flat at 4463 through the race in every run. No node is added or removed after GO.
 - The spec compile delta over the race is 641 to 701 per run (a cumulative counter read per frame). Not used in the conclusion.
 - Run 6 was queued behind another session's GPU lock for about 10 minutes (`loop.log`, 14:49 to 15:04). The loop kept a single run at a time.
