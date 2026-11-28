@@ -14,6 +14,7 @@ const MIN_START_READY: int = 2  ## the countdown starts when this many players a
 const SNAP_HZ: float = 20.0  ## client car state rate
 const INTERP_DELAY_S: float = 0.1  ## remote cars are drawn this far behind the newest snapshot
 const COUNTDOWN_S: float = 3.0
+const RECONNECT_GRACE_S: float = 20.0  ## a player who drops out of a race keeps the seat this long (sim clock) to rejoin
 const FINISH_WAIT_S: float = 15.0  ## after the first finish, unfinished cars get this long, then DNF
 const MAX_SPEED_MS: float = 120.0  ## server rejects faster states
 const JUMP_FACTOR: float = 1.5  ## allowed position jump = max speed * dt * JUMP_FACTOR + JUMP_SLACK_M

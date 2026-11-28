@@ -1,0 +1,129 @@
+{
+  "run": "wp5_rtt0",
+  "scenario": "plain",
+  "address": "127.0.0.1",
+  "impairment": {
+    "rtt_ms": 0.0,
+    "jitter_ms": 0.0,
+    "loss": 0.0,
+    "dup": 0.0,
+    "seed": 1
+  },
+  "checks": {
+    "server_exit_0": true,
+    "joins_2": true,
+    "start_2_racers": true,
+    "server_go": true,
+    "server_results_2_rows": true,
+    "ada_results": true,
+    "bo_results": true,
+    "finish_order_agrees": true,
+    "a_car_finished": true
+  },
+  "passed": true,
+  "server_results": [
+    {
+      "pid": 1,
+      "name": "Ada",
+      "position": 1,
+      "finished": true,
+      "dnf": false,
+      "time_s": 47.5647630000017
+    },
+    {
+      "pid": 2,
+      "name": "Bo",
+      "position": 2,
+      "finished": true,
+      "dnf": false,
+      "time_s": 47.9314150000017
+    }
+  ],
+  "server_rejects_by_reason": {},
+  "server_accepted_by_pid": {
+    "2": 929,
+    "1": 921
+  },
+  "proxy_directions": {
+    "to_server": {
+      "in": 2330,
+      "sent": 2330,
+      "lost": 0,
+      "duplicated": 0,
+      "bytes_in": 405998
+    },
+    "to_client": {
+      "in": 2763,
+      "sent": 2763,
+      "lost": 0,
+      "duplicated": 0,
+      "bytes_in": 492272
+    }
+  },
+  "clients": {
+    "Ada": {
+      "sent": 929,
+      "sent_hz": 20.0,
+      "snapshots": 929,
+      "snapshot_hz": 20.0,
+      "client_rejected": 0,
+      "rtt_ms_last_min_avg": [
+        17.02,
+        15.9,
+        17.03
+      ],
+      "results": [
+        {
+          "pid": 1,
+          "name": "Ada",
+          "position": 1,
+          "finished": true,
+          "dnf": false,
+          "time_s": 47.5647630000017
+        },
+        {
+          "pid": 2,
+          "name": "Bo",
+          "position": 2,
+          "finished": true,
+          "dnf": false,
+          "time_s": 47.9314150000017
+        }
+      ]
+    },
+    "Bo": {
+      "sent": 929,
+      "sent_hz": 20.0,
+      "snapshots": 921,
+      "snapshot_hz": 19.8,
+      "client_rejected": 0,
+      "rtt_ms_last_min_avg": [
+        16.86,
+        16.67,
+        17.04
+      ],
+      "results": [
+        {
+          "pid": 1,
+          "name": "Ada",
+          "position": 1,
+          "finished": true,
+          "dnf": false,
+          "time_s": 47.5647630000017
+        },
+        {
+          "pid": 2,
+          "name": "Bo",
+          "position": 2,
+          "finished": true,
+          "dnf": false,
+          "time_s": 47.9314150000017
+        }
+      ]
+    }
+  },
+  "finish_order_agrees": {
+    "Ada": true,
+    "Bo": true
+  }
+}

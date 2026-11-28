@@ -52,12 +52,15 @@ var rtt_last_ms: float = -1.0  ## client: round trip to the server, measured wit
 var rtt_min_ms: float = -1.0
 var _rtt_sum_ms: float = 0.0
 var _rtt_n: int = 0
+var resume: Dictionary = {}  ## client: the car's last accepted server state when this join resumes a dropped seat, else {}
 var last_reject_key: String = ""  ## client: NetProtocol.REJECT_* key of the last reject, "" for other reasons
 var _rejected: bool = false  ## client: the server refused this connect; the disconnect that follows is not a lost link
 var _join_code: String = ""  ## server: the join code every hello must carry (never sent to clients or logged)
 var _hello_code: String = ""  ## client: the join code sent in the hello
 var _hello_limit: NetHelloLimiter = NetHelloLimiter.new()  ## server: hello attempts per remote address
 var _unjoined: Dictionary = {}  ## server: peer key -> [connect time on the sim clock, peer], until its hello is accepted
+var _seats: NetReconnect = NetReconnect.new()  ## server: seats held for players who dropped out of a race
+var _start_msg: Dictionary = {}  ## server: the start message of this race, sent again to a player who resumes
 
 
 ## The session node under the scene root, created on first use.
@@ -167,11 +170,12 @@ func send_state(seq: int, xf: Transform3D, vel: Vector3, steer: float, reset: bo
 ## Leaves cleanly: the server drops this player from the lobby or the race.
 func close() -> void:
 	if _host != null:
-		if role == ROLE_CLIENT and _server_link != null:
+		if role == ROLE_CLIENT and _server_link != null and _server_link.get_state() == ENetPacketPeer.STATE_CONNECTED:
 			_send(_server_link, {"t": NetProtocol.MSG_BYE})
 			_server_link.peer_disconnect_later()
 		for pid: int in _peer_of:
-			(_peer_of[pid] as ENetPacketPeer).peer_disconnect_later()
+			if (_peer_of[pid] as ENetPacketPeer).get_state() == ENetPacketPeer.STATE_CONNECTED:
+				(_peer_of[pid] as ENetPacketPeer).peer_disconnect_later()
 		_host.flush()
 		_host.destroy()
 	_host = null
@@ -190,6 +194,9 @@ func close() -> void:
 	_hello_code = ""
 	_hello_limit = NetHelloLimiter.new()
 	_unjoined.clear()
+	_seats.clear()
+	_start_msg = {}
+	resume = {}
 	if _track != null:
 		_track.queue_free()
 		_track = null
@@ -216,6 +223,10 @@ func _tick_server(delta: float) -> void:
 		if hello_overdue(float(entry[0]), _sim_t):
 			_unjoined.erase(key)
 			(entry[1] as ENetPacketPeer).peer_disconnect_later()
+	for seat: int in _seats.expire(_sim_t):
+		if _race != null:
+			_race.mark_dnf(seat, "disconnected")
+		print("[net] pid %d did not come back within the grace period: DNF" % seat)
 	if _state == STATE_COUNTDOWN:
 		_countdown_t -= delta
 		if _countdown_t <= 0.0:
@@ -289,6 +300,11 @@ func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
 		reason = "wrong join code"
 		reason_key = NetProtocol.REJECT_CODE
 	if reason == "" and _state != STATE_LOBBY:
+		var seat: int = _resume_seat(player_name, peer.get_remote_address())
+		if seat >= 0:
+			_resume(peer, key, seat)
+			return
+	if reason == "" and _state != STATE_LOBBY:
 		reason = "a race is running, try again after the results"
 	var pid: int = _next_pid
 	if reason == "":
@@ -304,6 +320,60 @@ func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
 	print("[net] join pid %d name %s" % [pid, player_name])
 	_send(peer, {"t": NetProtocol.MSG_WELCOME, "pid": pid, "v": NetConfig.PROTOCOL_VERSION})
 	_broadcast_lobby()
+
+
+## Server: the seat a hello of this name resumes during a race: a held seat inside the grace period, or the active
+## seat of the same name when the hello comes from the same remote address as the old connection (it has not timed
+## out yet). A different address cannot take a live racer's seat. Trust assumption: a held seat is claimed by name
+## plus the join code. -1 when there is none, and none during the countdown (the other cars are not moving yet).
+func _resume_seat(player_name: String, address: String) -> int:
+	if _race == null or _state == STATE_COUNTDOWN:
+		return -1
+	var seat: int = _seats.claim(player_name, _sim_t)
+	if seat >= 0:
+		return seat
+	for other: int in _peer_of:
+		if _race.is_racing(other) and _race.driver(other).display_name == player_name and _pid_has_address(other, address):
+			return other
+	return -1
+
+
+## Server: true when a live connection of pid comes from address.
+func _pid_has_address(pid: int, address: String) -> bool:
+	for key: String in _pid_of:
+		if _pid_of[key] == pid and address_of_key(key) == address:
+			return true
+	return false
+
+
+## The remote address part of a peer key ("address:port"; IPv6 addresses contain colons, so cut at the last one).
+static func address_of_key(key: String) -> String:
+	return key.substr(0, key.rfind(":"))
+
+
+## Server: the player gets its seat back: same pid, the car's last accepted state (the client resumes from it and
+## continues the sequence after it) and the race's start message again with no countdown.
+func _resume(peer: ENetPacketPeer, key: String, pid: int) -> void:
+	var old: ENetPacketPeer = _peer_of.get(pid) as ENetPacketPeer
+	if old != null and old != peer:
+		_forget_pid_keys(pid)
+		old.peer_disconnect_later()
+	_pid_of[key] = pid
+	_peer_of[pid] = peer
+	var driver: NetRaceAuthority.NetDriver = _race.driver(pid)
+	if not _lobby.has(pid):
+		_lobby.join(pid, driver.display_name)
+		_lobby.set_ready(pid, true)
+	var st: Dictionary = driver.last_state
+	var seat_state: Dictionary = {}
+	if not st.is_empty():
+		seat_state = {"seq": st["seq"], "xf": st["xf"], "vel": st["vel"], "steer": st["steer"]}
+	print("[net] resume pid %d name %s, last seq %d" % [pid, driver.display_name, int(seat_state.get("seq", 0))])
+	_send(peer, {"t": NetProtocol.MSG_WELCOME, "pid": pid, "v": NetConfig.PROTOCOL_VERSION, "resume": seat_state})
+	var again: Dictionary = _start_msg.duplicate()
+	again["countdown"] = 0.0
+	again["resume"] = true
+	_send(peer, again)
 
 
 func _on_state(pid: int, d: Dictionary) -> void:
@@ -353,16 +423,21 @@ func _begin_countdown() -> void:
 	_countdown_t = NetConfig.COUNTDOWN_S
 	_order_t = 0.0
 	print("[net] start: %d racers, grid %s" % [racers.size(), str(grid)])
-	_broadcast({"t": NetProtocol.MSG_START, "countdown": NetConfig.COUNTDOWN_S, "laps": _laps, "grid": grid, "names": names, "track": _track_path})
+	_start_msg = {"t": NetProtocol.MSG_START, "countdown": NetConfig.COUNTDOWN_S, "laps": _laps, "grid": grid, "names": names, "track": _track_path}
+	_broadcast(_start_msg)
 
 
 func _end_race() -> void:
+	# A seat still held at the end is a car that dropped and never came back: DNF with its reason, not a time limit.
+	for seat: int in _seats.pids():
+		_race.mark_dnf(seat, "disconnected")
 	var rows: Array[Dictionary] = _race.results()
 	print("[net] results: %s" % str(rows))
 	print("[net] accepted states per pid: %s, rate limited: %d" % [str(_accepted_by_pid), int(stats["rate_limited"])])
 	_broadcast({"t": NetProtocol.MSG_RESULTS, "rows": rows})
 	server_results.emit(rows)
 	_race = null
+	_seats.clear()
 	_state = STATE_LOBBY
 	_lobby.reset_ready()
 	_broadcast_lobby()
@@ -378,27 +453,50 @@ func _on_disconnect(peer: ENetPacketPeer) -> void:
 			last_message = LOST_MESSAGE
 			connection_lost.emit(last_message)
 		return
-	var key: String = _peer_key(peer)
-	_unjoined.erase(key)
-	if not _pid_of.has(key):
+	_forget_unjoined(peer)
+	var pid: int = _pid_for_peer(peer)
+	if pid < 0:
 		return
-	var pid: int = _pid_of[key]
-	_pid_of.erase(key)
+	_forget_pid_keys(pid)
 	_peer_of.erase(pid)
 	_rate.erase(pid)
 	_lobby.leave(pid)
-	if _race != null and _race.has_driver(pid):
-		_race.mark_dnf(pid, "disconnected")
+	if _race != null and _race.is_racing(pid):
+		# Mid-race drop: the seat is held (see NetReconnect); the car is DNF only if no one takes it back in time.
+		_seats.reserve(pid, _race.driver(pid).display_name, _sim_t)
+		print("[net] pid %d dropped in the race, seat held for %.0f s" % [pid, NetConfig.RECONNECT_GRACE_S])
 	print("[net] leave pid %d" % pid)
 	_broadcast({"t": NetProtocol.MSG_PEER_LEFT, "pid": pid})
 	peer_left.emit(pid)
 	_broadcast_lobby()
 
 
+## Server: the pid whose connection is this peer object, or -1. Compares objects, never asks a dead peer for its address.
+func _pid_for_peer(peer: ENetPacketPeer) -> int:
+	for pid: int in _peer_of:
+		if _peer_of[pid] == peer:
+			return pid
+	return -1
+
+
+## Server: removes every peer key that maps to pid (the key of a connection that has gone or been replaced).
+func _forget_pid_keys(pid: int) -> void:
+	for key: String in _pid_of.keys():
+		if _pid_of[key] == pid:
+			_pid_of.erase(key)
+
+
+func _forget_unjoined(peer: ENetPacketPeer) -> void:
+	for key: String in _unjoined.keys():
+		if (_unjoined[key] as Array)[1] == peer:
+			_unjoined.erase(key)
+
+
 func _client_message(t: String, d: Dictionary) -> void:
 	match t:
 		NetProtocol.MSG_WELCOME:
 			my_pid = int(d.get("pid", -1))
+			resume = d.get("resume", {}) as Dictionary
 			welcomed.emit(my_pid)
 		NetProtocol.MSG_REJECT:
 			last_message = str(d.get("reason", "rejected"))

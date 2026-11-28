@@ -1,0 +1,26 @@
+{
+  "listen": "127.0.0.1:24701",
+  "server": "127.0.0.1:24700",
+  "one_way_delay_ms": 75.0,
+  "jitter_ms": 10.0,
+  "loss": 0.05,
+  "dup": 0.005,
+  "clients_seen": 2,
+  "max_queue": 14,
+  "directions": {
+    "to_server": {
+      "in": 2282,
+      "sent": 2180,
+      "lost": 114,
+      "duplicated": 12,
+      "bytes_in": 408778
+    },
+    "to_client": {
+      "in": 2595,
+      "sent": 2452,
+      "lost": 152,
+      "duplicated": 9,
+      "bytes_in": 475574
+    }
+  }
+}

@@ -167,6 +167,14 @@ func _on_server_results(_rows: Array) -> void:
 
 
 func _on_race_starting(info: Dictionary) -> void:
+	## shortcut: a rejoin into a running race is unit tested only (no live kill-and-rejoin run with this client yet),
+	## so this client refuses it and leaves the race; the server then holds the seat as a dropout (ONLINE_LAN.md)
+	if bool(info.get("resume", false)):
+		_session.call_deferred("close")
+		_status.text = I18n.t("net.not_in_race")
+		_ready_on = false
+		_refresh_buttons()
+		return
 	var track: String = str(info.get("track", ""))
 	if not NetConfig.track_usable(track):
 		_session.call_deferred("close")  ## leaves the race (bye) instead of racing another road
