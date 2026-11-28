@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.929,
+  "luma_min": 0.0,
+  "name": "traffic_row",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 74,
+    "draw_calls_min": 74,
+    "driver": "vulkan",
+    "fps": 1396.876,
+    "frame_ms_avg": 0.716,
+    "frame_ms_p95": 0.769,
+    "frame_ms_p99": 0.812,
+    "frames": 60,
+    "objects": 74,
+    "os": "Windows",
+    "primitives": 154636,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 445.18,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/car_studio_traffic/traffic_row.png",
+  "preset": "high",
+  "scenario": "car_studio_traffic"
+}

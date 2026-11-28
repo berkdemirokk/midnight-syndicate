@@ -646,6 +646,8 @@ def main():
         cfg = json.load(fh)
     if cfg["car_id"] != car_id:
         raise SystemExit("config car_id %s is not %s" % (cfg["car_id"], car_id))
+    if cfg.get("wheel_src"):  # vans name their wheels Wheel_Front_L etc.: the config maps them to FL, FR, RL, RR order
+        WHEEL_SRC[:] = cfg["wheel_src"]
     if cfg.get("plate_image") and not os.path.isabs(cfg["plate_image"]):
         cfg["plate_image"] = os.path.join(ROOT, cfg["plate_image"])
     os.makedirs(out_dir, exist_ok=True)
