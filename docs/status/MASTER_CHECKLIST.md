@@ -8,13 +8,13 @@ Status words: DONE (verified tonight or earlier with evidence), PARTIAL, MISSING
 | 1 | AAA-level graphics on the flagship Ortakoy segment | PARTIAL (improved) | big day/night/sunset improvement (before_after_2026-11-28); not equal to the references: stylised licensed cars, flat photo rows at grazing angles, simple bridge |
 | 2 | 30 distinct premium vehicles | BLOCKED | 11 licensed CC BY cars ship. More need the owner's yes to download licensed models (CLAUDE.md rule) or many days of modelling; generating low-quality cars to fill a count is ruled out by the brief |
 | 3 | Detailed Istanbul environments | PARTIAL | Ortakoy/Bosphorus, Maslak, Neon Wharf tracks exist; quality gate passed only partly (Ortakoy best) |
-| 4 | Career, >= 30 events | DONE | PR #8: 30 events, TR/EN names (test_events) |
+| 4 | Career, >= 30 events | DONE (35) | PR #8: 30 events, TR/EN names (test_events) |
 | 5 | Sprint, circuit, time trial | DONE | events.gd, race tests |
-| 6 | Drift mode | MISSING | next package |
-| 7 | Elimination mode | MISSING | next package |
-| 8 | Police pursuit / escape mode | PARTIAL | opt-in mode built and tested (15 tests, pursuit_demo captures), flag off; not in the career |
+| 6 | Drift mode | DONE | 2 drift events, HUD chain/banked score, stars by score (test_modes, mode_drift_hud captures); thresholds provisional, need a playtest |
+| 7 | Elimination mode | DONE | 2 elimination events, last car out per lap, OUT rows (test_modes, mode_elim_out captures); placed after the championship |
+| 8 | Police pursuit / escape mode | DONE (one event) | career event bogaz_escape (Boğaz kaçışı): bust = no reward, escape/finish = reward, end-to-end test; global flag still off for other races. Earlier note: | opt-in mode built and tested (15 tests, pursuit_demo captures), flag off; not in the career |
 | 9 | Online multiplayer with real clients | PARTIAL | LAN/loopback: lobby, ready, countdown, sync, server results, disconnect, Bosphorus, live standings; verified with real processes and a rendered client. Not internet: no free authorised hosting exists (brief: no paid servers) |
-| 10 | Private lobbies | MISSING | next package (join code) |
+| 10 | Private lobbies | DONE (LAN) | 6-character join code checked by the server, 5 hellos / 10 s per address, TR/EN rejects (test_net_join, smoke PASS); code travels unencrypted on the LAN |
 | 11 | Competitive rankings | PARTIAL | personal results stored (GameState.record_result); no online ranking backend (none allowed); local records screen to check |
 | 12 | Garage, customisation, upgrades | DONE | garage, paint, rims, upgrades applied to the race car (PR #8) |
 | 13 | Balanced economy | PARTIAL | PR #8 time-trial economy; ROADMAP step 9 rebalance not done |
@@ -25,7 +25,7 @@ Status words: DONE (verified tonight or earlier with evidence), PARTIAL, MISSING
 | 18 | Menus and HUD | PARTIAL | UX pass merged: TR results footer, phone event list, garage SATIN AL fit (test_ux_footer); BUY buttons 64 px tall (< 88 px target) |
 | 19 | TR/EN localisation | PARTIAL | i18n exists; completeness test in the UX package |
 | 20 | Onboarding | PARTIAL | hints exist; first-run flow to check |
-| 21 | Persistent progression across restarts | PARTIAL | save v2, backup, PR #8 save safety; cross-process restart test to add |
+| 21 | Persistent progression across restarts | DONE | tools/restart_check.py: two processes on a temp profile (cash, cars, paint, rims, stars) + crash during save recovers from the backup; default-colour save defect fixed (docs/design/SAVE_PERSISTENCE.md) |
 | 22 | Offline play | DONE | the game needs no network; online is opt-in |
 | 23 | Mobile performance | PARTIAL | budgets met on the dev PC (night gameplay 409 draws / 441k primitives); soak: 10 headless races flat memory after the first, 8 rendered races 61,388 frames, 23 > 33 ms, video memory flat (docs/perf/SOAK_2026-11-28.md); no phone number exists (B2) |
 | 24 | iOS build compiles | DONE | tag ios-check-5 on the RC (3b71618 + docs): GitHub Actions run 46086560575 success, build only, no upload |
