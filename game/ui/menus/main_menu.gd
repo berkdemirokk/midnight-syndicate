@@ -7,6 +7,8 @@ extends Control
 const EVENT_SELECT_SCENE: String = "res://ui/menus/event_select.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
+const RECORDS_SCENE: String = "res://ui/menus/records_screen.tscn"
+const ONBOARDING_SCENE: String = "res://ui/menus/onboarding.tscn"
 const TAGLINE_PX: int = 20
 const VERSION_PX: int = 16
 const TOAST_PX: int = 22
@@ -26,6 +28,7 @@ var _holder: Control
 var _backdrop: MenuBackdrop
 var _race_btn: Button
 var _garage_btn: Button
+var _records_btn: Button
 var _settings_btn: Button
 var _quit_btn: Button
 var _tagline: Label
@@ -61,6 +64,14 @@ func _ready() -> void:
 	if net != null and net.last_message != "":
 		_show_toast(I18n.t("net.lost") if net.last_message == NetSession.LOST_MESSAGE else net.last_message)
 		net.last_message = ""
+	call_deferred("_maybe_onboard")
+
+
+## A player who has not finished the first-launch flow goes there once, before the menu is used.
+## Only the menu that is the running scene does this, so a menu loaded by a test or capture stays put.
+func _maybe_onboard() -> void:
+	if get_tree().current_scene == self and not GameState.is_onboarded():
+		Router.goto(ONBOARDING_SCENE)
 
 
 func _build_foreground() -> void:
@@ -98,6 +109,7 @@ func _build_foreground() -> void:
 	_race_btn = _menu_button(menu, "menu.race", _on_race)
 	_race_btn.theme_type_variation = &"PrimaryButton"
 	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
+	_records_btn = _menu_button(menu, "menu.records", _on_records)
 	_settings_btn = _menu_button(menu, "menu.settings", _on_settings)
 	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
 	if NetConfig.is_enabled():
@@ -176,7 +188,7 @@ func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 
 ## The column slides in from the left, button by button (skipped when the tree is not running a real frame loop).
 func _play_intro() -> void:
-	var items: Array[Control] = [_race_btn, _garage_btn, _settings_btn, _quit_btn]
+	var items: Array[Control] = [_race_btn, _garage_btn, _records_btn, _settings_btn, _quit_btn]
 	for i: int in items.size():
 		var b: Control = items[i]
 		b.modulate.a = 0.0
@@ -244,6 +256,10 @@ func _on_online() -> void:
 
 func _on_settings() -> void:
 	_open(SETTINGS_SCENE)
+
+
+func _on_records() -> void:
+	_open(RECORDS_SCENE)
 
 
 func _on_quit() -> void:
