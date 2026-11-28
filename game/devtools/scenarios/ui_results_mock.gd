@@ -15,6 +15,7 @@ const GAP_STEP_S: float = 3.214
 const BEST_BASE_S: float = 79.42
 const BEST_STEP_S: float = 0.612
 const PROFILE: String = "user://capture_results_mock.json"
+const PAINTS: PackedStringArray = ["#e0a030", "#2fd3ff", "#d6336c", "#8a8f98", "#5a7d3a", "#f2f2f2"]
 const NAMES: PackedStringArray = ["Vance Reyes", "Kato Mori", "Ilse Brandt", "Rafa Ortiz", "Nina Kowal", "Sol Vidal"]
 
 
@@ -43,6 +44,7 @@ func _show() -> void:
 			"name": NAMES[i], "position": i + 1,
 			"total_time": BASE_TIME_S + float(i) * GAP_STEP_S,
 			"best_lap": BEST_BASE_S + float(i) * BEST_STEP_S,
+			"paint": PAINTS[i],
 			"is_player": i + 1 == PLAYER_POS})
 	GameState.reset_profile()
 	var rewards: Dictionary = GameState.record_result("wharf_sprint", BASE_TIME_S, PLAYER_POS)

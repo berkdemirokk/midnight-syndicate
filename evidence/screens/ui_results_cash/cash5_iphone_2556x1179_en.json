@@ -11,23 +11,23 @@
     "draw_calls": 19,
     "draw_calls_min": 19,
     "driver": "vulkan",
-    "fps": 1908.033,
-    "frame_ms_avg": 0.524,
-    "frame_ms_p95": 0.54,
-    "frame_ms_p99": 0.6,
+    "fps": 1879.876,
+    "frame_ms_avg": 0.532,
+    "frame_ms_p95": 0.556,
+    "frame_ms_p99": 0.622,
     "frames": 60,
-    "objects": 867,
+    "objects": 880,
     "os": "Windows",
-    "primitives": 1176,
+    "primitives": 1202,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 97.889,
+    "video_mem_mb": 100.389,
     "viewport_size": [
       2556,
       1179
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-polish/evidence/screens/ui_results_cash/cash5_iphone_2556x1179_en.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-uiresults/evidence/screens/ui_results_cash/cash5_iphone_2556x1179_en.png",
   "preset": "high",
   "scenario": "ui_results_cash"
 }

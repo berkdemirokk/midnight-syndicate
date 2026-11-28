@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.989,
+  "luma_min": 0.0,
+  "name": "maslak_sunset",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 333,
+    "draw_calls_min": 308,
+    "driver": "vulkan",
+    "fps": 175.222,
+    "frame_ms_avg": 5.707,
+    "frame_ms_p95": 6.967,
+    "frame_ms_p99": 7.853,
+    "frames": 60,
+    "objects": 19235,
+    "os": "Windows",
+    "primitives": 316087,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 724.966,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-grade/evidence/screens/tod_tracks/maslak_sunset.png",
+  "preset": "high",
+  "scenario": "tod_tracks"
+}

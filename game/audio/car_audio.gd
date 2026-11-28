@@ -2,24 +2,40 @@ class_name CarAudio
 extends Node3D
 ## Engine, tyre, nitro and impact audio for one ArcadeCar. Add as a child of the car (or call bind()).
 ## Reads car state only (rpm_norm, gear, input.throttle, wheel_slip, speed_kmh, nitro_active, hit).
-## Player: 3 engine layers + squeal + wet hiss + nitro + scrape + turbo/blow-off/backfire/impacts.
-## Opponent (is_player = false): 2 engine layers + squeal, positional with Doppler, quieter.
+## Player: layered engine (EngineLayers: 2 adjacent bands x on/off load = 4 voices, pitch per band) + squeal +
+## wet hiss + nitro + scrape + turbo/blow-off/backfire/impacts. Fallback when layered_engine is false or a loop is
+## missing: the old 3 single engine loops.
+## Opponent (is_player = false): 1 engine loop (voice budget) + squeal, positional with Doppler, quieter.
 
 const SHIFT_TIME := 0.20  ## seconds of rpm dip + level dip after an upshift
 const SHIFT_RPM_DIP := 0.16
+const SHIFT_CUT_TIME := 0.06  ## upshift cut: throttle dip and volume duck, seconds
+const SHIFT_CUT_THROTTLE := 0.4  ## throttle multiplier during the cut
+const SHIFT_CUT_GAIN := 0.3  ## volume multiplier during the cut
+const LIMITER_RPM_NORM := 0.98  ## limiter bounce starts at this rpm_norm with throttle on
+const LIMITER_HZ := 16.0
+const LIMITER_DEPTH := 0.45  ## bounce dips the engine gain by this fraction
 const LAYER_DB := -2.0
+const LAYER_GAIN := 0.8  ## linear, same level as LAYER_DB for the layered voices
 const OPPONENT_DB := -10.0
+const RIVAL_MID_FLOOR := 0.5  ## rival level floor (-6 dB): the mid weight is zero at redline
 const HEAVY_HIT_IMPULSE := 6000.0
 const MIN_HIT_IMPULSE := 700.0
+const AUDIBLE_FLOOR := 0.0001  ## band weight below this counts as silent
+const STEAL_GAIN := 0.1  ## a silent band's slot may be taken by a new band once its voices are below this (-20 dB)
+const VOICE_FADE := 40.0  ## 1/s, layered voice gain smoothing (about 25 ms time constant)
 
 @export var is_player: bool = true
 @export_range(0.0, 1.0) var wetness: float = 0.0  ## set by the weather system; scales tyre hiss on wet road
+@export var layered_engine: bool = true  ## player only: false keeps the old single-loop engine
 var scrape_level: float = 0.0  ## 0..1, set by whoever knows about wall contact
 
 var car: ArcadeCar
 var enabled: bool = true
 var rpm_smooth: float = 0.0
 var shift_timer: float = 0.0
+var layered: bool = false  ## true while the player engine uses the layered bands
+var engine_index: int = 2  ## EngineLayers.ENGINE_NAMES index for this car
 
 var low: AudioStreamPlayer3D
 var mid: AudioStreamPlayer3D
@@ -29,6 +45,17 @@ var hiss: AudioStreamPlayer3D
 var nitro: AudioStreamPlayer3D
 var scrape: AudioStreamPlayer3D
 
+var _lv: Array[AudioStreamPlayer3D] = []  ## layered voices, index slot * 2 + load (load 0 off, 1 on)
+var _slot_band := PackedInt32Array([-1, -1])  ## band held by each slot, -1 free
+var _vgain := PackedFloat32Array([0.0, 0.0, 0.0, 0.0])  ## smoothed linear gain per voice
+var _vpitch := PackedFloat32Array([1.0, 1.0, 1.0, 1.0])
+var _amp := PackedFloat32Array()  ## per-band audible amplitude, reused every frame
+var _rpm_abs: float = 0.0
+var _thr_eff: float = 0.0
+var _cut_t: float = 0.0
+var _duck: float = 1.0
+var _limit_t: float = 0.0
+var _bounce: float = 1.0
 var _shots: Array[AudioStreamPlayer3D] = []
 var _shot_next: int = 0
 var _last_gear: int = 1
@@ -88,9 +115,14 @@ func set_enabled(on: bool) -> void:
 
 func _build() -> void:
 	var near: bool = is_player
-	low = _loop_player(&"engine_low_loop", LAYER_DB, near) if is_player else null
-	mid = _loop_player(&"engine_mid_loop", LAYER_DB, near)
-	high = _loop_player(&"engine_high_loop", LAYER_DB - 2.0, near)
+	layered = is_player and layered_engine and EngineLayers.loops_ready()
+	if layered:
+		for i: int in 4:
+			_lv.append(_make_player(true))
+	else:
+		low = _loop_player(&"engine_low_loop", LAYER_DB, near) if is_player else null
+		mid = _loop_player(&"engine_mid_loop", LAYER_DB, near)
+		high = _loop_player(&"engine_high_loop", LAYER_DB - 2.0, near) if is_player else null
 	squeal = _loop_player(&"tyre_squeal_loop", -80.0, near)
 	if is_player:
 		hiss = _loop_player(&"tyre_hiss_wet_loop", -80.0, true)
@@ -102,12 +134,20 @@ func _build() -> void:
 			_shots.append(p)
 	# Engine layers on the Engine bus (its own volume slider in Settings) when it exists.
 	if AudioServer.get_bus_index(&"Engine") >= 0:
-		for p: AudioStreamPlayer3D in [low, mid, high]:
-			if p != null:
-				p.bus = &"Engine"
+		for p: AudioStreamPlayer3D in _engine_players():
+			p.bus = &"Engine"
 	for p: AudioStreamPlayer3D in [low, mid, high, squeal, hiss, nitro, scrape]:
 		if p != null and p.stream != null and p.is_inside_tree():
 			p.play()
+
+
+func _engine_players() -> Array[AudioStreamPlayer3D]:
+	var out: Array[AudioStreamPlayer3D] = []
+	for p: AudioStreamPlayer3D in [low, mid, high]:
+		if p != null:
+			out.append(p)
+	out.append_array(_lv)
+	return out
 
 
 func _all_players() -> Array[AudioStreamPlayer3D]:
@@ -115,8 +155,48 @@ func _all_players() -> Array[AudioStreamPlayer3D]:
 	for p: AudioStreamPlayer3D in [low, mid, high, squeal, hiss, nitro, scrape]:
 		if p != null:
 			out.append(p)
+	out.append_array(_lv)
 	out.append_array(_shots)
 	return out
+
+
+## Engine voices that are playing now: 4 at most for the player, 1 for an opponent.
+func engine_voices_playing() -> int:
+	var n: int = 0
+	for p: AudioStreamPlayer3D in _engine_players():
+		if p.playing:
+			n += 1
+	return n
+
+
+## Band held by each layered slot (-1 free). For tests and the evidence log.
+func slot_bands() -> PackedInt32Array:
+	return _slot_band
+
+
+## Per-voice state for the evidence log, voice index slot * 2 + load.
+func voice_gain(v: int) -> float:
+	return _vgain[v]
+
+
+func voice_pitch(v: int) -> float:
+	return _vpitch[v]
+
+
+func throttle_effective() -> float:
+	return _thr_eff
+
+
+func rpm_abs() -> float:
+	return _rpm_abs
+
+
+func duck() -> float:
+	return _duck
+
+
+func bounce() -> float:
+	return _bounce
 
 
 func _make_player(near: bool) -> AudioStreamPlayer3D:
@@ -157,10 +237,12 @@ func update_audio(delta: float) -> void:
 	var gear_now: int = car.gear
 	if gear_now > _last_gear:
 		shift_timer = SHIFT_TIME
+		_cut_t = SHIFT_CUT_TIME
 		if is_player and thr > 0.7 and car.rpm_norm > 0.55 and _rng.randf() < 0.35:
 			_pops.append(_rng.randf_range(0.04, 0.12))
 	_last_gear = gear_now
 	shift_timer = maxf(0.0, shift_timer - delta)
+	_cut_t = maxf(0.0, _cut_t - delta)
 
 	var rpm_t: float = car.rpm_norm
 	if shift_timer > 0.0:
@@ -173,7 +255,10 @@ func update_audio(delta: float) -> void:
 	rpm_smooth = lerpf(rpm_smooth, rpm_t, 1.0 - exp(-14.0 * delta))
 	_shift_gain = move_toward(_shift_gain, 0.55 if shift_timer > 0.0 else 1.0, 7.0 * delta)
 
-	_update_engine(thr)
+	if layered:
+		_update_layers(thr, delta)
+	else:
+		_update_engine(thr)
 	_update_tyres(delta)
 	if is_player:
 		_update_nitro(delta)
@@ -184,22 +269,110 @@ func update_audio(delta: float) -> void:
 	_last_throttle = thr
 
 
+## Layered player engine: at most two adjacent bands (4 voices) at once, each with its own on/off pair.
+func _update_layers(thr: float, delta: float) -> void:
+	var sp: CarSpec = car.spec
+	var idle: float = sp.idle_rpm if sp != null else 1000.0
+	var redline: float = sp.redline_rpm if sp != null else 7500.0
+	var eng: int = EngineLayers.engine_for_spec(sp)
+	if eng != engine_index:
+		engine_index = eng
+		for s: int in 2:
+			_free_slot(s)
+	_rpm_abs = idle + clampf(rpm_smooth, 0.0, 1.0) * (redline - idle)
+	_thr_eff = thr * (SHIFT_CUT_THROTTLE if _cut_t > 0.0 else 1.0)
+	var duck_t: float = SHIFT_CUT_GAIN if _cut_t > 0.0 else 1.0
+	_duck = lerpf(_duck, duck_t, 1.0 - exp(-120.0 * delta))
+	_limit_t += delta
+	var bounce_t: float = 1.0
+	if car.rpm_norm >= LIMITER_RPM_NORM and thr > 0.5:
+		bounce_t = 1.0 - LIMITER_DEPTH * (0.5 - 0.5 * cos(TAU * LIMITER_HZ * _limit_t))
+	_bounce = lerpf(_bounce, bounce_t, 1.0 - exp(-200.0 * delta))  ## fast enough to keep the 16 Hz bounce in its shape
+
+	var w: PackedFloat32Array = EngineLayers.band_weights(_rpm_abs, _thr_eff)
+	_assign_slots(w)
+	var k: float = 1.0 - exp(-VOICE_FADE * delta)
+	for s: int in 2:
+		var b: int = _slot_band[s]
+		for l: int in 2:
+			var v: int = s * 2 + l
+			var target: float = 0.0
+			if b >= 0:
+				target = w[b * 2 + l] * EngineLayers.loop_norm(eng, b, l) * LAYER_GAIN * _duck * _bounce * _shift_gain
+				_vpitch[v] = EngineLayers.band_pitch(_rpm_abs, b)
+				_lv[v].pitch_scale = _vpitch[v]
+			_vgain[v] = lerpf(_vgain[v], target, k)
+			_lv[v].volume_db = _db(_vgain[v])
+
+
+## Frees slots whose band has gone quiet and faded out, then gives a slot to each newly audible band.
+func _assign_slots(w: PackedFloat32Array) -> void:
+	if _amp.size() != EngineLayers.BANDS:
+		_amp.resize(EngineLayers.BANDS)
+	for b: int in EngineLayers.BANDS:
+		_amp[b] = maxf(w[b * 2], w[b * 2 + 1])
+	for s: int in 2:
+		var b: int = _slot_band[s]
+		if b >= 0 and _amp[b] <= AUDIBLE_FLOOR and _vgain[s * 2] < 0.001 and _vgain[s * 2 + 1] < 0.001:
+			_free_slot(s)
+	for b: int in EngineLayers.BANDS:
+		if _amp[b] <= AUDIBLE_FLOOR or _slot_band.find(b) >= 0:
+			continue
+		var s: int = _slot_band.find(-1)
+		if s < 0:
+			s = _steal_slot()
+		if s < 0:
+			break  # two adjacent bands at most; a band that finds no free slot waits until one frees
+		_slot_band[s] = b
+		for l: int in 2:
+			var v: int = s * 2 + l
+			_lv[v].stream = AudioLib.get_stream(EngineLayers.loop_id(engine_index, b, l))
+			_vgain[v] = 0.0
+			_lv[v].volume_db = -80.0
+			_lv[v].play()
+
+
+## After a fast rpm drop (upshift) both slots can still hold fading bands of the old rpm while the new band
+## waits, which left the engine near silent for about 150 ms. Take the quieter slot whose band is silent once
+## it is below STEAL_GAIN; -1 when no slot qualifies.
+func _steal_slot() -> int:
+	var best: int = -1
+	var best_g: float = STEAL_GAIN
+	for s: int in 2:
+		var g: float = maxf(_vgain[s * 2], _vgain[s * 2 + 1])
+		if _amp[_slot_band[s]] <= AUDIBLE_FLOOR and g < best_g:
+			best = s
+			best_g = g
+	if best >= 0:
+		_free_slot(best)
+	return best
+
+
+func _free_slot(s: int) -> void:
+	_slot_band[s] = -1
+	for l: int in 2:
+		var v: int = s * 2 + l
+		_vgain[v] = 0.0
+		if _lv[v].playing:
+			_lv[v].stop()
+
+
 func _update_engine(thr: float) -> void:
 	var g: Vector3 = layer_gains(rpm_smooth)
 	var pit: Vector3 = layer_pitches(rpm_smooth)
 	var drive: float = lerpf(0.5, 1.0, thr) * _shift_gain
-	var base: float = 0.0 if is_player else OPPONENT_DB
 	if is_player:
 		low.pitch_scale = pit.x
 		low.volume_db = _db(g.x * drive) + LAYER_DB
 		mid.pitch_scale = pit.y
 		mid.volume_db = _db(g.y * drive) + LAYER_DB
+		high.pitch_scale = pit.z
+		high.volume_db = _db(g.z * drive * lerpf(0.65, 1.0, thr)) + LAYER_DB - 2.0
 	else:
-		# Opponents: low weight folds into the mid layer, fewer layers to mix.
+		# Opponents: one loop (the old engine_mid_loop) at the mid pitch, quieter; no separate high layer.
+		# Level follows rpm as the old path did (low+mid share), floored so the rival is not silent at redline.
 		mid.pitch_scale = pit.y
-		mid.volume_db = _db(sqrt(g.x * g.x + g.y * g.y) * drive) + LAYER_DB + base
-	high.pitch_scale = pit.z
-	high.volume_db = _db(g.z * drive * lerpf(0.65, 1.0, thr)) + LAYER_DB - 2.0 + base
+		mid.volume_db = _db(maxf(sqrt(g.x * g.x + g.y * g.y), RIVAL_MID_FLOOR) * drive) + LAYER_DB + OPPONENT_DB
 
 
 func _update_tyres(delta: float) -> void:
