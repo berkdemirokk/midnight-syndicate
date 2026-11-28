@@ -2,26 +2,26 @@
  "car_id": "arden_ramjet",
  "source": "assets_src/third_party/vinish_cars/incoming2/ram-air-coupe.glb",
  "lod0": {
-  "tris": 78728,
+  "tris": 85056,
   "tris_by_node": {
-   "body": 502,
-   "brake_FL": 1236,
-   "brake_FR": 1236,
-   "brake_RL": 1236,
-   "brake_RR": 1236,
+   "body": 31276,
+   "brake_FL": 1030,
+   "brake_FR": 1030,
+   "brake_RL": 1030,
+   "brake_RR": 1030,
    "col_body": 90,
    "exhaust": 14884,
    "glass": 3884,
-   "interior": 9540,
+   "interior": 7155,
    "lights_front": 640,
    "lights_rear": 668,
    "plate_rear": 2,
-   "trim": 26080,
+   "trim": 7491,
    "underbody": 1598,
-   "wheel_FL": 3974,
-   "wheel_FR": 3974,
-   "wheel_RL": 3974,
-   "wheel_RR": 3974
+   "wheel_FL": 3312,
+   "wheel_FR": 3312,
+   "wheel_RL": 3312,
+   "wheel_RR": 3312
   },
   "slots_by_node": {
    "body": [
@@ -105,16 +105,16 @@
    [
     1.0180277824401855,
     2.5799906253814697,
-    1.3684680461883545
+    1.3683253526687622
    ]
   ],
   "stray_verts_moved": {},
   "tail_pipes": 2
  },
  "lod1": {
-  "tris": 24364,
+  "tris": 25292,
   "tris_by_node": {
-   "body": 122,
+   "body": 7818,
    "brake_FL": 75,
    "brake_FR": 75,
    "brake_RL": 74,
@@ -125,7 +125,7 @@
    "interior": 4770,
    "lights_front": 320,
    "lights_rear": 334,
-   "trim": 14354,
+   "trim": 7586,
    "wheel_FL": 794,
    "wheel_FR": 794,
    "wheel_RL": 794,
@@ -199,23 +199,23 @@
   "material_count": 10,
   "box": [
    [
-    -1.0179747343063354,
+    -1.0160424709320068,
     -2.3877692222595215,
     -0.0007688403129577637
    ],
    [
-    1.0179747343063354,
+    1.0160424709320068,
     2.5799906253814697,
-    1.3708745241165161
+    1.3684600591659546
    ]
   ],
   "stray_verts_moved": {},
   "tail_pipes": 0
  },
  "lod2": {
-  "tris": 6590,
+  "tris": 6515,
   "tris_by_node": {
-   "body": 38,
+   "body": 2630,
    "brake_FL": 36,
    "brake_FR": 36,
    "brake_RL": 36,
@@ -226,7 +226,7 @@
    "interior": 762,
    "lights_front": 76,
    "lights_rear": 80,
-   "trim": 3898,
+   "trim": 1231,
    "wheel_FL": 271,
    "wheel_FR": 271,
    "wheel_RL": 272,
@@ -306,7 +306,8 @@
    ]
   ],
   "stray_verts_moved": {
-   "trim": 33
+   "body": 4,
+   "trim": 34
   },
   "tail_pipes": 0
  }

@@ -90,9 +90,9 @@
     "Tread_Car": "M_Tire",
     "Bulb": "M_Trim",
     "Seat_Insert_Red": "M_Interior",
-    "Paint_White": "M_Paint",
+    "Paint_White": "M_Trim",
     "Paint_Black": "M_Trim",
-    "Paint_Grabber": "M_Trim"
+    "Paint_Grabber": "M_Paint"
   },
   "nodes": {
     "Under": "underbody",
@@ -220,9 +220,9 @@
   "wheel_fill_lod2": "M_Tire",
   "decimate": {
     "0": {
-      "wheel": 0.6,
-      "trim": 0.55,
-      "interior": 0.6,
+      "wheel": 0.5,
+      "trim": 0.45,
+      "interior": 0.45,
       "underbody": 0.5
     },
     "1": {
