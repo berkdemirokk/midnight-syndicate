@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-28T02:31:11"
+    "time": "2026-11-28T03:47:06"
   },
   "test_ai_churn.gd": {
     "test_closing_car_brakes_before_contact": {
@@ -872,7 +872,7 @@
         "light_budget_log": 4,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1192.6,
+        "load_time_ms": 1508.4,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -938,7 +938,7 @@
         "8car_orderA_nitro100_race_time_s": 74.42,
         "8car_orderA_nitro100_stuck_events": 0,
         "8car_orderA_nitro100_stuck_worst_car": 0,
-        "8car_orderA_nitro100_wall_s": 4.5
+        "8car_orderA_nitro100_wall_s": 4.7
       },
       "pass": true
     },
@@ -950,7 +950,7 @@
         "8car_orderA_nitro140_race_time_s": 74.57,
         "8car_orderA_nitro140_stuck_events": 0,
         "8car_orderA_nitro140_stuck_worst_car": 0,
-        "8car_orderA_nitro140_wall_s": 4.4
+        "8car_orderA_nitro140_wall_s": 4.7
       },
       "pass": true
     },
@@ -962,7 +962,7 @@
         "8car_orderA_nitro0_race_time_s": 78.98,
         "8car_orderA_nitro0_stuck_events": 1,
         "8car_orderA_nitro0_stuck_worst_car": 1,
-        "8car_orderA_nitro0_wall_s": 5.2
+        "8car_orderA_nitro0_wall_s": 5.6
       },
       "pass": true
     },
@@ -974,7 +974,7 @@
         "8car_orderB_nitro100_race_time_s": 80.98,
         "8car_orderB_nitro100_stuck_events": 3,
         "8car_orderB_nitro100_stuck_worst_car": 2,
-        "8car_orderB_nitro100_wall_s": 5.7
+        "8car_orderB_nitro100_wall_s": 6.2
       },
       "pass": true
     },
@@ -986,7 +986,7 @@
         "8car_orderB_nitro140_race_time_s": 79.92,
         "8car_orderB_nitro140_stuck_events": 1,
         "8car_orderB_nitro140_stuck_worst_car": 1,
-        "8car_orderB_nitro140_wall_s": 4.7
+        "8car_orderB_nitro140_wall_s": 5.1
       },
       "pass": true
     },
@@ -998,7 +998,7 @@
         "8car_orderB_nitro0_race_time_s": 79.57,
         "8car_orderB_nitro0_stuck_events": 3,
         "8car_orderB_nitro0_stuck_worst_car": 1,
-        "8car_orderB_nitro0_wall_s": 5.5
+        "8car_orderB_nitro0_wall_s": 5.9
       },
       "pass": true
     },
@@ -1021,7 +1021,7 @@
         "6car_nitro100_race_time_s": 73.8,
         "6car_nitro100_stuck_events": 0,
         "6car_nitro100_stuck_worst_car": 0,
-        "6car_nitro100_wall_s": 3.0
+        "6car_nitro100_wall_s": 3.2
       },
       "pass": true
     },
@@ -1033,7 +1033,7 @@
         "6car_nitro140_race_time_s": 73.8,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.0
+        "6car_nitro140_wall_s": 3.2
       },
       "pass": true
     },
@@ -1045,7 +1045,7 @@
         "6car_nitro0_race_time_s": 73.58,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 3.1
+        "6car_nitro0_wall_s": 3.2
       },
       "pass": true
     }
@@ -1126,6 +1126,28 @@
       "pass": true
     },
     "test_shade_gradient": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_dome_normals.gd": {
+    "test_coplanar_neighbours_weld": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_kit_domes_smooth_and_keep_shape": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_ninety_degree_fold_keeps_hard_edge": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_other_materials_untouched": {
       "failures": [],
       "metrics": {},
       "pass": true
@@ -1223,19 +1245,19 @@
     "test_ceiling_keeps_camera_under_roof": {
       "failures": [],
       "metrics": {
-        "camera_y_under_roof_m": 0.32352597117424
+        "camera_y_under_roof_m": 0.423525995016098
       },
       "pass": true
     },
     "test_chase_camera_behind_car_after_five_seconds": {
       "failures": [],
       "metrics": {
-        "camera_back_m": 4.9349946975708,
-        "camera_distance_m": 5.10399007797241,
-        "camera_height_above_car_m": 1.24925267696381,
-        "camera_lateral_m": 0.00000000143617273629104,
-        "camera_to_ideal_gap_m": 0.0124664306640625,
-        "car_angle_from_view_deg": 9.14026274571639,
+        "camera_back_m": 5.18535661697388,
+        "camera_distance_m": 5.32357406616211,
+        "camera_height_above_car_m": 1.14925265312195,
+        "camera_lateral_m": 0.00000000136097022540582,
+        "camera_to_ideal_gap_m": 0.0193939208984375,
+        "car_angle_from_view_deg": 11.2597024834975,
         "car_slip_deg": 0.00000000360018281270043,
         "speed_kmh_after_5s": 146.562451171875
       },
@@ -1286,7 +1308,7 @@
     "test_look_point_moves_toward_corner_inside": {
       "failures": [],
       "metrics": {
-        "look_lateral_left_turn_m": -0.583825469017029,
+        "look_lateral_left_turn_m": -0.449942588806152,
         "look_side_left_turn": -0.942567380748795
       },
       "pass": true
@@ -1325,9 +1347,9 @@
     "test_shake_offset_is_zero_at_rest_and_scales_with_trauma_squared": {
       "failures": [],
       "metrics": {
-        "shake_mean_at_0.5_m": 0.0881962573776642,
-        "shake_mean_at_1.0_m": 0.317662664254506,
-        "shake_ratio_1_vs_0.5": 3.60177034377147
+        "shake_mean_at_0.5_m": 0.081774689629674,
+        "shake_mean_at_1.0_m": 0.309198758999507,
+        "shake_ratio_1_vs_0.5": 3.78110587028515
       },
       "pass": true
     },
@@ -1350,7 +1372,7 @@
       "metrics": {
         "camera_height_drop_m": 0.0533128678798676,
         "speed_kmh_for_shake": 254.129425048828,
-        "speed_shake_mean_m": 0.00535210302138391,
+        "speed_shake_mean_m": 0.00535210305242799,
         "speed_shake_peak_m": 0.00804899353533983
       },
       "pass": true
@@ -1377,8 +1399,8 @@
     "test_wall_between_car_and_camera_shortens_distance": {
       "failures": [],
       "metrics": {
-        "distance_before_wall_m": 4.67850494384766,
-        "distance_with_wall_m": 3.67813467979431
+        "distance_before_wall_m": 4.65214061737061,
+        "distance_with_wall_m": 3.64454007148743
       },
       "pass": true
     }
@@ -1937,7 +1959,7 @@
         "race_time_s": 55.43,
         "stuck_total": 1,
         "stuck_worst_car": 1,
-        "wall_s": 2.0
+        "wall_s": 2.2
       },
       "pass": true
     },
@@ -1957,7 +1979,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 659.0,
+        "load_ms": 858.0,
         "prop_instances": 991,
         "second_row": 155,
         "track_length_m": 2205.4
@@ -2009,7 +2031,7 @@
         "race_time_s": 58.03,
         "stuck_total": 0,
         "stuck_worst_car": 0,
-        "wall_s": 2.0
+        "wall_s": 2.1
       },
       "pass": true
     },
@@ -2029,7 +2051,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 828.0,
+        "load_ms": 1026.0,
         "prop_instances": 1252,
         "second_row": 102,
         "track_length_m": 2243.6
@@ -2322,8 +2344,8 @@
       "metrics": {
         "roadblock_layout_14m": [
           -6.0,
-          -3.79999995231628,
-          -1.60000002384186
+          -4.0,
+          -2.0
         ]
       },
       "pass": true
@@ -2331,14 +2353,14 @@
     "test_roadblock_on_city_road": {
       "failures": [],
       "metrics": {
-        "city_barrier_worst_kerb_margin_m": 0.187031936645508
+        "city_barrier_worst_kerb_margin_m": -0.0129680633544922
       },
       "pass": true
     },
     "test_roadblock_placement_is_safe": {
       "failures": [],
       "metrics": {
-        "roadblock_min_car_m": 138.476684570313
+        "roadblock_min_car_m": 138.609115600586
       },
       "pass": true
     },
@@ -2462,7 +2484,7 @@
     "test_grid_intro_ends_at_chase_pose": {
       "failures": [],
       "metrics": {
-        "intro_handover_step_m": 0.023321695625782
+        "intro_handover_step_m": 0.0233615692704916
       },
       "pass": true
     },
@@ -2755,7 +2777,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@24665"
+        "main_menu_focus": "@Button@24599"
       },
       "pass": true
     },
@@ -2833,6 +2855,13 @@
       "metrics": {
         "star_pop_peak": 1.10000405296
       },
+      "pass": true
+    }
+  },
+  "test_ux_footer.gd": {
+    "test_results_footer_fits_turkish_labels": {
+      "failures": [],
+      "metrics": {},
       "pass": true
     }
   },

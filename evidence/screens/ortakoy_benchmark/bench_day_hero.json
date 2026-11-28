@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.999,
+  "luma_max": 1.0,
   "luma_min": 0.0,
   "name": "bench_day_hero",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 310,
     "draw_calls_min": 310,
     "driver": "vulkan",
-    "fps": 506.256,
-    "frame_ms_avg": 1.975,
-    "frame_ms_p95": 3.313,
-    "frame_ms_p99": 3.663,
+    "fps": 406.76,
+    "frame_ms_avg": 2.458,
+    "frame_ms_p95": 4.065,
+    "frame_ms_p99": 4.581,
     "frames": 60,
     "objects": 310,
     "os": "Windows",
     "primitives": 378177,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 771.329,
+    "video_mem_mb": 771.245,
     "viewport_size": [
       1920,
       1061
