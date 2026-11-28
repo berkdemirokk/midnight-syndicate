@@ -9,6 +9,7 @@ const CRUISE_KMH: float = 100.0
 const PROVOKE_TICKS: int = 40  ## 0.67 s of full steer (and handbrake for the drift)
 const TOL: float = 0.05
 const WINDOW_TICKS: int = 120  ## 2 s after the push arms
+const HOLD_TICKS: int = 120  ## 2 s of held steer with no release: must not arm the push
 const MAX_TICKS: int = 60 * 12
 const CARS: Array = [
 	{"name": "sable", "spec": "res://vehicles/specs/noctra_sable.tres"},
@@ -39,8 +40,8 @@ func _run(spec_path: String, drift: bool) -> Dictionary:
 		car.input.throttle = 0.5 if provoke else 1.0
 		car.input.handbrake = drift and provoke
 		await frames(1)
-		seen = seen or car.is_drifting or car._turning
-		if not armed and car._exit_push_t > 0.0:
+		seen = seen or car.is_drifting or car.is_grip_turning()
+		if not armed and car.is_exit_push_active():
 			armed = true
 			arm_tick = i
 			v_exit = car.speed_kmh
@@ -52,8 +53,38 @@ func _run(spec_path: String, drift: bool) -> Dictionary:
 		"gain_kmh": v_2s - v_exit}
 
 
+func test_held_steer_does_not_arm_push() -> void:
+	for c: Dictionary in CARS:
+		var ground: StaticBody3D = FlatWorld.make_ground(0.0)
+		add(ground)
+		var car := ArcadeCar.new()
+		car.spec = load(c["spec"]) as CarSpec
+		add(car)
+		car.reset_to(Transform3D(Basis.IDENTITY, Vector3(0.0, 0.47, 0.0)))
+		var guard: int = 0
+		car.input.throttle = 1.0
+		while car.speed_kmh < CRUISE_KMH and guard < 60 * 40:
+			await frames(1)
+			guard += 1
+		var turned: bool = false
+		var drifted: bool = false
+		var pushed: bool = false
+		for i: int in HOLD_TICKS:
+			car.input.steer = 1.0
+			car.input.throttle = 0.5
+			await frames(1)
+			turned = turned or car.is_grip_turning()
+			drifted = drifted or car.is_drifting
+			pushed = pushed or (car.is_exit_push_active() and not drifted)
+		await cleanup([car, ground])
+		var name: String = c["name"]
+		check(turned, "%s: held steer never built yaw above the threshold" % name)
+		check(not pushed, "%s: held steer armed the grip exit push" % name)
+
+
 func test_exit_push_drift_matches_grip() -> void:
 	var rows: Array = []
+	var accepted: bool = true
 	for c: Dictionary in CARS:
 		var d: Dictionary = await _run(c["spec"], true)
 		var g: Dictionary = await _run(c["spec"], false)
@@ -65,16 +96,18 @@ func test_exit_push_drift_matches_grip() -> void:
 		check(g["seen"], "%s: grip turn never built yaw above the threshold" % name)
 		check(d["armed"], "%s: exit push not armed after the drift" % name)
 		check(g["armed"], "%s: exit push not armed after the grip turn" % name)
-		# Parity (drift gain within 5 % of grip gain) is measured and recorded, not enforced: it is not met yet.
+		# Parity (drift gain within 5 % of grip gain) is recorded, NOT enforced: WP-A3 is not accepted while it fails.
+		# Tuning is a separate step; the suite pass is not acceptance (see evidence/handling/exit_push.json "accepted").
 		var parity: bool = absf(d["gain_kmh"] - g["gain_kmh"]) <= TOL * maxf(absf(g["gain_kmh"]), 0.001)
+		accepted = accepted and parity
 		metric(name + "_parity_5pct", parity)
 		print("EXITPUSH %s parity within 5 %%: %s" % [name, str(parity)])
-		rows.append({"car": name, "drift": d, "grip": g})
+		rows.append({"car": name, "parity_within_tol": parity, "drift": d, "grip": g})
 	var dir: String = ProjectSettings.globalize_path("res://").path_join("../evidence/handling").simplify_path()
 	DirAccess.make_dir_recursive_absolute(dir)
 	var f := FileAccess.open(dir.path_join("exit_push.json"), FileAccess.WRITE)
 	if f != null:
-		f.store_string(JSON.stringify({"push_s": 0.3, "push_mult": 1.15, "window_s": 2.0, "tolerance": TOL, "hz": HZ, "cruise_kmh": CRUISE_KMH, "rows": rows}, "\t"))
+		f.store_string(JSON.stringify({"push_s": 0.3, "push_mult": 1.15, "window_s": 2.0, "tolerance": TOL, "hz": HZ, "cruise_kmh": CRUISE_KMH, "accepted": accepted, "rows": rows}, "\t"))
 		f.close()
 	else:
 		check(false, "could not write evidence/handling/exit_push.json")

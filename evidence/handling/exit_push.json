@@ -1,4 +1,5 @@
 {
+	"accepted": false,
 	"cruise_kmh": 100.0,
 	"hz": 60.0,
 	"push_mult": 1.15,
@@ -17,11 +18,12 @@
 			"grip": {
 				"armed": true,
 				"drift": false,
-				"gain_kmh": 44.1802345275879,
+				"gain_kmh": 45.7609886169434,
 				"seen": true,
-				"v_2s_kmh": 148.047019958496,
-				"v_exit_kmh": 103.866785430908
-			}
+				"v_2s_kmh": 157.423617553711,
+				"v_exit_kmh": 111.662628936768
+			},
+			"parity_within_tol": false
 		},
 		{
 			"car": "vela",
@@ -36,11 +38,12 @@
 			"grip": {
 				"armed": true,
 				"drift": false,
-				"gain_kmh": 21.7328796386719,
+				"gain_kmh": 41.3070762634277,
 				"seen": true,
-				"v_2s_kmh": 110.817176055908,
-				"v_exit_kmh": 89.0842964172363
-			}
+				"v_2s_kmh": 124.472557067871,
+				"v_exit_kmh": 83.1654808044434
+			},
+			"parity_within_tol": false
 		}
 	],
 	"tolerance": 0.05,
