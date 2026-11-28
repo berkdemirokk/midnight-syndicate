@@ -144,6 +144,7 @@ const DICT: Dictionary = {
 	"hud.out_tag": {"tr": "ELENDİ", "en": "OUT"},
 	"results.out": {"tr": "ELENDİ · TUR %d", "en": "OUT · LAP %d"},
 	"results.pts": {"tr": "%s PUAN", "en": "%s PTS"},
+	"results.new_best": {"tr": "YENİ EN İYİ", "en": "NEW BEST"},
 	"event.start": {"tr": "BAŞLA", "en": "START"},
 	"event.locked": {"tr": "KİLİTLİ", "en": "LOCKED"},
 	"event.locked_hint": {"tr": "ÖNCEKİ ETKİNLİKTE 1 YILDIZ KAZAN", "en": "EARN 1 STAR ON THE PREVIOUS EVENT"},
