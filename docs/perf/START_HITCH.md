@@ -122,7 +122,7 @@ Not ruled out: the spike is tied to a track position (the car reaches about x -2
 
 ### Hypothesis 2: SPECIALIZATION compiles and light toggles
 
-- The car `CarFx` `OmniLight3D` nodes toggle visibility 135 to 181 times per 60 s race (mostly nitro and underglow flicker). Compiles do not follow them: mean specialization compiles per frame are 0.13 to 0.20 in frames with a toggle and 0.18 to 0.19 in frames without one.
+- The car `CarFx` `OmniLight3D` nodes toggle visibility 135 to 181 times per 60 s race (which effect drives them was not checked). Compiles do not follow them: mean specialization compiles per frame are 0.13 to 0.20 in frames with a toggle and 0.18 to 0.19 in frames without one.
 - Compiles keep arriving through the race at about 0.18 per frame (about 11 per second) with no toggle in the frame. The big batch (about 120) comes in the grid beat, before countdown, as already measured in attempt 1. So compiles are not only at GO.
 - Shadow state changes were not seen in the probe (no `shadow_enabled` flips).
 
