@@ -14,7 +14,9 @@ const SPEED_HI_KMH := 40.0
 const PITCH_LOW := 0.92
 const PITCH_MID := 1.0
 const PITCH_HIGH := 1.08  ## high slip sits +8 % above mid
-const GAIN_SCALE := 0.8
+## Same stream, same position: 4 voices at 0.4 with staggered starts sum (in power) to the old single squeal's 0.8.
+## At 0.8 each, voices started in one frame summed coherently to 3.2 linear.
+const GAIN_SCALE := 0.4
 const AUDIBLE_GAIN := 0.005
 
 var players: Array[AudioStreamPlayer3D] = []
@@ -63,7 +65,7 @@ func update(slip: PackedFloat32Array, speed_kmh: float, grounded: bool, delta: f
 		if _gain[i] > AUDIBLE_GAIN:
 			p.volume_db = linear_to_db(maxf(_gain[i] * GAIN_SCALE, 0.00003))
 			if not p.playing and p.stream != null and p.is_inside_tree():
-				p.play()
+				p.play(p.stream.get_length() * 0.25 * i)  # stagger the loop so wheels do not add sample-aligned
 		else:
 			p.volume_db = -80.0
 			if p.playing:
