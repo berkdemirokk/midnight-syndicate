@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.976,
+  "luma_max": 0.997,
   "luma_min": 0.0,
   "name": "city_sunset",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 397,
-    "draw_calls_min": 383,
+    "draw_calls": 389,
+    "draw_calls_min": 387,
     "driver": "vulkan",
-    "fps": 111.692,
-    "frame_ms_avg": 8.953,
-    "frame_ms_p95": 10.884,
-    "frame_ms_p99": 11.61,
+    "fps": 257.58,
+    "frame_ms_avg": 3.882,
+    "frame_ms_p95": 4.938,
+    "frame_ms_p99": 6.568,
     "frames": 60,
-    "objects": 13904,
+    "objects": 18705,
     "os": "Windows",
-    "primitives": 353618,
+    "primitives": 361240,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 585.907,
+    "video_mem_mb": 729.073,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/tod_tracks/city_sunset.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/fable-graphics-visual-quality-105c41/evidence/screens/tod_tracks/city_sunset.png",
   "preset": "high",
   "scenario": "tod_tracks"
 }
