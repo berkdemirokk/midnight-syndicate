@@ -10,6 +10,9 @@ const LAUNCH_CAP_TICKS: int = 60 * 60
 const SPEC_NAMES: Array[String] = ["noctra_sable", "noctra_vela", "noctra_tayfun", "kestrel_gtr", "arden_bruiser", "atmaca_stock"]
 ## 0-100 km/h bands per class (dev PC, headless, 60 Hz): each class keeps its own pull.
 const LAUNCH_BAND: Dictionary = {"noctra_sable": [3.6, 4.4], "noctra_vela": [3.6, 4.6], "noctra_tayfun": [3.0, 3.8], "kestrel_gtr": [3.0, 3.9], "arden_bruiser": [4.2, 5.3], "atmaca_stock": [8.0, 10.0]}
+## 90 % of top speed from rest (s), pinned to about +-8 % of the measured 2026-11-28 value. These are measured, not targets:
+## Sable (21.7 s) and Kestrel GT (20.8 s) approach slowly. A tuning pass moves these bands on purpose (HANDLING doc, follow-up).
+const TIME90_BAND: Dictionary = {"noctra_sable": [20.0, 23.4], "noctra_vela": [13.9, 16.3], "noctra_tayfun": [15.4, 18.0], "kestrel_gtr": [19.1, 22.5], "arden_bruiser": [13.7, 16.0], "atmaca_stock": [15.2, 17.8]}
 
 
 func _spawn(spec_name: String, x: float, z: float = 0.0, y: float = 0.47) -> ArcadeCar:
@@ -62,7 +65,8 @@ func test_feel_launch_per_class() -> void:
 		_say(spec_name + "_0_100_s", t100)
 		var band: Array = LAUNCH_BAND[spec_name]
 		check_range(t100, band[0], band[1], spec_name + " 0-100 km/h (s)")
-		check(t90 > 0.0 and t90 < 25.0, "%s time to 90 %% of top %.1f s" % [spec_name, t90])
+		var band90: Array = TIME90_BAND[spec_name]
+		check_range(t90, band90[0], band90[1], spec_name + " time to 90 % of top (s)")
 		_say(spec_name + "_90pct_top_s", t90)
 		_say(spec_name + "_top_kmh", top)
 		await cleanup([car])
