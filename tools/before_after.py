@@ -22,8 +22,8 @@ def sheet(before: str, after: str, out: str, label: str) -> None:
     s.paste(a, (0, 40))
     s.paste(b, (w + 8, 40))
     d = ImageDraw.Draw(s)
-    d.text((10, 12), "BEFORE (feature/vertical-slice a4c30a1)  " + label, fill=(230, 230, 230))
-    d.text((w + 18, 12), "AFTER (release/rc-2026-11-28)  " + label, fill=(230, 230, 230))
+    d.text((10, 12), os.environ.get("BA_BEFORE", "BEFORE (feature/vertical-slice a4c30a1)") + "  " + label, fill=(230, 230, 230))
+    d.text((w + 18, 12), os.environ.get("BA_AFTER", "AFTER (release/rc-2026-11-28)") + "  " + label, fill=(230, 230, 230))
     s.save(out, quality=88)
 
 
