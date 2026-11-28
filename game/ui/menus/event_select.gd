@@ -32,6 +32,7 @@ const FOCUS_PX: float = 2.0
 const RULE_LINES: int = 3
 const ARROW_R: float = 16.0
 const STAR_OFF: Color = Color(0.541, 0.580, 0.651, 0.3)
+const HEADER_PX: float = 30.0  ## chapter header slot above the first row of a chapter
 
 ## The single canvas item the screen paints into.
 class Board:
@@ -53,6 +54,8 @@ var _row_num: Array[HudText] = []
 var _row_name: Array[HudText] = []
 var _row_info: Array[HudText] = []
 var _row_lock: Array[HudText] = []
+var _header_slots: Dictionary = {}  ## row index -> spacer above that row (chapter starts only)
+var _header_texts: Dictionary = {}  ## row index -> chapter name painted in its spacer
 var _d_title: HudText
 var _d_state: HudText
 var _d_caps: Array[HudText] = []  ## rival level, laps, rivals, winner pays, best time
@@ -105,6 +108,9 @@ func _ready() -> void:
 	list.add_theme_constant_override("separation", int(ROW_GAP_PX))
 	body.add_child(list)
 	for i: int in EventCatalog.count():
+		if is_chapter_start(i):
+			_header_slots[i] = _slot(list, Vector2(ROW_W, HEADER_PX * MSTheme.k()))
+			_header_texts[i] = _text("tracked", ROW_INFO_PX, MSTheme.CYAN)
 		_row_btns.append(_row_button(list, i))
 		_row_num.append(_text("digits", ROW_PX, MSTheme.CYAN))
 		_row_name.append(_text("bold", ROW_PX, MSTheme.TEXT))
@@ -187,6 +193,8 @@ func _update_window() -> void:
 		_win = _sel - capacity + 1
 	for i: int in n:
 		_row_btns[i].visible = i >= _win and i < _win + capacity
+	for i: int in _header_slots.keys():
+		_header_slots[i].visible = _row_btns[i].visible
 	if _up_btn != null:
 		_up_btn.disabled = _sel <= 0
 		_down_btn.disabled = _sel >= n - 1
@@ -227,6 +235,12 @@ func start_race() -> void:
 		return
 	UiSounds.click()
 	Router.goto(RACE_SCENE, params)
+
+
+## True when the list shows a chapter header above this row: the first row and each row whose chapter differs from the
+## row before (the modes and pursuit tail, chapter 0, gets its own header too).
+static func is_chapter_start(index: int) -> bool:
+	return index == 0 or EventCatalog.chapter_of(EventCatalog.id_at(index)) != EventCatalog.chapter_of(EventCatalog.id_at(index - 1))
 
 
 # --- build ---------------------------------------------------------------------------------------------
@@ -325,6 +339,8 @@ func _refresh_text() -> void:
 		_row_info[i].set_text(_info_line(ev))
 		_row_lock[i].set_text(I18n.t("event.locked"))
 		_row_lock[i].visible = not open
+	for i: int in _header_texts.keys():
+		(_header_texts[i] as HudText).set_text(I18n.t(EventCatalog.chapter_name_key(EventCatalog.chapter_of(EventCatalog.id_at(i)))))
 	_refresh_detail()
 	_start_btn.disabled = not GameState.is_event_unlocked(get_selected_id())
 	_board.queue_redraw()
@@ -466,6 +482,15 @@ func _paint_board(c: Control) -> void:
 		_row_name[i].pos = Vector2(nx, top)
 		_row_info[i].pos = Vector2(nx, top + _row_name[i].height())
 		_row_lock[i].pos = Vector2(right - _row_lock[i].width(), r.position.y + (r.size.y - _row_lock[i].height()) * 0.5)
+
+	# Chapter headers: each text sits at the bottom of the spacer above its first row.
+	for i: int in _header_slots.keys():
+		var slot: Control = _header_slots[i]
+		var ht: HudText = _header_texts[i]
+		ht.visible = slot.visible
+		if slot.visible:
+			var hr: Rect2 = _local_rect(slot)
+			ht.pos = Vector2(hr.position.x + MSTheme.BUTTON_PAD_X + ACCENT_W, hr.end.y - ht.height())
 
 	# Detail panel: title, stars, then caption left and value right on one line each.
 	var pad: float = MSTheme.BUTTON_PAD_X * 1.5
