@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.965,
+  "luma_min": 0.0,
+  "name": "hero34",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 57,
+    "draw_calls_min": 57,
+    "driver": "vulkan",
+    "fps": 852.079,
+    "frame_ms_avg": 1.174,
+    "frame_ms_p95": 1.239,
+    "frame_ms_p99": 1.286,
+    "frames": 60,
+    "objects": 57,
+    "os": "Windows",
+    "primitives": 157736,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 492.225,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetD/evidence/screens/car_studio_serce/hero34.png",
+  "preset": "high",
+  "scenario": "car_studio_serce"
+}
