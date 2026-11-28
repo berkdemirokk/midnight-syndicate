@@ -65,6 +65,7 @@ func _ready() -> void:
 	_back.name = "Back"
 	_back.custom_minimum_size = Vector2(ROW_W, maxf(TOUCH_H, MSTheme.button_h()))
 	_back.text = I18n.t("common.back")
+	_back.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN  # the run rows' width, not the whole screen
 	_back.pressed.connect(func() -> void: UiSounds.click())
 	_back.pressed.connect(back)
 	col.add_child(_back)

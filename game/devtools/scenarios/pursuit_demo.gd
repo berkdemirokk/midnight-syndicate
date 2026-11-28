@@ -22,6 +22,9 @@ const SHOT_CAM_BACK_M: float = 8.0
 const ROADBLOCK_NEAR_WAIT_S: float = 40.0
 const CLOSE_CAM_BACK_M: float = 7.0  ## the close-up camera: this far before the barriers, toward the traffic
 const CLOSE_CAM_UP_M: float = 1.4
+const BOX_WAIT_S: float = 20.0  ## the box shot waits this long for both boxing cars to hold their point
+const BOX_CAM_BACK_M: float = 12.0
+const BOX_CAM_UP_M: float = 9.0
 const HIDE_WAIT_S: float = 60.0  ## the hiding spot shot waits this long for the player to drive into a spot
 const CLOSE_CAM_SIDE_M: float = -2.0  ## left of the barrier line: the player car drives in the open lane on the right
 
@@ -141,17 +144,10 @@ func run() -> void:
 	pm.state.heat = 5
 	await cap.wait_seconds(1.0)
 	await cap.shot("pursuit_heat_5")
-	# Boxing at heat 5: the first two police cars hold the box points left and right of the player, ahead of it.
-	await cap.wait_seconds(4.0)
-	var box_info: String = ""
-	for c: ArcadeCar in pm.police:
-		var drv_b: PoliceDriver = c.get_node_or_null(PursuitMode.DRIVER_NAME) as PoliceDriver
-		if drv_b != null:
-			var gap: float = PoliceDriver.box_gap_m(_scene.track.get_progress(c.global_position), pm._player_s, _scene.track.length)
-			box_info += " side=%d gap=%.1f" % [drv_b.box_side, gap]
-	print("PURSUIT_DEMO box%s" % box_info)
-	await cap.shot("pursuit_box_heat_5")
-	# Hiding spot: wait until the player drives into one, then shot the HUD hint.
+	# Back to the chase camera: the HUD hint and the box are judged from the player's view.
+	_scene.camera.make_current()
+	cam2.queue_free()
+	# Hiding spot: wait until the player is inside one, then shot the HUD hint.
 	waited = 0.0
 	while HidingSpots.index_at(_scene.config_used.track_scene, pm._player_s, _scene.track.length) < 0 and waited < HIDE_WAIT_S:
 		await cap.wait_frames(1)
@@ -162,6 +158,39 @@ func run() -> void:
 		return
 	await cap.wait_frames(2)
 	await cap.shot("pursuit_hiding_spot")
+	# Boxing at heat 5: the first two police cars take the box points left and right of the player, ahead of it. The
+	# player is held at the barriers here; at full speed the stock police sedan cannot get ahead (see PURSUIT_MODE.md).
+	# Shot when both hold their point, or at the time limit as an attempt (the line says which).
+	waited = 0.0
+	var box_info: String = ""
+	var holding: int = 0
+	while waited < BOX_WAIT_S:
+		await cap.wait_frames(1)
+		waited += WAIT_STEP_S
+		box_info = ""
+		holding = 0
+		for c: ArcadeCar in pm.police:
+			var drv_b: PoliceDriver = c.get_node_or_null(PursuitMode.DRIVER_NAME) as PoliceDriver
+			if drv_b != null:
+				var gap: float = PoliceDriver.box_gap_m(_scene.track.get_progress(c.global_position), pm._player_s, _scene.track.length)
+				box_info += " side=%d gap=%.1f" % [drv_b.box_side, gap]
+				if drv_b.box_side != 0 and absf(gap - PursuitMode.BOX_AHEAD_M) <= PoliceDriver.BOX_TOLERANCE_M:
+					holding += 1
+		if holding >= 2:
+			break
+	print("PURSUIT_DEMO box%s holding=%d waited=%.1f speed=%.0f" % [box_info, holding, waited, _scene.player.speed_kmh])
+	# A high camera behind the player: from the chase camera the player car hides the two boxing cars ahead of it.
+	var fwd_b: Vector3 = _scene.track.get_tangent_at(pm._player_s)
+	var cam3 := Camera3D.new()
+	cam3.fov = 60.0
+	_scene.add_child(cam3)
+	cam3.global_position = _scene.player.global_position - fwd_b * BOX_CAM_BACK_M + Vector3.UP * BOX_CAM_UP_M
+	cam3.look_at(_scene.player.global_position + fwd_b * PursuitMode.BOX_AHEAD_M, Vector3.UP)
+	cam3.make_current()
+	await cap.wait_frames(2)
+	await cap.shot("pursuit_box_heat_5")
+	_scene.camera.make_current()
+	cam3.queue_free()
 	# Escape, real rules: every police car 150 m back, out of sensing range, so the 8 s cooldown runs and the chase ends.
 	var fwd_e: Vector3 = _scene.track.get_tangent_at(_scene.track.get_progress(_scene.player.global_position))
 	for c: ArcadeCar in pm.police:

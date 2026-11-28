@@ -55,3 +55,16 @@ func test_normal_races_never_get_pursuit() -> void:
 		checked += 1
 	check(checked > 30, "checked %d normal events" % checked)
 	check(RaceConfig.new().pursuit == false, "a default race config has no pursuit")
+
+
+func test_results_screen_shows_the_evade_bonus() -> void:
+	var screen: ResultsScreen = add(load("res://ui/menus/results_screen.tscn").instantiate()) as ResultsScreen
+	await frames(1)
+	var rows: Array[Dictionary] = [{"name": "Player", "position": 1, "total_time": 90.0, "best_lap": 45.0, "is_player": true}]
+	screen.show_results(rows, {"cash": 100, "rep": 5, "evade_bonus": 1200})
+	var sub: String = (screen.get("_subtitle") as HudText).text
+	check(sub.contains(I18n.t("pursuit.evade") % 1200), "the results line shows the evade bonus (%s)" % sub)
+	screen.show_results(rows, {"cash": 100, "rep": 5})
+	sub = (screen.get("_subtitle") as HudText).text
+	check(not sub.contains(I18n.t("pursuit.evade") % 1200), "no evade line without a bonus (%s)" % sub)
+	await cleanup([screen as Node])
