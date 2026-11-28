@@ -253,6 +253,8 @@ func _build_chrome() -> void:
 		var garage_btn: Button = results_screen.get("_garage_btn") as Button
 		if garage_btn != null:
 			garage_btn.visible = false
+	# First career race only, once: the three onboarding hints (no-op for every other race and after they are done).
+	OnboardingHints.attach(self, config_used, results_screen)
 
 
 func _build_race() -> void:
