@@ -2,7 +2,7 @@
   "_meta": {
     "godot": "4.7.2-stable (official)",
     "physics_engine": "Jolt Physics",
-    "time": "2026-11-28T03:47:06"
+    "time": "2026-11-28T04:33:50"
   },
   "test_ai_churn.gd": {
     "test_closing_car_brakes_before_contact": {
@@ -872,7 +872,7 @@
         "light_budget_log": 4,
         "light_worst_per_mesh_omni": 8,
         "light_worst_per_mesh_spot": 8,
-        "load_time_ms": 1508.4,
+        "load_time_ms": 1569.6,
         "probe_worst_per_mesh": 3
       },
       "pass": true
@@ -974,7 +974,7 @@
         "8car_orderB_nitro100_race_time_s": 80.98,
         "8car_orderB_nitro100_stuck_events": 3,
         "8car_orderB_nitro100_stuck_worst_car": 2,
-        "8car_orderB_nitro100_wall_s": 6.2
+        "8car_orderB_nitro100_wall_s": 6.0
       },
       "pass": true
     },
@@ -998,7 +998,7 @@
         "8car_orderB_nitro0_race_time_s": 79.57,
         "8car_orderB_nitro0_stuck_events": 3,
         "8car_orderB_nitro0_stuck_worst_car": 1,
-        "8car_orderB_nitro0_wall_s": 5.9
+        "8car_orderB_nitro0_wall_s": 5.8
       },
       "pass": true
     },
@@ -1033,7 +1033,7 @@
         "6car_nitro140_race_time_s": 73.8,
         "6car_nitro140_stuck_events": 0,
         "6car_nitro140_stuck_worst_car": 0,
-        "6car_nitro140_wall_s": 3.2
+        "6car_nitro140_wall_s": 3.3
       },
       "pass": true
     },
@@ -1045,7 +1045,7 @@
         "6car_nitro0_race_time_s": 73.58,
         "6car_nitro0_stuck_events": 0,
         "6car_nitro0_stuck_worst_car": 0,
-        "6car_nitro0_wall_s": 3.2
+        "6car_nitro0_wall_s": 3.3
       },
       "pass": true
     }
@@ -1406,12 +1406,49 @@
     }
   },
   "test_economy.gd": {
+    "test_career_cost_ratio_is_in_band": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_cash_table_falls_with_place": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
     "test_economy_caps_before_integer_addition": {
       "failures": [],
       "metrics": {},
       "pass": true
     },
     "test_time_trial_rewards_follow_stars": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_escape_event.gd": {
+    "test_bust_shows_result_without_reward": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_escape_event_runs_to_a_result": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_event_flag_opens_gate_with_kill_switch_off": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_event_is_reachable_and_localized": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_other_events_do_not_opt_in": {
       "failures": [],
       "metrics": {},
       "pass": true
@@ -1956,10 +1993,10 @@
       "failures": [],
       "metrics": {
         "min_upright_y": 0.9968,
-        "race_time_s": 55.43,
+        "race_time_s": 55.1,
         "stuck_total": 1,
         "stuck_worst_car": 1,
-        "wall_s": 2.2
+        "wall_s": 2.0
       },
       "pass": true
     },
@@ -1979,7 +2016,7 @@
         "istanbul_sign_types": 7,
         "lights_built": 150,
         "lights_dropped": 19,
-        "load_ms": 858.0,
+        "load_ms": 913.0,
         "prop_instances": 991,
         "second_row": 155,
         "track_length_m": 2205.4
@@ -2051,7 +2088,7 @@
         "istanbul_sign_types": 12,
         "lights_built": 138,
         "lights_dropped": 0,
-        "load_ms": 1026.0,
+        "load_ms": 1074.0,
         "prop_instances": 1252,
         "second_row": 102,
         "track_length_m": 2243.6
@@ -2105,6 +2142,87 @@
         "landmark_origin_lateral_m": -13.0,
         "layout_instances_in_footprint": 0
       },
+      "pass": true
+    }
+  },
+  "test_modes.gd": {
+    "test_drift_chains_bank_only_while_racing": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_drift_config_is_timed_and_solo": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_drift_event_runs_timed_to_a_scored_result": {
+      "failures": [],
+      "metrics": {
+        "drift_score_autopilot": 700.0,
+        "frames_drift_harbour": 3873
+      },
+      "pass": true
+    },
+    "test_drift_reward_uses_the_star_tier": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_drift_stars_follow_the_score": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_elimination_config_has_cars_minus_one_laps": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_elimination_event_places_every_car": {
+      "failures": [],
+      "metrics": {
+        "elim_player_out_lap": 1,
+        "elim_player_place": 4,
+        "frames_elim_wharf": 5009
+      },
+      "pass": true
+    },
+    "test_elimination_places_and_lap_rules": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_elimination_reward_uses_the_place": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_elimination_stars_follow_the_place": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_mode_events_are_on_the_ladder": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_net_join.gd": {
+    "test_hello_rate_limit": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_join_code_format": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_right_and_wrong_code": {
+      "failures": [],
+      "metrics": {},
       "pass": true
     }
   },
@@ -2207,6 +2325,40 @@
       "pass": true
     }
   },
+  "test_onboarding.gd": {
+    "test_hints_end_when_results_show": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_hints_show_once_in_first_race": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_main_menu_first_launch_redirect_and_records_button": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_new_profile_onboards_once": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_old_save_counts_as_onboarded": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_onboarding_screen_steps_and_language": {
+      "failures": [],
+      "metrics": {
+        "default_language": "tr"
+      },
+      "pass": true
+    }
+  },
   "test_perf_presets.gd": {
     "test_mirror_environment_no_glow_linear_tonemap": {
       "failures": [],
@@ -2224,6 +2376,41 @@
       "pass": true
     },
     "test_settings_apply_post_aa_to_viewport": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
+  "test_persistence_restart.gd": {
+    "test_full_career_survives_restart": {
+      "failures": [],
+      "metrics": {
+        "cash_after_restart": 57080,
+        "total_stars": 5
+      },
+      "pass": true
+    },
+    "test_missing_main_recovers_backup": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_recovered_profile_keeps_backup_clean": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_second_restart_keeps_new_progress": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_stale_staging_file_is_ignored": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_torn_main_recovers_previous_save": {
       "failures": [],
       "metrics": {},
       "pass": true
@@ -2472,6 +2659,28 @@
       "pass": true
     }
   },
+  "test_records_screen.gd": {
+    "test_best_score_and_car_are_kept": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_old_career_records_load_with_new_fields": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_records_screen_empty_profile_has_note": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_records_screen_rows_and_values": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
   "test_replay.gd": {
     "test_director_skips_blocked_spot": {
       "failures": [],
@@ -2708,12 +2917,59 @@
       "pass": true
     }
   },
+  "test_touch_survival.gd": {
+    "test_focus_loss_pauses_and_never_resumes": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_layout_clear_of_hud_on_desktop": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_layout_clear_of_hud_on_iphone_and_ipad": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_new_strings_exist": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_online_pause_keeps_the_clock_running": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_pause_button_emits_pause_pressed": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_pause_drops_held_touches": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_pause_menu_actions": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    },
+    "test_touch_pause_toggles_menu": {
+      "failures": [],
+      "metrics": {},
+      "pass": true
+    }
+  },
   "test_traffic.gd": {
     "test_five_ai_race_with_traffic_finishes": {
       "failures": [],
       "metrics": {
         "race_traffic_grid_min_m": 119.9,
-        "race_traffic_hits": 7,
+        "race_traffic_hits": 8,
         "race_traffic_min_upright_y": 0.9962,
         "race_traffic_respawns": 47,
         "race_traffic_stuck_total": 0,
@@ -2764,8 +3020,8 @@
     "test_i18n_keys_complete_and_used": {
       "failures": [],
       "metrics": {
-        "i18n_keys": 203,
-        "i18n_keys_used": 81
+        "i18n_keys": 257,
+        "i18n_keys_used": 90
       },
       "pass": true
     },
@@ -2777,7 +3033,7 @@
     "test_main_menu_focus_and_backdrop": {
       "failures": [],
       "metrics": {
-        "main_menu_focus": "@Button@24599"
+        "main_menu_focus": "@Button@27025"
       },
       "pass": true
     },
@@ -2813,7 +3069,7 @@
     "test_every_menu_button_is_a_44pt_target_on_phone": {
       "failures": [],
       "metrics": {
-        "phone_buttons_checked": 24
+        "phone_buttons_checked": 26
       },
       "pass": true
     },
