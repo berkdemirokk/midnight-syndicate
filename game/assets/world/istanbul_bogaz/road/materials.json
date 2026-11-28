@@ -145,6 +145,18 @@
    "textures": "none embedded; engine applies CC0 PBR set or procedural shader"
   },
   {
+   "name": "M_Stone_Plinth",
+   "base_colour_srgb": "#F0E8DA",
+   "roughness": 0.8,
+   "metallic": 0.0,
+   "emissive_srgb": "#000000",
+   "emissive_strength": 0.0,
+   "uv": "world triplanar (engine)",
+   "notes": "cut-stone quay plinth (edge barrier, config road.edge_barrier_material)",
+   "textures": "none embedded; engine applies CC0 PBR set or procedural shader",
+   "uv_tile_m": 1.6
+  },
+  {
    "name": "M_Cobble",
    "base_colour_srgb": "#6B665F",
    "roughness": 0.7,

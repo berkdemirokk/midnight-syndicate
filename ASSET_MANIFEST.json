@@ -7670,10 +7670,10 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 11187176,
-      "sha256": "aa1cb16c7b3032c53595e9674550a0c83db886159acd17778f8f13941abdc9ef",
+      "bytes": 11180028,
+      "sha256": "9e3a8653ae82a25cb35b4c6e66b1d10163f0a0fb449457ac34fde75f9c4b47ab",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7690,7 +7690,7 @@
       "bytes": 755362,
       "sha256": "27333ccba4820c1e7951a74082610417339d67e6885d88b61db8e7020648616f",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7704,10 +7704,10 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 4806,
-      "sha256": "1edc675c06262e8268e76925099daacccb15983cc676db9658a3dbac22221b85",
+      "bytes": 5216,
+      "sha256": "7e659ec105ce579e3006f393090e28b227e9fc112b41d38f8acbec659d078897",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7722,9 +7722,9 @@
       "texture_sizes": {},
       "material_count": 0,
       "bytes": 1770,
-      "sha256": "bf9b1979c22c18c3be0b3a885eb86ced2bc626ccbc6c09207cfb44280d9c4597",
+      "sha256": "5170ca48de45d75b79b7d13f9998d07f74aa1280fe5d20f22aa33dd831e1190d",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7741,7 +7741,7 @@
       "bytes": 455809,
       "sha256": "0ccbbf31f7a5b586816415689dc88b27778f0d31cd8621ce5852ecaab6de19f4",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7758,7 +7758,7 @@
       "bytes": 6217,
       "sha256": "c7278e54a1b91042d765d4c45e8c05cc630c7628aebb5a8e188075935a17a9f0",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7775,7 +7775,7 @@
       "bytes": 72188,
       "sha256": "d6954acd6a903c69a08f7fe3794673ddcab5dfb991ab850e3f0af97132c2a2d5",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7792,7 +7792,7 @@
       "bytes": 16972,
       "sha256": "449e2b67bf8fd13afb87881929d55c69377110b73ee6d6c22954e22ab9c3c0d3",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7809,7 +7809,7 @@
       "bytes": 94140,
       "sha256": "fea101f70acc705c6d3660595a8ec938e30772bb8a7e58167c61010a72ed5afb",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7826,7 +7826,7 @@
       "bytes": 18992,
       "sha256": "5f6f014c6b92bb275238894d15ce5f7ebb2e354272fda8ab7d9bcb5adea3f3c9",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7843,7 +7843,7 @@
       "bytes": 97588,
       "sha256": "cfac73ccb45ee79626a4730b12dbee887e3cb8b1583ba58543560f604962fb35",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7860,7 +7860,7 @@
       "bytes": 16456,
       "sha256": "a27cdf04ceda24202a8c579a0b2e403172f393e130faacf68061bcdcebb7501e",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7877,7 +7877,7 @@
       "bytes": 89188,
       "sha256": "6a7e2b6df9fe5d2f04c9ccebd16247b1ecfcf307ead5d6922ab7b220cb453029",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7894,7 +7894,7 @@
       "bytes": 15156,
       "sha256": "34f484591d672670bf8f8e3e75d4a8d3391b04cab857192028d971537811fb1a",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7911,7 +7911,7 @@
       "bytes": 73572,
       "sha256": "db12f53927655d1cbec82958f66b57b23cda743e81ec255a2783c1f0292c4d59",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7928,7 +7928,7 @@
       "bytes": 13596,
       "sha256": "be6cbc11f7f9c1a171153d24d6de93382473b8c2b4a4b90944d4b3c319b50c40",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7945,7 +7945,7 @@
       "bytes": 67372,
       "sha256": "438edb1abaf279b5d775c9b1e85a8f57260cb4995fc916001509aa4d20d95f85",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7962,7 +7962,7 @@
       "bytes": 12356,
       "sha256": "f742ced5857de9111f2843efc6774b34ba070f7173a4cdfddb35f58171ab1a51",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {
@@ -7979,7 +7979,7 @@
       "bytes": 51276,
       "sha256": "e6f7a746595688b66355aa22c2999deeea7556ca1928a1a864e8a750ab447964",
       "test_result": "pass",
-      "added": "2026-11-26",
+      "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
     },
     {

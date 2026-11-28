@@ -11,23 +11,23 @@
     "draw_calls": 255,
     "draw_calls_min": 217,
     "driver": "vulkan",
-    "fps": 513.707,
-    "frame_ms_avg": 1.947,
-    "frame_ms_p95": 3.239,
-    "frame_ms_p99": 3.71,
+    "fps": 554.621,
+    "frame_ms_avg": 1.803,
+    "frame_ms_p95": 2.261,
+    "frame_ms_p99": 3.311,
     "frames": 60,
     "objects": 255,
     "os": "Windows",
     "primitives": 251761,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 777.936,
+    "video_mem_mb": 763.671,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/fable-graphics-visual-quality-105c41/evidence/screens/ortakoy_benchmark/bench_night_mosque.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-plinth/evidence/screens/ortakoy_benchmark/bench_night_mosque.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }
