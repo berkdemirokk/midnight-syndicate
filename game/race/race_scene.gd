@@ -186,8 +186,17 @@ func _on_touch_pause() -> void:
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_APPLICATION_FOCUS_OUT and what != NOTIFICATION_APPLICATION_PAUSED and what != NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		return
+	if _is_capture_run():  # the capture harness opens an off-screen window that never has focus
+		return
 	if pause_menu != null and race != null and race.state != RaceManager.State.FINISHED and not _pursuit_busted and not pause_menu.is_paused_menu_open():
 		pause_menu.pause()
+
+
+static func _is_capture_run() -> bool:
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--capture="):
+			return true
+	return false
 
 
 ## Fresh race from the grid with the same config. Used by RETRY and by the pause menu's restart.
