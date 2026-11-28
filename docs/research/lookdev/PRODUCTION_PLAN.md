@@ -141,6 +141,8 @@ Recipe: 0.3 s at 1.15x engine force when a drift ends above `drift_entry_speed_k
 with yaw rate above a threshold at the same speed.
 Test: speed 2 s after exit, drift vs grip, within 5 % on Sable and Vela; no change on straight-line acceleration tests.
 Evidence: `evidence/handling/exit_push.json`. Deps: WP-A2 done (do not tune both at once).
+Built with 3 constants (`EXIT_PUSH_TIME_S`, `EXIT_PUSH_MULT`, `GRIP_TURN_YAW_RAD_S`), not 2. Status: **implemented, NOT accepted**:
+5 % parity fails on Sable and Vela (`"accepted": false` in the evidence). Tuning is a separate step.
 
 **WP-A4 Steer assist mode.** Goal: a phone player who never steers finishes a lap.
 Files: `game/vehicles/player_driver.gd` (new `MODE_ASSIST` branch only; WP-A1 merges first), `game/core/settings.gd`
