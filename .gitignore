@@ -40,3 +40,10 @@ evidence/tmp/
 # AI concept image supplied by the owner: reference only, never shipped or published
 MIDNIGHT_RESCUE/reference/
 asset_inbox/
+# Raw CC0 audio downloads (archives, extracted packs, source wav/mp3): reproducible from source.json; only game/assets/audio/cc0 is committed
+assets_src/third_party/audio_cc0/**/*.zip
+assets_src/third_party/audio_cc0/**/extracted/
+assets_src/third_party/audio_cc0/**/*.wav
+assets_src/third_party/audio_cc0/**/*.mp3
+# Raw CC0 audio downloads (any format): reproducible from source.json; only game/assets/audio/cc0 is committed
+assets_src/third_party/audio_cc0/**/*.ogg
