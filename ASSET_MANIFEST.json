@@ -7671,7 +7671,7 @@
       "texture_sizes": {},
       "material_count": 0,
       "bytes": 11180028,
-      "sha256": "f61c4d0e2f860dcdd97eacf61e6f78e0e3acce1cf0dda1ee20de761eba50bd51",
+      "sha256": "9e3a8653ae82a25cb35b4c6e66b1d10163f0a0fb449457ac34fde75f9c4b47ab",
       "test_result": "pass",
       "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
@@ -7704,8 +7704,8 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 5201,
-      "sha256": "5090cce83367b01f798fb8d5c0b18026af76b6b0906d7e19a42f3f690e342aa8",
+      "bytes": 5216,
+      "sha256": "7e659ec105ce579e3006f393090e28b227e9fc112b41d38f8acbec659d078897",
       "test_result": "pass",
       "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"
@@ -7722,7 +7722,7 @@
       "texture_sizes": {},
       "material_count": 0,
       "bytes": 1770,
-      "sha256": "921d6d671cef6768e363fb859fd753cd75cca044f38b73cbc8afefbb0735004c",
+      "sha256": "5170ca48de45d75b79b7d13f9998d07f74aa1280fe5d20f22aa33dd831e1190d",
       "test_result": "pass",
       "added": "2026-11-28",
       "notes": "world kit and tracks, shipped by tools/ship_world.py"

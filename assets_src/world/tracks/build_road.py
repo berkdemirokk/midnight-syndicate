@@ -81,16 +81,18 @@ MAT_SPEC = {
                              uv="metres", note="deck expansion joints"),
     "M_Rail": dict(hex="#7C8290", rough=0.4, metal=0.8, emis=None, strength=0.0,
                    uv="metres", note="steel top rail on parapets"),
-    "M_Stone_Plinth": dict(hex="#B8A98F", rough=0.8, metal=0.0, emis=None, strength=0.0,
-                           uv="U across (m), V along (m)", note="cut-stone quay plinth (Bogaz edge barrier, config road.edge_barrier_material)"),
 }
+if RCFG.get("edge_barrier_material") == "M_Stone_Plinth":   # Bogaz quay plinth: the engine binds the sandstone_blocks_08 CC0 set
+    # near-white tint so the photo set keeps its own sandstone tone; 1.6 m tile gives ~0.32 m block courses on the 0.55 m plinth
+    MAT_SPEC["M_Stone_Plinth"] = dict(hex="#F0E8DA", rough=0.8, metal=0.0, emis=None, strength=0.0, tile=1.6,
+                                      uv="world triplanar (engine)", note="cut-stone quay plinth (edge barrier, config road.edge_barrier_material)")
 if RCFG.get("cobble_cp"):   # cobbled street surface (Istanbul tracks): the engine binds M_Cobble from the Istanbul kit
     MAT_SPEC["M_Cobble"] = dict(hex="#6B665F", rough=0.7, metal=0.0, emis=None, strength=0.0,
                                 uv="metres, tiled 1 m", note="granite setts, road surface of the cobbled section")
 SLOTS = {
     "road": ["M_Asphalt", "M_Curb"] + (["M_Cobble"] if RCFG.get("cobble_cp") else []),
     "sidewalk": ["M_Paving", "M_Concrete_Wall"],
-    "structure": ["M_Concrete_Wall", "M_Rail", "M_TunnelLight", "M_TunnelStripe", "M_Stone_Plinth"],
+    "structure": ["M_Concrete_Wall", "M_Rail", "M_TunnelLight", "M_TunnelStripe"] + (["M_Stone_Plinth"] if "M_Stone_Plinth" in MAT_SPEC else []),
     "wall": ["M_Concrete_Wall"],
     "markings": ["M_RoadPaint", "M_ExpansionJoint"],
     "decals": ["M_Manhole", "M_Grate"],
@@ -1090,6 +1092,8 @@ def write_outputs(placed, kept, total, tri_by_kind, obj_count_by_kind, road_norm
                      "emissive_srgb": sp["emis"] or "#000000",
                      "emissive_strength": sp["strength"], "uv": sp["uv"], "notes": sp["note"],
                      "textures": "none embedded; engine applies CC0 PBR set or procedural shader"})
+        if "tile" in sp:
+            mats[-1]["uv_tile_m"] = sp["tile"]
     with open(os.path.join(OUT, "materials.json"), "w", encoding="utf-8") as fh:
         json.dump({"coords": "godot_y_up", "materials": mats}, fh, indent=1)
 
