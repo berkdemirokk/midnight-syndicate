@@ -1,0 +1,360 @@
+{
+  "car": "noctra_tayfun",
+  "cpu": "AMD Ryzen 5 7600 6-Core Processor",
+  "flags": {
+    "nodes": {
+      "first": 19.0,
+      "flag_monotonic_growth": false,
+      "growth": 0.0,
+      "last": 19.0,
+      "non_decreasing": true
+    },
+    "objects": {
+      "first": 2032.0,
+      "flag_monotonic_growth": false,
+      "growth": 0.0,
+      "last": 2032.0,
+      "non_decreasing": false
+    },
+    "orphan_nodes": {
+      "first": 0.0,
+      "flag_monotonic_growth": false,
+      "growth": 0.0,
+      "last": 0.0,
+      "non_decreasing": true
+    },
+    "resources": {
+      "first": 201.0,
+      "flag_monotonic_growth": false,
+      "growth": 0.0,
+      "last": 201.0,
+      "non_decreasing": true
+    },
+    "static_mb": {
+      "first": 198.95,
+      "flag_monotonic_growth": false,
+      "growth": 0.55,
+      "last": 199.5,
+      "non_decreasing": false
+    }
+  },
+  "godot": "4.7.2-stable (official)",
+  "grid": 6,
+  "laps": 2,
+  "machine": "Windows 11 dev PC, NVIDIA RTX 5060 Ti 8 GB, Godot 4.7.2. Desktop numbers, not a phone.",
+  "mode": "sim",
+  "races": [
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2032,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 198.95,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10227,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 353.6,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 9,
+        "objects": 1626,
+        "orphan_nodes": 0,
+        "resources": 98,
+        "static_mb": 69.38,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 5,
+      "race_time_s": 131.6,
+      "tag": "sim_01",
+      "ticks": 8159,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2031,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.09,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10226,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 353.75,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2033,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 198.95,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 6,
+      "race_time_s": 124.07,
+      "tag": "sim_02",
+      "ticks": 7706,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2036,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.3,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10230,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 353.96,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2032,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.09,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 2,
+      "race_time_s": 118.77,
+      "tag": "sim_03",
+      "ticks": 7388,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2033,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.31,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10228,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 353.97,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2037,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.31,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 4,
+      "race_time_s": 123.37,
+      "tag": "sim_04",
+      "ticks": 7664,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2030,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.31,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10226,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 353.99,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2034,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.32,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 4,
+      "race_time_s": 116.33,
+      "tag": "sim_05",
+      "ticks": 7242,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2036,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.4,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10231,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 354.06,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2031,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.31,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 3,
+      "race_time_s": 124.95,
+      "tag": "sim_06",
+      "ticks": 7759,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2036,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.43,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10230,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 354.08,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2037,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.4,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 3,
+      "race_time_s": 122.27,
+      "tag": "sim_07",
+      "ticks": 7598,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2035,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.49,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10230,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 354.14,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2037,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.43,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 6,
+      "race_time_s": 125.95,
+      "tag": "sim_08",
+      "ticks": 7819,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2031,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.47,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10225,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 354.13,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2036,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.49,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 6,
+      "race_time_s": 121.6,
+      "tag": "sim_09",
+      "ticks": 7558,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 2032,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.5,
+        "video_mem_mb": 0.0
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10227,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 354.16,
+        "video_mem_mb": 0.0
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 2032,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 199.47,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 4,
+      "race_time_s": 116.73,
+      "tag": "sim_10",
+      "ticks": 7266,
+      "timed_out": false
+    }
+  ],
+  "time_of_day": "night",
+  "track": "istanbul_bogaz.tscn"
+}
