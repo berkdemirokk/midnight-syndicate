@@ -191,7 +191,7 @@ func _make_day() -> void:
 	car_rim_color = Color(1.0, 0.92, 0.82)
 	audio_wetness = 0.1
 	car_reflection = 0.32  # the Ortakoy street reads in the clearcoat (0.16 was a uniform wash)
-	car_reflection_highlight = 0.6
+	car_reflection_highlight = 0.35
 	water = {"sky_fill": 0.12, "deep_colour": Color(0.008, 0.035, 0.050), "shallow_colour": Color(0.045, 0.105, 0.125),
 		"far_roughness": 0.30, "swell_strength": 0.30}
 
