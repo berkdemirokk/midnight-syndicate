@@ -27,6 +27,10 @@ const SERVER_CHANNEL: int = 0
 const TRACK_SCENE: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"  ## the race track, chosen by the server
 const TRACK_ALLOW: PackedStringArray = [TRACK_SCENE]  ## the only track scenes a start message may name
 const ORDER_HZ: float = 4.0  ## server: live standings (place, lap, metres) for every racer
+const CODE_LEN: int = 6  ## join code length, chosen by the host (random unless --code= is given)
+const CODE_ALPHABET: String = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  ## no look-alikes: 0, O, 1, I, L are left out
+const HELLO_WINDOW_S: float = 10.0  ## server: hello attempts are counted per remote address over this window
+const HELLO_MAX: int = 5  ## server: hello attempts allowed per address in the window (wrong codes count too)
 
 
 ## The track scene a start message names when it is allow-listed, else "" (the development circuit).

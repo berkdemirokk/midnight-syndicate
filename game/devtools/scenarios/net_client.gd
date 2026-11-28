@@ -5,7 +5,7 @@ extends "res://devtools/capture_scenario.gd"
 ## server must be running: tools/net_ingame_check.py starts all three.
 ## Shots: net_grid (after the start message), net_racing (5 s after GO, chase view), net_remote (a camera behind the
 ## remote car), net_results (the server's results). Fails without a remote car or without server results.
-## Options: --port=N (default NetConfig.DEFAULT_PORT), --name=X.
+## Options: --port=N (default NetConfig.DEFAULT_PORT), --name=X, --code=ABCDEF (the server's join code).
 
 const SCENE: String = "res://race/race_scene.tscn"
 const WAIT_JOIN_S: float = 30.0
@@ -21,16 +21,19 @@ var _results: Array = []
 func run() -> void:
 	var port: int = NetConfig.DEFAULT_PORT
 	var player_name: String = "Rendered"
+	var join_code: String = ""
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--port="):
 			port = int(a.trim_prefix("--port="))
 		elif a.begins_with("--name="):
 			player_name = a.trim_prefix("--name=")
+		elif a.begins_with("--code="):
+			join_code = a.trim_prefix("--code=")
 	_session = NetSession.get_or_create(tree)
 	_session.welcomed.connect(func(_pid: int) -> void: _session.send_ready(true))
 	_session.race_starting.connect(func(info: Dictionary) -> void: _info = info)
 	_session.results_received.connect(func(rows: Array) -> void: _results = rows)
-	var err: String = _session.connect_to_server(NetConfig.DEFAULT_BIND, port, player_name)
+	var err: String = _session.connect_to_server(NetConfig.DEFAULT_BIND, port, player_name, join_code)
 	if err != "":
 		cap.fail("connect: " + err)
 		return

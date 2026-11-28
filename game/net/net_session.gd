@@ -52,6 +52,10 @@ var rtt_last_ms: float = -1.0  ## client: round trip to the server, measured wit
 var rtt_min_ms: float = -1.0
 var _rtt_sum_ms: float = 0.0
 var _rtt_n: int = 0
+var last_reject_key: String = ""  ## client: NetProtocol.REJECT_* key of the last reject, "" for other reasons
+var _join_code: String = ""  ## server: the join code every hello must carry (never sent to clients or logged)
+var _hello_code: String = ""  ## client: the join code sent in the hello
+var _hello_limit: NetHelloLimiter = NetHelloLimiter.new()  ## server: hello attempts per remote address
 
 
 ## The session node under the scene root, created on first use.
@@ -76,7 +80,7 @@ func _process(delta: float) -> void:
 			break
 		var peer: ENetPacketPeer = ev[1] as ENetPacketPeer
 		if kind == ENetConnection.EVENT_CONNECT and peer != null and role == ROLE_CLIENT:
-			_send(peer, {"t": NetProtocol.MSG_HELLO, "v": NetConfig.PROTOCOL_VERSION, "name": my_name})
+			_send(peer, {"t": NetProtocol.MSG_HELLO, "v": NetConfig.PROTOCOL_VERSION, "name": my_name, "code": _hello_code})
 		if kind == ENetConnection.EVENT_RECEIVE and peer != null:
 			_on_packet(peer)
 		elif kind == ENetConnection.EVENT_DISCONNECT and peer != null:
@@ -88,17 +92,24 @@ func _process(delta: float) -> void:
 
 
 ## Server: binds bind_address:port (127.0.0.1 unless a LAN address is given) and builds the dev circuit.
-func start_server(bind_address: String, port: int, laps: int, track_scene: String = NetConfig.TRACK_SCENE) -> String:
+func start_server(bind_address: String, port: int, laps: int, track_scene: String = NetConfig.TRACK_SCENE, join_code: String = "") -> String:
 	if role != ROLE_NONE:
 		return "already running"
 	if not NetConfig.bind_allowed(bind_address):
 		return "refused: %s is not loopback; start with --address=<LAN IP> to host on the LAN" % bind_address
+	# An empty code means a random one; a given code must be well formed (the menu shows the code it ends up with).
+	var code: String = NetProtocol.normalize_code(join_code)
+	if code == "":
+		code = NetProtocol.make_code()
+	elif not NetProtocol.code_valid(code):
+		return "refused: the join code is %d characters from %s" % [NetConfig.CODE_LEN, NetConfig.CODE_ALPHABET]
 	_host = ENetConnection.new()
 	var err: int = _host.create_host_bound(bind_address, port, NetConfig.MAX_PLAYERS)
 	if err != OK:
 		_host = null
 		return "could not open %s:%d (error %d)" % [bind_address, port, err]
 	role = ROLE_SERVER
+	_join_code = code
 	my_pid = 0
 	_laps = maxi(laps, 1)
 	_track = NetTrack.instance(track_scene)
@@ -114,7 +125,7 @@ func start_server(bind_address: String, port: int, laps: int, track_scene: Strin
 
 
 ## Client: connects to address:port; the hello is sent at once and the server answers with welcome or reject.
-func connect_to_server(address: String, port: int, player_name: String) -> String:
+func connect_to_server(address: String, port: int, player_name: String, join_code: String = "") -> String:
 	if role != ROLE_NONE:
 		return "already connected"
 	_host = ENetConnection.new()
@@ -124,6 +135,7 @@ func connect_to_server(address: String, port: int, player_name: String) -> Strin
 	_server_link = _host.connect_to_host(address, port, 1, 0)
 	role = ROLE_CLIENT
 	my_name = player_name.strip_edges()
+	_hello_code = NetProtocol.normalize_code(join_code)
 	# The hello goes out on EVENT_CONNECT: ENet drops sends made before the link is up.
 	return ""
 
@@ -167,9 +179,17 @@ func close() -> void:
 	_state = STATE_LOBBY
 	_race = null
 	_track_path = ""
+	_join_code = ""
+	_hello_code = ""
+	_hello_limit = NetHelloLimiter.new()
 	if _track != null:
 		_track.queue_free()
 		_track = null
+
+
+## Server: the join code players must enter (shown to the host in the lobby overlay, sent to no one).
+func join_code() -> String:
+	return _join_code
 
 
 func lobby_players() -> Array:
@@ -237,22 +257,32 @@ func _server_message(peer: ENetPacketPeer, t: String, d: Dictionary) -> void:
 func _on_hello(peer: ENetPacketPeer, key: String, d: Dictionary) -> void:
 	if _pid_of.has(key):
 		return
-	var player_name: String = str(d.get("name", ""))
-	var reason: String = NetProtocol.check_hello(int(d.get("v", -1)), player_name)
+	var player_name: String = str(d.get("name", "")).strip_edges()
+	var reason: String = ""
+	var reason_key: String = ""
+	# Every attempt counts, right or wrong, before anything else is checked: this is what stops code guessing.
+	if not _hello_limit.allow(peer.get_remote_address(), Time.get_ticks_msec() / 1000.0):
+		reason = "too many attempts, wait a few seconds"
+		reason_key = NetProtocol.REJECT_RATE
+	else:
+		reason = NetProtocol.check_hello(int(d.get("v", -1)), player_name)
+	if reason == "" and not NetProtocol.code_matches(_join_code, d.get("code", "")):
+		reason = "wrong join code"
+		reason_key = NetProtocol.REJECT_CODE
 	if reason == "" and _state != STATE_LOBBY:
 		reason = "a race is running, try again after the results"
 	var pid: int = _next_pid
 	if reason == "":
-		reason = _lobby.join(pid, player_name.strip_edges())
+		reason = _lobby.join(pid, player_name)
 	if reason != "":
 		print("[net] reject hello: %s" % reason)
-		_send(peer, {"t": NetProtocol.MSG_REJECT, "reason": reason})
+		_send(peer, {"t": NetProtocol.MSG_REJECT, "reason": reason, "key": reason_key})
 		peer.peer_disconnect_later()
 		return
 	_next_pid += 1
 	_pid_of[key] = pid
 	_peer_of[pid] = peer
-	print("[net] join pid %d name %s" % [pid, player_name.strip_edges()])
+	print("[net] join pid %d name %s" % [pid, player_name])
 	_send(peer, {"t": NetProtocol.MSG_WELCOME, "pid": pid, "v": NetConfig.PROTOCOL_VERSION})
 	_broadcast_lobby()
 
@@ -347,6 +377,7 @@ func _client_message(t: String, d: Dictionary) -> void:
 			welcomed.emit(my_pid)
 		NetProtocol.MSG_REJECT:
 			last_message = str(d.get("reason", "rejected"))
+			last_reject_key = str(d.get("key", ""))
 			rejected.emit(last_message)
 		NetProtocol.MSG_LOBBY:
 			lobby_changed.emit(d.get("players", []))

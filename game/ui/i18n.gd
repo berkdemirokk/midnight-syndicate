@@ -224,6 +224,11 @@ const DICT: Dictionary = {
 	"net.lost": {"tr": "Sunucuyla bağlantı koptu.", "en": "Lost the connection to the server."},
 	"net.track_missing": {"tr": "Sunucunun pisti bu oyunda yok: %s. Yarışa katılınmadı.", "en": "The server's track is not in this game: %s. Not joining the race."},
 	"net.not_in_race": {"tr": "Bu yarış sen olmadan başladı.", "en": "This race started without you."},
+	"net.code": {"tr": "Katılım kodu", "en": "Join code"},
+	"net.join_code": {"tr": "Katılım kodu: %s (katılacak oyuncular bu kodu girmeli)", "en": "Join code: %s (players need this code to join)"},
+	"net.code_needed": {"tr": "Katılmak için 6 karakterlik katılım kodunu girin.", "en": "Enter the 6-character join code to join."},
+	"net.reject_code": {"tr": "Katılım kodu yanlış.", "en": "Wrong join code."},
+	"net.reject_rate": {"tr": "Çok fazla deneme. Birkaç saniye bekleyin.", "en": "Too many attempts. Wait a few seconds."},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}

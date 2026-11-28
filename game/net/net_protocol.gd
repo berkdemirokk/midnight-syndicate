@@ -17,6 +17,8 @@ const MSG_BYE: String = "bye"
 const MSG_PING: String = "ping"
 const MSG_PONG: String = "pong"
 const MSG_ORDER: String = "order"
+const REJECT_CODE: String = "code"  ## reject key: wrong join code (the client shows its own TR/EN text)
+const REJECT_RATE: String = "rate"  ## reject key: too many hello attempts from this address
 
 
 ## Live order rows from the server, validated on the client: integer pid, place 1..MAX_PLAYERS, lap 0..laps and
@@ -51,6 +53,35 @@ static func check_hello(version: int, player_name: String) -> String:
 	if clean.is_empty() or clean.length() > NetConfig.MAX_NAME_LEN:
 		return "name must be 1 to %d characters" % NetConfig.MAX_NAME_LEN
 	return ""
+
+
+## A new random join code from NetConfig.CODE_ALPHABET.
+static func make_code() -> String:
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var out: String = ""
+	for i: int in NetConfig.CODE_LEN:
+		out += NetConfig.CODE_ALPHABET.substr(rng.randi_range(0, NetConfig.CODE_ALPHABET.length() - 1), 1)
+	return out
+
+
+## Trimmed and upper-cased, so a typed code matches whatever case it was typed in.
+static func normalize_code(raw: Variant) -> String:
+	return str(raw).strip_edges().to_upper()
+
+
+static func code_valid(code: String) -> bool:
+	if code.length() != NetConfig.CODE_LEN:
+		return false
+	for i: int in code.length():
+		if NetConfig.CODE_ALPHABET.find(code.substr(i, 1)) < 0:
+			return false
+	return true
+
+
+## True when the given code (as typed by the client) is the host's code. Empty or malformed host codes match nothing.
+static func code_matches(expected: String, given: Variant) -> bool:
+	return code_valid(expected) and normalize_code(given) == expected
 
 
 static func vec_finite(v: Vector3) -> bool:
