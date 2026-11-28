@@ -424,3 +424,25 @@ func test_race_finished_stops_the_chase() -> void:
 	check(hits.is_empty() and pm.escape_reward == 0, "race_finished neither busts nor pays")
 	await cleanup([scene])
 	PursuitMode.ENABLED = was
+
+
+func test_police_models_by_heat() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = true
+	var scene: RaceScene = _make_scene(_cfg(true))
+	await frames(2)
+	var pm: PursuitMode = _pursuit_of(scene)
+	pm.state.heat = 1
+	check(str(pm._police_model(0)["scene"]) == PursuitMode.PATROL_SCENE, "heat 1 chaser must be the patrol car")
+	pm.state.heat = 3
+	check(str(pm._police_model(2)["scene"]) == PursuitMode.INTERCEPTOR_SCENE, "heat 3 chaser must be the interceptor")
+	pm.state.heat = 4
+	check(str(pm._police_model(0)["scene"]) == PursuitMode.SUV_SCENE, "heat 4 boxer slot must be the SUV")
+	check(str(pm._police_model(2)["scene"]) == PursuitMode.INTERCEPTOR_SCENE, "heat 4 chaser must be the interceptor")
+	pm.state.heat = 1
+	pm.top_up()
+	check(not pm.police.is_empty(), "heat 1 spawned no police car")
+	if not pm.police.is_empty():
+		check(pm.police[0].find_child("LightBar", true, false) != null, "police car has no light bar")
+	await cleanup([scene])
+	PursuitMode.ENABLED = was

@@ -8,26 +8,26 @@
   "name": "pursuit_escape",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 186,
-    "draw_calls_min": 142,
+    "draw_calls": 335,
+    "draw_calls_min": 266,
     "driver": "vulkan",
-    "fps": 212.592,
-    "frame_ms_avg": 4.704,
-    "frame_ms_p95": 6.139,
-    "frame_ms_p99": 6.487,
+    "fps": 156.855,
+    "frame_ms_avg": 6.375,
+    "frame_ms_p95": 8.61,
+    "frame_ms_p99": 9.209,
     "frames": 60,
-    "objects": 17893,
+    "objects": 19351,
     "os": "Windows",
-    "primitives": 273732,
+    "primitives": 318604,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 717.573,
+    "video_mem_mb": 910.721,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit2/evidence/screens/pursuit_demo/pursuit_escape.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/pursuit_demo/pursuit_escape.png",
   "preset": "high",
   "scenario": "pursuit_demo"
 }

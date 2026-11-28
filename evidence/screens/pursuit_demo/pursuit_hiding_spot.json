@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 1.0,
+  "luma_max": 0.998,
   "luma_min": 0.0,
   "name": "pursuit_hiding_spot",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
     "draw_calls": 343,
-    "draw_calls_min": 234,
+    "draw_calls_min": 250,
     "driver": "vulkan",
-    "fps": 121.15,
-    "frame_ms_avg": 8.254,
-    "frame_ms_p95": 10.189,
-    "frame_ms_p99": 11.022,
+    "fps": 89.805,
+    "frame_ms_avg": 11.135,
+    "frame_ms_p95": 9.857,
+    "frame_ms_p99": 190.029,
     "frames": 60,
-    "objects": 19497,
+    "objects": 17827,
     "os": "Windows",
-    "primitives": 321404,
+    "primitives": 295431,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 717.19,
+    "video_mem_mb": 910.37,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit2/evidence/screens/pursuit_demo/pursuit_hiding_spot.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/pursuit_demo/pursuit_hiding_spot.png",
   "preset": "high",
   "scenario": "pursuit_demo"
 }

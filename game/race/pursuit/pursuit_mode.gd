@@ -14,6 +14,13 @@ signal busted
 
 const POLICE_SCENE: String = "res://vehicles/bosfor_atmaca/atmaca_stock.tscn"  ## Istanbul sedan, fictional brand
 const POLICE_SPEC: String = "res://vehicles/specs/atmaca_stock.tres"
+const PATROL_SCENE: String = "res://vehicles/police_patrol/police_patrol.tscn"  ## CC BY 4.0 model, heat 1 and 2 chasers
+const PATROL_SPEC: String = "res://vehicles/specs/police_patrol.tres"
+const INTERCEPTOR_SCENE: String = "res://vehicles/police_interceptor/police_interceptor.tscn"  ## CC BY 4.0 model, heat 3 and up
+const INTERCEPTOR_SPEC: String = "res://vehicles/specs/police_interceptor.tres"
+const SUV_SCENE: String = "res://vehicles/police_suv/police_suv.tscn"  ## CC BY 4.0 model, the boxing pair from heat 4
+const SUV_SPEC: String = "res://vehicles/specs/police_suv.tres"
+const INTERCEPTOR_HEAT: int = 3  ## from this heat, a new police car is an interceptor (the boxers are SUVs)
 const POLICE_PAINT: Color = Color("#16305C")  ## dark blue body; the light bar carries the red and blue
 const LIGHT_RED: Color = Color("#FF2A2A")
 const LIGHT_BLUE: Color = Color("#2A7BFF")
@@ -206,7 +213,7 @@ func top_up() -> int:
 ## Spawns one police car behind the player, out of the camera view when a candidate spot allows it.
 ## Returns false when every candidate spot is blocked by a car.
 func spawn_police() -> bool:
-	var model: Dictionary = _police_model()
+	var model: Dictionary = _police_model(police.size())
 	if model.is_empty() or _track == null or player == null:
 		return false
 	_player_s = _track.get_progress(player.global_position, _player_s)
@@ -457,11 +464,25 @@ func _car_positions() -> PackedVector3Array:
 	return out
 
 
-## Preferred: the Istanbul sedan. Fallback: the first available catalog car, so a build without it still runs.
-func _police_model() -> Dictionary:
+## Model for the police car at this list index: the boxers (first two, from BOXERS_HEAT) are SUVs, the rest are
+## patrol cars below INTERCEPTOR_HEAT and interceptors from it. Fallback: the Istanbul sedan, then the first catalog
+## car, so a build without the new models still runs.
+func _police_model(index: int) -> Dictionary:
 	var scene_path: String = POLICE_SCENE
 	var spec_path: String = POLICE_SPEC
-	if not (ResourceLoader.exists(POLICE_SCENE) and ResourceLoader.exists(POLICE_SPEC)):
+	if index < boxers_for_heat(state.heat):
+		scene_path = SUV_SCENE
+		spec_path = SUV_SPEC
+	elif state.heat >= INTERCEPTOR_HEAT:
+		scene_path = INTERCEPTOR_SCENE
+		spec_path = INTERCEPTOR_SPEC
+	else:
+		scene_path = PATROL_SCENE
+		spec_path = PATROL_SPEC
+	if not (ResourceLoader.exists(scene_path) and ResourceLoader.exists(spec_path)):
+		scene_path = POLICE_SCENE
+		spec_path = POLICE_SPEC
+	if not (ResourceLoader.exists(scene_path) and ResourceLoader.exists(spec_path)):
 		var ids: Array[String] = CarCatalog.available_ids()
 		if ids.is_empty():
 			return {}

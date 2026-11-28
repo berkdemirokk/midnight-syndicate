@@ -4,30 +4,30 @@
     1061
   ],
   "luma_max": 0.96,
-  "luma_min": 0.004,
+  "luma_min": 0.0,
   "name": "pursuit_menu_button",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 30,
-    "draw_calls_min": 30,
+    "draw_calls": 51,
+    "draw_calls_min": 51,
     "driver": "vulkan",
-    "fps": 2723.188,
-    "frame_ms_avg": 0.367,
-    "frame_ms_p95": 0.395,
-    "frame_ms_p99": 0.498,
+    "fps": 1973.749,
+    "frame_ms_avg": 0.507,
+    "frame_ms_p95": 0.599,
+    "frame_ms_p99": 0.765,
     "frames": 60,
-    "objects": 145,
+    "objects": 177,
     "os": "Windows",
-    "primitives": 806,
+    "primitives": 85396,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 68.669,
+    "video_mem_mb": 153.611,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit2/evidence/screens/pursuit_demo/pursuit_menu_button.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/pursuit_demo/pursuit_menu_button.png",
   "preset": "high",
   "scenario": "pursuit_demo"
 }
