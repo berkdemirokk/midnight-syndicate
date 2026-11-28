@@ -131,7 +131,7 @@ func _on_next() -> void:
 func _start_first_race() -> void:
 	var gs: Node = store if store != null else GameState
 	gs.set_onboarded()
-	nav.call(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(FIRST_EVENT)})
+	nav.call(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(FIRST_EVENT)}))
 
 
 func _refresh_text() -> void:
