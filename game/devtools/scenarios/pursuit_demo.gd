@@ -129,9 +129,12 @@ func run() -> void:
 	await cap.wait_seconds(1.0)
 	await cap.shot("pursuit_heat_5")
 	# Escape, real rules: every police car 150 m back, out of sensing range, so the 8 s cooldown runs and the chase ends.
-	var fwd: Vector3 = _scene.track.get_tangent_at(_scene.track.get_progress(_scene.player.global_position))
+	var fwd_e: Vector3 = _scene.track.get_tangent_at(_scene.track.get_progress(_scene.player.global_position))
 	for c: ArcadeCar in pm.police:
-		c.global_transform = Transform3D(Basis.looking_at(fwd, Vector3.UP), _scene.player.global_position - fwd * 150.0 + Vector3(0.0, PursuitMode.SPAWN_HEIGHT_M, 0.0))
+		var drv_off: AIDriver = c.get_node_or_null(PursuitMode.DRIVER_NAME) as AIDriver
+		if drv_off != null:
+			drv_off.enabled = false  # the police must not drive back into sensing range during the cooldown
+		c.global_transform = Transform3D(Basis.looking_at(fwd_e, Vector3.UP), _scene.player.global_position - fwd_e * 150.0 + Vector3(0.0, PursuitMode.SPAWN_HEIGHT_M, 0.0))
 	waited = 0.0
 	while pm.state.phase != PursuitState.Phase.ESCAPED and pm.state.phase != PursuitState.Phase.BUSTED and waited < 15.0:
 		await cap.wait_frames(1)
