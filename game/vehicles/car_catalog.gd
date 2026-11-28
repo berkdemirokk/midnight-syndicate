@@ -6,7 +6,7 @@ extends RefCounted
 
 const STARTER: String = "noctra_tayfun"
 const DEFAULT_CARS: Array[Dictionary] = [
-	# All eleven are CC BY 4.0 models, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival
+	# Every listed car is a CC BY 4.0 model, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival
 	# grid: all but the Strix S (170 km/h) and the Vela (232 km/h). A rival drives its own spec, and a car slower than
 	# the track speed profile (Track.max_speed, 252 km/h) falls off the back of every grid, the final included.
 	{"id": "noctra_tayfun", "class": "street", "price": 0, "rep": 0, "rival": true},
@@ -15,11 +15,15 @@ const DEFAULT_CARS: Array[Dictionary] = [
 	{"id": "atmaca_modified", "class": "classic", "price": 4000, "rep": 0,
 		"scene": "res://vehicles/bosfor_atmaca/atmaca_modified.tscn", "spec": "res://vehicles/specs/atmaca_modified.tres"},
 	{"id": "noctra_vela", "class": "hatch", "price": 8000, "rep": 0},
+	{"id": "bosfor_kivilcim", "class": "hatch", "price": 1500, "rep": 0},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "bosfor_serce", "class": "hatch", "price": 2500, "rep": 0},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "arden_bruiser", "class": "muscle", "price": 15000, "rep": 300, "rival": true},
 	{"id": "kestrel_gtr", "class": "gt", "price": 30000, "rep": 800, "rival": true},
 	{"id": "kestrel_vanta", "class": "super", "price": 45000, "rep": 1200, "rival": true},
 	{"id": "arden_havoc", "class": "muscle", "price": 16000, "rep": 400, "rival": true},
 	{"id": "kestrel_marten", "class": "sport", "price": 22000, "rep": 500, "rival": true},
+	{"id": "arden_ramjet", "class": "muscle", "price": 12000, "rep": 450, "rival": true},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
+	{"id": "arden_shaker", "class": "muscle", "price": 14000, "rep": 600, "rival": true},  # CC BY 4.0 model, see THIRD_PARTY_LICENSES.md
 	{"id": "noctra_meridian", "class": "gt", "price": 28000, "rep": 700, "rival": true},
 	{"id": "bosfor_yildirim", "class": "hyper", "price": 90000, "rep": 2500, "rival": true},
 ]

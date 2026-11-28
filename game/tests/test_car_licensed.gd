@@ -36,10 +36,34 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.32, "front_r": 0.33, "rear_r": 0.355, "wheelbase": 2.64,
 	},
 	{
+		"id": "bosfor_kivilcim", "scene": "res://vehicles/bosfor_kivilcim/bosfor_kivilcim.tscn",
+		"spec": "res://vehicles/specs/bosfor_kivilcim.tres", "name": "Bosfor Kıvılcım",
+		"len": 4.223, "width": 2.10, "height": 1.547,  # source GLB bounding box (metres), ev-hatchback.glb
+		"axle": 1.30, "front_r": 0.325, "rear_r": 0.325, "wheelbase": 2.60,
+	},
+	{
+		"id": "bosfor_serce", "scene": "res://vehicles/bosfor_serce/bosfor_serce.tscn",
+		"spec": "res://vehicles/specs/bosfor_serce.tres", "name": "Bosfor Serçe",
+		"len": 3.594, "width": 1.927, "height": 1.636,  # source GLB bounding box (metres), pocket-rocket-hatch.glb
+		"axle": 1.145, "front_r": 0.29, "rear_r": 0.29, "wheelbase": 2.29,
+	},
+	{
 		"id": "arden_havoc", "scene": "res://vehicles/arden_havoc/arden_havoc.tscn",
 		"spec": "res://vehicles/specs/arden_havoc.tres", "name": "Arden Havoc",
 		"len": 4.87, "width": 2.11, "height": 1.368,  # source GLB bounding box (metres), muscle-coupe.glb
 		"axle": 1.395, "front_r": 0.35, "rear_r": 0.36, "wheelbase": 2.79,
+	},
+	{
+		"id": "arden_ramjet", "scene": "res://vehicles/arden_ramjet/arden_ramjet.tscn",
+		"spec": "res://vehicles/specs/arden_ramjet.tres", "name": "Arden Ramjet",
+		"len": 4.968, "width": 2.036, "height": 1.368,  # source GLB bounding box (metres), ram-air-coupe.glb
+		"axle": 1.395, "front_r": 0.35, "rear_r": 0.35, "wheelbase": 2.79,
+	},
+	{
+		"id": "arden_shaker", "scene": "res://vehicles/arden_shaker/arden_shaker.tscn",
+		"spec": "res://vehicles/specs/arden_shaker.tres", "name": "Arden Shaker",
+		"len": 4.968, "width": 2.036, "height": 1.368,  # source GLB bounding box (metres), shaker-hood-coupe.glb
+		"axle": 1.395, "front_r": 0.35, "rear_r": 0.35, "wheelbase": 2.79,
 	},
 	{
 		"id": "noctra_sable", "scene": "res://vehicles/noctra_sable/noctra_sable.tscn",
@@ -88,9 +112,9 @@ const PAINT_TEST: Color = Color(0.0, 0.0, 1.0)
 const HERO_SPEC: String = "res://vehicles/specs/noctra_sable.tres"
 const PLAIN_CAR: String = "res://vehicles/bosfor_atmaca/atmaca_stock.tscn"  ## a project-made model: no vertex colours
 const LOD_BOX_MARGIN_M: float = 0.1  ## a far LOD may reach this far beyond the LOD0 box
-const NO_TAIL_ATLAS: PackedStringArray = ["noctra_vela", "kestrel_gtr"]  ## no tail_cell in their config: plain red glow
+const NO_TAIL_ATLAS: PackedStringArray = ["noctra_vela", "kestrel_gtr", "bosfor_kivilcim"]  ## no tail_cell in their config: plain red glow
 ## No pipe markers: the Kestrel GT is an electric car, and the Bruiser's side pipes are hidden from the chase camera.
-const NO_TAIL_PIPES: PackedStringArray = ["kestrel_gtr", "arden_bruiser"]
+const NO_TAIL_PIPES: PackedStringArray = ["kestrel_gtr", "arden_bruiser", "bosfor_kivilcim"]
 const FLAME_MAX_HEIGHT_M: float = 0.6  ## above the road; the plate and the lamps sit higher
 const FX_SCENE: String = "res://fx/car_fx.tscn"
 

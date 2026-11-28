@@ -32,3 +32,7 @@
 "Italianate Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Second Empire Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Sirens and Alarm Noise" by aquinn (https://opengameart.org/content/sirens-and-alarm-noise), CC0 1.0 public domain. Used: police siren.
+"EV Hatchback" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Kıvılcım.
+"Pocket Rocket Hatch" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Serçe.
+"Ram-Air Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Arden Ramjet.
+"Shaker Hood Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Arden Shaker.
