@@ -38,6 +38,7 @@ const PANEL_TOP_PX: float = 136.0
 const SWATCH_W: float = 70.0
 const SWATCH_H: float = 56.0
 const PIP_PX: float = 18.0
+const TOUCH_H: float = 88.0  ## BUY and carousel buttons: touch targets at 1080 px (64 px was too small to hit reliably)
 const STRIP_H: float = 28.0
 const STEP_SATURATION: float = 0.85
 const VALUE_FLOOR: float = 0.1
@@ -226,22 +227,22 @@ func _build_carousel(ins: Vector4, m: float) -> void:
 	var row := HBoxContainer.new()
 	row.name = "Carousel"
 	row.add_theme_constant_override("separation", 12)
-	_place(row, 0.0, 0.0, 0.0, 0.0, ins.x + m, ins.y + m + 450.0, ins.x + m + 560.0, ins.y + m + 506.0)
+	_place(row, 0.0, 0.0, 0.0, 0.0, ins.x + m, ins.y + m + 450.0, ins.x + m + 560.0, ins.y + m + 450.0 + TOUCH_H)
 	_car_prev = Button.new()
 	_car_prev.name = "CarPrev"
 	_car_prev.text = "<"
-	_car_prev.custom_minimum_size = Vector2(84.0, 56.0)
+	_car_prev.custom_minimum_size = Vector2(84.0, TOUCH_H)
 	_car_prev.pressed.connect(func() -> void: car_step_pressed.emit(-1))
 	row.add_child(_car_prev)
 	_car_action = Button.new()
 	_car_action.name = "CarAction"
-	_car_action.custom_minimum_size = Vector2(300.0, 56.0)
+	_car_action.custom_minimum_size = Vector2(300.0, TOUCH_H)
 	_car_action.pressed.connect(func() -> void: car_action_pressed.emit())
 	row.add_child(_car_action)
 	_car_next = Button.new()
 	_car_next.name = "CarNext"
 	_car_next.text = ">"
-	_car_next.custom_minimum_size = Vector2(84.0, 56.0)
+	_car_next.custom_minimum_size = Vector2(84.0, TOUCH_H)
 	_car_next.pressed.connect(func() -> void: car_step_pressed.emit(1))
 	row.add_child(_car_next)
 
@@ -344,6 +345,7 @@ func _build_upgrades_page() -> Control:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 12)
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
+		row.custom_minimum_size = Vector2(0.0, TOUCH_H)
 		var name_l: Label = _keyed_label(PART_KEYS[part], "bold", 20, MSTheme.TEXT)
 		name_l.custom_minimum_size = Vector2(118.0, 0.0)  # the widest name fits; BUY must stay inside the panel
 		row.add_child(name_l)
@@ -362,7 +364,7 @@ func _build_upgrades_page() -> Control:
 		price.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		row.add_child(price)
-		var buy: Button = _button("garage.buy", Vector2(120.0, 52.0))
+		var buy: Button = _button("garage.buy", Vector2(120.0, TOUCH_H))
 		buy.pressed.connect(func() -> void: upgrade_pressed.emit(part))
 		row.add_child(buy)
 		page.add_child(row)

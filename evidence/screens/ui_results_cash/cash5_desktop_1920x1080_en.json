@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.04,
+  "name": "cash5_desktop_1920x1080_en",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 19,
+    "draw_calls_min": 19,
+    "driver": "vulkan",
+    "fps": 2379.159,
+    "frame_ms_avg": 0.42,
+    "frame_ms_p95": 0.443,
+    "frame_ms_p99": 0.493,
+    "frames": 60,
+    "objects": 867,
+    "os": "Windows",
+    "primitives": 1176,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 37.146,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-polish/evidence/screens/ui_results_cash/cash5_desktop_1920x1080_en.png",
+  "preset": "high",
+  "scenario": "ui_results_cash"
+}

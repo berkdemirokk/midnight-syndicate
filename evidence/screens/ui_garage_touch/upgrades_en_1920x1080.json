@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "upgrades_en_1920x1080",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 296,
+    "draw_calls_min": 296,
+    "driver": "vulkan",
+    "fps": 527.324,
+    "frame_ms_avg": 1.896,
+    "frame_ms_p95": 1.921,
+    "frame_ms_p99": 1.934,
+    "frames": 60,
+    "objects": 473,
+    "os": "Windows",
+    "primitives": 350098,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 585.088,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-polish/evidence/screens/ui_garage_touch/upgrades_en_1920x1080.png",
+  "preset": "high",
+  "scenario": "ui_garage_touch"
+}

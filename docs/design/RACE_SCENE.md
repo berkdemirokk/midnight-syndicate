@@ -62,7 +62,7 @@ The player takes grid slot `opponent_count`, the last one used.
 
 ## Behaviour
 - Grid: 1.5 s beat, then `start_countdown()` (3, 2, 1, GO). Camera ORBITs on the grid, CHASEs at GO. Results pay via `GameState.record_result`.
-- Rewards are the `GameState` table, top 4 only (1000/600/300/100 cash, 100/60/30/10 rep). A 5th place or lower
+- Rewards are the `GameState` table, top 4 only (4000/2400/1200/400 cash, 100/60/30/10 rep). A 5th place or lower
   pays 0 by design; the `race_city` run finished 6th, so its results screen read CASH 0 / REP 0.
 - Capture only: `RaceConfig.force_nitro_above_kmh` (default -1, off). Above that speed the autopilot's nitro gate
   opens (`force_player_nitro`). Autopilot path only.

@@ -26,6 +26,7 @@ var _cs: float = 0.0
 var _sn: float = -1.0  ## heading 0: the map is turned so forward is up
 var _dot_t: PackedFloat32Array = PackedFloat32Array()
 var _dot_player: PackedByteArray = PackedByteArray()
+var _dot_shown: PackedByteArray = PackedByteArray()  ## 0 hides a rival, e.g. one eliminated from the race
 
 
 func set_track(points: PackedVector2Array) -> void:
@@ -59,13 +60,19 @@ func set_track(points: PackedVector2Array) -> void:
 func set_dot_count(n: int) -> void:
 	_dot_t.resize(n)
 	_dot_player.resize(n)
+	_dot_shown.resize(n)
 
 
-func set_dot(index: int, progress: float, is_player: bool) -> void:
+func dot_shown(index: int) -> bool:
+	return index >= 0 and index < _dot_shown.size() and _dot_shown[index] == 1
+
+
+func set_dot(index: int, progress: float, is_player: bool, shown: bool = true) -> void:
 	if index < 0 or index >= _dot_t.size():
 		return
 	_dot_t[index] = fposmod(progress, 1.0)
 	_dot_player[index] = 1 if is_player else 0
+	_dot_shown[index] = 1 if shown else 0
 
 
 ## forward: the player's heading on the map plane (x, z). Turns the whole map so that heading points up.
@@ -117,7 +124,7 @@ func paint_dots(c: CanvasItem, centre: Vector2) -> void:
 	if _rot.size() >= 2:
 		var tex: ImageTexture = _disc_texture()
 		for i: int in _dot_t.size():
-			if _dot_player[i] == 0:
+			if _dot_player[i] == 0 and _dot_shown[i] == 1:
 				var p: Vector2 = centre + _turn(_point_at(_dot_t[i]))
 				c.draw_texture_rect(tex, Rect2(p - Vector2.ONE * rival_radius_px, Vector2.ONE * rival_radius_px * 2.0), false, RIVAL_COL)
 	# Player arrow, pointing up the screen (the map turns, so forward is always up).
