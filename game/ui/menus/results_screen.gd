@@ -79,6 +79,7 @@ var _show_stars: bool = false  ## the finished event is on the career ladder: pa
 var _stars: int = 0
 var _next_id: String = ""  ## the unlocked event the NEXT EVENT button starts, "" = button hidden
 var _event_id_override: String = ""
+var _mode: String = RaceConfig.MODE_RACE  ## race mode of the finished run: title and the drift score / elimination cells
 var _garage_btn: Button
 var _menu_btn: Button
 var _replay_btn: Button
@@ -268,7 +269,8 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 		if int(r.get("position", 0)) == 1:
 			leader_time = float(r.get("total_time", 0.0))
 			player_won = bool(r.get("is_player", false))
-	_title.set_text(I18n.t("results.title"))
+	_mode = str(rewards.get("mode", RaceConfig.MODE_RACE))
+	_title.set_text(I18n.t("results.title") if _mode == RaceConfig.MODE_RACE else "%s · %s" % [I18n.t("results.title"), I18n.t("mode.%s" % _mode)])
 	_subtitle.set_text(I18n.t("results.won") if player_won else I18n.t("results.done"))
 	for row: Array in _row_texts:
 		for t: HudText in row:
@@ -308,12 +310,21 @@ func _result_row(r: Dictionary, leader_time: float) -> Array[HudText]:
 	var total: float = float(r.get("total_time", 0.0))
 	var best: float = float(r.get("best_lap", 0.0))
 	var ink: Color = MSTheme.CYAN if is_player else MSTheme.TEXT
+	var out_lap: int = int(r.get("out_lap", 0))
 	var gap_text: String = I18n.t("results.leader") if pos == 1 else "+%.3f" % (total - leader_time)
+	var time_text: String = RaceHUD.fmt_time(total) if total > 0.0 else I18n.t("hud.no_time")
+	if _mode == RaceConfig.MODE_ELIMINATION and pos != 1:
+		gap_text = ""  # cars still in when the race ended share the session time: a gap would read +0.000
+	if out_lap > 0:  # elimination: the lap the car went out at, no gap
+		time_text = I18n.t("results.out") % out_lap
+		gap_text = ""
+	elif is_player and _mode == RaceConfig.MODE_DRIFT:
+		gap_text = I18n.t("results.pts") % RaceHUD.group_int(int(r.get("score", 0.0)))
 	var cells: Array[HudText] = []
 	var specs: Array = [
 		["digits", str(pos), ink],
 		["bold", str(r.get("name", "")), ink],
-		["digits", RaceHUD.fmt_time(total) if total > 0.0 else I18n.t("hud.no_time"), ink],
+		["digits", time_text, ink],
 		["digits", gap_text, MSTheme.MUTED],
 		["digits", RaceHUD.fmt_time(best) if best > 0.0 else I18n.t("hud.no_time"), ink]]
 	for s: Array in specs:

@@ -11,11 +11,13 @@ signal lap_completed(car: ArcadeCar, lap: int, lap_time: float)
 signal position_changed(car: ArcadeCar, position: int)  ## 1-based
 signal race_finished(results: Array[Dictionary])  ## sorted; keys: car, name, position, total_time, best_lap, is_player
 signal wrong_way_changed(is_wrong: bool)  ## player only
+signal car_eliminated(car: ArcadeCar, place: int)  ## elimination mode: the car is out; place is its final place
 
 enum State { GRID, COUNTDOWN, RACING, FINISHED }
 
 const GATE_COUNT: int = 4  ## virtual gates per lap; the last one is the start/finish line
 const MIN_ESTIMATE_FRACTION: float = 0.05  ## floor for progress used in the finish time estimate
+const ELIM_GRACE_S: float = 60.0  ## elimination: a car still out on a lap this long after the lap leader is out, the last place goes anyway
 
 class Racer extends RefCounted:
 	var car: ArcadeCar
@@ -33,12 +35,18 @@ class Racer extends RefCounted:
 	var finish_seq: int = 0
 	var total_time: float = 0.0
 	var place: int = 0
+	var eliminated: bool = false  ## elimination mode: out at the end of a lap
+	var elim_ordinal: int = 0  ## 1 = the first car out (last place), counting up
 
 @export var total_laps: int = 3
 @export var countdown_seconds: int = 3
 @export var finish_wait_s: float = 15.0  ## after the player finishes, the rest may run this long
 @export var wrong_way_speed_ms: float = 3.0  ## m/s backwards along the line
 @export var wrong_way_time_s: float = 0.5
+## Race mode, set before setup(). MODE_RACE finishes on laps; MODE_DRIFT ends at time_limit_s and banks the drift
+## chains of the player (results "score"); MODE_ELIMINATION eliminates the last car at the end of each lap.
+var mode: String = RaceConfig.MODE_RACE
+var time_limit_s: float = 0.0
 
 var state: State = State.GRID
 var race_time: float = 0.0
@@ -55,6 +63,9 @@ var _finish_seq: int = 0
 var _wrong_t: float = 0.0
 var _wrong: bool = false
 var _by_order_cmp: Callable = _by_order  ## kept as a member so sort_custom does not allocate each tick
+var _eliminated_count: int = 0
+var _elim_wait_t: float = -1.0  ## race time the lap leader got through while a car was still out; -1 = not waiting
+var _drift_total: float = 0.0  ## drift mode: banked chain scores of the player
 
 
 ## Register cars before start_countdown(). The track node follows the Track contract.
@@ -76,6 +87,9 @@ func setup(track: Node3D, cars: Array[ArcadeCar], player: ArcadeCar, driver_name
 	_finish_deadline = -1.0
 	_finish_seq = 0
 	_wrong_t = 0.0
+	_eliminated_count = 0
+	_elim_wait_t = -1.0
+	_drift_total = 0.0
 	if _wrong:
 		_wrong = false
 		wrong_way_changed.emit(false)
@@ -104,6 +118,8 @@ func setup(track: Node3D, cars: Array[ArcadeCar], player: ArcadeCar, driver_name
 		r.driver.noise_seed = i + 1
 		r.driver.setup(_track)
 		r.driver.set_traffic(cars)
+	if mode == RaceConfig.MODE_DRIFT and player != null and not player.drift_ended.is_connected(_on_drift_ended):
+		player.drift_ended.connect(_on_drift_ended)
 	set_physics_process(false)
 
 
@@ -144,6 +160,26 @@ func get_best_lap_time(car: ArcadeCar) -> float:  ## 0.0 when no lap finished
 
 func get_car_count() -> int:
 	return _racers.size()
+
+
+func active_count() -> int:  ## cars still in the race (all of them, unless elimination mode has taken some out)
+	return _active_racers().size()
+
+
+func is_eliminated(car: ArcadeCar) -> bool:
+	var r: Racer = _racer_of(car)
+	return r != null and r.eliminated
+
+
+## Drift mode: the banked chains plus the chain running now, for the HUD.
+func drift_score_now() -> float:
+	var live: float = player_car.drift_score if player_car != null and player_car.is_drifting else 0.0
+	return _drift_total + live
+
+
+## Final place of the car out as the ordinal-th car in a race of cars cars: the first out is last.
+static func elimination_place(cars: int, ordinal: int) -> int:
+	return cars - ordinal + 1
 
 
 ## Place order for the HUD leaderboard: car, name, place (1-based) and unwrapped race distance in metres.
@@ -195,14 +231,21 @@ func _go() -> void:
 func _tick_race(delta: float) -> void:
 	race_time += delta
 	for r: Racer in _racers:
-		_update_progress(r)
+		if not r.eliminated:
+			_update_progress(r)
 	if _player != null:
 		for r: Racer in _racers:
-			if r.driver != null:
+			if r.driver != null and not r.eliminated:
 				r.driver.set_reference_gap(_player.distance - r.distance)
 	_update_wrong_way(delta)
 	_update_places()
-	_check_finish()
+	if mode == RaceConfig.MODE_ELIMINATION:
+		_check_eliminations()
+	elif mode == RaceConfig.MODE_DRIFT:
+		if race_time >= time_limit_s:
+			_end_race()
+	else:
+		_check_finish()
 
 
 func _update_progress(r: Racer) -> void:
@@ -231,7 +274,7 @@ func _cross_gate(r: Racer, k: int) -> void:
 	if r.best_lap <= 0.0 or lap_time < r.best_lap:
 		r.best_lap = lap_time
 	lap_completed.emit(r.car, r.laps, lap_time)
-	if r.laps >= total_laps:
+	if r.laps >= total_laps and mode == RaceConfig.MODE_RACE:
 		_finish(r)
 
 
@@ -264,16 +307,28 @@ func _end_race() -> void:
 	set_physics_process(false)
 	var total_distance: float = float(total_laps) * _track.length
 	for r: Racer in _racers:
+		if r.eliminated:
+			continue  # out during the race: keeps its elimination time
 		if not r.finished:
-			# Time estimated from progress: the average pace so far, extended to the full distance.
-			var done: float = maxf(r.distance, _track.length * MIN_ESTIMATE_FRACTION)
-			r.total_time = race_time * total_distance / done
+			if mode == RaceConfig.MODE_RACE:
+				# Time estimated from progress: the average pace so far, extended to the full distance.
+				var done: float = maxf(r.distance, _track.length * MIN_ESTIMATE_FRACTION)
+				r.total_time = race_time * total_distance / done
+			else:
+				r.total_time = race_time  # drift and elimination: the session time
 			if r.driver != null:
 				r.driver.set_racing(false)
+	if mode == RaceConfig.MODE_DRIFT and player_car != null and player_car.is_drifting:
+		_drift_total += player_car.drift_score  # a chain still running at the time limit banks too
 	var order: Array[Racer] = []
-	for r: Racer in _racers:
-		order.append(r)
-	order.sort_custom(_by_time)
+	if mode == RaceConfig.MODE_ELIMINATION:
+		_update_places()  # active cars by distance, then the out cars by when they went
+		for r: Racer in _order:
+			order.append(r)
+	else:
+		for r: Racer in _racers:
+			order.append(r)
+		order.sort_custom(_by_time)
 	var results: Array[Dictionary] = []
 	for i: int in order.size():
 		var r: Racer = order[i]
@@ -285,6 +340,8 @@ func _end_race() -> void:
 			"total_time": r.total_time,
 			"best_lap": r.best_lap,
 			"is_player": r.is_player,
+			"score": _drift_total if r.is_player else 0.0,  # drift mode: the banked score, 0 otherwise
+			"out_lap": r.elim_ordinal,  # elimination mode: the lap the car went out at, 0 if it stayed in
 		})
 	race_finished.emit(results)
 
@@ -312,11 +369,94 @@ func _update_wrong_way(delta: float) -> void:
 
 
 func _by_order(a: Racer, b: Racer) -> bool:
+	if a.eliminated != b.eliminated:
+		return b.eliminated
+	if a.eliminated:
+		return a.elim_ordinal > b.elim_ordinal  # the later out, the better place
 	if a.finished != b.finished:
 		return a.finished
 	if a.finished:
 		return a.finish_seq < b.finish_seq
 	return a.distance > b.distance
+
+
+# Elimination: the lap is over once every car still running has crossed its line; the last one across is out.
+func _check_eliminations() -> void:
+	var active: Array[Racer] = _active_racers()
+	while active.size() > 1 and _elimination_due(active):
+		var victim: Racer = _last_place(active)
+		active.erase(victim)
+		_eliminate(victim)
+		if victim.is_player:
+			break  # the player's elimination ends the race with its placed result
+	if active.size() <= 1 or (_player != null and _player.eliminated):
+		_end_race()
+
+
+# True when the next elimination is due. The grace period stops a stuck car from holding the race forever.
+func _elimination_due(active: Array[Racer]) -> bool:
+	var min_laps: int = 1 << 20
+	var max_laps: int = 0
+	for r: Racer in active:
+		min_laps = mini(min_laps, r.laps)
+		max_laps = maxi(max_laps, r.laps)
+	if min_laps > _eliminated_count:
+		return true
+	if max_laps <= _eliminated_count:
+		_elim_wait_t = -1.0
+		return false
+	if _elim_wait_t < 0.0:
+		_elim_wait_t = race_time
+	return race_time - _elim_wait_t >= ELIM_GRACE_S
+
+
+func _eliminate(r: Racer) -> void:
+	_eliminated_count += 1
+	r.eliminated = true
+	r.elim_ordinal = _eliminated_count
+	r.total_time = race_time
+	r.place = elimination_place(_racers.size(), _eliminated_count)
+	_elim_wait_t = -1.0
+	if r.driver != null:
+		r.driver.set_racing(false)
+	# Out of the race: no physics, no collisions, not drawn, no AI. The others stop reacting to it.
+	r.car.set_frozen_for_grid(true)
+	r.car.collision_layer = 0
+	r.car.collision_mask = 0
+	r.car.visible = false
+	r.car.process_mode = Node.PROCESS_MODE_DISABLED
+	var audio: CarAudio = r.car.get_node_or_null("CarAudio") as CarAudio
+	if audio != null:
+		audio.set_enabled(false)  # the engine falls silent with the car
+	var live: Array[ArcadeCar] = []
+	for o: Racer in _racers:
+		if not o.eliminated:
+			live.append(o.car)
+	for o: Racer in _racers:
+		if not o.eliminated and o.driver != null:
+			o.driver.set_traffic(live)
+	car_eliminated.emit(r.car, r.place)
+
+
+func _active_racers() -> Array[Racer]:
+	var out: Array[Racer] = []
+	for r: Racer in _racers:
+		if not r.eliminated:
+			out.append(r)
+	return out
+
+
+func _last_place(active: Array[Racer]) -> Racer:
+	var last: Racer = active[0]
+	for r: Racer in active:
+		if r.distance < last.distance:
+			last = r
+	return last
+
+
+func _on_drift_ended(score: float) -> void:
+	if state == State.RACING:
+		_drift_total += score
 
 
 func _by_time(a: Racer, b: Racer) -> bool:

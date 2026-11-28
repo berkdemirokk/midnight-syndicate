@@ -255,6 +255,8 @@ func _build_race() -> void:
 	race = RaceManager.new()
 	race.name = "RaceManager"
 	race.total_laps = config_used.laps
+	race.mode = config_used.mode
+	race.time_limit_s = config_used.time_limit_s
 	_world.add_child(race)
 	race.setup(track, cars, player, _names)
 	if config_used.net_hold_grid:
@@ -803,7 +805,8 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 	var rewards: Dictionary = {}
 	for r: Dictionary in results:
 		if bool(r.get("is_player", false)):
-			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)))
+			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)), float(r.get("score", -1.0)))
+	rewards["mode"] = config_used.mode  # the results screen labels the mode and shows the drift score
 	if player_ai != null:
 		player_ai.set_racing(false)
 	if camera != null:

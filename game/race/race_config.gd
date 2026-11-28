@@ -42,6 +42,11 @@ extends Resource
 @export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
 @export var net_hold_grid: bool = false  ## online race (net/): the grid waits for the server start message; no AI opponents are spawned
 @export var pursuit: bool = false  ## police pursuit (race/pursuit/PursuitMode); only with PursuitMode.ENABLED, normal races never add it
+const MODE_RACE: String = "race"  ## finish the laps, placed by finish order
+const MODE_DRIFT: String = "drift"  ## timed solo run, scored by the drift chains (time_limit_s, no rivals)
+const MODE_ELIMINATION: String = "elimination"  ## last car out at the end of each lap; laps = cars - 1
+@export var mode: String = MODE_RACE  ## MODE_RACE, MODE_DRIFT or MODE_ELIMINATION (see RaceManager)
+@export var time_limit_s: float = 0.0  ## drift: race time limit in seconds; 0 = not timed
 
 
 ## Opponent paint by index, cycling through the list. Falls back to the player colour when no list is set.

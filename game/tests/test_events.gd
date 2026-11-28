@@ -36,7 +36,7 @@ func _wipe() -> void:
 
 
 func test_catalog_shape() -> void:
-	check(EventCatalog.count() == 30, "original eleven events plus nineteen extended tour events")
+	check(EventCatalog.count() == 34, "original eleven events, nineteen extended tour events, four mode events")
 	for id: String in ["maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]:
 		var c: RaceConfig = EventCatalog.config_for(id)
 		check(c != null and ResourceLoader.exists(c.track_scene) and c.track_scene.contains("istanbul"), "%s races on an Istanbul track" % id)
@@ -58,7 +58,7 @@ func test_catalog_shape() -> void:
 	check(EventCatalog.previous_id("ortakoy_night") == "" and EventCatalog.is_open("ortakoy_night"), "the showcase comes first and is always open")
 	check(EventCatalog.next_id("syndicate_final") == "maslak_sprint", "the Arden Bay final opens the Istanbul tour")
 	check(EventCatalog.next_id("bogaz_final") == "maslak_time_trial", "original finale leads to extended tour")
-	check(EventCatalog.next_id("istanbul_championship") == "", "last event has no next")
+	check(EventCatalog.next_id("istanbul_championship") == "drift_harbour", "the championship leads to the mode events")
 	check(EventCatalog.next_id("wharf_sprint") == "neon_strip_circuit", "ladder order")
 	check(EventCatalog.next_id("dev_circuit") == "", "unknown id has no next")
 
@@ -191,7 +191,7 @@ func test_long_career_list_keeps_selected_row_visible() -> void:
 	var screen: EventSelect = (load(SELECT) as PackedScene).instantiate() as EventSelect
 	add(screen)
 	await frames(3)
-	check(screen.get_row_count() == 30, "all career events exist")
+	check(screen.get_row_count() == 34, "all career events exist")
 	var capacity: int = EventSelect.PHONE_WINDOW_ROWS if MSTheme.phone else EventSelect.DESKTOP_WINDOW_ROWS
 	for i: int in [0, 11, 29, 0]:
 		screen.select(i)
