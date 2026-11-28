@@ -16,6 +16,9 @@ uniform float night_light = 1.6;
 uniform vec3 ceiling_lamp : source_color = vec3(1.0, 0.82, 0.6);
 uniform float glass_roughness = 0.08;
 uniform float engine_specular = 0.06;
+uniform float closed_share = 0.2;  // shops with the shutter down after dark
+uniform float cool_share = 0.25;  // shops with cool white LED light
+uniform vec3 shutter_colour : source_color = vec3(0.16, 0.16, 0.17);
 uniform float mirror_strength = 0.85;
 uniform vec3 street_day : source_color = vec3(0.16, 0.15, 0.14);
 uniform vec3 street_night : source_color = vec3(0.025, 0.02, 0.02);
@@ -69,6 +72,21 @@ void fragment() {
 		col = avg * 0.8 * mix(1.0, 0.65, depth01);  // side walls get darker toward the back
 	}
 	col *= mix(1.0, 0.7, depth01 * (1.0 - night));
+	// Every shop is its own business after dark: a hash of the window's left edge (constant over one window) picks
+	// closed (roller shutter down, a dim security light), cool white LED, or warm light at its own brightness.
+	vec3 edge = world_pos - t * p.x - vec3(0.0, p.y, 0.0);  // the window's bottom-left corner
+	float sh = fract(sin(dot(round(edge * 2.0) + vec3(crop.r * 37.0), vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+	float lit_dusk = night;
+	if (sh < closed_share) {
+		float slat = 0.55 + 0.45 * smoothstep(0.0, 0.5, abs(fract(p.y / 0.11) - 0.5));
+		vec3 shutter = shutter_colour * slat * mix(1.0, 0.25, lit_dusk);
+		col = mix(col, shutter, lit_dusk);
+	} else if (sh < closed_share + cool_share) {
+		float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
+		col = mix(col, vec3(l) * vec3(0.82, 0.92, 1.08) * 1.15, lit_dusk);
+	} else {
+		col *= mix(1.0, mix(0.6, 1.25, fract(sh * 9.7)), lit_dusk);
+	}
 	// Mirror: at the grazing chase angle shop glass reflects the far side of the street, not the sky. The probes here
 	// hold mostly sky, so the engine specular is kept weak and the shader adds the street: dark facades below the
 	// horizon of the reflected ray, a little sky above it.
