@@ -285,6 +285,7 @@ func _build_road() -> void:
 	var road: Node3D = _scene(road_glb).instantiate() as Node3D
 	road.name = "Road"
 	stats["road_surfaces"] = MaterialLibrary.apply(road)
+	stats["road_ao_surfaces"] = MaterialLibrary.bind_road_ao(road, road_glb.get_basename() + "_ao.png")
 	# The "ground" plane collider sits at about -0.3 m, above the underpass approach where the road drops below it,
 	# so cars stepped off it. The road and sidewalk colliders cover the drivable surface; the ground mesh stays.
 	var ground: Node = road.get_node_or_null("ground")

@@ -24,6 +24,7 @@ DST = os.path.join(REPO, "game", "assets", "world")
 
 CITY_FILES = [
     (os.path.join(SRC, "city_01", "road_out", "city_01_road.glb"), "city_01"),
+    (os.path.join(SRC, "city_01", "road_out", "city_01_road_ao.png"), "city_01"),
     (os.path.join(SRC, "city_01", "road_out", "city_01_centerline.json"), "city_01"),
     (os.path.join(SRC, "city_01", "road_out", "materials.json"), "city_01/road"),
     (os.path.join(SRC, "city_01", "road_out", "report.json"), "city_01/road"),
@@ -124,6 +125,7 @@ def track_files(track_id):
     """Road, centreline, layout and the per-track props of a generic track (assets_src/world/tracks/<id>)."""
     base = os.path.join(SRC, "tracks", track_id)
     pairs = [(os.path.join(base, "road_out", track_id + "_road.glb"), track_id),
+             (os.path.join(base, "road_out", track_id + "_road_ao.png"), track_id),
              (os.path.join(base, "road_out", track_id + "_centerline.json"), track_id),
              (os.path.join(base, "road_out", "materials.json"), track_id + "/road"),
              (os.path.join(base, "road_out", "report.json"), track_id + "/road"),
