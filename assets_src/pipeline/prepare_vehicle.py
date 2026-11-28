@@ -318,8 +318,85 @@ def pull_back_strays(ob, before):
     return moved
 
 
+def add_plate(cfg):
+    """config add_plate: a rear number plate quad (material Plate_Added -> M_Plate) for a source with no plate mesh.
+    Sits on the highest point of the tail, facing +Y (the tail is +Y in Blender space, before the centring shift)."""
+    ys = [v.co.y for o in bpy.data.objects for v in o.data.vertices]
+    y = max(ys) + 0.01
+    hw, z0, z1 = 0.26, 0.42, 0.54
+    me = bpy.data.meshes.new("Plate_Added")
+    me.from_pydata([(-hw, y, z0), (hw, y, z0), (hw, y, z1), (-hw, y, z1)], [], [(0, 3, 2, 1)])
+    me.materials.append(bpy.data.materials.new("Plate_Added"))
+    bpy.data.objects.new("Plate_Added", me)
+    bpy.context.scene.collection.objects.link(bpy.data.objects["Plate_Added"])
+
+
+def add_brakes(cfg):
+    """config add_brakes: a flat disc on the outboard face of each source wheel (material Brake_Added -> M_BrakeDisc),
+    for a source with no brake parts (vintage drum cars). The engine needs brake_FL..brake_RR nodes; a disc inside the
+    spokes reads as a brake."""
+    verts, faces = [], []
+    for src in WHEEL_SRC:
+        o = bpy.data.objects[src]
+        vs = [v.co for v in o.data.vertices]
+        mn = [min(p[i] for p in vs) for i in range(3)]
+        mx = [max(p[i] for p in vs) for i in range(3)]
+        cx, cy, cz = [(mn[i] + mx[i]) / 2 for i in range(3)]
+        r = (mx[2] - mn[2]) / 2 * 0.62
+        sx = 1.0 if cx > 0 else -1.0
+        x = (mx[0] if sx > 0 else mn[0]) - sx * 0.02
+        base = len(verts)
+        verts.append((x, cy, cz))
+        for k in range(16):
+            t = 2 * math.pi * k / 16
+            verts.append((x, cy + r * math.cos(t), cz + r * math.sin(t)))
+        for k in range(16):
+            faces.append((base, base + 1 + k, base + 1 + (k + 1) % 16))
+    me = bpy.data.meshes.new("Brake_Added")
+    me.from_pydata(verts, [], faces)
+    me.materials.append(bpy.data.materials.new("Brake_Added"))
+    bpy.context.scene.collection.objects.link(bpy.data.objects.new("Brake_Added", me))
+
+
+def scale_lenses(cfg):
+    """config lens_scale {material: factor}: grows each loose island of that material about its own centre, across
+    the lamp face (X/Z) only. Vintage tail lenses are 7-9 cm discs, too small to read as a brake glow in the chase view."""
+    for o in [o for o in bpy.data.objects if o.type == "MESH"]:
+        names = [s.material.name if s.material else "" for s in o.material_slots]
+        for mat, k in cfg["lens_scale"].items():
+            idx = {i for i, n in enumerate(names) if n.split(".")[0] == mat}
+            if not idx:
+                continue
+            bm = bmesh.new()
+            bm.from_mesh(o.data)
+            todo = {f for f in bm.faces if f.material_index in idx}
+            while todo:
+                seed = todo.pop()
+                island, stack = {seed}, [seed]
+                while stack:
+                    for e in stack.pop().edges:
+                        for g in e.link_faces:
+                            if g in todo:
+                                todo.discard(g)
+                                island.add(g)
+                                stack.append(g)
+                vs = {v for f in island for v in f.verts}
+                c = sum((v.co for v in vs), Vector()) / len(vs)
+                for v in vs:
+                    v.co.x = c.x + (v.co.x - c.x) * k
+                    v.co.z = c.z + (v.co.z - c.z) * k
+            bm.to_mesh(o.data)
+            bm.free()
+
+
 def build_lod(src, cfg, level, out_dir, stats, colours, metallic):
     load_source(src)
+    if cfg.get("add_plate"):
+        add_plate(cfg)
+    if cfg.get("add_brakes"):
+        add_brakes(cfg)
+    if cfg.get("lens_scale"):
+        scale_lenses(cfg)
     centres = wheel_centres()
     shift = Vector((0.0, -(centres["wheel_FL"][0].y + centres["wheel_RL"][0].y) / 2, 0.0))
     for o in bpy.data.objects:
