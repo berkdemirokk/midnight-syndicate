@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.965,
+  "luma_min": 0.0,
+  "name": "lights_on",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 58,
+    "draw_calls_min": 58,
+    "driver": "vulkan",
+    "fps": 910.761,
+    "frame_ms_avg": 1.098,
+    "frame_ms_p95": 1.143,
+    "frame_ms_p99": 1.222,
+    "frames": 60,
+    "objects": 58,
+    "os": "Windows",
+    "primitives": 154626,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 494.861,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetC/evidence/screens/car_studio_sovereign/lights_on.png",
+  "preset": "high",
+  "scenario": "car_studio_sovereign"
+}
