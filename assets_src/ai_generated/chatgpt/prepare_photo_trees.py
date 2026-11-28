@@ -2,10 +2,10 @@
 
 Input: assets_src/ai_generated/chatgpt/<name>.png (RGBA, tree on a transparent background, ground line at the bottom).
 Output (game/assets/world/kits/trees_photo/):
-  plane_atlas.png        2048x1024 RGBA: two plane trees side by side, each 1024x1024 (plane_a | plane_b)
-  plane_atlas_night.jpg  same layout, RGB: the night pictures, lit crowns on black (the glow map)
-  cypress.png            256x1024 RGBA
-  judas.png              1024x1024 RGBA
+  plane_atlas.png        1024x512 RGBA: two plane trees side by side, each 512x512 (plane_a | plane_b)
+  plane_atlas_night.jpg  same layout, 1024x512 RGB: the night pictures, lit crowns on black (the glow map)
+  cypress.png            256x512 RGBA
+  judas.png              512x512 RGBA
 
 Alpha is cleaned (faint fringe removed) and the colour under the transparent area is bled outward so mipmaps
 do not pick up a dark or white halo. Run: py -3.10 assets_src/ai_generated/chatgpt/prepare_photo_trees.py
@@ -17,7 +17,7 @@ from PIL import Image
 
 SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(SRC, "..", "..", "..", "game", "assets", "world", "kits", "trees_photo")
-TREE_PX = 1024
+TREE_PX = 512  # atlas cell (was 1024): the crown is well under 512 px on screen
 
 
 def load(name: str) -> np.ndarray:
@@ -86,7 +86,7 @@ def main() -> None:
 
     cyp_day = load("cypress_c_day")
     cx0, cx1 = crop_bounds(cyp_day)
-    cyp = clean_alpha(fit(cyp_day[:, cx0:cx1], 256, TREE_PX))
+    cyp = clean_alpha(fit(cyp_day[:, cx0:cx1], TREE_PX // 2, TREE_PX))
     Image.fromarray(cyp).save(os.path.join(OUT, "cypress.png"), optimize=True)
     judas_day = load("judas_d_day")
     jx0, jx1 = crop_bounds(judas_day)
