@@ -62,3 +62,46 @@ func test_ungraded_track_untouched() -> void:
 	TrackGrade.apply_to_world(root, BOGAZ_TRACK, "sunset")
 	check(we.environment.adjustment_enabled, "a graded track changes the environment")
 	await cleanup([root])
+
+
+## A base is only reused while the environment still holds what the grade wrote. TimeOfDay writing a new hour in between
+## must start a new base: the sunset grade is the sunset preset times the table, not stacked on the day grade.
+func test_base_follows_timeofday_write() -> void:
+	var env := Environment.new()
+	var sun := DirectionalLight3D.new()
+	TimeOfDay.preset("day").apply_environment(env, sun, 40.0)
+	TrackGrade.apply(env, TrackGrade.values("bogaz", "day"))
+	var sunset: TimeOfDay = TimeOfDay.preset("sunset")
+	sunset.apply_environment(env, sun, 40.0)
+	var v: Dictionary = TrackGrade.values("bogaz", "sunset")
+	TrackGrade.apply(env, v)
+	var t: Color = v["ambient"]
+	var base: Color = sunset.ambient_color
+	var want_amb := Color(clampf(base.r * t.r, 0.0, 1.0), clampf(base.g * t.g, 0.0, 1.0), clampf(base.b * t.b, 0.0, 1.0), base.a)
+	check(env.ambient_light_color.is_equal_approx(want_amb), "sunset ambient is the sunset preset times the table (%s vs %s)" % [str(env.ambient_light_color), str(want_amb)])
+	var want_fog: Color = sunset.fog_color.lerp(v["fog"], float(v["fog_mix"]))
+	check(env.fog_light_color.is_equal_approx(want_fog), "sunset fog is the sunset preset mixed toward the table fog")
+	check(absf(env.tonemap_exposure - sunset.exposure * float(v["exposure"])) < 0.0001, "sunset exposure is the preset times the table")
+	check(absf(env.adjustment_saturation - sunset.grade_saturation * float(v["saturation"])) < 0.0001, "sunset saturation is the preset times the table")
+	sun.free()
+
+
+## The order RaceScene uses: TimeOfDay writes the hour, then the track grade is applied to the world's environment.
+func test_hook_order_matches_race_scene() -> void:
+	var root := Node3D.new()
+	var we := WorldEnvironment.new()
+	we.environment = Environment.new()
+	root.add_child(we)
+	add(root)
+	var sun := DirectionalLight3D.new()
+	var tod: TimeOfDay = TimeOfDay.preset("day")
+	tod.apply_environment(we.environment, sun, 40.0)
+	TrackGrade.apply_to_world(root, MASLAK_TRACK, tod.id)
+	var v: Dictionary = TrackGrade.values("maslak", "day")
+	var t: Color = v["ambient"]
+	var base: Color = tod.ambient_color
+	var want := Color(clampf(base.r * t.r, 0.0, 1.0), clampf(base.g * t.g, 0.0, 1.0), clampf(base.b * t.b, 0.0, 1.0), base.a)
+	check(we.environment.ambient_light_color.is_equal_approx(want), "maslak day ambient after the race order")
+	check(we.environment.adjustment_enabled, "maslak day grade is on after the race order")
+	sun.free()
+	await cleanup([root])
