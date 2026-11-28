@@ -1,0 +1,69 @@
+{
+  "run": "rc_final",
+  "port": 24590,
+  "laps": 1,
+  "checks": {
+    "server_exit_0": true,
+    "wrong_code_refused": true,
+    "joins_2": true,
+    "ready_2": true,
+    "start_2_racers": true,
+    "track_bogaz": true,
+    "server_go": true,
+    "server_results": true,
+    "results_both_cars": true,
+    "car_finished": true,
+    "Ada_go": true,
+    "Ada_results": true,
+    "Ada_exit_0": true,
+    "Ada_snapshots": true,
+    "Ada_orders": true,
+    "Bo_go": true,
+    "Bo_results": true,
+    "Bo_exit_0": true,
+    "Bo_snapshots": true,
+    "Bo_orders": true
+  },
+  "passed": true,
+  "server_results": [
+    {
+      "pid": 1,
+      "name": "Ada",
+      "position": 1,
+      "finished": true,
+      "dnf": false,
+      "time_s": 47.5167410000017
+    },
+    {
+      "pid": 2,
+      "name": "Bo",
+      "position": 2,
+      "finished": true,
+      "dnf": false,
+      "time_s": 47.9167250000017
+    }
+  ],
+  "accepted_by_pid": "{ 1: 921, 2: 929 }",
+  "client_snapshots": {
+    "Ada": 929,
+    "Bo": 921
+  },
+  "client_rtt_ms_last_min_avg": {
+    "Ada": [
+      17.18,
+      16.94,
+      17.04
+    ],
+    "Bo": [
+      17.03,
+      16.91,
+      17.03
+    ]
+  },
+  "exit_codes": {
+    "server": 0,
+    "eve": 1,
+    "Ada": 0,
+    "Bo": 0
+  }
+}
