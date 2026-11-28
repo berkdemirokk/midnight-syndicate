@@ -398,3 +398,19 @@ func test_owned_player_upgrades_do_not_tune_rivals() -> void:
 	for suffix: String in ["", ".bak", ".tmp"]:
 		if FileAccess.file_exists(path + suffix):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(path + suffix))
+
+
+## A busted race has no pause: neither the touch button nor leaving the window opens the pause menu.
+func test_busted_race_cannot_be_paused() -> void:
+	var scene: RaceScene = _make_scene(_cfg(true, 1, 2))
+	await frames(2)
+	scene._pursuit_busted = true
+	scene._on_touch_pause()
+	check(not scene.pause_menu.is_paused_menu_open(), "touch pause is blocked after a bust")
+	scene._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	check(not scene.pause_menu.is_paused_menu_open(), "focus out does not pause a busted race")
+	scene._pursuit_busted = false
+	scene._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	check(scene.pause_menu.is_paused_menu_open(), "focus out pauses a race that is not busted")
+	scene.pause_menu.resume()
+	await cleanup([scene])
