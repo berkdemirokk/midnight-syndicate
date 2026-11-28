@@ -23,6 +23,10 @@ const MIN_DIVISOR: float = 0.01  ## floor for speeds, radii and travel used as d
 const BODY_LAYER: int = 2
 const BODY_MASK: int = 11  ## world 1 + vehicles 2 + props 8
 const RAY_MASK: int = 9  ## world 1 + props 8
+## Body contacts (walls, props, cars) only. Tyres are rays, so grip is unaffected. Low friction keeps a glancing
+## scrape from killing momentum; a little bounce gives the hit some life.
+const BODY_FRICTION: float = 0.05  ## shortcut: one value for every class, upgrade to a CarSpec field with car_spec.gd
+const BODY_BOUNCE: float = 0.1
 
 @export var spec: CarSpec
 
@@ -86,6 +90,10 @@ func _ready() -> void:
 	angular_damp = 0.0
 	continuous_cd = true
 	contact_monitor = true
+	var body_mat := PhysicsMaterial.new()
+	body_mat.friction = BODY_FRICTION
+	body_mat.bounce = BODY_BOUNCE
+	physics_material_override = body_mat
 	max_contacts_reported = spec.max_contacts_reported
 	collision_layer = BODY_LAYER
 	collision_mask = BODY_MASK
