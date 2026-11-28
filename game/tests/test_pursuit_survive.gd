@@ -64,10 +64,19 @@ func test_pursuit_events_are_consistent() -> void:
 			survive_count += 1
 			var s: float = float(ev["survive_s"])
 			check(s >= 60.0 and s <= 600.0, "survive time is a few minutes: " + id)
-			check(int(ev["laps"]) >= 2, "a survive run is long enough to outlast the goal: " + id)
+			# 60 s is quicker than any 3-star lap (star_times start at 68 s): the race cannot end before the goal
+			check(int(ev["laps"]) * 60.0 > s, "a survive run is long enough to outlast the goal: " + id)
 		var key: String = EventCatalog.name_key(id)
 		for lang: String in ["tr", "en"]:
 			Settings.set_language(lang)
 			check(I18n.t(key) != key, "name translated (" + lang + "): " + id)
 		Settings.set_language(saved)
 	check(survive_count >= 3, "at least three survive events")
+
+
+func test_career_pursuit_events_are_gated_by_the_ladder() -> void:
+	check(EventCatalog.previous_id("pursuit_harbour_chase") == "elim_maslak", "the first career chase follows the last mode event")
+	check(EventCatalog.previous_id("pursuit_maslak_hunt") == "pursuit_harbour_chase", "Maslak hunt follows the harbour chase")
+	check(EventCatalog.previous_id("pursuit_bogaz_gauntlet") == "pursuit_maslak_hunt", "the gauntlet follows the Maslak hunt")
+	for id: String in ["pursuit_harbour_chase", "pursuit_maslak_hunt", "pursuit_bogaz_gauntlet"]:
+		check(not EventCatalog.is_open(id), "career chase is on the ladder, not open: " + id)
