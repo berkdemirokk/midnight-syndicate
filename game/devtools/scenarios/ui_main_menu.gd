@@ -5,8 +5,8 @@ const SCENE: String = "res://ui/menus/main_menu.tscn"
 const SETTLE_FRAMES: int = 40
 const DESKTOP_W: int = 1920
 const DESKTOP_H: int = 1080
-const PHONE_W: int = 2556
-const PHONE_H: int = 1179
+const PHONE_W: int = 2532
+const PHONE_H: int = 1170
 
 
 func run() -> void:

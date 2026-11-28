@@ -242,7 +242,7 @@ func _current_event_id() -> String:
 func _on_next() -> void:
 	next_pressed.emit()
 	if not _next_id.is_empty():
-		Router.goto(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(_next_id)})
+		Router.goto(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(_next_id)}))
 
 
 ## Shows the REPLAY button only when the race has a recording to play.

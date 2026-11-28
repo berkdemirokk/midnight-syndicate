@@ -9,7 +9,10 @@ const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const RECORDS_SCENE: String = "res://ui/menus/records_screen.tscn"
 const PURSUIT_SELECT_SCENE: String = "res://race/pursuit/pursuit_select.tscn"
-const PURSUIT_TOUCH_H: float = 88.0  ## touch target of the pursuit button
+const MENU_TOUCH_H: float = 88.0  ## every menu button is at least this tall (touch target)
+const RACE_H: float = 104.0  ## the primary RACE button is the tallest: one clear entry point
+const SWEEP_S: float = 3.2  ## light sweep across the backdrop: travel time, then a pause before the next pass
+const SWEEP_PAUSE_S: float = 2.5
 const ONBOARDING_SCENE: String = "res://ui/menus/onboarding.tscn"
 const TAGLINE_PX: int = 20
 const VERSION_PX: int = 16
@@ -27,6 +30,7 @@ const INTRO_S: float = 0.5
 const INTRO_STAGGER_S: float = 0.07
 
 var _holder: Control
+var _sweep: LightSweep
 var _backdrop: MenuBackdrop
 var _race_btn: Button
 var _garage_btn: Button
@@ -57,6 +61,9 @@ func _ready() -> void:
 	_holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_holder)
+	_sweep = LightSweep.new()
+	add_child(_sweep)
+	_sweep.run()
 	_build_foreground()
 	Settings.changed.connect(_on_settings_changed)
 	GameState.profile_changed.connect(_refresh_stats)
@@ -112,9 +119,9 @@ func _build_foreground() -> void:
 	col.add_child(menu)
 	_race_btn = _menu_button(menu, "menu.race", _on_race)
 	_race_btn.theme_type_variation = &"PrimaryButton"
+	_race_btn.custom_minimum_size.y = maxf(RACE_H, MSTheme.button_h())
 	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
 	_pursuit_btn = _menu_button(menu, "menu.pursuit", _on_pursuit)
-	_pursuit_btn.custom_minimum_size.y = maxf(PURSUIT_TOUCH_H, MSTheme.button_h())
 	_records_btn = _menu_button(menu, "menu.records", _on_records)
 	_settings_btn = _menu_button(menu, "menu.settings", _on_settings)
 	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
@@ -183,7 +190,7 @@ func _stat(parent: Container, ink: Color, cap_key: String) -> Label:
 
 func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(MENU_W, MSTheme.button_h())
+	b.custom_minimum_size = Vector2(MENU_W, maxf(MENU_TOUCH_H, MSTheme.button_h()))
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.pressed.connect(func() -> void: UiSounds.click())
 	b.pressed.connect(handler)
@@ -295,3 +302,30 @@ func _show_toast(text: String) -> void:
 	_toast_tw.tween_interval(TOAST_HOLD_S)
 	_toast_tw.tween_property(_toast, "modulate:a", 0.0, TOAST_FADE_S)
 	_toast_tw.tween_callback(func() -> void: _toast.visible = false)
+
+
+## A soft diagonal band of light that crosses the backdrop again and again. Drawn in one pass, no textures.
+class LightSweep extends Control:
+	var pos: float = -0.4  ## band position as a fraction of the width
+
+	func _init() -> void:
+		name = "LightSweep"
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	func run() -> void:
+		var tw: Tween = create_tween().set_loops()
+		tw.tween_method(_set_pos, -0.4, 1.4, SWEEP_S).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		tw.tween_interval(SWEEP_PAUSE_S)
+
+	func _set_pos(v: float) -> void:
+		pos = v
+		queue_redraw()
+
+	func _draw() -> void:
+		var w: float = size.x * 0.12
+		var cx: float = size.x * pos
+		var k: float = size.y * MSTheme.SKEW_RATIO
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(cx + k, 0.0), Vector2(cx + k + w, 0.0), Vector2(cx + w, size.y), Vector2(cx, size.y)]),
+			MSTheme.tint(MSTheme.CYAN, 0.06))

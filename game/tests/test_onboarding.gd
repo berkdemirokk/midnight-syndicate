@@ -88,8 +88,9 @@ func test_onboarding_screen_steps_and_language() -> void:
 	check(screen.step == OnboardingScreen.STEP_CONTROLS and calls.is_empty(), "CONTINUE opens the controls step")
 	screen._next_btn.pressed.emit()
 	check(gs.is_onboarded(), "START saves onboarding as done")
-	check(calls.size() == 1 and calls[0][0] == OnboardingScreen.RACE_SCENE, "START goes to the race scene")
-	var cfg: RaceConfig = (calls[0][1] as Dictionary).get(RaceScene.CONFIG_PARAM) if calls.size() == 1 else null
+	check(calls.size() == 1 and calls[0][0] == LoadingScreen.SCENE, "START goes through the loading card")
+	check(calls.size() == 1 and (calls[0][1] as Dictionary)[LoadingScreen.TARGET_KEY] == OnboardingScreen.RACE_SCENE, "the card loads the race scene")
+	var cfg: RaceConfig = ((calls[0][1] as Dictionary)[LoadingScreen.NEXT_KEY] as Dictionary).get(RaceScene.CONFIG_PARAM) if calls.size() == 1 else null
 	check(cfg != null and cfg.event_id == FIRST_RACE, "START opens Ortakoy Night")
 	await cleanup([screen as Node])
 	gs.free()
