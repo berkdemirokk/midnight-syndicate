@@ -10,7 +10,8 @@ Do not expose the PC to the internet with this build.
 - Join code: the host gets a 6-character code (random, from 23 letters and 8 digits, no 0, O, 1, I, L) shown in the
   lobby overlay. Joining needs the same code in the Code field. `--code=ABCDEF` on the host or the joiner sets it
   (tests only; the code is then the same for every run that uses it). The code is checked on the server only and is
-  never sent to other clients or written to the logs.
+  never sent to other clients or written to the logs. It travels unencrypted in the hello, so anyone who can
+  read LAN traffic can read it: the code keeps out guessers on a trusted LAN, not eavesdroppers.
 - With either, the main menu shows "Online (LAN, experimental)" (Turkish: "Online (LAN, deneysel)"). Without them the
   button does not exist. All menu and lobby text goes through I18n (keys `net.*` in `ui/i18n.gd`).
 - The server binds 127.0.0.1. A LAN address is accepted only when the game is started with `--address=<LAN IP>`;

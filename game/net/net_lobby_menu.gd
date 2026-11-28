@@ -99,8 +99,7 @@ func _on_host() -> void:
 	if err != "":
 		_status.text = err
 		return
-	_status.text = I18n.t("net.hosting") % [_address.text, _port.text, laps] + "
-" + I18n.t("net.join_code") % _session.join_code()
+	_status.text = I18n.t("net.hosting") % [_address.text, _port.text, laps] + "\n" + I18n.t("net.join_code") % _session.join_code()
 	_refresh_buttons()
 
 
