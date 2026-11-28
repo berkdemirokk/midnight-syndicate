@@ -6,6 +6,8 @@ Method: page fetch of each model URL on 2026-11-28 (WebFetch). Later fetches ret
 Carried forward from commit 39c5dc9 (marie645 x2, olliej08, Genbrugge): not re-fetched in this pass, marked below.
 Real-make models are excluded by the no-real-make rule (see Excluded).
 
+Lead review (2026-11-28, Opus): licences of ranks 1, 4 and 5 re-checked on the page today (CC Attribution, Download button, tris as listed, no make named). Quality verdict: none of ranks 1-10 reaches the realistic bar of the 11 cars that ship now (vinish.dev "realistic-cars", CC BY 4.0). Every row here is a low-poly, stylised body and would look worse than the current fleet next to it in a race. Do not download ranks 1, 2 and 6-10 as player cars. Ranks 3-5 (police x2, taxi) are acceptable only as background traffic or pursuit filler, after a side-by-side render with a shipped car. Next pass: search the remaining vinish.dev categories first (same licence, same look as the fleet), then Sketchfab with the Creative Commons Attribution, Downloadable and "not low poly" criteria.
+
 ## Ranked shortlist (verified on page)
 
 Triangle counts are the Sketchfab listing figures (before decimation). Licence = "Creative Commons Attribution" (CC BY 4.0) as shown on the page.
