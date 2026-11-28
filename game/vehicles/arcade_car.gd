@@ -433,7 +433,6 @@ func reset_to(xf: Transform3D, refill_nitro: bool = true) -> void:
 	gear = 1
 
 
-## While frozen the car holds its place on the grid and ignores input (engine may still rev).
 ## Read-only: true while the exit push boost runs (a drift or grip turn just ended above the entry speed).
 func is_exit_push_active() -> bool:
 	return _exit_push_t > 0.0
@@ -444,6 +443,7 @@ func is_grip_turning() -> bool:
 	return _turning
 
 
+## While frozen the car holds its place on the grid and ignores input (engine may still rev).
 func set_frozen_for_grid(frozen: bool) -> void:
 	_frozen = frozen
 	freeze = frozen
