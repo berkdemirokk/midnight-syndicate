@@ -50,9 +50,10 @@ Tests: `test_istanbul_bogaz.gd` (4 tests: scene build with kit content and skyli
 - Blender sign text is ASCII only.
 
 ## Ortakoy 3D row bays: attempt, not shipped (2026-11-28)
-Goal: replace the flat photo fronts on the Bogaz land-side first row (within 900 m) with modular 3D bays (recessed windows,
+Goal (brief): replace the flat photo fronts of the first row the chase camera sees (roughly within 25 m of the road) with modular 3D bays (recessed windows,
 cumba, balconies, shop fronts with night glow). Result: the bays look worse than the photo fronts, so nothing is merged into the
-game build. Branch `wp/ortakoy3d` stays at the base for code; the evidence sheets are kept as the record of this attempt.
+game build. Scope actually tried: land-side first-row frontages in the first 900 m of track distance (`MAX_S_M = 900.0` in
+`rows_bays.gd`), skipping any bay that would reach inside the 7.3 m race corridor. Branch `wp/ortakoy3d` stays at the base for code; the evidence sheets are kept as the record of this attempt.
 
 What was built (uncommitted, in the worktree and the WIP copies, not in the game):
 - `assets_src/world/kit_istanbul_rows/build_rows.py` (Blender 5.3 python): two 6 m bays (a: timber cumba over floors 2-3, b:
@@ -62,7 +63,10 @@ What was built (uncommitted, in the worktree and the WIP copies, not in the game
   `photo_fronts.gd`. The flag was on only for the AFTER captures and was reverted before the commit.
 - `game/tests/test_istanbul_rows.gd` (3 tests). Full suite with the bays code present but the flag off: 470 passed, 0 failed.
 
-Numbers (desktop, RTX 5060 Ti, Mobile renderer, High, 60 frames; not phone numbers). BEFORE = base 0e37938, AFTER = bays on:
+Numbers (desktop, RTX 5060 Ti, Mobile renderer, High, 60 frames; not phone numbers). BEFORE = a fresh re-capture of base 0e37938,
+not the committed `evidence/screens/ortakoy_benchmark/*.json`; AFTER = bays on. Draw calls and primitives match the committed JSON;
+frame times are one 60-frame run each and noisy (night gameplay: 3.38 ms here, 4.17 ms in the committed JSON), so only the day hero
+rise is clearly outside the noise:
 | shot | draws before to after | primitives before to after | avg frame ms before to after |
 |---|---|---|---|
 | night street | 334 to 337 | 281,407 to 305,115 | 2.19 to 2.68 |
@@ -71,7 +75,8 @@ Numbers (desktop, RTX 5060 Ti, Mobile renderer, High, 60 frames; not phone numbe
 | day street | 279 to 280 | 251,805 to 277,755 | 1.78 to 1.87 |
 | day hero | 310 to 305 | 377,513 to 391,997 | 2.12 to 3.95 |
 
-Looked at (`evidence/screens/before_after_ortakoy3d/`): bench_night_street.jpg, bench_day_street.jpg, bench_night_hero.jpg. The day hero and both gameplay sheets exist but were not viewed.
+Looked at (`evidence/screens/before_after_ortakoy3d/`): all six sheets (day and night street, hero, gameplay), by the builder and the
+lead reviewer. Every sheet shows the same result; none contradicts the verdict.
 Verdict from the pictures: the bays read as flat orange-brown boxes. The plaster texture does not show, every bay has the same
 colour, the shop fronts do not read as shops, and the photo fronts (with their signs, awnings and colour variety) are better.
 Primitives rise 8 to 10 percent and the frame time rises, with no draw-call saving. Not shipped.
