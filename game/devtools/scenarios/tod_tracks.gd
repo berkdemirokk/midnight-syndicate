@@ -52,6 +52,7 @@ func _one(track_key: String, tod_id: String) -> void:
 	_go_seen = false
 	_scene = (load(SCENE) as PackedScene).instantiate() as RaceScene
 	_scene.config = cfg
+	MSTheme.set_phone("--phone" in OS.get_cmdline_user_args())  # --phone: iPhone HUD layout for the race capture
 	tree.root.add_child(_scene)
 	await cap.wait_frames(SETTLE_FRAMES)
 	if _scene.dev_track_used or _scene.dev_car_used or _scene.find_child("DevWatermark", true, false) != null:

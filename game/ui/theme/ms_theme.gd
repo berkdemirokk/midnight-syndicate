@@ -17,6 +17,7 @@ const PEARL: Color = Color(0.957, 0.957, 0.957)  ## #F4F4F4 primary text, focus 
 const STEEL: Color = Color(0.557, 0.580, 0.616)  ## #8E949D captions (6.1:1 on graphite)
 const GOLD: Color = Color(0.914, 0.722, 0.337)  ## #E9B856 currency, stars (sparingly)
 const GO: Color = Color(0.333, 0.780, 0.557)  ## #55C78E owned, gained, personal best
+const GOOD: Color = GO  ## the release HUD's name for "ahead" (lap delta); DANGER is behind
 
 # Old names, kept so every screen picks up the brand without a rewrite.
 const BG: Color = GRAPHITE

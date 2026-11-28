@@ -13,6 +13,7 @@ static var TRACK_COL: Color = MSTheme.GRAPHITE_2.lerp(MSTheme.TITANIUM, 0.6)
 static var RING_COL: Color = MSTheme.GRAPHITE_2.lerp(MSTheme.TITANIUM, 0.3)
 static var ARROW_COL: Color = MSTheme.RED
 static var RIVAL_COL: Color = MSTheme.PEARL
+static var ARROW_OUTLINE_COL: Color = Color(0.0, 0.0, 0.0, 0.75)
 
 static var _disc: ImageTexture = null
 
@@ -111,7 +112,7 @@ func paint_rects(c: CanvasItem, centre: Vector2) -> void:
 
 
 func paint_lines(c: CanvasItem, centre: Vector2) -> void:
-	c.draw_multiline(SpeedGauge.ring_segments(centre, radius_px, 0.0, TAU, 64), RING_COL, 2.0, true)
+	c.draw_multiline(SpeedGauge.ring_segments(centre, radius_px, 0.0, TAU, 64), RING_COL, 3.0, true)
 	if _rot.size() < 2:
 		return
 	var pts := PackedVector2Array()
@@ -130,9 +131,15 @@ func paint_dots(c: CanvasItem, centre: Vector2) -> void:
 				var p: Vector2 = centre + _turn(_point_at(_dot_t[i]))
 				c.draw_texture_rect(tex, Rect2(p - Vector2.ONE * rival_radius_px, Vector2.ONE * rival_radius_px * 2.0), false, RIVAL_COL)
 	# Player arrow, pointing up the screen (the map turns, so forward is always up).
+	# Dark outline under the arrow first, so it reads on bright signage and on the track line.
 	var a: float = arrow_px
-	c.draw_colored_polygon(PackedVector2Array([centre + Vector2(0.0, -a), centre + Vector2(a * 0.75, a * 0.7),
-		centre + Vector2(0.0, a * 0.3), centre + Vector2(-a * 0.75, a * 0.7)]), ARROW_COL)
+	c.draw_colored_polygon(_arrow(centre, a * 1.3), ARROW_OUTLINE_COL)
+	c.draw_colored_polygon(_arrow(centre, a), ARROW_COL)
+
+
+static func _arrow(centre: Vector2, a: float) -> PackedVector2Array:
+	return PackedVector2Array([centre + Vector2(0.0, -a), centre + Vector2(a * 0.75, a * 0.7),
+		centre + Vector2(0.0, a * 0.3), centre + Vector2(-a * 0.75, a * 0.7)])
 
 
 ## White disc with an anti-aliased rim, tinted per dot.

@@ -156,6 +156,16 @@ class Monitor extends Node:
 		get_tree().quit(0)
 
 
+## --set / --tset value: a number, or true / false (1 / 0). Anything else stops the run instead of silently giving 0.
+static func _num(text: String) -> float:
+	if text == "true":
+		return 1.0
+	if text == "false":
+		return 0.0
+	assert(text.is_valid_float(), "diag_rivals: value is not a number, true or false: " + text)
+	return text.to_float()
+
+
 func _initialize() -> void:
 	call_deferred("_start")
 
@@ -166,9 +176,15 @@ func _start() -> void:
 	var skills: PackedFloat32Array = PackedFloat32Array([1.0, 0.97, 0.94, 0.91, 0.88, 0.85])
 	var laps: int = 1
 	var sets: PackedStringArray = PackedStringArray()
+	var tsets: PackedStringArray = PackedStringArray()
+	var reverse: bool = false
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--set="):
 			sets.append(a.trim_prefix("--set="))
+		if a.begins_with("--tset="):
+			tsets.append(a.trim_prefix("--tset="))
+		if a == "--reverse":
+			reverse = true
 		if a.begins_with("--track="):
 			track_key = a.trim_prefix("--track=")
 		if a.begins_with("--seed="):
@@ -181,7 +197,11 @@ func _start() -> void:
 				skills.append(float(p))
 	var n: int = skills.size()
 	var city: Track = (load(TRACKS[track_key]) as PackedScene).instantiate() as Track
+	for kv: String in tsets:
+		city.set(kv.get_slice("=", 0), _num(kv.get_slice("=", 1)))
 	root.add_child(city)
+	if reverse:
+		city.set_reversed(true)
 	var manager := RaceManager.new()
 	manager.total_laps = laps
 	root.add_child(manager)
@@ -195,7 +215,7 @@ func _start() -> void:
 		d.name = "AIDriver"
 		d.skill = skills[i]
 		for kv: String in sets:
-			d.set(kv.get_slice("=", 0), kv.get_slice("=", 1).to_float())
+			d.set(kv.get_slice("=", 0), _num(kv.get_slice("=", 1)))
 		car.add_child(d)
 		cars.append(car)
 		names.append("S%d" % i)

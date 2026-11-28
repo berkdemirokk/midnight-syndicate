@@ -762,6 +762,10 @@ func _force_nitro_gate() -> void:
 
 
 func _attach_optional() -> void:
+	if not tod.is_night() and not tod.rain and track != null and track.scene_file_path.contains("istanbul_bogaz") and get_node_or_null("Petals") == null:
+		var petals := Petals.new()  # erguvan petals from the blossom rows, day and sunset on the Ortakoy route
+		petals.name = "Petals"
+		_world.add_child(petals)
 	if tod.rain and ResourceLoader.exists(FX_RAIN_SCENE):
 		_world.add_child((load(FX_RAIN_SCENE) as PackedScene).instantiate())
 	if tod.rain and get_node_or_null("RainOnLens") == null:
