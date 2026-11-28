@@ -48,3 +48,35 @@ Tests: `test_istanbul_bogaz.gd` (4 tests: scene build with kit content and skyli
 - 19 lights are dropped by the per-mesh light budget (150 built).
 - Parked cars line the promenade kerb (City 01 parked-car pass); a rival that leaves the road at the start can end up beside them (visible in racing_10s).
 - Blender sign text is ASCII only.
+
+## Ortakoy 3D row bays: attempt, not shipped (2026-11-28)
+Goal: replace the flat photo fronts on the Bogaz land-side first row (within 900 m) with modular 3D bays (recessed windows,
+cumba, balconies, shop fronts with night glow). Result: the bays look worse than the photo fronts, so nothing is merged into the
+game build. Branch `wp/ortakoy3d` stays at the base for code; the evidence sheets are kept as the record of this attempt.
+
+What was built (uncommitted, in the worktree and the WIP copies, not in the game):
+- `assets_src/world/kit_istanbul_rows/build_rows.py` (Blender 5.3 python): two 6 m bays (a: timber cumba over floors 2-3, b:
+  balcony and French door), LOD0 and LOD1 GLBs with the surfaces M_Plaster, M_Trim, M_Wood, M_Glass, M_Glow, M_Iron, M_Awning, M_Roof.
+  Triangles: a LOD0 1692 / LOD1 1344, b LOD0 1560 / LOD1 1176.
+- `game/world/street_fronts/rows_bays.gd` (RowBays: MultiMesh per 60 m chunk, kind and LOD) and a flag `USE_BAYS` in
+  `photo_fronts.gd`. The flag was on only for the AFTER captures and was reverted before the commit.
+- `game/tests/test_istanbul_rows.gd` (3 tests). Full suite with the bays code present but the flag off: 470 passed, 0 failed.
+
+Numbers (desktop, RTX 5060 Ti, Mobile renderer, High, 60 frames; not phone numbers). BEFORE = base 0e37938, AFTER = bays on:
+| shot | draws before to after | primitives before to after | avg frame ms before to after |
+|---|---|---|---|
+| night street | 334 to 337 | 281,407 to 305,115 | 2.19 to 2.68 |
+| night hero | 376 to 375 | 424,444 to 440,736 | 2.30 to 3.13 |
+| night gameplay | 409 to 409 | 440,774 to 459,082 | 3.38 to 4.07 |
+| day street | 279 to 280 | 251,805 to 277,755 | 1.78 to 1.87 |
+| day hero | 310 to 305 | 377,513 to 391,997 | 2.12 to 3.95 |
+
+Looked at (`evidence/screens/before_after_ortakoy3d/`): bench_night_street.jpg, bench_day_street.jpg, bench_night_hero.jpg. The day hero and both gameplay sheets exist but were not viewed.
+Verdict from the pictures: the bays read as flat orange-brown boxes. The plaster texture does not show, every bay has the same
+colour, the shop fronts do not read as shops, and the photo fronts (with their signs, awnings and colour variety) are better.
+Primitives rise 8 to 10 percent and the frame time rises, with no draw-call saving. Not shipped.
+
+What would have to change before a second try (owner decision on the time): per-bay colour variety (MultiMesh instance colour),
+shop signs and awnings on the ground floor, a real plaster albedo and roughness check in a QA render before any capture,
+and a check of the photo_fronts test that pins the photo rows on Bogaz (it would have to change with the flag).
+Not done: street life (kerbs, lamps, benches, bins, bollards, trees and parked vehicles were not added), no new lamp or tree assets.
