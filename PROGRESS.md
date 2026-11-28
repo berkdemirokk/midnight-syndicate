@@ -261,3 +261,4 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - Changed: `game/export_presets.cfg` iOS preset `shader_baker/enabled=true` (3c3720d4); new test `game/tests/test_export_shader_baker.gd` (a4008e03) checks the key is on for iOS and nowhere else.
 - Key confirmed as a string in the Godot 4.7.2 binary. Effect on first launch: not measured (headless export may skip the bake).
 - CI iOS compile check: OPEN, no run id (build-ios.yml runs on `ios-check-*` tags only; the worker did not push).
+- Lead review (Opus): key `shader_baker/enabled` found 4x in Godot_v4.7.2-stable_win64.exe. Local headless `--export-release "iOS"` with a dummy team id (as CI's sed does) finished with warnings only (`.ipa` needs macOS; pre-existing boot_splash warning), no Shader Baker error, so the CI headless export is not broken by the key; the bake itself is likely skipped headless. Full suite 572 tests, 0 failed, exit 0. Preset edit approved by the lead.
