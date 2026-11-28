@@ -363,3 +363,8 @@ Reading:
 - Sign-named nodes cost 0 to 10 draws on Bosphorus, against 122 sign draws measured on City 01 above. The sign cut is worth far less on this track than the City numbers suggest.
 - Sign surfaces were NOT merged in this pass. A same-material join (brackets + plate, lattice + legs + catwalk) saves one or two surfaces per blade or billboard sign, a few draws on Bosphorus. Halving the sign MultiMesh count needs neon colour materials merged, which changes the look. Not done, no GLB rebuilt.
 - Not measured: `results` and `replay_orbit` moments on Bosphorus.
+
+## Open items (WP-B5 review, 2026-11-28)
+
+- FirstRow LOD2 gate (10 draws) is NOT evaluated on Bosphorus: the building nodes are not named as on City 01, so the FirstRow LOD rows read 0. Open until the lead names those nodes or accepts this as an open item.
+- Sign surfaces are not merged (see the Bosphorus re-measure). Sign MultiMesh count test does not exist. WP-B5 stays partial.
