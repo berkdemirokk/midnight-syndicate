@@ -108,7 +108,7 @@ func test_every_car_wheels_sit_on_the_ground() -> void:
 		await cleanup([car])
 
 
-func test_every_car_lod0_node_count_stays_within_20() -> void:
+func test_every_car_lod0_nodes_and_surfaces_within_limits() -> void:
 	for id: String in _ids():
 		var car: Node3D = _spawn(id)
 		if car == null:

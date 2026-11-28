@@ -78,7 +78,7 @@ Measured (existing studio perf JSON, RTX 5060 Ti, Vulkan, Mobile, 1920x1061; dev
 | noctra_meridian | 27 | 8 | 8 | 59 | 20 | 39 |
 | bosfor_yildirim | 27 | 8 | 8 | 59 | 20 | 39 |
 
-Source: game/assets/vehicles/<car>/<car>_prepare_stats.json (lod0.surfaces, slots_by_node); studio JSON in evidence/screens/car_studio*/front34.json (atmaca: modified_front34.json). Target was <= 20 incremental.
+Source: game/assets/vehicles/<car>/<car>_prepare_stats.json (lod0.surfaces, slots_by_node), except atmaca_modified, whose stats are game/assets/vehicles/bosfor_atmaca/atmaca_modified_prepare_stats.json (27 surfaces). Studio JSON: evidence/screens/car_studio*/front34.json (atmaca: evidence/screens/car_studio_atmaca/modified_front34.json, 59 objects). car_studio_atmaca has no empty_studio.json, so its 20-object baseline is borrowed from the shared evidence/screens/car_studio/empty_studio.json (same scene, same resolution). Target was <= 20 incremental.
 
 Why the target is not reached by a small change:
 - Wheels and brakes alone are 16 of the 27 surfaces. Each wheel carries M_Rim and M_Tire, each brake carries M_BrakeDisc and M_Caliper. Keeping one surface per wheel and per brake (8 draws) would need those pairs merged into one material each.
@@ -89,3 +89,19 @@ Why the target is not reached by a small change:
 Owner decision needed: approve a material-merge pass for the car model (wheel material set per wheel with packed metal/rubber channels, brake disc and caliper as one material, body trim/chrome/underbody as one vertex-coloured material with packed roughness and metal). Estimated work: one Blender bake per car and a visual review of 4 cars. Until then the budget stays a known FAIL.
 
 Test: game/tests/test_car_validation.gd now asserts LOD0_SURFACES_MAX per car (the current counts above). It is a ratchet, not the target. Full suite: 467 tests, 0 failed.
+
+### Round 2 (carmerge re-review, 2026-11-28): still blocked, re-scope requested
+
+Status: the merge pass is not delivered in this round either. No car was rebuilt, no material or mesh was merged, no Blender bake was run, and no before/after render exists. The owner decision above still stands, and the budget is still a known FAIL.
+
+What this round did:
+- Test renamed to test_every_car_lod0_nodes_and_surfaces_within_limits, because it checks both the node limit (20) and the surface ratchet. The surface check is still a ratchet on the current counts, not a budget.
+- Stats path and baseline source corrected for atmaca_modified (see Source line above).
+- The 12 extra studio draws are NOT traced. Hypothesis, unverified: the studio objects and draw counts (RenderingServer totals in game/devtools/perf_probe.gd) include the car's shadow-pass instances, not only its main-pass surfaces. Confirm with one GPU capture of car_studio front34 with the directional shadow turned off in a throwaway script. This needs a GPU run through the lock and was not done in this round.
+
+Re-scope requested from the owner before any merge work:
+1. Approve a material merge that changes the look: wheel rim+tyre as one surface per wheel (packed metal/rubber in one baked material), brake disc+caliper as one surface per brake, and body trim/chrome/underbody/interior merged into one vertex-coloured or atlased material.
+2. Approve the Blender bake cost: about 11 bakes plus a visual review of at least 4 cars, one GPU run per studio shot.
+3. Decide on the 12-draw gap first (shadow pass test above). If it is shadow-pass, the budget may be reached by reducing shadow casters on wheels and brakes, which costs no look change; this is cheaper than the material merge and should be tried first.
+
+Sharing materials between the four wheels does not reduce draws: Godot issues one draw per surface whatever the material, so only mesh merging lowers the count.
