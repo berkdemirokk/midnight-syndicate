@@ -503,7 +503,9 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	if ResourceLoader.exists(FX_CAR_SCENE):
 		var fx: Node = (load(FX_CAR_SCENE) as PackedScene).instantiate()
 		if fx is CarFx:
-			(fx as CarFx).headlights_on = tod.headlights_on  # only at sunset and night
+			var cfx: CarFx = fx as CarFx
+			cfx.lamp_pools = rival  # rivals light the wet road with pools, the player keeps two spots
+			cfx.headlights_on = tod.headlights_on and (not rival or Settings.get_preset_id() != "low")  # sunset and night; no rival lamps on Low
 		car.add_child(fx)
 		# Smoke, sparks and flames are particles: they must not be drawn again in the sun's shadow pass.
 		for g: Node in fx.find_children("*", "GeometryInstance3D", true, false):

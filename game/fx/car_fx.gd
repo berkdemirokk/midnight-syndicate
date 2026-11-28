@@ -29,6 +29,8 @@ const WIND_FRACTION: float = 0.3  ## puffs trail at 30% of the car's velocity
 @export var skid_slip_deg: float = 15.0
 @export var spark_min_impulse: float = 0.0  ## the car only emits hit above spec.hit_min_impulse already
 @export var headlights_on: bool = true
+## Rivals: the lamps are glow pools on the road, no SpotLight3D (Headlights.lamp_pools). The player keeps its spots.
+@export var lamp_pools: bool = false
 ## Full-screen overlay: off by default. race_scene gives every car a CarFx, so only the player's
 ## HUD speed lines should be driven; an opponent with this on would draw streaks on the player's screen.
 @export var speed_lines_on: bool = false
@@ -64,6 +66,8 @@ func _ready() -> void:
 	skid.layers = body_layers  ## the car fill light and test expect every car mesh on the body layers
 	sparks = Sparks.new()
 	headlights = Headlights.new()
+	headlights.lamp_pools = lamp_pools
+	headlights.mesh_layers = body_layers
 	add_child(flames)
 	flames.set_mesh_layers(body_layers)
 	add_child(smoke)
