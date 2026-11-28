@@ -29,7 +29,7 @@ Branch release/rc-2026-11-28, PR https://github.com/berkdemirokk/midnight-syndic
 | 21 | Persistent progression across restarts | DONE | restart_check.py 21/21 incl. crash during save; backup failure no longer drops a save |
 | 22 | Offline play | DONE | online is opt-in |
 | 23 | Mobile performance | PARTIAL | budgets met on the dev PC (night gameplay ~409 draws / 441k primitives); soak flat; no phone number (B2) |
-| 24 | iOS build compiles | DONE | ios-check-5 green; ios-check-6 on the final RC: see the handoff |
+| 24 | iOS build compiles | DONE | ios-check-5 and ios-check-6 (final RC 84bf82c, run 46098658715) green on GitHub Actions macOS; build only, no upload |
 | 25 | Real-device test | BLOCKED | owner's iPhone needed (B1/B2) |
 | 26 | App Store readiness | BLOCKED | device numbers, owner decisions (price, bundle id, age rating), owner-only submission |
 | 27 | Race-start / periodic frame spikes | PARTIAL | 0 frames > 25 ms in the 5 s after GO in 19 runs; a ~40 s spike in some runs is unexplained (START_HITCH.md attempts 1-3) |

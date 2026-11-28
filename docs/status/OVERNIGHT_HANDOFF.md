@@ -24,7 +24,7 @@ Brief: `docs/status/OVERNIGHT_MASTER.md`. Lead: Opus 5.5. Release candidate bran
 ## Final state (05:35)
 - release/rc-2026-11-28 at 84bf82c (+ doc commits): 467 tests, 0 failed; asset manifest 657/0; restart_check 21/21;
   net_smoke PASS and rendered online check (both cars finished) on the merged RC; iOS compile ios-check-5 green,
-  ios-check-6 started on the final RC.
+  ios-check-6 green on the final RC (run 46098658715); PR #9 CI green.
 - Draft PR #9 to feature/vertical-slice. Nothing merged into feature/vertical-slice or main; ChatGPT branches untouched.
 - Full status: docs/status/MASTER_CHECKLIST.md and docs/status/RELEASE_CANDIDATE_2026-11-28.md.
 
