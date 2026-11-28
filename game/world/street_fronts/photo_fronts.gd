@@ -49,6 +49,8 @@ const NIGHT_TINT: Vector3 = Vector3(0.55, 0.5, 0.5)  ## unlit walls keep a littl
 var _facades: Array[ShaderMaterial] = []
 var _shop_glass: Array[ShaderMaterial] = []  ## storefront glass per picture (index as _facades): the picture's shop is the room
 var _trims: Dictionary = {}  ## stone texture name -> storefront trim material
+var _shop_info: Array = []  ## {"xf", "w"} of every placed house, for StreetProps
+var props: StreetProps = null
 var _groups: Array[Dictionary] = []  ## the track groups with "mats": indices into _facades of the shipped pictures
 
 
@@ -97,6 +99,10 @@ func setup(track: Track, time_of_day_id: String) -> void:
 		_add_pools()
 		_add_lights(layout)
 	_apply_time()
+	props = StreetProps.new()
+	props.name = "StreetProps"
+	add_child(props)
+	props.setup(track, _shop_info, Settings.get_preset_id() == "low")
 
 
 func _load_groups(groups: Array) -> void:
@@ -235,6 +241,7 @@ func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary,
 					float(group["w"]) * sx, float(group["h"]) * sx, float(house) / float(HOUSES_PER_ATLAS), float(house + 1) / float(HOUSES_PER_ATLAS),
 					frac, shop_rng, group.get("stone", Color(0.6, 0.56, 0.5)))
 		_shop_fronts.append(root.global_transform * local)
+		_shop_info.append({"xf": root.global_transform * Transform3D(Basis(Vector3.UP, PI), Vector3(float(slot["x"]), 0.0, 0.0)), "w": float(group["w"]) * sx})
 	var mesh := ArrayMesh.new()
 	for mat: int in tools:
 		var st: SurfaceTool = tools[mat]
