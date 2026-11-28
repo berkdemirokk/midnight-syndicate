@@ -11,6 +11,7 @@ const SETTLE_FRAMES: int = 60
 const TIME_TOL: float = 0.15
 const MAX_HITS: int = 2
 const EVIDENCE_PATH: String = "../evidence/handling/steer_assist.json"
+const DRIVE_ACTIONS: PackedStringArray = ["accelerate", "brake", "steer_left", "steer_right", "handbrake", "nitro"]
 
 var _hits: int = 0
 
@@ -22,6 +23,8 @@ func _on_hit(_impulse: float, _at: Vector3) -> void:
 ## One lap from the grid with no input from the test. Returns finished, seconds, body contacts and the largest assist.
 func _lap(track: CityBuilder, use_assist: bool) -> Dictionary:
 	_hits = 0
+	for action: String in DRIVE_ACTIONS:  # other tests leave keys held (test_driver_camera): a zero-input lap needs none
+		Input.action_release(action)
 	var car := ArcadeCar.new()
 	car.spec = load(SPEC_PATH) as CarSpec
 	add(car)
@@ -31,6 +34,7 @@ func _lap(track: CityBuilder, use_assist: bool) -> Dictionary:
 	var pd: PlayerDriver = null
 	var settings: Node = tree.root.get_node_or_null("Settings")
 	var saved_mode: String = ""
+	var saved_auto: Variant = null
 	if use_assist:
 		pd = PlayerDriver.new()
 		pd.name = "PlayerDriver"
@@ -39,7 +43,9 @@ func _lap(track: CityBuilder, use_assist: bool) -> Dictionary:
 		pd.set_track(track)
 		if settings != null:
 			saved_mode = str(settings.get("steering_mode"))
+			saved_auto = settings.get("auto_accelerate")
 			settings.set("steering_mode", "assist")
+			settings.set("auto_accelerate", true)  # the lap is zero input: the throttle must come from the assist
 	else:
 		ai = AIDriver.new()
 		ai.name = "AIDriver"
@@ -72,6 +78,7 @@ func _lap(track: CityBuilder, use_assist: bool) -> Dictionary:
 			max_assist = maxf(max_assist, absf(pd._assist_steer()))
 	if settings != null and use_assist:
 		settings.set("steering_mode", saved_mode)
+		settings.set("auto_accelerate", saved_auto)
 	car.hit.disconnect(_on_hit)
 	var out: Dictionary = {"finished": dist >= track.length, "s": float(ticks) / HZ, "hits": _hits, "max_assist": max_assist}
 	await cleanup([car])
