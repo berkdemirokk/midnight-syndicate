@@ -152,6 +152,25 @@ func test_upshift_cut_dips_throttle_and_ducks() -> void:
 	await cleanup([car])
 
 
+func test_rival_level_follows_rpm_and_keeps_a_floor() -> void:
+	var rig := _rig(false)
+	var car: ArcadeCar = rig[0]
+	var ca: CarAudio = rig[1]
+	car.input.throttle = 1.0
+	car.rpm_norm = 0.3
+	for i: int in 180:
+		ca.update_audio(DT)
+	var low_db: float = ca.mid.volume_db
+	car.rpm_norm = 0.99
+	for i: int in 180:
+		ca.update_audio(DT)
+	var red_db: float = ca.mid.volume_db
+	metric("rival_mid_db_low_high", [snappedf(low_db, 0.1), snappedf(red_db, 0.1)])
+	check(red_db > -25.0, "rival is silent at redline: %f dB" % red_db)
+	check(low_db > red_db, "rival level does not follow rpm: low %f red %f" % [low_db, red_db])
+	await cleanup([car])
+
+
 func test_limiter_bounce_only_at_redline() -> void:
 	var rig := _rig()
 	var car: ArcadeCar = rig[0]
@@ -224,18 +243,23 @@ func test_race_trace_20s() -> void:
 	await cleanup([car])
 
 
-## Race profile: 3 s cycles, each an upshift to the next gear, rpm 0.45 to redline, then 0.6 s held at the limiter.
+## Race profile: 3 s cycles, each an upshift to the next gear, rpm 0.45 to redline, 0.4 s held at the limiter,
+## then 0.2 s lifted off (throttle 0), so the off-load voices carry weight in the trace too.
 func _profile(t: float) -> Array:
 	var cyc: float = 3.0
 	var k: int = int(t / cyc)
 	var ph: float = fmod(t, cyc)
 	var gear: int = 1 + k % 6
 	var rpm: float = 0.45
-	if ph >= 2.4:
+	var thr: float = 1.0
+	if ph >= 2.8:
+		rpm = 0.99
+		thr = 0.0
+	elif ph >= 2.4:
 		rpm = 0.99
 	elif ph >= 0.2:
 		rpm = lerpf(0.45, 0.99, (ph - 0.2) / 2.2)
-	return [rpm, gear, 1.0]
+	return [rpm, gear, thr]
 
 
 func _log_path() -> String:

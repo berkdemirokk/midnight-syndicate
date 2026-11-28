@@ -18,6 +18,7 @@ const LIMITER_DEPTH := 0.45  ## bounce dips the engine gain by this fraction
 const LAYER_DB := -2.0
 const LAYER_GAIN := 0.8  ## linear, same level as LAYER_DB for the layered voices
 const OPPONENT_DB := -10.0
+const RIVAL_MID_FLOOR := 0.5  ## rival level floor (-6 dB): the mid weight is zero at redline
 const HEAVY_HIT_IMPULSE := 6000.0
 const MIN_HIT_IMPULSE := 700.0
 const AUDIBLE_FLOOR := 0.0001  ## band weight below this counts as silent
@@ -47,6 +48,7 @@ var _lv: Array[AudioStreamPlayer3D] = []  ## layered voices, index slot * 2 + lo
 var _slot_band := PackedInt32Array([-1, -1])  ## band held by each slot, -1 free
 var _vgain := PackedFloat32Array([0.0, 0.0, 0.0, 0.0])  ## smoothed linear gain per voice
 var _vpitch := PackedFloat32Array([1.0, 1.0, 1.0, 1.0])
+var _amp := PackedFloat32Array()  ## per-band audible amplitude, reused every frame
 var _rpm_abs: float = 0.0
 var _thr_eff: float = 0.0
 var _cut_t: float = 0.0
@@ -295,7 +297,7 @@ func _update_layers(thr: float, delta: float) -> void:
 			var v: int = s * 2 + l
 			var target: float = 0.0
 			if b >= 0:
-				target = w[b * 2 + l] * EngineLayers.loop_norm(eng, b, l) * LAYER_GAIN * _duck * _bounce
+				target = w[b * 2 + l] * EngineLayers.loop_norm(eng, b, l) * LAYER_GAIN * _duck * _bounce * _shift_gain
 				_vpitch[v] = EngineLayers.band_pitch(_rpm_abs, b)
 				_lv[v].pitch_scale = _vpitch[v]
 			_vgain[v] = lerpf(_vgain[v], target, k)
@@ -304,16 +306,16 @@ func _update_layers(thr: float, delta: float) -> void:
 
 ## Frees slots whose band has gone quiet and faded out, then gives a slot to each newly audible band.
 func _assign_slots(w: PackedFloat32Array) -> void:
-	var amp := PackedFloat32Array()
-	amp.resize(EngineLayers.BANDS)
+	if _amp.size() != EngineLayers.BANDS:
+		_amp.resize(EngineLayers.BANDS)
 	for b: int in EngineLayers.BANDS:
-		amp[b] = maxf(w[b * 2], w[b * 2 + 1])
+		_amp[b] = maxf(w[b * 2], w[b * 2 + 1])
 	for s: int in 2:
 		var b: int = _slot_band[s]
-		if b >= 0 and amp[b] <= AUDIBLE_FLOOR and _vgain[s * 2] < 0.001 and _vgain[s * 2 + 1] < 0.001:
+		if b >= 0 and _amp[b] <= AUDIBLE_FLOOR and _vgain[s * 2] < 0.001 and _vgain[s * 2 + 1] < 0.001:
 			_free_slot(s)
 	for b: int in EngineLayers.BANDS:
-		if amp[b] <= AUDIBLE_FLOOR or _slot_band.find(b) >= 0:
+		if _amp[b] <= AUDIBLE_FLOOR or _slot_band.find(b) >= 0:
 			continue
 		var s: int = _slot_band.find(-1)
 		if s < 0:
@@ -349,8 +351,9 @@ func _update_engine(thr: float) -> void:
 		high.volume_db = _db(g.z * drive * lerpf(0.65, 1.0, thr)) + LAYER_DB - 2.0
 	else:
 		# Opponents: one loop (the old engine_mid_loop) at the mid pitch, quieter; no separate high layer.
+		# Level follows rpm as the old path did (low+mid share), floored so the rival is not silent at redline.
 		mid.pitch_scale = pit.y
-		mid.volume_db = _db(drive) + LAYER_DB + OPPONENT_DB
+		mid.volume_db = _db(maxf(sqrt(g.x * g.x + g.y * g.y), RIVAL_MID_FLOOR) * drive) + LAYER_DB + OPPONENT_DB
 
 
 func _update_tyres(delta: float) -> void:
