@@ -190,3 +190,78 @@ Max frame over 0 to 60 s: baseline (retained) 21.4, 24.2, 21.2 ms. Lamps off: 39
 1. Run 6 or more baseline runs to pin the rate, then 6 runs per variant. A variant needs 0 spikes in at least 6 of 6 while the baseline shows them.
 2. Log ResourceLoader calls (wrap `ResourceLoader.load` through a probe hook, or count `Resource` creation) in the 36 to 44 s window.
 3. Repeat the lamp storm with `--no-lamps` alone, no other variant, to see whether hiding lights mid-race is itself costly.
+
+---
+
+# Attempt 4 (wp-spike2, 2026-11-28): six baseline runs and a Resource-count probe, no fix
+
+Same machine and rules as attempts 1 to 3 (Ryzen 5 7600, RTX 5060 Ti 8 GB, Godot 4.7.2, Forward Mobile, rendered under the GPU lock, not a phone). Probe: `game/devtools/scenarios/hitch_probe_run.gd` (`hitch_probe.gd` wrapper), default flags, bogaz, Tayfun, 60 s after GO. No `game/` file other than the probe was changed. No fix is claimed.
+
+## Verdict
+
+- **No fix.** The spike at about 40 s is not reproduced in a usable way in this session, and no cause is identified. There is no 6 of 6 result, so no fix is claimed.
+- **Resource loads are ruled out as the cause of the 40 s spike.** `Performance.OBJECT_RESOURCE_COUNT` rises by one or two in the first 12 s of the race, then by one more in each run at 32 to 40 s after GO, at a track point away from the spike (see below). Those late creations do not line up with the spike frames.
+- **The baseline is contaminated.** Five of six runs had sustained frame times of 25 to 35 ms over the whole race. That is not the attempt 2 picture (0 frames over 25 ms in the first 5 s in 15 runs). The GPU lock was queued behind other sessions, and the desktop CPU load was about 43 % (Chrome, Claude, Codex and other Godot processes from other worktrees). Only run 1 is close to the attempt 2 picture. Its numbers are the only clean ones.
+
+## Baseline runs (6 x 60 s, one loop, unique names `spike2/a4/base_r1..6`)
+
+Machine state from the loop log (`godot_procs_before` counts processes named Godot_v4; it does not show CPU use by them). Post-GO = frames from GO to GO+60 s, recomputed from the raw JSON with `analyse.py`.
+
+| run | Godot procs before / after | post-GO frames | frames > 25 ms, 0 to 5 s | frames > 25 ms, 0 to 60 s | frames > 25 ms, 36 to 44 s | max frame 0 to 60 s (ms) | median frame (ms) | median process ms |
+|---|---|---|---|---|---|---|---|---|
+| r1 | 2 / 4 | 3602 | 0 | 1 | 0 | 25.1 | 16.66 | 12.3 |
+| r2 | 4 / 2 | 3259 | 18 | 327 | 59 | 513.4 | 16.03 | 21.2 |
+| r3 | 2 / 2 | 3291 | 35 | 437 | 59 | 341.8 | 16.07 | 23.7 |
+| r4 | 2 / 2 | 3478 | 30 | 424 | 53 | 564.5 | 16.06 | 23.0 |
+| r5 | 2 / 4 | 3510 | 27 | 391 | 58 | 247.2 | 16.16 | 22.8 |
+| r6 | 6 / 4 | 2951 | 36 | 858 | 186 | 134.1 | 17.15 | 27.3 |
+
+Notes on these numbers:
+- The "frames over 25 ms" counts include the cluster echo described in attempt 2. The clusters of 25 to 35 ms frames run through the whole race, so the counts are not spike counts. Counting cluster starts only gives 202 to 334 clusters in runs 2 to 6.
+- r1 is the only run without a sustained slowdown. It has no frame over 25 ms in 36 to 44 s, and one frame over 25 ms in the whole race (at about 58 s). That is one clean run with no spike in the window. It cannot pin the rate on its own.
+- Run 4 had the 40 s band of 25 to 35 ms frames, with no single larger spike at 40 s. Run 5 had one 247 ms frame at about 2.7 s. The 36 to 44 s window is inside the contamination in runs 2 to 6, so the "spike near 40 s" of attempt 2 cannot be counted in this batch.
+- Node count is flat at 4463 through the race in every run. No node is added or removed after GO.
+- The spec compile delta over the race is 641 to 701 per run (a cumulative counter read per frame). Not used in the conclusion.
+- Run 6 was queued behind another session's GPU lock for about 10 minutes (`loop.log`, 14:49 to 15:04). The loop kept a single run at a time.
+
+## Resource-count probe (new in this attempt)
+
+`hitch_probe_run.gd` now also reads `Performance.OBJECT_RESOURCE_COUNT` every frame, adds it as a 15th frame field (`res_count`), and logs an event `resource` "count a -> b" for each change after countdown. Raw counts for all six runs:
+
+- At GO and the first 12 s: the count rises by 6 to 7 (for example 1329 to 1336). These are the setup loads of the race (MusicPlayer, HUD, pause and results screens, car materials).
+- After 12 s: exactly one more Resource in each of runs 1, 2, 3, 4, 5 and 6, at 32.2 to 39.9 s after GO. That is 0 or 1 in the 36 to 44 s window in each run. Runs 4 and 5 created it at 32 s, so it is not a fixed 36 to 44 s event.
+- Track position at the late creation: runs 1, 3 and 6 at x -264, z -158 (speed 162 km/h); runs 2, 4 and 5 at x -140, z 260 (speed 56 to 97 km/h). The spike position from attempt 2 (x -241 to -255, z -193 to -235) is about 40 m away from both.
+- The probe cannot name the class of the created Resource (only the count moves). Not identified.
+- Result: **resource creation does not line up with the spike, and the spike is not at the creation point.** No `ResourceLoader` call is made in the race after GO according to the scene scripts (every `load()` in `game/race` and `game/world` runs at setup, checked by grep). The one late Resource is a lazy creation of something not yet identified. It is not evidence for or against the spike.
+
+## Far-LOD rewrite counter
+
+Not added. `CarLod.set_forced` rewrites visibility ranges at race setup (`race_scene.gd` line 454), not per frame, so a per-frame counter would be 0. Not measured.
+
+## What was ruled out or not reproduced
+
+- Race-start window (0 to 5 s): the contaminated runs show 18 to 36 frames over 25 ms, so the start is not clean in this batch. Attempt 2's clean start (0 frames in 15 runs) was not reproduced.
+- Late Resource creation (above): not at the spike.
+- Node churn after GO: none (4463 nodes, constant).
+- Lap events: unchanged from attempt 3 (laps from 46.7 s).
+- Lamp, rain, mirror, audio: not re-run in this attempt (the contamination makes one-variant runs uninterpretable). The attempt 3 bisect stays the last word on those.
+
+## Not done
+
+- The 6 of 6 fix check (no fix). Attempt 3's next steps are still open: 6 or more clean baseline runs with no other Godot process and no other render on the machine, then the lamp-only variant.
+- Cold-cache first launch (not measured, as in attempts 1 to 3).
+- Resource class attribution for the late creation (needs a probe that enumerates resources on the count change, or a `--no-lamps`/`--no-rain` variant run with the same counter).
+- Phone measurement: none. Desktop numbers only.
+
+## Files
+
+- `game/devtools/scenarios/hitch_probe_run.gd`: resource count field and event (devtools only).
+- `docs/perf/START_HITCH.md`: this section.
+- Raw JSON and logs: `spike2/a4/` in the scratchpad (not in the repo; about 1 MB per run).
+- Analysis script: `spike2/a4/analyse.py` (scratchpad).
+
+## Next step if reopened
+
+1. Wait for an idle GPU lock and a quiet desktop (no other Godot or browser load), then run 6 baseline runs with a `godot_procs` and CPU log per run. Accept a run only if its 0 to 5 s window is clean (no frame over 25 ms), as in attempt 2. Otherwise the batch is invalid.
+2. Name the late Resource: on the count change, list the classes of the nodes that got a new material or texture in the same frame.
+3. Only then a variant (`--no-lamps` alone, per attempt 3's caveat).
