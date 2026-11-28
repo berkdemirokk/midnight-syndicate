@@ -193,11 +193,12 @@ Test: the road material has an AO texture; the ASSET_MANIFEST validator passes (
 Evidence: `tod_tracks` day (section 6). Deps: none. GPU queue slot 2.
 
 **WP-B3 Foliage diet.** Goal: same pink mass, less fill.
-Files: `assets_src/world/kit_trees/prepare_licensed_trees.py`, `game/assets/world/kits/trees_photo/**`,
+Files: `assets_src/world/kit_trees/prepare_licensed_trees.py`, `assets_src/ai_generated/chatgpt/prepare_photo_trees.py` (added: real generator of `trees_photo/**`), `game/assets/world/kits/trees_photo/**`,
 `game/world/greenery/greenery.gd` (LOD2 card count only), `game/tests/test_greenery.gd`.
-Recipe: atlases 512 (LOD0) / 256 (LOD1, LOD2), power of two; LOD2 2-3 crossed cards; assert no tree material uses
-alpha blend. Do not touch `LOD_RANGES` or the sway.
-Test: atlas sizes and transparency mode asserted. Evidence: `tod_tracks` bogaz day + sunset (section 6). Deps: none.
+Recipe: leaf atlases 512 px cells for LOD0 and LOD1 (LOD1 shares the LOD0 leaf texture; a separate 256 LOD1 atlas needs a
+`greenery.gd` change outside the list above, so it is out of this sprint), impostor 512x256 (two 256 px LOD2 crossed cards),
+photo cells 512 px (cypress 256 wide), all power of two; assert no tree material uses alpha blend. Do not touch `LOD_RANGES` or the sway.
+Test: sizes asserted exactly (`test_atlas_sizes_power_of_two`); transparency mode asserted by the existing foliage and photo shader contract tests. Evidence: `tod_tracks` bogaz day + sunset (section 6). Deps: none.
 
 **WP-B4 Rival lamp pools.** Goal: rivals light the wet road without real lights.
 Files: `game/fx/headlights.gd`, `game/fx/car_fx.gd` (hook), new `game/tests/test_lamp_pools.gd`.
