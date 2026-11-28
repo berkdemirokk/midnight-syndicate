@@ -9,7 +9,10 @@ signal reset_requested
 
 const MODE_TILT: String = "tilt"
 const MODE_ASSIST: String = "assist"
-const ASSIST_LOOK_M: float = 30.0  ## m, the racing line point the assist steers at. Plan said 12 m: that gave 21 body contacts on bogaz (dev PC, 2026-11-28); 30 m gives 2. shortcut: fixed look-ahead, not speed-scaled; upgrade: scale with speed if the tuning shows a need
+const ASSIST_LOOK_S: float = 0.6  ## s, the racing line point the assist steers at is this far ahead at the current speed
+const ASSIST_LOOK_MIN_M: float = 12.0  ## m, look-ahead floor (the plan's 12 m). A fixed 12 m gave 21 body contacts on bogaz, a fixed 30 m 2-20 (chaotic)
+const ASSIST_LOOK_MAX_M: float = 45.0  ## m, look-ahead cap (AIDriver's look_ahead_max)
+const ASSIST_SPEED_MARGIN: float = 0.9  ## the speed hold targets this share of the autopilot's line speed: the capped steer cannot turn as hard as the AI
 const ASSIST_SPEED_AHEAD_S: float = 0.6  ## s, the speed target is also read this far ahead (as AIDriver does)
 const ASSIST_SPEED_AHEAD_M: float = 40.0  ## m, cap of that look-ahead
 const ASSIST_THROTTLE_GAIN: float = 0.5  ## throttle per m/s below the target (AIDriver's gain)
@@ -152,12 +155,12 @@ func _manual_steer(delta: float) -> float:
 	return steer
 
 
-## Pure pursuit to the racing line ASSIST_LOOK_M ahead, the same geometry as AIDriver, capped at assist_cap_deg of wheel angle.
+## Pure pursuit to the racing line ASSIST_LOOK_S ahead (12..45 m), the same geometry as AIDriver, capped at assist_cap_deg of wheel angle.
 func _assist_steer() -> float:
 	if not _ensure_track() or _car.spec == null:
 		return 0.0
 	var pos: Vector3 = _car.global_position
-	var ahead: float = _track_progress() + ASSIST_LOOK_M
+	var ahead: float = _track_progress() + clampf(maxf(_car.forward_speed, 0.0) * ASSIST_LOOK_S, ASSIST_LOOK_MIN_M, ASSIST_LOOK_MAX_M)
 	var t: Vector3 = _track.get_tangent_at(ahead)
 	var target: Vector3 = _track.get_point_at(ahead) + Vector3(-t.z, 0.0, t.x) * _track.get_line_offset(ahead)
 	var b: Basis = _car.global_transform.basis
@@ -183,7 +186,7 @@ func _assist_speed() -> Vector2:
 	var s: float = _track_progress()
 	var v: float = maxf(_car.forward_speed, 0.0)
 	var want: float = minf(_track.get_line_speed(s), _track.get_line_speed(s + clampf(ASSIST_SPEED_AHEAD_S * v, 0.0, ASSIST_SPEED_AHEAD_M)))
-	var err: float = want - v
+	var err: float = want * ASSIST_SPEED_MARGIN - v
 	if err >= 0.0:
 		return Vector2(clampf(err * ASSIST_THROTTLE_GAIN, 0.0, 1.0), 0.0)
 	return Vector2(0.0, clampf(-err * ASSIST_BRAKE_GAIN, 0.0, 1.0))

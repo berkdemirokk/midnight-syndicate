@@ -109,7 +109,8 @@ func test_steer_assist_laps_near_the_autopilot() -> void:
 
 func _write_evidence(ai_lap: Dictionary, assist_lap: Dictionary, ratio: float) -> void:
 	var ev: Dictionary = {
-		"track": "istanbul_bogaz", "car": "noctra_sable", "assist_cap_deg": 6.0, "look_ahead_m": PlayerDriver.ASSIST_LOOK_M,
+		"track": "istanbul_bogaz", "car": "noctra_sable", "assist_cap_deg": 6.0, "look_ahead": "%.2f s x speed, %.0f..%.0f m" % [PlayerDriver.ASSIST_LOOK_S, PlayerDriver.ASSIST_LOOK_MIN_M, PlayerDriver.ASSIST_LOOK_MAX_M],
+		"speed_margin": PlayerDriver.ASSIST_SPEED_MARGIN,
 		"machine": "dev PC, Windows 11, RTX 5060 Ti 8 GB, Godot 4.7.2 (headless, no GPU render)",
 		"autopilot_lap_s": snappedf(float(ai_lap["s"]), 0.01), "assist_lap_s": snappedf(float(assist_lap["s"]), 0.01),
 		"assist_over_autopilot": snappedf(ratio, 0.001), "assist_body_contacts": int(assist_lap["hits"]),
