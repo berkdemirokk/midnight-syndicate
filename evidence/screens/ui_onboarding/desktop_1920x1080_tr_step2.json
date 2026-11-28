@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1080
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.004,
+  "name": "desktop_1920x1080_tr_step2",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 17,
+    "draw_calls_min": 17,
+    "driver": "vulkan",
+    "fps": 2628.466,
+    "frame_ms_avg": 0.38,
+    "frame_ms_p95": 0.401,
+    "frame_ms_p99": 0.405,
+    "frames": 60,
+    "objects": 124,
+    "os": "Windows",
+    "primitives": 362,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 29.532,
+    "viewport_size": [
+      1920,
+      1080
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-menus/evidence/screens/ui_onboarding/desktop_1920x1080_tr_step2.png",
+  "preset": "high",
+  "scenario": "ui_onboarding"
+}
