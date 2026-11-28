@@ -391,15 +391,14 @@ static func _scale_rgb(c: Color, s: float) -> Color:
 ## Binds the road's baked contact AO (UV2 atlas PNG) to every wet asphalt surface under root. Called per track, after apply().
 static func bind_road_ao(root: Node, ao_path: String) -> int:
 	var bound: int = 0
-	if not ResourceLoader.exists(ao_path):
-		return 0
-	var ao: Texture2D = _tex(ao_path)
+	# M_Asphalt is one shared material: a road without a PNG clears the previous track's atlas (white = no AO).
+	var ao: Texture2D = _tex(ao_path) if ResourceLoader.exists(ao_path) else null
 	for mi: MeshInstance3D in _meshes(root):
 		for s: int in mi.get_surface_override_material_count():
 			var m: ShaderMaterial = mi.get_surface_override_material(s) as ShaderMaterial
 			if m != null and m.resource_name == "M_Asphalt":
 				m.set_shader_parameter("ao_tex", ao)
-				bound += 1
+				bound += 1 if ao != null else 0
 	return bound
 
 

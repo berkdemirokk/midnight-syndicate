@@ -44,6 +44,7 @@ func test_bind_road_ao_sets_texture_on_asphalt() -> void:
 	check(bound == 1, "one M_Asphalt surface bound")
 	check(m.get_shader_parameter("ao_tex") is Texture2D, "ao_tex set on M_Asphalt")
 	check(MaterialLibrary.bind_road_ao(root, "res://assets/world/none_ao.png") == 0, "missing AO PNG binds nothing")
+	check(m.get_shader_parameter("ao_tex") == null, "missing AO PNG clears the previous track's ao_tex")
 	root.free()
 
 
