@@ -36,6 +36,7 @@ func _lap(track: CityBuilder, use_assist: bool) -> Dictionary:
 		pd.name = "PlayerDriver"
 		pd.enabled = false
 		car.add_child(pd)
+		pd.set_track(track)
 		if settings != null:
 			saved_mode = str(settings.get("steering_mode"))
 			settings.set("steering_mode", "assist")

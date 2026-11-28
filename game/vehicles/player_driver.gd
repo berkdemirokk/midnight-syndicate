@@ -108,6 +108,12 @@ func set_touch_handbrake(on: bool) -> void:
 	touch_handbrake = on
 
 
+## Assist mode steers on this track. Without it the driver finds the first Track in the tree (shortcut, see _ensure_track).
+func set_track(track: Track) -> void:
+	_track = track
+	_track_searched = true
+
+
 ## Sets the neutral tilt to the device's current pose. Also runs once automatically.
 func calibrate_tilt() -> void:
 	_tilt_neutral = Input.get_accelerometer()
