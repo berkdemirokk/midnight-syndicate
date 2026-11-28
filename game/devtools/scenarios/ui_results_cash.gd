@@ -28,7 +28,7 @@ func run() -> void:
 			cap.set_size(PHONE_W if phone else DESKTOP_W, PHONE_H if phone else DESKTOP_H)
 			var screen: ResultsScreen = await cap.load_scene(SCENE) as ResultsScreen
 			screen.set_event_id("wharf_sprint")
-			screen.show_results(_results(), {"cash": CASH_REWARD, "rep": REP_REWARD, "stars": 2})
+			screen.show_results(_results(), {"cash": CASH_REWARD, "rep": REP_REWARD, "stars": 2, "new_best": true})
 			await cap.wait_frames(COUNT_FRAMES)
 			var tag: String = "iphone_%dx%d" % [PHONE_W, PHONE_H] if phone else "desktop_%dx%d" % [DESKTOP_W, DESKTOP_H]
 			await cap.shot("cash5_%s_%s" % [tag, lang])
@@ -46,5 +46,6 @@ func _results() -> Array[Dictionary]:
 			"name": Mock.NAMES[i], "position": i + 1,
 			"total_time": Mock.BASE_TIME_S + float(i) * Mock.GAP_STEP_S,
 			"best_lap": Mock.BEST_BASE_S + float(i) * Mock.BEST_STEP_S,
+			"paint": Mock.PAINTS[i],
 			"is_player": i + 1 == Mock.PLAYER_POS})
 	return results
