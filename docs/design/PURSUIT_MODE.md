@@ -87,3 +87,20 @@ Not done in this package (owner decisions or later work):
 - HUD: the bust and escape gauges had no captions and vanished on a dark sky. They now carry the `pursuit.gauge.*` captions and a coloured outline.
 - HUD: heat pips moved below the gauge captions (they overlapped), and radar dots are drawn over the player arrow (a police car alongside was hidden under it).
 - Evidence re-made on this code: `pursuit_demo` re-captured (6 shots, errors 0, escape phase ESCAPED at heat 5, reward 1000), before/after sheets rebuilt from base 0e37938 PNGs and the new PNGs, full suite 478 tests, 0 failed (`evidence/test_results.json`). The gain is in the HUD only; the world render is unchanged. Heat 5 and bust shots stay state-forced.
+
+## Update: pursuit2 (menu entry, boxing and ram, hiding spots, HUD hint)
+
+- Menu entry: the main menu has a "POLİS TAKİBİ" / "POLICE PURSUIT" button between GARAGE and RECORDS (88 px touch target, built in code like the other menu buttons, `main_menu.tscn` unchanged). It opens `res://race/pursuit/pursuit_select.tscn` (`PursuitSelect`), which lists the open pursuit runs (`PursuitSelect.run_ids()`: rows with `pursuit` and `open`). That is six rows: the five pursuit runs of the wave 1 update plus `bogaz_escape`, which is also open and pursuit. The event select screen is not used: it has no mode filter and it is not in this package's ownership. Start goes through Router with the event's RaceConfig; Back returns to the main menu.
+- Boxing (heat 4 and 5): the first two police cars (`PursuitMode.boxer_side`) take the box points beside the player's lane, 2.5 m left and right, and hold 12 m ahead of the player (`PoliceDriver.box_side`, `box_ahead_m`). `PoliceDriver.box_throttle` pushes a car that is behind its point and holds back one that is past it. The third police car chases as before.
+- Ram (heat 5): a police car directly behind the player (within 6 m, the player ahead of it) adds an impulse to the player's body of mass x 3 m/s. It is not a teleport. A 6 s cooldown follows (`PursuitMode.can_ram`, `RAM_COOLDOWN_S`). No damage model exists; the ram is only the push.
+- Hiding spots: `HidingSpots` lists 3 or 4 track stretches per track, as fractions of the lap (city 01, Bosphorus, Maslak). In a spot, with no police car in the camera frustum, the escape cooldown runs at 2x (`PursuitState.tick(..., cooldown_mult)`). The stretches are rule zones with no side-road geometry: the tracks have no side-street data yet. A spot with a police car in view runs at 1x.
+- HUD hint: while the player is in a spot, the bottom centre of the HUD shows "SAKLANMA NOKTASI: KAÇIŞ x2" / "HIDING SPOT: ESCAPE x2" (no police in view) or "HIDING SPOT: POLICE IN SIGHT".
+- Evade bonus: `PursuitMode.evade_bonus()` returns the cash paid on ESCAPED and the string `pursuit.evade` exists. NOT wired to the results screen: that needs one line in `race_scene.gd` (the `rewards` dict) and a line in `results_screen.gd`, both outside this package's ownership.
+- Tests: `game/tests/test_pursuit_tactics.gd` (box counts and sides, box gap and throttle, ram conditions, hiding multiplier and ranges, the escape tick count at x2, HUD hint), `game/tests/test_pursuit_menu.gd` (menu button opens the select, the select lists and starts the open runs, normal events have no pursuit).
+- Capture: `pursuit_demo` now also writes `pursuit_menu_button`, `pursuit_select`, `pursuit_box_heat_5` (heat 5, four seconds after the forced heat step, box side and gap printed as `PURSUIT_DEMO box`) and `pursuit_hiding_spot` (the first shot where the player is inside a spot, found by driving, not forced).
+
+Still not done (this package):
+- Evade bonus on the results screen (see above).
+- The box and ram are not tuned on real cars. A box can fail when the player is much faster than the boxers.
+- Hiding spots are rule zones, not side streets, and "police in view" uses the camera frustum only.
+- Phone-size captures not made.

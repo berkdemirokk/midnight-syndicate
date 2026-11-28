@@ -20,6 +20,7 @@ const POLICE_COLOUR: Color = Color("#4A8DFF")
 var _heat: Label
 var _goal: Label
 var _banner: Label
+var _hint: Label
 var _panel: Control
 var _heat_now: int = 0
 var _heat_max: int = 5
@@ -51,6 +52,16 @@ func _init() -> void:
 	_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_panel.draw.connect(_draw_panel)
 	add_child(_panel)
+	_hint = Label.new()  # hiding spot hint: bottom centre, clear of the heat line, goal and gauges
+	_hint.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	_hint.offset_top = -150.0
+	_hint.offset_bottom = -120.0
+	_hint.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hint.add_theme_font_size_override("font_size", 22)
+	_hint.add_theme_color_override("font_color", ESCAPE_COLOUR)
+	_hint.visible = false
+	add_child(_hint)
 	_banner = Label.new()
 	_banner.set_anchors_preset(Control.PRESET_CENTER)
 	_banner.grow_horizontal = Control.GROW_DIRECTION_BOTH
@@ -71,6 +82,12 @@ func set_heat(heat: int, max_heat: int) -> void:
 
 func set_goal(text: String) -> void:
 	_goal.text = text
+
+
+## Empty text hides the hint.
+func set_hint(text: String) -> void:
+	_hint.text = text
+	_hint.visible = text != "" and _heat_now > 0
 
 
 func set_banner(text: String) -> void:

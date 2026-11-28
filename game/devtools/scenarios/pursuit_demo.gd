@@ -22,6 +22,7 @@ const SHOT_CAM_BACK_M: float = 8.0
 const ROADBLOCK_NEAR_WAIT_S: float = 40.0
 const CLOSE_CAM_BACK_M: float = 7.0  ## the close-up camera: this far before the barriers, toward the traffic
 const CLOSE_CAM_UP_M: float = 1.4
+const HIDE_WAIT_S: float = 60.0  ## the hiding spot shot waits this long for the player to drive into a spot
 const CLOSE_CAM_SIDE_M: float = -2.0  ## left of the barrier line: the player car drives in the open lane on the right
 
 var _scene: RaceScene
@@ -32,6 +33,18 @@ func run() -> void:
 	GameState.open_profile("user://pursuit_capture_save.json")  # the escape pays out: keep the real profile out of it
 	GameState.reset_profile()
 	PursuitMode.ENABLED = true
+	# The pursuit entry on the main menu, then the run select it opens (the real screens, no race yet).
+	var menu: MainMenu = (load("res://ui/menus/main_menu.tscn") as PackedScene).instantiate() as MainMenu
+	tree.root.add_child(menu)
+	await cap.wait_frames(SETTLE_FRAMES)
+	await cap.shot("pursuit_menu_button")
+	menu.queue_free()
+	var sel: PursuitSelect = (load("res://race/pursuit/pursuit_select.tscn") as PackedScene).instantiate() as PursuitSelect
+	tree.root.add_child(sel)
+	await cap.wait_frames(SETTLE_FRAMES)
+	await cap.shot("pursuit_select")
+	sel.queue_free()
+	await cap.wait_frames(2)
 	var cfg := RaceConfig.new()
 	cfg.use_garage_paint = false
 	cfg.autopilot = true
@@ -128,6 +141,27 @@ func run() -> void:
 	pm.state.heat = 5
 	await cap.wait_seconds(1.0)
 	await cap.shot("pursuit_heat_5")
+	# Boxing at heat 5: the first two police cars hold the box points left and right of the player, ahead of it.
+	await cap.wait_seconds(4.0)
+	var box_info: String = ""
+	for c: ArcadeCar in pm.police:
+		var drv_b: PoliceDriver = c.get_node_or_null(PursuitMode.DRIVER_NAME) as PoliceDriver
+		if drv_b != null:
+			var gap: float = PoliceDriver.box_gap_m(_scene.track.get_progress(c.global_position), pm._player_s, _scene.track.length)
+			box_info += " side=%d gap=%.1f" % [drv_b.box_side, gap]
+	print("PURSUIT_DEMO box%s" % box_info)
+	await cap.shot("pursuit_box_heat_5")
+	# Hiding spot: wait until the player drives into one, then shot the HUD hint.
+	waited = 0.0
+	while HidingSpots.index_at(_scene.config_used.track_scene, pm._player_s, _scene.track.length) < 0 and waited < HIDE_WAIT_S:
+		await cap.wait_frames(1)
+		waited += WAIT_STEP_S
+	print("PURSUIT_DEMO hiding_spot index=%d progress=%.1f waited=%.1f" % [HidingSpots.index_at(_scene.config_used.track_scene, pm._player_s, _scene.track.length), pm._player_s, waited])
+	if HidingSpots.index_at(_scene.config_used.track_scene, pm._player_s, _scene.track.length) < 0:
+		cap.fail("the player never drove into a hiding spot")
+		return
+	await cap.wait_frames(2)
+	await cap.shot("pursuit_hiding_spot")
 	# Escape, real rules: every police car 150 m back, out of sensing range, so the 8 s cooldown runs and the chase ends.
 	var fwd_e: Vector3 = _scene.track.get_tangent_at(_scene.track.get_progress(_scene.player.global_position))
 	for c: ArcadeCar in pm.police:
