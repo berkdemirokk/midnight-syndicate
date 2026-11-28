@@ -1,0 +1,59 @@
+{
+	"cases": [
+		{
+			"along_wall_ratio": 0.599252736291143,
+			"body_friction": 1.0,
+			"case": "body1_wall1",
+			"end_speed_kmh": 69.4600433349609,
+			"into_wall_residual": 0.0,
+			"kept_speed": 0.578833694458008,
+			"wall_friction": 1.0,
+			"wall_rough": false
+		},
+		{
+			"along_wall_ratio": 0.807627382388698,
+			"body_friction": 1.0,
+			"case": "body1_wall005",
+			"end_speed_kmh": 93.6129776000977,
+			"into_wall_residual": 0.0,
+			"kept_speed": 0.78010814666748,
+			"wall_friction": 0.05,
+			"wall_rough": false
+		},
+		{
+			"along_wall_ratio": 0.807627382388698,
+			"body_friction": 0.05,
+			"case": "body005_wall1",
+			"end_speed_kmh": 93.6129776000977,
+			"into_wall_residual": 0.0,
+			"kept_speed": 0.78010814666748,
+			"wall_friction": 1.0,
+			"wall_rough": false
+		},
+		{
+			"along_wall_ratio": 0.807627382388698,
+			"body_friction": 0.05,
+			"case": "body005_wall005",
+			"end_speed_kmh": 93.6129776000977,
+			"into_wall_residual": 0.0,
+			"kept_speed": 0.78010814666748,
+			"wall_friction": 0.05,
+			"wall_rough": false
+		},
+		{
+			"along_wall_ratio": 0.599252736291143,
+			"body_friction": 1.0,
+			"case": "body1_wall1_rough_wall",
+			"end_speed_kmh": 69.4600433349609,
+			"into_wall_residual": 0.0,
+			"kept_speed": 0.578833694458008,
+			"wall_friction": 1.0,
+			"wall_rough": true
+		}
+	],
+	"engine": "Jolt Physics, Godot 4.7.2, headless 60 Hz",
+	"glance_deg": 15.0,
+	"hz": 60.0,
+	"speed_kmh": 120.0,
+	"ticks": 120
+}
