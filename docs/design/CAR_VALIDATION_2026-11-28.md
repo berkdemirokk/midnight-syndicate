@@ -120,3 +120,46 @@ Consequence for the owner decision (smaller than the rounds above say):
 - The cheapest step: brake disc and caliper as one surface per brake saves 4 surfaces on every car. The brakes sit mostly behind the rims, so a single baked or vertex-coloured metal material changes little that a player sees. Adding plate and exhaust into M_Trim (vertex colour) saves 2 more, which reaches 20 or 21.
 - Rim and tyre can stay separate. They are the most visible material pair on the car.
 - The studio draw total also drops if the mirror copy or the shadow casters get fewer surfaces. That is a separate, look-neutral lever. Measure it before any bake.
+
+### carmerge2 (2026-11-28): brake disc and caliper as one surface
+
+Status: partly delivered. The brake merge is built, rendered and ratcheted on all 11 cars. The 21-surface target is met on 1 car (arden_bruiser). The other 10 cars sit at 22 or 23 and are not at the target. The second fold (exhaust and underbody) is blocked, see "Blocked" below.
+
+What changed (assets_src/pipeline/prepare_vehicle.py): a source part routed to M_Caliper is now built as M_BrakeDisc. The caliper colour survives as the vertex colour of that surface (M_BrakeDisc is in VC_TARGETS). Brake node names, the wheel/brake routing and every game-side material name lookup are unchanged, so car_visual.gd, car_factory.gd, car_materials.gd and car_lod.gd need no edit. Rim, tyre, paint, glass and both lamp surfaces are untouched. Rebuilt: LOD0 of all 11 cars through rebuild_vehicles.py (Blender, GPU lock). LOD1 and LOD2 are unchanged. Triangle counts are unchanged. ASSET_MANIFEST.json refreshed for 33 records. validate: 657 records, 0 failing.
+
+Per-car LOD0 surface table (prepare stats, before to after; the ratchet in game/tests/test_car_validation.gd now holds the after values):
+
+| Car | Before | After | Budget 21 |
+|---|---|---|---|
+| arden_bruiser | 25 | 21 | met |
+| arden_havoc | 26 | 22 | not met |
+| kestrel_marten | 26 | 22 | not met |
+| noctra_vela | 26 | 22 | not met |
+| atmaca_modified | 27 | 23 | not met |
+| bosfor_yildirim | 27 | 23 | not met |
+| kestrel_gtr | 27 | 23 | not met |
+| kestrel_vanta | 27 | 23 | not met |
+| noctra_meridian | 27 | 23 | not met |
+| noctra_sable | 27 | 23 | not met |
+| noctra_tayfun | 27 | 23 | not met |
+
+Studio check (dev PC, RTX 5060 Ti, Vulkan, Mobile, 1920x1061; not phone). Draw calls, before to after, from the perf JSON of the same shot:
+
+| Scenario (car) | front34 | wheel_closeup | lights_on | empty_studio |
+|---|---|---|---|---|
+| car_studio (noctra_sable) | 59 to 59 | 56 to 56 | 58 to 58 | 20 to 20 |
+| car_studio_bruiser | 59 to 59 | 55 to 55 | 58 to 58 | 20 to 20 |
+| car_studio_kestrel (kestrel_gtr) | 59 to 59 | 55 to 55 | 58 to 58 | 20 to 20 |
+| car_studio_vela (noctra_vela) | 59 to 59 | 55 to 55 | 58 to 58 | 20 to 20 |
+
+Finding: the 4 surfaces removed per car do not change the studio draw total. The studio count stayed the same on every shot. Triangles and primitives are identical, so the change is in batching, not geometry.
+
+Planar-mirror probe (noctra_sable, front34, same PC): a throwaway copy of car_studio with the ShowroomSet PlanarReflection freed draws 33 instead of 59, so the mirror copy accounts for about 26 of the 39 car draws. A second throwaway copy with the directional light shadow disabled still drew 59, so the shadow pass is not visible in this count, or the probe did not reach the shadow pass. Not resolved. The throwaway scenarios were deleted and are not committed.
+
+Visual check: before/after sheets in evidence/screens/before_after_carmerge2/<car>/ (front34, wheel_closeup, lights_on for noctra_sable, arden_bruiser, kestrel_gtr and noctra_vela) were read. Front34 and lights_on look the same on all four cars. Wheel closeups look the same. On kestrel_gtr the lime caliper is still visible after the merge.
+
+Blocked: getting to 21 on the 26 and 27 surface cars needs 2 more surfaces. The only ways are to fold the underbody node (M_Trim) and the exhaust node (M_Chrome, which is all remaining chrome) into the trim node. Both node names are in the required-node lists of six other test files (game/tests/test_car_asset.gd, test_car_atmaca.gd, test_car_bruiser.gd, test_car_kestrel.gd, test_car_licensed.gd, test_car_vela.gd), which are outside this package's ownership. Removing them is a contract change the lead must approve. Folding exhaust chrome into a matte vertex-coloured M_Trim also changes how the pipes look, and no render has been made for that. Not done.
+
+Not done in this round: one race shot per car for 2 cars (no GPU run was made for a race), and the mirror-versus-shadow split is only partly measured (see the probe above).
+
+Tests: headless suite 501 tests, 0 failed (game/tests/run_tests.gd).
