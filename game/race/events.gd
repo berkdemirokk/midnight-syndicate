@@ -47,6 +47,8 @@ const EVENTS: Array[Dictionary] = [
 	{"id": "bogaz_master", "tod": "day", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.8, "place": "bogaz", "track": TRACK_BOGAZ},
 	{"id": "wharf_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5},
 	{"id": "istanbul_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.5, "place": "bogaz", "track": TRACK_BOGAZ},
+	# Police chase on the Bosphorus at night: "open" (never locked, never gates the ladder), "pursuit" opts in to PursuitMode.
+	{"id": "bogaz_escape", "tod": "night", "laps": 2, "skills": [0.9, 0.88, 0.86], "level": 3, "mult": 3.0, "place": "bogaz", "track": TRACK_BOGAZ, "open": true, "pursuit": true, "cls": "street"},
 ]
 
 
@@ -85,7 +87,12 @@ static func previous_id(id: String) -> String:
 ## Id of the event after id, or "" for the last event and unknown ids.
 static func next_id(id: String) -> String:
 	var i: int = index_of(id)
-	return id_at(i + 1) if i >= 0 and i < EVENTS.size() - 1 else ""
+	if i < 0:
+		return ""
+	for j: int in range(i + 1, EVENTS.size()):  # showcase events are skipped: the ladder ends at its last event
+		if not is_open(id_at(j)):
+			return id_at(j)
+	return ""
 
 
 ## Text key prefix, e.g. "event.wharf_sprint" (+ ".name").
@@ -145,4 +152,6 @@ static func config_for(id: String) -> RaceConfig:
 	c.rival_class = str(ev.get("cls", ""))
 	c.traffic_enabled = bool(ev.get("traffic", false))
 	c.time_of_day = str(ev.get("tod", "night"))
+	c.pursuit = bool(ev.get("pursuit", false))
+	c.pursuit_event = c.pursuit
 	return c

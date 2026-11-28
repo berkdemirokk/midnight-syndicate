@@ -228,7 +228,7 @@ func test_bust_when_parked_next_to_police() -> void:
 		if pm.state.phase == PursuitState.Phase.BUSTED:
 			break
 	check(pm.state.phase == PursuitState.Phase.BUSTED, "parked player beside police should be busted, phase %d" % pm.state.phase)
-	check((pm._hud as PursuitHud)._banner.text == "BUSTED", "BUSTED banner missing")
+	check((pm._hud as PursuitHud)._banner.text == I18n.t("pursuit.busted"), "BUSTED banner missing")
 	var drv: AIDriver = car.get_node_or_null(PursuitMode.DRIVER_NAME) as AIDriver
 	check(drv != null and not drv.enabled, "police driver must stop after the bust")
 	await cleanup([scene])
@@ -337,7 +337,7 @@ func test_escape_pays_cash() -> void:
 	check(pm.state.phase == PursuitState.Phase.ESCAPED, "police out of range for 8 s should escape, phase %d" % pm.state.phase)
 	check(pm.escape_reward == PursuitMode.ESCAPE_REWARD_PER_HEAT, "escape reward %d" % pm.escape_reward)
 	check(GameState.get_cash() == cash_before + PursuitMode.ESCAPE_REWARD_PER_HEAT, "escape cash not added")
-	check((pm._hud as PursuitHud)._banner.text.begins_with("ESCAPED"), "ESCAPED banner missing")
+	check((pm._hud as PursuitHud)._banner.text.begins_with(I18n.t("pursuit.escaped").get_slice("%", 0).strip_edges()), "ESCAPED banner missing")
 	await cleanup([scene])
 	_restore_profile(old)
 	PursuitMode.ENABLED = was

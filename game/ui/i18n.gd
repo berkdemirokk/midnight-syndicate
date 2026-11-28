@@ -207,6 +207,11 @@ const DICT: Dictionary = {
 	"net.lost": {"tr": "Sunucuyla bağlantı koptu.", "en": "Lost the connection to the server."},
 	"net.track_missing": {"tr": "Sunucunun pisti bu oyunda yok: %s. Yarışa katılınmadı.", "en": "The server's track is not in this game: %s. Not joining the race."},
 	"net.not_in_race": {"tr": "Bu yarış sen olmadan başladı.", "en": "This race started without you."},
+	"event.bogaz_escape.name": {"tr": "Boğaz kaçışı", "en": "Bosphorus escape"},
+	"pursuit.heat": {"tr": "ARAMA %d / %d", "en": "HEAT %d / %d"},
+	"pursuit.busted": {"tr": "YAKALANDIN", "en": "BUSTED"},
+	"pursuit.escaped": {"tr": "KAÇTIN  +%d nakit", "en": "ESCAPED  +%d cash"},
+	"pursuit.busted.result": {"tr": "Polis seni yakaladı. Ödül yok, aynı etkinliği yeniden deneyebilirsin.", "en": "Police caught you. No reward. You can retry the same event."},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}

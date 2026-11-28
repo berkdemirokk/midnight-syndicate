@@ -42,6 +42,7 @@ extends Resource
 @export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
 @export var net_hold_grid: bool = false  ## online race (net/): the grid waits for the server start message; no AI opponents are spawned
 @export var pursuit: bool = false  ## police pursuit (race/pursuit/PursuitMode); only with PursuitMode.ENABLED, normal races never add it
+@export var pursuit_event: bool = false  ## set by an event that opts in (EventCatalog "pursuit": true); the gate accepts it without ENABLED
 
 
 ## Opponent paint by index, cycling through the list. Falls back to the player colour when no list is set.

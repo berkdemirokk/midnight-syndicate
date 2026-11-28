@@ -9,6 +9,9 @@ extends Node
 ## or a test can turn it on for one run.
 static var ENABLED: bool = false
 
+## Emitted once, on BUSTED. race_scene stops the race and shows a result with no reward.
+signal busted
+
 const POLICE_SCENE: String = "res://vehicles/bosfor_atmaca/atmaca_stock.tscn"  ## Istanbul sedan, fictional brand
 const POLICE_SPEC: String = "res://vehicles/specs/atmaca_stock.tres"
 const POLICE_PAINT: Color = Color("#16305C")  ## dark blue body; the light bar carries the red and blue
@@ -223,6 +226,8 @@ func _finish() -> void:
 	if state.phase == PursuitState.Phase.ESCAPED:
 		escape_reward = ESCAPE_REWARD_PER_HEAT * state.heat
 		GameState.add_cash(escape_reward)
+	elif state.phase == PursuitState.Phase.BUSTED:
+		busted.emit()
 	_update_hud()
 
 
@@ -231,9 +236,9 @@ func _update_hud() -> void:
 		return
 	_hud.set_heat(state.heat, PursuitState.MAX_HEAT)
 	if state.phase == PursuitState.Phase.BUSTED:
-		_hud.set_banner("BUSTED")
+		_hud.set_banner(I18n.t("pursuit.busted"))
 	elif state.phase == PursuitState.Phase.ESCAPED:
-		_hud.set_banner("ESCAPED  +%d cash" % escape_reward)
+		_hud.set_banner(I18n.t("pursuit.escaped") % escape_reward)
 	else:
 		_hud.set_banner("")
 

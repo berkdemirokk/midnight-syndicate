@@ -26,6 +26,7 @@ const ENV_AMBIENT_ENERGY: float = 0.5
 const HUD_SCENE: String = "res://ui/hud/race_hud.tscn"
 const PAUSE_SCENE: String = "res://ui/menus/pause_menu.tscn"
 const RESULTS_SCENE: String = "res://ui/menus/results_screen.tscn"
+const PURSUIT_BUST_SHOW_S: float = 3.0  ## the BUSTED banner shows this long before the results screen
 const TOUCH_SCENE: String = "res://vehicles/touch/touch_controls.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
@@ -104,6 +105,7 @@ var _reflection: PlanarReflection = null  ## wet road mirror; null unless High, 
 var _road_mats: Array[ShaderMaterial] = []
 var _nitro_forced: bool = false
 var _results_up: bool = false  ## results overlay showing: mirror off, HUD hidden
+var _pursuit_busted: bool = false  ## police caught the player: no result, no reward
 
 
 func _ready() -> void:
@@ -239,6 +241,7 @@ func _build_race() -> void:
 	wrong_way = false
 	_nitro_forced = false
 	_results_up = false
+	_pursuit_busted = false
 	hud.visible = true
 	_reflection = null
 	_road_mats.clear()
@@ -259,11 +262,12 @@ func _build_race() -> void:
 	race.setup(track, cars, player, _names)
 	if config_used.net_hold_grid:
 		NetRaceGlue.attach(self, _world)  ## online race: visuals for the others, countdown on the server start message
-	if config_used.pursuit and PursuitMode.ENABLED:
+	if config_used.pursuit and (PursuitMode.ENABLED or config_used.pursuit_event):
 		var pursuit := PursuitMode.new()
 		pursuit.name = "PursuitMode"
 		_world.add_child(pursuit)
 		pursuit.setup(track, player, cars, race)
+		pursuit.busted.connect(_on_pursuit_busted)
 	if config_used.traffic_enabled and not dev_track_used:
 		var traffic := TrafficSystem.new()
 		traffic.name = "Traffic"
@@ -789,9 +793,32 @@ func _on_race_started() -> void:
 		player_ai.set_racing(true)
 
 
+## Police caught the player: the race stops and the BUSTED banner shows, then the results screen with no time, no
+## reward and no record, so the event can be retried.
+func _on_pursuit_busted() -> void:
+	if _pursuit_busted or race.state == RaceManager.State.FINISHED:
+		return
+	_pursuit_busted = true
+	race.set_physics_process(false)
+	get_tree().create_timer(PURSUIT_BUST_SHOW_S).timeout.connect(_show_busted)
+
+
+func _show_busted() -> void:
+	if not _pursuit_busted:
+		return  ## retried or left before the banner ended
+	last_results.clear()
+	results_screen.set_replay_enabled(false)
+	results_screen.show_results([], {})
+	results_screen.get("_subtitle").set_text(I18n.t("pursuit.busted.result"))
+	results_screen.visible = true
+	_set_results_up(true)
+
+
 func _on_race_finished(results: Array[Dictionary]) -> void:
 	if config_used.net_hold_grid:
 		return  ## online: NetRaceGlue shows the server results instead
+	if _pursuit_busted:
+		return  ## busted: the result screen is already up with no reward
 	last_results = results
 	MusicPlayer.get_instance().duck(-10.0, 0.15)
 	UiSounds.finish()
