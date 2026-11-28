@@ -5,14 +5,16 @@ The wet asphalt shader has no SSAO on Mobile, so the road gets its contact darke
   1. imports the road GLB and gives every road mesh object (all but the "ground" and the water / ground materials) a
      second UV map "UV2": one atlas shared by the whole road, so kerbs, wall bases and the carriageway all sit in
      one 1024 px image;
-  2. bakes Cycles ambient occlusion (distance 3 m) into that image; the rest of the scene, ground included, occludes;
+  2. bakes Cycles ambient occlusion (distance 3 m) into that image. The GLB's own kerbs, walls and ground occlude, and
+     so does every building in the layout JSON (a box per building instance, footprint and height from the layout);
+     the boxes are only in the bake scene and are deleted before the export;
   3. saves the bake as a greyscale PNG next to the GLB (<name>_ao.png, 1 = open sky) and re-exports the GLB with
      TEXCOORD_1 added and COLOR_0 (the authored puddle / wear colours) unchanged.
 
 The shader samples the PNG with UV2 (wet_asphalt.gdshader, ao_tex). MaterialLibrary.bind_road_ao() loads it.
 
 Usage (Blender 5.3 background, after --):
-  blender -b --factory-startup --python bake_road_ao.py -- <in.glb> <out.glb> <out_ao.png> [res=1024] [samples=64]
+  blender -b --factory-startup --python bake_road_ao.py -- <in.glb> <out.glb> <out_ao.png> [res=1024] [samples=64] [layout.json]
 Prints one line "ROAD_AO_JSON {...}" with the round-trip checks: TEXCOORD_1 and COLOR_0 counts per primitive.
 Shortcut: one atlas for the whole road at 1024 px (about 0.3 m per texel), upgrade to per-chunk atlases if the
 contact darkening reads too soft at the kerbs on the Mobile sheets.
@@ -31,8 +33,12 @@ RES = int(ARGV[3]) if len(ARGV) > 3 else 1024
 SAMPLES = int(ARGV[4]) if len(ARGV) > 4 else 64
 SKIP_MATS = {"M_Ground", "M_Water"}
 SKIP_NAMES = {"ground"}
+LAYOUT_JSON = ARGV[5] if len(ARGV) > 5 else None
 AO_DISTANCE_M = 3.0
 MARGIN = 0.003
+BUILDING_KINDS = {"building", "building_lod2_only"}
+UNIT_CUBE_VERTS = [(x, y, z) for x in (-0.5, 0.5) for y in (-0.5, 0.5) for z in (-0.5, 0.5)]
+UNIT_CUBE_FACES = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
 
 
 def log(*a):
@@ -49,6 +55,36 @@ def glb_primitive_stats(path):
     uv2 = sum(1 for p in prims if "TEXCOORD_1" in p["attributes"])
     col = sum(1 for p in prims if "COLOR_0" in p["attributes"])
     return dict(primitives=len(prims), with_uv2=uv2, with_color0=col)
+
+
+def add_building_occluders(layout_path):
+    """One box per building instance, Godot Y-up metres to Blender Z-up (x, -z, y), yaw about Z, unit cube scaled."""
+    with open(layout_path, encoding="utf-8") as fh:
+        instances = json.load(fh)["instances"]
+    mesh = bpy.data.meshes.new("AO_PROXY_MESH")
+    mesh.from_pydata(UNIT_CUBE_VERTS, [], UNIT_CUBE_FACES)
+    mesh.update()
+    count = 0
+    for it in instances:
+        if it.get("kind") not in BUILDING_KINDS:
+            continue
+        px, py, pz = it["position"]
+        w, d, h = it["width_m"], it["depth_m"], it["height_m"]
+        o = bpy.data.objects.new("AO_PROXY", mesh)
+        o.location = (px, -pz, py + 0.5 * h)
+        o.rotation_euler = (0.0, 0.0, it["yaw"])
+        o.scale = (w, d, h)
+        bpy.context.scene.collection.objects.link(o)
+        count += 1
+    log("building occluders", count)
+    return count
+
+
+def remove_building_occluders():
+    for o in [o for o in bpy.data.objects if o.name.startswith("AO_PROXY")]:
+        bpy.data.objects.remove(o, do_unlink=True)
+    for m in [m for m in bpy.data.meshes if m.name.startswith("AO_PROXY")]:
+        bpy.data.meshes.remove(m)
 
 
 def main():
@@ -99,6 +135,7 @@ def main():
             m.node_tree.nodes.active = node
 
     scene = bpy.context.scene
+    occluders = add_building_occluders(LAYOUT_JSON) if LAYOUT_JSON else 0
     scene.render.engine = "CYCLES"
     scene.cycles.samples = SAMPLES
     scene.cycles.use_denoising = False
@@ -129,7 +166,8 @@ def main():
     pixels = list(img.pixels)[0::4]
     log("ao min/mean/max", round(min(pixels), 3), round(sum(pixels) / len(pixels), 3), round(max(pixels), 3))
 
-    # 3. remove the bake nodes, export
+    # 3. remove the bake nodes and the occluder boxes, export
+    remove_building_occluders()
     for o in road:
         for slot in o.material_slots:
             m = slot.material
@@ -145,7 +183,7 @@ def main():
         export_active_vertex_color_when_no_material=True)
     stats = glb_primitive_stats(OUT_GLB)
     print("ROAD_AO_JSON " + json.dumps(dict(glb=os.path.basename(OUT_GLB), png=os.path.basename(OUT_PNG),
-                                            res=RES, samples=SAMPLES, road_objects=len(road), **stats)), flush=True)
+                                            res=RES, samples=SAMPLES, road_objects=len(road), occluders=occluders, **stats)), flush=True)
 
 
 main()

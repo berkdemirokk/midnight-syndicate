@@ -191,6 +191,14 @@ Recipe: add a UV2 unwrap to each road GLB if it has none; Cycles AO bake, 1024 p
 GLBs get vertex AO the same way the Ortakoy kit did.
 Test: the road material has an AO texture; the ASSET_MANIFEST validator passes (`py -3.10 tools/asset_factory.py validate`).
 Evidence: `tod_tracks` day (section 6). Deps: none. GPU queue slot 2.
+Status (2026-11-28, partial): road AO done. The GLB's own kerbs and walls occlude, and every layout building (196, 313 and 249 boxes)
+is a bake-only occluder. Kit vertex AO is not done: split into WP-B2b. Road GLB sizes: City 01 10.5 -> 14.1 MB, Bogaz 11.2 -> 15.1 MB,
+Maslak 10.8 -> 14.7 MB (UV2 and tangents; not in the iOS budget check yet). Look: `tod_tracks` day checked (city, bogaz, maslak).
+
+**WP-B2b Kit vertex AO.** Goal: the Ortakoy-style vertex AO on the track kit GLBs (the part of WP-B2 left out).
+Files: `assets_src/pipeline/bake_vertex_ao.py`, the kit GLBs it names, their `game/assets` copies, `ASSET_MANIFEST.json`.
+Recipe: run the existing vertex AO bake on each kit GLB with the layout occluders, ship the GLBs, no shader change.
+Test: kit GLBs carry COLOR_0 AO; the ASSET_MANIFEST validator passes. Evidence: `tod_tracks` day. Deps: WP-B2. GPU queue slot 2.
 
 **WP-B3 Foliage diet.** Goal: same pink mass, less fill.
 Files: `assets_src/world/kit_trees/prepare_licensed_trees.py`, `game/assets/world/kits/trees_photo/**`,
