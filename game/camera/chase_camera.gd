@@ -217,7 +217,7 @@ func snap() -> void:
 	_off_vel = Vector3.ZERO
 	_initialised = true
 	nitro_kick = 1.0 if target.nitro_active else 0.0
-	_fov_now = orbit_fov_deg if mode == Mode.ORBIT else compute_base_fov() + nitro_fov_kick * nitro_kick
+	_fov_now = orbit_fov_deg if mode == Mode.ORBIT else compute_base_fov() + nitro_fov_kick * nitro_kick * _motion_gain()
 	fov = minf(_fov_now, fov_cap_deg())
 	global_position = compute_ideal_position()
 	look_at(_look_point(xf), Vector3.UP)
@@ -415,10 +415,10 @@ func _orbit_point(xf: Transform3D, radius: float) -> Vector3:
 func _update_lens(delta: float) -> void:
 	var nitro_goal: float = 1.0 if target.nitro_active else 0.0
 	nitro_kick = lerpf(nitro_kick, nitro_goal, 1.0 - exp(-nitro_kick_rate * delta))
-	var goal: float = orbit_fov_deg if mode == Mode.ORBIT else compute_base_fov() + nitro_fov_kick * nitro_kick
+	var goal: float = orbit_fov_deg if mode == Mode.ORBIT else compute_base_fov() + nitro_fov_kick * nitro_kick * _motion_gain()
 	_fov_now = lerpf(_fov_now, goal, 1.0 - exp(-fov_rate * delta))
 	# The ignition punch is added after smoothing, so it peaks at once instead of being filtered away.
-	fov = minf(_fov_now + nitro_punch_deg * exp(-_kick_clock / NITRO_PUNCH_S), fov_cap_deg())
+	fov = minf(_fov_now + nitro_punch_deg * _motion_gain() * exp(-_kick_clock / NITRO_PUNCH_S), fov_cap_deg())
 
 
 ## Two sines per axis, about 16 Hz, scaled by trauma squared and the camera_shake option.
@@ -435,7 +435,7 @@ func _shake_offset(b: Basis) -> Vector3:
 ## Very small high-frequency shake that ramps in above speed_shake_from_kmh, scaled by camera_shake.
 func _speed_shake_offset(b: Basis) -> Vector3:
 	var k: float = clampf((target.speed_kmh - speed_shake_from_kmh) / maxf(speed_shake_full_kmh - speed_shake_from_kmh, MIN_DIV), 0.0, 1.0)
-	var amp: float = speed_shake_m * k * _shake_scale()
+	var amp: float = speed_shake_m * k * _shake_scale() * _motion_gain()
 	if amp <= 0.0:
 		return Vector3.ZERO
 	var ph: float = _shake_clock * TAU * speed_shake_hz
@@ -449,6 +449,20 @@ func _shake_scale() -> float:
 	if v == null:
 		return 1.0
 	return clampf(float(v), 0.0, 1.0)
+
+
+## Gain of the speed shake and nitro FOV kick for a reduced_motion level: off 0, low half, high full.
+static func motion_gain(level: String) -> float:
+	if level == "off":
+		return 0.0
+	return 0.5 if level == "low" else 1.0
+
+
+func _motion_gain() -> float:
+	if _settings == null:
+		return 1.0
+	var v: Variant = _settings.get("reduced_motion")
+	return motion_gain(str(v)) if v != null else 1.0
 
 
 func _speed_t() -> float:
