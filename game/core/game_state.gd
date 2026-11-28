@@ -178,22 +178,26 @@ func upgrade(car_id: String, part: String) -> bool:
 
 ## Records a finished event and returns the rewards: {cash, rep, stars, new_best}.
 ## Rewards scale with the event's multiplier and stars follow its rule (EventCatalog); other ids use position only.
+## score: the drift score of a drift event (score events take their stars from it); -1 for every other event.
 ## Returns an empty dictionary for a bad event id, time or position.
-func record_result(event_id: String, time_s: float, position: int) -> Dictionary:
+func record_result(event_id: String, time_s: float, position: int, score: float = -1.0) -> Dictionary:
 	# Written as a positive test so NaN (every comparison false) and infinity are rejected too.
 	if event_id.is_empty() or not (time_s > 0.0 and time_s <= MAX_TIME_S) or position < 1:
 		push_warning("GameState: bad result for event '%s'" % event_id)
 		return {}
 	var mult: float = EventCatalog.reward_multiplier(event_id)
-	var stars: int = EventCatalog.stars_for(event_id, time_s, position)
-	# A solo time trial always finishes in position 1. Pay by achieved star tier instead,
-	# using the existing 1st/2nd/3rd reward table, so a slow lap does not earn the top prize.
-	var reward_position: int = (MAX_STARS - stars + 1) if EventCatalog.is_time_event(event_id) else position
+	var stars: int = EventCatalog.stars_for(event_id, time_s, position, score)
+	# A solo time trial or drift session always finishes in position 1. Pay by achieved star tier instead,
+	# using the existing 1st/2nd/3rd reward table, so a slow lap or a low score does not earn the top prize.
+	var by_stars: bool = EventCatalog.is_time_event(event_id) or EventCatalog.is_score_event(event_id)
+	var reward_position: int = (MAX_STARS - stars + 1) if by_stars else position
 	var cash_reward: int = roundi(_reward(REWARD_CASH, reward_position) * mult)
 	var rep_reward: int = roundi(_reward(REWARD_REP, reward_position) * mult)
 	var career: Dictionary = profile["career"]
 	var rec: Dictionary = career.get(event_id, {"best_time": 0.0, "best_position": 0, "stars": 0})
-	var new_best: bool = float(rec["best_time"]) <= 0.0 or time_s < float(rec["best_time"])
+	# Drift sessions always last the time limit and an early elimination is short: only race mode keeps a best time.
+	var keeps_best: bool = EventCatalog.mode_of(event_id) == RaceConfig.MODE_RACE
+	var new_best: bool = keeps_best and (float(rec["best_time"]) <= 0.0 or time_s < float(rec["best_time"]))
 	if new_best:
 		rec["best_time"] = time_s
 	var best_pos: int = int(rec["best_position"])

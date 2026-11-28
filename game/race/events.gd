@@ -5,6 +5,9 @@ extends RefCounted
 ## Time events carry star_times = [3 stars, 2 stars, 1 star] in seconds; any finish earns at least 1 star, so a slow
 ## first try still opens the next event.
 ## Unknown ids (the dev circuit, tests) fall back to position stars and a 1.0 reward multiplier.
+## Drift events ("mode": "drift") run a timed solo session and earn stars from the drift score ("star_scores", 3/2/1 stars).
+## Elimination events ("mode": "elimination") run cars - 1 laps; the last car out ends every lap, and the player's
+## elimination ends the race with a placed result.
 ## Tuning note: the autopilot laps the loop in about 64 s (TEST_RESULTS), so the star times below are a first guess for
 ## a good human lap and want a play test.
 
@@ -47,7 +50,23 @@ const EVENTS: Array[Dictionary] = [
 	{"id": "bogaz_master", "tod": "day", "laps": 3, "skills": [0.99, 0.98, 0.97, 0.96, 0.95], "level": 4, "mult": 4.8, "place": "bogaz", "track": TRACK_BOGAZ},
 	{"id": "wharf_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5},
 	{"id": "istanbul_championship", "tod": "night", "laps": 3, "skills": [0.99, 0.99, 0.98, 0.97, 0.96], "level": 4, "mult": 5.5, "place": "bogaz", "track": TRACK_BOGAZ},
+	# Modes, appended after the championship so existing saves keep every unlock (the ladder unlocks in order).
+	# Provisional tuning: score thresholds and time limits want a human playtest.
+	{"id": "drift_harbour", "mode": "drift", "tod": "sunset", "laps": 1, "skills": [], "level": 2, "mult": 2.0, "time_limit": 60.0, "star_scores": [1000, 600, 250]},
+	{"id": "elim_wharf", "mode": "elimination", "tod": "day", "laps": 3, "skills": [0.90, 0.88, 0.86], "level": 2, "mult": 2.5, "cls": "street"},
+	{"id": "drift_bogaz", "mode": "drift", "tod": "night", "laps": 1, "skills": [], "level": 3, "mult": 3.5, "place": "bogaz", "track": TRACK_BOGAZ, "time_limit": 75.0, "star_scores": [1400, 800, 350]},
+	{"id": "elim_maslak", "mode": "elimination", "tod": "sunset", "laps": 4, "skills": [0.95, 0.94, 0.93, 0.92], "level": 3, "mult": 4.0, "place": "maslak", "track": TRACK_MASLAK},
 ]
+
+
+## Race mode of an event: RaceConfig.MODE_RACE unless the event names another one.
+static func mode_of(id: String) -> String:
+	return str(find(id).get("mode", RaceConfig.MODE_RACE))
+
+
+## True for drift events: stars come from the drift score, not from the finishing position.
+static func is_score_event(id: String) -> bool:
+	return find(id).has("star_scores")
 
 
 ## True for showcase events that never lock and never gate the ladder.
@@ -101,9 +120,16 @@ static func reward_multiplier(id: String) -> float:
 	return float(find(id).get("mult", 1.0))
 
 
-## Stars for a finish. Time events use the star_times table, every other event the finishing position.
-static func stars_for(id: String, time_s: float, position: int) -> int:
+## Stars for a finish. Time events use the star_times table, drift events the star_scores table (score given),
+## every other event the finishing position.
+static func stars_for(id: String, time_s: float, position: int, score: float = -1.0) -> int:
 	var ev: Dictionary = find(id)
+	if ev.has("star_scores"):
+		var earned: int = 0
+		for limit: float in ev["star_scores"]:  # descending: 3, 2, 1 stars
+			if score >= limit:
+				earned += 1
+		return maxi(earned, 1) if time_s > 0.0 else 0  # a finished drift session always earns a star
 	if ev.has("star_times"):
 		var stars: int = 0
 		for limit: float in ev["star_times"]:
@@ -141,6 +167,11 @@ static func config_for(id: String) -> RaceConfig:
 		skills.append(s)
 	c.opponent_skills = skills
 	c.opponent_count = skills.size()
+	c.mode = mode_of(id)
+	if c.mode == RaceConfig.MODE_ELIMINATION:
+		c.laps = c.opponent_count  # cars - 1 laps: one car is out at the end of each lap
+	if c.mode == RaceConfig.MODE_DRIFT:
+		c.time_limit_s = float(ev.get("time_limit", 60.0))
 	c.rival_mix = true
 	c.rival_class = str(ev.get("cls", ""))
 	c.traffic_enabled = bool(ev.get("traffic", false))

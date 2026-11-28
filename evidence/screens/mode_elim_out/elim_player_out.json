@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.04,
+  "name": "elim_player_out",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 215,
+    "draw_calls_min": 214,
+    "driver": "vulkan",
+    "fps": 570.386,
+    "frame_ms_avg": 1.753,
+    "frame_ms_p95": 2.159,
+    "frame_ms_p99": 2.483,
+    "frames": 60,
+    "objects": 1094,
+    "os": "Windows",
+    "primitives": 99219,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 724.38,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-modes/evidence/screens/mode_elim_out/elim_player_out.png",
+  "preset": "high",
+  "scenario": "mode_elim_out"
+}

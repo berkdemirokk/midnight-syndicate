@@ -332,7 +332,11 @@ func _refresh_text() -> void:
 
 func _info_line(ev: Dictionary) -> String:
 	var laps: int = int(ev["laps"])
-	return "%s  ·  %s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), I18n.t("tod.%s" % str(ev.get("tod", "night"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
+	var mode: String = str(ev.get("mode", RaceConfig.MODE_RACE))
+	if mode == RaceConfig.MODE_DRIFT:
+		return "%s  ·  %s  ·  %s" % [I18n.t("mode.drift"), I18n.t("tod.%s" % str(ev.get("tod", "night"))), I18n.t("event.time_limit_value") % int(ev["time_limit"])]
+	var prefix: String = I18n.t("mode.elimination") + "  ·  " if mode == RaceConfig.MODE_ELIMINATION else ""
+	return prefix + "%s  ·  %s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), I18n.t("tod.%s" % str(ev.get("tod", "night"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
 
 
 func _refresh_detail() -> void:
@@ -342,12 +346,15 @@ func _refresh_detail() -> void:
 	_d_title.set_text(I18n.t(EventCatalog.name_key(id)))
 	_d_state.set_text("" if open else I18n.t("event.locked_hint"))
 	var caps: Array[String] = ["event.ai", "event.laps", "event.rivals", "event.win_reward", "event.best"]
+	var mode: String = EventCatalog.mode_of(id)
+	if mode == RaceConfig.MODE_DRIFT:
+		caps[1] = "event.time_limit"
 	for i: int in caps.size():
 		_d_caps[i].set_text(I18n.t(caps[i]))
 	var reward: Dictionary = EventCatalog.win_rewards(id)
 	var best: float = GameState.best_time(id)
 	_d_vals[0].set_text(I18n.t("event.level_%d" % int(ev["level"])))
-	_d_vals[1].set_text(str(ev["laps"]))
+	_d_vals[1].set_text(I18n.t("event.time_limit_value") % int(ev["time_limit"]) if mode == RaceConfig.MODE_DRIFT else str(ev["laps"]))
 	_d_vals[2].set_text(str((ev["skills"] as Array).size()))
 	_d_vals[3].set_text(I18n.t("garage.money") % int(reward["cash"]))
 	_d_rep.set_text("%s %s" % [RaceHUD.group_int(int(reward["rep"])), I18n.t("results.reward_rep")])
@@ -358,6 +365,13 @@ func _refresh_detail() -> void:
 		for i: int in limits.size():
 			var n: int = 3 - i
 			rules.append(I18n.t("event.rule_time") % [RaceHUD.fmt_time(float(limits[i])), n, I18n.t("event.star" if n == 1 else "event.stars")])
+	elif EventCatalog.is_score_event(id):
+		var scores: Array = ev["star_scores"]
+		for i: int in scores.size():
+			var n: int = 3 - i
+			rules.append(I18n.t("event.rule_score") % [RaceHUD.group_int(int(scores[i])), n, I18n.t("event.star" if n == 1 else "event.stars")])
+	elif mode == RaceConfig.MODE_ELIMINATION:
+		rules = [I18n.t("event.rule_win"), I18n.t("event.rule_podium"), I18n.t("event.rule_elim")]
 	else:
 		rules = [I18n.t("event.rule_win"), I18n.t("event.rule_podium"), I18n.t("event.rule_finish")]
 	for i: int in RULE_LINES:
