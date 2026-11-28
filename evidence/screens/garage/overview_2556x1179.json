@@ -8,26 +8,26 @@
   "name": "overview_2556x1179",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 304,
-    "draw_calls_min": 304,
+    "draw_calls": 378,
+    "draw_calls_min": 378,
     "driver": "vulkan",
-    "fps": 434.789,
-    "frame_ms_avg": 2.3,
-    "frame_ms_p95": 2.323,
-    "frame_ms_p99": 2.348,
+    "fps": 395.776,
+    "frame_ms_avg": 2.527,
+    "frame_ms_p95": 3.992,
+    "frame_ms_p99": 4.158,
     "frames": 60,
-    "objects": 450,
+    "objects": 752,
     "os": "Windows",
-    "primitives": 360040,
+    "primitives": 363440,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 638.899,
+    "video_mem_mb": 661.89,
     "viewport_size": [
       2556,
       1179
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/garage/overview_2556x1179.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/garage/overview_2556x1179.png",
   "preset": "high",
   "scenario": "garage"
 }

@@ -3,31 +3,31 @@
     2732,
     2048
   ],
-  "luma_max": 0.968,
+  "luma_max": 0.957,
   "luma_min": 0.02,
   "name": "pause_touch_2732x2048",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 59,
-    "draw_calls_min": 59,
+    "draw_calls": 83,
+    "draw_calls_min": 83,
     "driver": "vulkan",
-    "fps": 1480.604,
-    "frame_ms_avg": 0.675,
-    "frame_ms_p95": 0.703,
-    "frame_ms_p99": 0.934,
+    "fps": 1419.144,
+    "frame_ms_avg": 0.705,
+    "frame_ms_p95": 0.781,
+    "frame_ms_p99": 1.075,
     "frames": 60,
-    "objects": 10030,
+    "objects": 9042,
     "os": "Windows",
-    "primitives": 11026,
+    "primitives": 10366,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 97.387,
+    "video_mem_mb": 97.9,
     "viewport_size": [
       2732,
       2048
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-touch/evidence/screens/ui_touch/pause_touch_2732x2048.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/ui_touch/pause_touch_2732x2048.png",
   "preset": "high",
   "scenario": "ui_touch"
 }

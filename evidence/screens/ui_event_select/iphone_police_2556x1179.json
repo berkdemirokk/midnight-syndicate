@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    2556,
+    1179
+  ],
+  "luma_max": 0.957,
+  "luma_min": 0.012,
+  "name": "iphone_police_2556x1179",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 77,
+    "draw_calls_min": 77,
+    "driver": "vulkan",
+    "fps": 2408.865,
+    "frame_ms_avg": 0.415,
+    "frame_ms_p95": 0.463,
+    "frame_ms_p99": 2.273,
+    "frames": 60,
+    "objects": 455,
+    "os": "Windows",
+    "primitives": 2178,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 101.452,
+    "viewport_size": [
+      2556,
+      1179
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/ui_event_select/iphone_police_2556x1179.png",
+  "preset": "high",
+  "scenario": "ui_event_select"
+}

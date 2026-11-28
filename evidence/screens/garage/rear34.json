@@ -8,26 +8,26 @@
   "name": "rear34",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 238,
-    "draw_calls_min": 238,
+    "draw_calls": 295,
+    "draw_calls_min": 295,
     "driver": "vulkan",
-    "fps": 653.033,
-    "frame_ms_avg": 1.531,
-    "frame_ms_p95": 1.551,
-    "frame_ms_p99": 1.571,
+    "fps": 589.866,
+    "frame_ms_avg": 1.695,
+    "frame_ms_p95": 3.083,
+    "frame_ms_p99": 3.158,
     "frames": 60,
-    "objects": 384,
+    "objects": 634,
     "os": "Windows",
-    "primitives": 345798,
+    "primitives": 348468,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 579.695,
+    "video_mem_mb": 576.714,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/garage/rear34.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/garage/rear34.png",
   "preset": "high",
   "scenario": "garage"
 }

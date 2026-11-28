@@ -8,26 +8,26 @@
   "name": "pursuit_police_behind",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 439,
-    "draw_calls_min": 332,
+    "draw_calls": 469,
+    "draw_calls_min": 353,
     "driver": "vulkan",
-    "fps": 202.291,
-    "frame_ms_avg": 4.943,
-    "frame_ms_p95": 7.033,
-    "frame_ms_p99": 9.574,
+    "fps": 136.392,
+    "frame_ms_avg": 7.332,
+    "frame_ms_p95": 9.4,
+    "frame_ms_p99": 10.945,
     "frames": 60,
-    "objects": 19334,
+    "objects": 18963,
     "os": "Windows",
-    "primitives": 447982,
+    "primitives": 481776,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 716.847,
+    "video_mem_mb": 894.002,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-pursuit2/evidence/screens/pursuit_demo/pursuit_police_behind.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/pursuit_demo/pursuit_police_behind.png",
   "preset": "high",
   "scenario": "pursuit_demo"
 }

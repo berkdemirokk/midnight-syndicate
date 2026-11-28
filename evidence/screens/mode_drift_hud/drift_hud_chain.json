@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.96,
+  "luma_max": 0.997,
   "luma_min": 0.0,
   "name": "drift_hud_chain",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 260,
-    "draw_calls_min": 254,
+    "draw_calls": 283,
+    "draw_calls_min": 276,
     "driver": "vulkan",
-    "fps": 338.371,
-    "frame_ms_avg": 2.955,
-    "frame_ms_p95": 4.372,
-    "frame_ms_p99": 4.652,
+    "fps": 278.742,
+    "frame_ms_avg": 3.588,
+    "frame_ms_p95": 4.706,
+    "frame_ms_p99": 5.126,
     "frames": 60,
-    "objects": 17921,
+    "objects": 16928,
     "os": "Windows",
-    "primitives": 210342,
+    "primitives": 222350,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 704.998,
+    "video_mem_mb": 884.636,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-modes/evidence/screens/mode_drift_hud/drift_hud_chain.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/mode_drift_hud/drift_hud_chain.png",
   "preset": "high",
   "scenario": "mode_drift_hud"
 }

@@ -8,26 +8,26 @@
   "name": "upgrades_tr_1920x1080",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 296,
-    "draw_calls_min": 296,
+    "draw_calls": 372,
+    "draw_calls_min": 372,
     "driver": "vulkan",
-    "fps": 548.015,
-    "frame_ms_avg": 1.825,
-    "frame_ms_p95": 1.856,
-    "frame_ms_p99": 1.866,
+    "fps": 549.134,
+    "frame_ms_avg": 1.821,
+    "frame_ms_p95": 1.905,
+    "frame_ms_p99": 2.054,
     "frames": 60,
-    "objects": 502,
+    "objects": 785,
     "os": "Windows",
-    "primitives": 350156,
+    "primitives": 359202,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 573.338,
+    "video_mem_mb": 577.097,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-polish/evidence/screens/ui_garage_touch/upgrades_tr_1920x1080.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/ui_garage_touch/upgrades_tr_1920x1080.png",
   "preset": "high",
   "scenario": "ui_garage_touch"
 }
