@@ -385,6 +385,7 @@ func _build_upgrades_page() -> Control:
 		buy.pressed.connect(func() -> void: upgrade_pressed.emit(part))
 		buy.mouse_entered.connect(func() -> void: preview_requested.emit(part))
 		buy.button_down.connect(func() -> void: preview_requested.emit(part))
+		buy.mouse_exited.connect(func() -> void: preview_requested.emit(""))  ## the ghost leaves with the pointer
 		row.add_child(buy)
 		page.add_child(row)
 		_rows[part] = {"pips": pip_list, "price": price, "buy": buy}
