@@ -16,6 +16,12 @@ uniform float night = 0.0;
 uniform vec3 tint = vec3(1.0);
 uniform float wall_saturation = 0.3;  // the CC0 clay plaster is ochre: most of its hue goes; brick keeps its own
 uniform float wall_gain = 2.6;
+// Lit windows at night show a room behind the glass (interior mapping, cheap form): the night picture is sampled again
+// one room depth behind the facade along the view ray, inside the lit-window mask, so lamps and walls inside shift with
+// the view instead of glowing as a flat poster. Near rows only (fades out by interior_end_m). uv_per_m is set per picture.
+uniform vec2 uv_per_m = vec2(0.0);
+uniform float room_depth_m = 2.6;
+uniform float interior_end_m = 45.0;
 
 varying float wall_height;
 
@@ -52,5 +58,18 @@ void fragment() {
 	ROUGHNESS = mix(0.85, 0.3, glass);
 	SPECULAR = mix(0.2, 0.5, glass);
 	// the glow only on the street face (roofs never glow); plain walls get a faint warm lift after dark, or the steps between rows read as black holes
-	EMISSION = texture(night_tex, UV).rgb * night * face + COLOR.rgb * vec3(1.0, 0.8, 0.6) * wall * night * 0.08;
+	vec3 glow = texture(night_tex, UV).rgb;
+	if (night > 0.0 && face > 0.5 && uv_per_m.x > 0.0) {
+		float near = 1.0 - smoothstep(interior_end_m * 0.6, interior_end_m, -VERTEX.z);
+		if (near > 0.0) {
+			vec3 vts = vec3(dot(VIEW, TANGENT), dot(VIEW, BINORMAL), dot(VIEW, NORMAL));  // toward the camera, tangent space
+			vec2 offset = -vts.xy / max(vts.z, 0.2) * room_depth_m * uv_per_m;
+			float window = smoothstep(0.06, 0.22, dot(glow, vec3(0.2126, 0.7152, 0.0722)));
+			vec3 back = texture(night_tex, UV + offset).rgb;
+			float back_lit = smoothstep(0.06, 0.22, dot(back, vec3(0.2126, 0.7152, 0.0722)));
+			vec3 room = mix(glow * 0.3, back * 1.15, back_lit);  // the far wall where the ray lands in a lit room, dim side wall elsewhere
+			glow = mix(glow, room, window * near);
+		}
+	}
+	EMISSION = glow * night * face + COLOR.rgb * vec3(1.0, 0.8, 0.6) * wall * night * 0.08;
 }

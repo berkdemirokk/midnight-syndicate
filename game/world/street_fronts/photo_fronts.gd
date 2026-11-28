@@ -137,6 +137,7 @@ func _load_groups(groups: Array) -> void:
 				if ResourceLoader.exists(relief_path):  # relief derived from the picture: recesses and trim catch the light
 					facade.set_shader_parameter("normal_tex", load(relief_path))
 					facade.set_shader_parameter("relief", 1.0)
+				facade.set_shader_parameter("uv_per_m", Vector2(1.0 / (float(HOUSES_PER_ATLAS) * float(group["w"])), 1.0 / float(group["h"])))
 				by_name[atlas_name] = _facades.size()
 				_facades.append(facade)
 				var gl := ShaderMaterial.new()
