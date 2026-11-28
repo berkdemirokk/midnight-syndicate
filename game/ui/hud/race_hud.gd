@@ -13,7 +13,6 @@ const VIOLET: Color = Color(0.706, 0.361, 1.0)  ## #B45CFF, the accent; CYAN is 
 const GEAR_RING_COL: Color = Color(0.06, 0.43, 0.49)  ## BORDER pre-blended (translucent chords bead)
 const TRACK_LEN_FALLBACK: float = 2200.0  ## metres, for captures and tests whose track has no length
 const GAP_MIN_MS: float = 8.0  ## gaps divide by at least this speed, so a stopped car does not blow them up
-const GOOD_COL: Color = Color(0.263, 1.0, 0.478)  ## lap delta ahead of the best lap (DANGER is behind it)
 
 ## Three pixel sizes only: every size is one more draw call per pass, so the whole HUD uses 80, 40 and 20.
 const BIG_PX: int = 80  ## position, speed, countdown
@@ -568,7 +567,7 @@ func _refresh_lap_delta(timed: bool) -> void:
 	if not timed and best > 0.0 and elapsed > 0.0:
 		var d: float = lap_delta(elapsed, best, _race.get_lap_progress(_car))  # already clamped 0..1: no wrap at the line
 		delta_text = fmt_delta(d)
-		delta_col = GOOD_COL if d < 0.0 else MSTheme.DANGER
+		delta_col = MSTheme.GOOD if d < 0.0 else MSTheme.DANGER
 	_delta_label.color = delta_col
 	_set_text("delta", _delta_label, delta_text)
 
