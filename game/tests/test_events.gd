@@ -36,7 +36,7 @@ func _wipe() -> void:
 
 
 func test_catalog_shape() -> void:
-	check(EventCatalog.count() == 34, "original eleven events, nineteen extended tour events, four mode events")
+	check(EventCatalog.count() == 35, "original eleven events, nineteen extended tour events, four mode events and the Bosphorus escape")
 	for id: String in ["maslak_sprint", "bogaz_circuit", "maslak_night", "bogaz_final"]:
 		var c: RaceConfig = EventCatalog.config_for(id)
 		check(c != null and ResourceLoader.exists(c.track_scene) and c.track_scene.contains("istanbul"), "%s races on an Istanbul track" % id)
@@ -191,9 +191,9 @@ func test_long_career_list_keeps_selected_row_visible() -> void:
 	var screen: EventSelect = (load(SELECT) as PackedScene).instantiate() as EventSelect
 	add(screen)
 	await frames(3)
-	check(screen.get_row_count() == 34, "all career events exist")
+	check(screen.get_row_count() == 35, "all career events exist")
 	var capacity: int = EventSelect.PHONE_WINDOW_ROWS if MSTheme.phone else EventSelect.DESKTOP_WINDOW_ROWS
-	for i: int in [0, 11, 29, 0]:
+	for i: int in [0, 11, 30, 0]:
 		screen.select(i)
 		await frames(2)
 		check(screen.get_selected_id() == EventCatalog.id_at(i), "selection reachable: %d" % i)

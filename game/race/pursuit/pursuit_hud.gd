@@ -26,7 +26,7 @@ func _init() -> void:
 
 
 func set_heat(heat: int, max_heat: int) -> void:
-	_heat.text = "" if heat <= 0 else "HEAT %d / %d" % [heat, max_heat]
+	_heat.text = "" if heat <= 0 else I18n.t("pursuit.heat") % [heat, max_heat]
 
 
 func set_banner(text: String) -> void:

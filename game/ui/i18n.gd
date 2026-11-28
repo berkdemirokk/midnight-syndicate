@@ -229,6 +229,11 @@ const DICT: Dictionary = {
 	"net.code_needed": {"tr": "Katılmak için 6 karakterlik katılım kodunu girin.", "en": "Enter the 6-character join code to join."},
 	"net.reject_code": {"tr": "Katılım kodu yanlış.", "en": "Wrong join code."},
 	"net.reject_rate": {"tr": "Çok fazla deneme. Birkaç saniye bekleyin.", "en": "Too many attempts. Wait a few seconds."},
+	"event.bogaz_escape.name": {"tr": "Boğaz kaçışı", "en": "Bosphorus escape"},
+	"pursuit.heat": {"tr": "ARAMA %d / %d", "en": "HEAT %d / %d"},
+	"pursuit.busted": {"tr": "YAKALANDIN", "en": "BUSTED"},
+	"pursuit.escaped": {"tr": "KAÇTIN  +%d nakit", "en": "ESCAPED  +%d cash"},
+	"pursuit.busted.result": {"tr": "Polis seni yakaladı. Ödül yok, aynı etkinliği yeniden deneyebilirsin.", "en": "Police caught you. No reward. You can retry the same event."},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}
