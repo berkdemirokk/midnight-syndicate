@@ -219,7 +219,7 @@ Machine state from the loop log (`godot_procs_before` counts processes named God
 Notes on these numbers:
 - The "frames over 25 ms" counts include the cluster echo described in attempt 2. The clusters of 25 to 35 ms frames run through the whole race, so the counts are not spike counts. Counting cluster starts only gives 202 to 334 clusters in runs 2 to 6.
 - r1 is the only run without a sustained slowdown. It has no frame over 25 ms in 36 to 44 s, and one frame over 25 ms in the whole race (at about 58 s). That is one clean run with no spike in the window. It cannot pin the rate on its own.
-- Run 4 had the 40 s band of 25 to 35 ms frames, with no single larger spike at 40 s. Run 5 had one 247 ms frame at about 2.7 s. The 36 to 44 s window is inside the contamination in runs 2 to 6, so the "spike near 40 s" of attempt 2 cannot be counted in this batch.
+- Run 4 had the 40 s band of 25 to 35 ms frames, and one 564 ms frame at 44.6 s (not at 40 s). Run 5 had one 247 ms frame at about 2.7 s. Run 2 had 513 ms and run 3 had 342 ms (times not checked against the events). The 36 to 44 s window is inside the contamination in runs 2 to 6, so the "spike near 40 s" of attempt 2 cannot be counted in this batch.
 - Node count is flat at 4463 through the race in every run. No node is added or removed after GO.
 - The spec compile delta over the race is 641 to 701 per run (a cumulative counter read per frame). Not used in the conclusion.
 - Run 6 was queued behind another session's GPU lock for about 10 minutes (`loop.log`, 14:49 to 15:04). The loop kept a single run at a time.
