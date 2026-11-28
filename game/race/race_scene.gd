@@ -77,6 +77,7 @@ var tod: TimeOfDay = TimeOfDay.preset("night")  ## the hour of this race, from c
 var track: Track
 var race: RaceManager
 var player: ArcadeCar
+var _car_paint: Dictionary = {}  ## car node -> paint colour, for the results chips
 var cars: Array[ArcadeCar] = []
 var camera: ChaseCamera
 var hud: RaceHUD
@@ -409,6 +410,7 @@ func _ensure_environment() -> void:
 func _spawn_cars() -> void:
 	var spec: CarSpec = load(config_used.car_spec_path) as CarSpec
 	cars.clear()
+	_car_paint.clear()
 	_names = PackedStringArray()
 	var opponents: int = 0 if config_used.net_hold_grid else clampi(config_used.opponent_count, 0, MAX_OPPONENTS)  ## net: remote players are spawned by NetRaceGlue
 	var rivals: Array[Dictionary] = []
@@ -423,6 +425,7 @@ func _spawn_cars() -> void:
 				r_scene = str(rivals[i]["scene"])
 				r_spec = loaded
 		var car: ArcadeCar = CarFactory.create(r_scene, r_spec, config_used.opponent_paint(i))
+		_car_paint[car] = config_used.opponent_paint(i)
 		_add_car(car, true)
 		_names.append(_opponent_name(i))
 	# Apply purchased upgrades only to the actual selected, owned player car, never to rivals or dev mules.
@@ -432,6 +435,7 @@ func _spawn_cars() -> void:
 	if use_setup and spec != null:
 		player_spec = GarageStats.tuned_spec(spec, GameState.get_setup(selected)["upgrades"])
 	player = CarFactory.create(config_used.car_scene, player_spec, _player_paint())
+	_car_paint[player] = _player_paint()
 	_add_car(player)
 	if use_setup:
 		var setup: Dictionary = GameState.get_setup(selected)
@@ -886,6 +890,9 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 		if bool(r.get("is_player", false)):
 			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)), float(r.get("score", -1.0)))
 	rewards["mode"] = config_used.mode  # the results screen labels the mode and shows the drift score
+	for r: Dictionary in results:
+		if _car_paint.has(r.get("car")):
+			r["paint"] = _car_paint[r["car"]]  # the chip beside each driver name
 	if player_ai != null:
 		player_ai.set_racing(false)
 	if camera != null:

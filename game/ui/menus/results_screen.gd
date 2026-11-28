@@ -43,6 +43,7 @@ const PANEL_SKEW: float = MSTheme.SKEW_RATIO * 0.5  ## same shear as MSTheme.box
 const ROW_PAD_Y: float = MSTheme.BUTTON_PAD_Y * 0.5
 const FOCUS_COL_PX: float = 2.0
 const CHIP_W: float = 12.0  ## car paint chip beside each driver name
+const BUTTON_MIN_H_PX: float = 88.0  ## footer buttons, desktop and phone (the phone height is larger)
 
 
 ## The single canvas item the screen paints into.
@@ -88,6 +89,7 @@ var _menu_btn: Button
 var _replay_btn: Button
 var _buttons: Array[Button] = []
 var _count_tw: Tween = null
+var _fade_tw: Tween = null  ## entrance fade of the board, killed before a new one starts
 var _text_nodes: Array = []  ## [node, i18n key]
 
 
@@ -188,7 +190,7 @@ func _ptext(kind: String, px: int, col: Color) -> HudText:
 
 func _button(parent: Container, key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5 * (1.0 + (MSTheme.k() - 1.0) * 0.8), MSTheme.button_h())
+	b.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.5 * (1.0 + (MSTheme.k() - 1.0) * 0.8), maxf(MSTheme.button_h(), BUTTON_MIN_H_PX))
 	b.set_meta("base_w", b.custom_minimum_size.x)  # the label may widen it (Turkish), never shrink it
 	b.pressed.connect(handler)
 	# The board paints the background; the button keeps only its label (same font, colours and size from the theme).
@@ -291,7 +293,10 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 	_count_rewards(int(rewards.get("cash", 0)), int(rewards.get("rep", 0)))
 	_best_tag.set_text(I18n.t("results.new_best") if bool(rewards.get("new_best", false)) else "")
 	_board.modulate.a = 0.0  # entrance: the board fades in (one alpha tween, no per-frame cost)
-	create_tween().tween_property(_board, "modulate:a", 1.0, 0.3)
+	if _fade_tw != null and _fade_tw.is_valid():
+		_fade_tw.kill()
+	_fade_tw = create_tween()
+	_fade_tw.tween_property(_board, "modulate:a", 1.0, 0.3)
 	var event_id: String = _current_event_id()
 	_show_stars = EventCatalog.index_of(event_id) >= 0
 	_stars = int(rewards.get("stars", 0))

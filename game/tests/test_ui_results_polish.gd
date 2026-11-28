@@ -30,3 +30,23 @@ func test_rows_carry_paint_and_new_best_tag() -> void:
 	check((screen.get("_best_tag") as HudText).text == "", "no NEW BEST tag without a new best")
 	cleanup([screen])
 	await frames(2)
+
+
+func test_fade_restarts_and_footer_buttons_are_tall() -> void:
+	var screen: ResultsScreen = (load(RESULTS) as PackedScene).instantiate() as ResultsScreen
+	add(screen)
+	await frames(2)
+	screen.show_results(_rows(), {"cash": 10, "rep": 1})
+	var board: Control = screen.get("_board")
+	check(board.modulate.a == 0.0, "board starts transparent for the entrance fade")
+	var first: Tween = screen.get("_fade_tw")
+	screen.show_results(_rows(), {"cash": 10, "rep": 1})
+	check(first == null or not first.is_valid(), "a second show_results kills the previous fade tween")
+	await frames(40)
+	check(board.modulate.a == 1.0, "board ends fully opaque after the fade")
+	var tall: bool = true
+	for b: Button in screen.get("_buttons"):
+		tall = tall and b.custom_minimum_size.y >= 88.0
+	check(tall, "every results button is at least 88 px tall")
+	cleanup([screen])
+	await frames(2)
