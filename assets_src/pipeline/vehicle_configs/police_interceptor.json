@@ -110,8 +110,8 @@
     "Wood_Car": "M_Interior",
     "Screens_Car": "M_Interior",
     "Line_Gold": "M_Trim",
-    "Livery_Police": "M_Trim",
-    "Livery_Num": "M_Trim",
+    "Livery_Police": "M_Paint",
+    "Livery_Num": "M_Paint",
     "Em_Red": "M_LightRear",
     "Em_Blue": "M_LightFront",
     "Em_White": "M_LightFront",
@@ -121,8 +121,8 @@
     "Reflector_Car": "M_Trim",
     "Alu_Car": "M_Trim",
     "Paint_Navy": "M_Paint",
-    "Livery_PoliceN": "M_Trim",
-    "Livery_NumN": "M_Trim"
+    "Livery_PoliceN": "M_Paint",
+    "Livery_NumN": "M_Paint"
   },
   "nodes": {
     "Under": "underbody",
@@ -287,5 +287,6 @@
     ]
   ],
   "source_file": "assets_src/third_party/vinish_cars/incoming2/pursuit-coupe.glb",
-  "out_dir": "game/assets/vehicles/police_interceptor"
+  "out_dir": "game/assets/vehicles/police_interceptor",
+  "front_plate_material": "M_Trim"
 }

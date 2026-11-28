@@ -2,9 +2,9 @@
  "car_id": "police_suv",
  "source": "assets_src/third_party/vinish_cars/incoming2/police-suv.glb",
  "lod0": {
-  "tris": 88283,
+  "tris": 88303,
   "tris_by_node": {
-   "body": 16470,
+   "body": 16895,
    "brake_FL": 859,
    "brake_FR": 859,
    "brake_RL": 859,
@@ -15,8 +15,8 @@
    "interior": 13985,
    "lights_front": 1636,
    "lights_rear": 2866,
-   "plate_rear": 4,
-   "trim": 17361,
+   "plate_rear": 2,
+   "trim": 16958,
    "underbody": 631,
    "wheel_FL": 4778,
    "wheel_FR": 4778,
@@ -115,9 +115,9 @@
   "tail_pipes": 2
  },
  "lod1": {
-  "tris": 38062,
+  "tris": 38093,
   "tris_by_node": {
-   "body": 9804,
+   "body": 10057,
    "brake_FL": 84,
    "brake_FR": 84,
    "brake_RL": 84,
@@ -129,7 +129,7 @@
    "lights_front": 906,
    "lights_rear": 1432,
    "plate_rear": 2,
-   "trim": 9527,
+   "trim": 9305,
    "wheel_FL": 955,
    "wheel_FR": 955,
    "wheel_RL": 954,
@@ -224,9 +224,9 @@
   "tail_pipes": 0
  },
  "lod2": {
-  "tris": 10562,
+  "tris": 10584,
   "tris_by_node": {
-   "body": 3137,
+   "body": 3218,
    "brake_FL": 42,
    "brake_FR": 42,
    "brake_RL": 42,
@@ -237,8 +237,8 @@
    "interior": 1967,
    "lights_front": 76,
    "lights_rear": 342,
-   "plate_rear": 0,
-   "trim": 2444,
+   "plate_rear": 2,
+   "trim": 2383,
    "wheel_FL": 281,
    "wheel_FR": 281,
    "wheel_RL": 281,
@@ -313,19 +313,19 @@
   "material_count": 11,
   "box": [
    [
-    -1.1925344467163086,
+    -1.183404803276062,
     -2.506999969482422,
     -0.0021308958530426025
    ],
    [
-    1.1925344467163086,
+    1.183404803276062,
     2.525331497192383,
     2.365046501159668
    ]
   ],
   "stray_verts_moved": {
    "body": 2,
-   "trim": 50
+   "trim": 52
   },
   "tail_pipes": 0
  }

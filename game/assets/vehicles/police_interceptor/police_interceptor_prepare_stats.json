@@ -2,9 +2,9 @@
  "car_id": "police_interceptor",
  "source": "assets_src/third_party/vinish_cars/incoming2/pursuit-coupe.glb",
  "lod0": {
-  "tris": 84463,
+  "tris": 84545,
   "tris_by_node": {
-   "body": 20141,
+   "body": 20563,
    "brake_FL": 2280,
    "brake_FR": 2280,
    "brake_RL": 2215,
@@ -16,7 +16,7 @@
    "lights_front": 2386,
    "lights_rear": 2108,
    "plate_rear": 2,
-   "trim": 13763,
+   "trim": 13423,
    "underbody": 653,
    "wheel_FL": 3980,
    "wheel_FR": 3980,
@@ -115,9 +115,9 @@
   "tail_pipes": 2
  },
  "lod1": {
-  "tris": 34172,
+  "tris": 34195,
   "tris_by_node": {
-   "body": 10069,
+   "body": 10280,
    "brake_FL": 286,
    "brake_FR": 281,
    "brake_RL": 287,
@@ -129,7 +129,7 @@
    "lights_front": 1472,
    "lights_rear": 1054,
    "plate_rear": 2,
-   "trim": 8086,
+   "trim": 7898,
    "wheel_FL": 796,
    "wheel_FR": 796,
    "wheel_RL": 794,
@@ -224,9 +224,9 @@
   "tail_pipes": 0
  },
  "lod2": {
-  "tris": 10959,
+  "tris": 10976,
   "tris_by_node": {
-   "body": 3222,
+   "body": 3290,
    "brake_FL": 286,
    "brake_FR": 281,
    "brake_RL": 287,
@@ -238,7 +238,7 @@
    "lights_front": 98,
    "lights_rear": 252,
    "plate_rear": 2,
-   "trim": 2041,
+   "trim": 1990,
    "wheel_FL": 353,
    "wheel_FR": 352,
    "wheel_RL": 351,
@@ -313,19 +313,19 @@
   "material_count": 11,
   "box": [
    [
-    -1.0505329370498657,
+    -1.0585556030273438,
     -2.4169998168945312,
     -0.008514255285263062
    ],
    [
-    1.051295518875122,
-    2.5197346210479736,
-    1.5563760995864868
+    1.0585556030273438,
+    2.5179734230041504,
+    1.5538330078125
    ]
   ],
   "stray_verts_moved": {
    "interior": 11,
-   "trim": 35
+   "trim": 29
   },
   "tail_pipes": 0
  }

@@ -12743,14 +12743,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 87090,
+      "tris": 87228,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 3467376,
-      "sha256": "6c4293c215012d0d135c72d58301834c432dc455ef519c2691d13323ae0a27c9",
+      "bytes": 3464940,
+      "sha256": "76993de4b76fed851afc36c94ea3c6975925af907774b41c4441b342d7df6f80",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Police Car\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis Devriye). Downloaded 2026-11-28."
+      "notes": "\"Police Car\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis Devriye). Downloaded 2026-11-28."
     },
     {
       "id": "police_patrol_lod1",
@@ -12760,14 +12760,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 35129,
+      "tris": 35174,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 1806896,
-      "sha256": "dda00bf41ff1fcc588dc27b30b40183665b4d43df1e1d304cd8b9de07b757643",
+      "bytes": 1804388,
+      "sha256": "3d8f1b4633f9ca2448afdb91e3b93a3cd037c83cbcb3e0778aff59ff9853826a",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Police Car\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis Devriye). Downloaded 2026-11-28."
+      "notes": "\"Police Car\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis Devriye). Downloaded 2026-11-28."
     },
     {
       "id": "police_patrol_lod2",
@@ -12777,14 +12777,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 10514,
+      "tris": 10634,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 642892,
-      "sha256": "6fe947b11250d9b7526a986e88c6c12134645abade75ae27f4b74bc0fa539921",
+      "bytes": 663224,
+      "sha256": "d20f6104d6a0185c8817ff9f33cbe83a51bc32049f69172d4fb870b61e3e6ba8",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Police Car\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis Devriye). Downloaded 2026-11-28."
+      "notes": "\"Police Car\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis Devriye). Downloaded 2026-11-28."
     },
     {
       "id": "police_interceptor_lod0",
@@ -12794,14 +12794,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 84463,
+      "tris": 84545,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 3452872,
-      "sha256": "360ad5ea69271b8f8b1881b096c4b8b25a8d58d86b7b867451b8a361b5683b47",
+      "bytes": 3452696,
+      "sha256": "956a2a9bc303f11635f604bfd6eb5f327ca6ba2c18aaeee5d9a684251c769bbb",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Pursuit Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis Takip). Downloaded 2026-11-28."
+      "notes": "\"Pursuit Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis Takip). Downloaded 2026-11-28."
     },
     {
       "id": "police_interceptor_lod1",
@@ -12811,14 +12811,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 34172,
+      "tris": 34195,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 1716536,
-      "sha256": "5fd97141c7414bafb766ebaf61e3cae811924a0ac4cae762d921276c77fb6df3",
+      "bytes": 1714336,
+      "sha256": "3e0b6f71b9b3887f678f2002087051c1fd67261a89b14a8be1cc792b858187cb",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Pursuit Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis Takip). Downloaded 2026-11-28."
+      "notes": "\"Pursuit Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis Takip). Downloaded 2026-11-28."
     },
     {
       "id": "police_interceptor_lod2",
@@ -12828,14 +12828,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 10959,
+      "tris": 10976,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 688668,
-      "sha256": "40fe3f69fe31cd74e83bcae4412379e5f52016a56a4057078049c3f38407c7ad",
+      "bytes": 690468,
+      "sha256": "99fd6f7ca1ca0de074989ff50c7f6c6461d28742b9e198754924292bb14a84bf",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Pursuit Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis Takip). Downloaded 2026-11-28."
+      "notes": "\"Pursuit Coupe\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis Takip). Downloaded 2026-11-28."
     },
     {
       "id": "police_suv_lod0",
@@ -12845,14 +12845,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 88283,
+      "tris": 88303,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 3606372,
-      "sha256": "de4f6dbf726ed014aa32738fdee794c5c53a0d2b92b4dbb35f08e7382f5490f9",
+      "bytes": 3602464,
+      "sha256": "32f2598cc2ea4656f7028df72ee5b1e9dd51d2c63d4da82303ca29882b170d7e",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Police SUV\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis SUV). Downloaded 2026-11-28."
+      "notes": "\"Police SUV\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis SUV). Downloaded 2026-11-28."
     },
     {
       "id": "police_suv_lod1",
@@ -12862,14 +12862,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 38062,
+      "tris": 38093,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 1971400,
-      "sha256": "913270a8bb200360df539dc55017076b176334edd1846090a61d86e4b4f78d48",
+      "bytes": 1966884,
+      "sha256": "26de1a1c3ca9b960fd98c2194638debe3aa24f32ff8b0d020d37b0d698399ea9",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Police SUV\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis SUV). Downloaded 2026-11-28."
+      "notes": "\"Police SUV\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis SUV). Downloaded 2026-11-28."
     },
     {
       "id": "police_suv_lod2",
@@ -12879,14 +12879,14 @@
       "source_url": "https://vinish.dev/free-3d-models/",
       "license": "CC-BY-4.0",
       "author": "vinish.dev",
-      "tris": 10562,
+      "tris": 10584,
       "texture_sizes": {},
       "material_count": 12,
-      "bytes": 599248,
-      "sha256": "27b24c40fd19afb1d3e99bda4af582fe48d19d8d5c2db1d58179760946669943",
+      "bytes": 618792,
+      "sha256": "919992f46eb9e83e14242f8969d3d792c08144e1c3b06b729bab0eb84e93cd41",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Police SUV\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, badges renamed to generic text, renamed in game (Polis SUV). Downloaded 2026-11-28."
+      "notes": "\"Police SUV\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs, plate, livery text panels painted body colour, front plate as a dark recess, renamed in game (Polis SUV). Downloaded 2026-11-28."
     },
     {
       "id": "traffic_cab_lod1",
@@ -12903,7 +12903,7 @@
       "sha256": "050632ff410ba5bc8d5023c5112067aa525625ae8d04e17baff5f95f642b276d",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Yellow City Cab\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, badges renamed to generic text, renamed in game (Taksi). Downloaded 2026-11-28."
+      "notes": "\"Yellow City Cab\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, renamed in game (Taksi). Downloaded 2026-11-28."
     },
     {
       "id": "traffic_cab_lod2",
@@ -12920,7 +12920,7 @@
       "sha256": "1a8fc076c077b26aa1947f2d49a77304935d1cddfc56f2815750bda476d8eff7",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Yellow City Cab\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, badges renamed to generic text, renamed in game (Taksi). Downloaded 2026-11-28."
+      "notes": "\"Yellow City Cab\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, renamed in game (Taksi). Downloaded 2026-11-28."
     },
     {
       "id": "traffic_van_lod1",
@@ -12937,7 +12937,7 @@
       "sha256": "26710e1f0ce187cf1c35d98913e200633b1b4771dcd87299dc9e9bd8c513bbaf",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"City Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, badges renamed to generic text, renamed in game (Minibus). Downloaded 2026-11-28."
+      "notes": "\"City Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, renamed in game (Minibus). Downloaded 2026-11-28."
     },
     {
       "id": "traffic_van_lod2",
@@ -12954,7 +12954,7 @@
       "sha256": "346e4e684ce240cd373928ddb0f3e5387ca22b27586d9883eaf2a1f6cada94b8",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"City Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, badges renamed to generic text, renamed in game (Minibus). Downloaded 2026-11-28."
+      "notes": "\"City Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, renamed in game (Minibus). Downloaded 2026-11-28."
     },
     {
       "id": "traffic_panel_van_lod1",
@@ -12971,7 +12971,7 @@
       "sha256": "a0ca26f415d887888fca9c8c130f45d9d385d0eb103de4d21a1cfb3973176e3b",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Panel Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, badges renamed to generic text, renamed in game (Panelvan). Downloaded 2026-11-28."
+      "notes": "\"Panel Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, renamed in game (Panelvan). Downloaded 2026-11-28."
     },
     {
       "id": "traffic_panel_van_lod2",
@@ -12988,7 +12988,7 @@
       "sha256": "8c1d42b15c53407e2c442819c7941231429c6cf78f4544f2280528bbaf30eacd",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "\"Panel Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, badges renamed to generic text, renamed in game (Panelvan). Downloaded 2026-11-28."
+      "notes": "\"Panel Van\" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: materials merged (part colours and a baked shade kept as vertex colours), LODs 1 and 2 only (traffic), plate, renamed in game (Panelvan). Downloaded 2026-11-28."
     }
   ]
 }

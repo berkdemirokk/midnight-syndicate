@@ -110,8 +110,8 @@
     "Wood_Car": "M_Interior",
     "Screens_Car": "M_Interior",
     "Line_Gold": "M_Trim",
-    "Livery_Police": "M_Trim",
-    "Livery_Num": "M_Trim",
+    "Livery_Police": "M_Paint",
+    "Livery_Num": "M_Paint",
     "Em_Red": "M_LightRear",
     "Em_Blue": "M_LightFront",
     "Em_White": "M_LightFront",
@@ -283,5 +283,6 @@
     ]
   ],
   "source_file": "assets_src/third_party/vinish_cars/incoming2/police-car.glb",
-  "out_dir": "game/assets/vehicles/police_patrol"
+  "out_dir": "game/assets/vehicles/police_patrol",
+  "front_plate_material": "M_Trim"
 }
