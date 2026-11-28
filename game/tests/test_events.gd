@@ -191,7 +191,7 @@ func test_long_career_list_keeps_selected_row_visible() -> void:
 	var screen: EventSelect = (load(SELECT) as PackedScene).instantiate() as EventSelect
 	add(screen)
 	await frames(3)
-	check(screen.get_row_count() == 35, "all career events exist")
+	check(screen.get_row_count() == 43, "all career events exist")
 	var capacity: int = EventSelect.PHONE_WINDOW_ROWS if MSTheme.phone else EventSelect.DESKTOP_WINDOW_ROWS
 	for i: int in [0, 11, 30, 0]:
 		screen.select(i)

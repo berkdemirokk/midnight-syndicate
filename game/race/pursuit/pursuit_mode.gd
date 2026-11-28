@@ -241,7 +241,7 @@ func _on_race_finished(_results: Array[Dictionary]) -> void:
 func _finish() -> void:
 	_stop_chase()
 	if state.phase == PursuitState.Phase.ESCAPED:
-		escape_reward = ESCAPE_REWARD_PER_HEAT * state.heat
+		escape_reward = roundi(ESCAPE_REWARD_PER_HEAT * state.heat * _event_mult())  # the event's mult shown on the select screen
 		GameState.add_cash(escape_reward)
 	elif state.phase == PursuitState.Phase.BUSTED:
 		busted.emit()
@@ -266,12 +266,22 @@ func _update_hud() -> void:
 
 ## Survive goal of the event this race runs. The race scene keeps the RaceConfig; walk up to it (no RaceScene edit).
 func _event_survive_s() -> float:
+	var ev: Dictionary = _event_data()
+	return float(ev.get("survive_s", 0.0))
+
+
+## Reward multiplier of the event this race runs (1.0 when it has none, e.g. a test race).
+func _event_mult() -> float:
+	return float(_event_data().get("mult", 1.0))
+
+
+func _event_data() -> Dictionary:
 	var n: Node = get_parent()
 	while n != null and not (n is RaceScene):
 		n = n.get_parent()
 	if n == null or (n as RaceScene).config_used == null:
-		return 0.0
-	return float(EventCatalog.find((n as RaceScene).config_used.event_id).get("survive_s", 0.0))
+		return {}
+	return EventCatalog.find((n as RaceScene).config_used.event_id)
 
 
 func _goal_text() -> String:
