@@ -12,7 +12,7 @@ const CASES: Array = [
 	{"name": "body1_wall005", "body": 1.0, "wall": 0.05},
 	{"name": "body005_wall1", "body": 0.05, "wall": 1.0},
 	{"name": "body005_wall005", "body": 0.05, "wall": 0.05},
-	{"name": "body1_wall1_rough_wall", "body": 1.0, "wall": 1.0, "rough": true},
+	{"name": "body005_wall1_rough_wall", "body": 0.05, "wall": 1.0, "rough": true},
 ]
 
 
@@ -36,6 +36,8 @@ func _run_case(wall_friction: float, body_friction: float, wall_rough: bool) -> 
 	body.gravity_scale = 0.0
 	body.lock_rotation = true
 	body.mass = 1200.0
+	body.linear_damp_mode = RigidBody3D.DAMP_MODE_REPLACE
+	body.linear_damp = 0.0  # default 0.1/s damp would hide the friction loss
 	var bmat := PhysicsMaterial.new()
 	bmat.friction = body_friction
 	body.physics_material_override = bmat
@@ -58,7 +60,7 @@ func _run_case(wall_friction: float, body_friction: float, wall_rough: bool) -> 
 	return {"kept_speed": kept, "along_wall_ratio": along, "into_wall_residual": into, "end_speed_kmh": v.length() * 3.6}
 
 
-func test_wall_friction_rule_lowest_wins() -> void:
+func test_wall_friction_rule_lowest_wins_rough_wall_wins() -> void:
 	var results: Array = []
 	for c: Dictionary in CASES:
 		var r: Dictionary = await _run_case(c["wall"], c["body"], c.get("rough", false))
@@ -80,8 +82,10 @@ func test_wall_friction_rule_lowest_wins() -> void:
 		f.close()
 	else:
 		check(false, "could not write evidence/handling/wall_rule.json")
-	# Jolt combines the pair by the lower friction: any pair with a 0.05 side gives the same kept speed (to 0.01),
-	# and the 1.0 / 1.0 pair keeps much less. Highest-wins or a geometric mean would fail these checks.
+	# Jolt combines the pair by the lower friction unless one side is rough, then the higher one is used
+	# (only measured with the rough side higher).
+	# With damping off the along-wall ratio fits Coulomb exactly: 1 - mu * tan(glance). mu = min(body, wall) fits;
+	# highest-wins, geometric mean (0.22) and product (0.0025 for 0.05 / 0.05) would miss by more than 0.005.
 	var k: Dictionary = {}
 	for r: Dictionary in results:
 		k[r["case"]] = r["kept_speed"]
@@ -89,3 +93,7 @@ func test_wall_friction_rule_lowest_wins() -> void:
 	check(absf(low - k["body1_wall005"]) < 0.01, "body 1.0 / wall 0.05 (%.4f) should match body 0.05 / wall 1.0 (%.4f)" % [k["body1_wall005"], low])
 	check(absf(low - k["body005_wall005"]) < 0.01, "body 0.05 / wall 0.05 (%.4f) should match body 0.05 / wall 1.0 (%.4f)" % [k["body005_wall005"], low])
 	check(k["body1_wall1"] < low - 0.1, "body 1.0 / wall 1.0 should keep less speed than any 0.05 pair")
+	for r: Dictionary in results:
+		var mu: float = maxf(r["body_friction"], r["wall_friction"]) if r["wall_rough"] else minf(r["body_friction"], r["wall_friction"])
+		var want: float = 1.0 - mu * tan(deg_to_rad(GLANCE_DEG))
+		check(absf(r["along_wall_ratio"] - want) < 0.005, "%s along-wall %.4f, Coulomb with mu %.2f predicts %.4f" % [r["case"], r["along_wall_ratio"], mu, want])

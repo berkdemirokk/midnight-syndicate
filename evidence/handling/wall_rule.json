@@ -1,52 +1,52 @@
 {
 	"cases": [
 		{
-			"along_wall_ratio": 0.599252736291143,
+			"along_wall_ratio": 0.732050886367119,
 			"body_friction": 1.0,
 			"case": "body1_wall1",
-			"end_speed_kmh": 69.4600433349609,
+			"end_speed_kmh": 84.8528228759766,
 			"into_wall_residual": 0.0,
-			"kept_speed": 0.578833694458008,
+			"kept_speed": 0.707106857299805,
 			"wall_friction": 1.0,
 			"wall_rough": false
 		},
 		{
-			"along_wall_ratio": 0.807627382388698,
+			"along_wall_ratio": 0.986602552942029,
 			"body_friction": 1.0,
 			"case": "body1_wall005",
-			"end_speed_kmh": 93.6129776000977,
+			"end_speed_kmh": 114.358186340332,
 			"into_wall_residual": 0.0,
-			"kept_speed": 0.78010814666748,
+			"kept_speed": 0.952984886169434,
 			"wall_friction": 0.05,
 			"wall_rough": false
 		},
 		{
-			"along_wall_ratio": 0.807627382388698,
+			"along_wall_ratio": 0.986602552942029,
 			"body_friction": 0.05,
 			"case": "body005_wall1",
-			"end_speed_kmh": 93.6129776000977,
+			"end_speed_kmh": 114.358186340332,
 			"into_wall_residual": 0.0,
-			"kept_speed": 0.78010814666748,
+			"kept_speed": 0.952984886169434,
 			"wall_friction": 1.0,
 			"wall_rough": false
 		},
 		{
-			"along_wall_ratio": 0.807627382388698,
+			"along_wall_ratio": 0.986602552942029,
 			"body_friction": 0.05,
 			"case": "body005_wall005",
-			"end_speed_kmh": 93.6129776000977,
+			"end_speed_kmh": 114.358186340332,
 			"into_wall_residual": 0.0,
-			"kept_speed": 0.78010814666748,
+			"kept_speed": 0.952984886169434,
 			"wall_friction": 0.05,
 			"wall_rough": false
 		},
 		{
-			"along_wall_ratio": 0.599252736291143,
-			"body_friction": 1.0,
-			"case": "body1_wall1_rough_wall",
-			"end_speed_kmh": 69.4600433349609,
+			"along_wall_ratio": 0.732050886367119,
+			"body_friction": 0.05,
+			"case": "body005_wall1_rough_wall",
+			"end_speed_kmh": 84.8528228759766,
 			"into_wall_residual": 0.0,
-			"kept_speed": 0.578833694458008,
+			"kept_speed": 0.707106857299805,
 			"wall_friction": 1.0,
 			"wall_rough": true
 		}
