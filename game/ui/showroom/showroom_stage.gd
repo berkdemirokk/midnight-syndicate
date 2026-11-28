@@ -66,10 +66,10 @@ func _init(q: String = "full") -> void:
 
 
 func _ready() -> void:
-	_build_environment()
-	_build_floor()
-	_build_lights()
-	_build_set()
+	var built: Dictionary = build_studio(self, quality, true)
+	env = built["env"]
+	floor_material = built["floor_material"]
+	planar = built["planar"]
 	_pivot = Node3D.new()
 	_pivot.name = "CarPivot"
 	add_child(_pivot)
@@ -156,89 +156,96 @@ func show_car(id: String) -> void:
 	CarMaterials.set_reflection(car, studio_pano(quality != "full"), 0.85, 1.4, 2.2)
 
 
-func _build_environment() -> void:
-	env = Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = BG
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.11, 0.115, 0.13)
-	env.ambient_light_energy = 0.7
-	env.reflected_light_source = Environment.REFLECTION_SOURCE_BG
-	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_white = 6.0
-	env.tonemap_exposure = 1.05
-	env.fog_enabled = true
-	env.fog_light_color = BG
-	env.fog_density = 0.035
-	env.fog_sky_affect = 0.0
-	env.glow_enabled = quality == "full"  # no full-screen glow pass on the phone / Low tier
-	env.glow_intensity = 0.45
-	env.glow_bloom = 0.0
-	env.glow_hdr_threshold = 1.4
-	env.glow_hdr_scale = 1.6
+## The studio set, shared by this stage (main menu) and the garage: environment, glossy floor with a planar mirror on
+## the "full" tier, fill and rim spots when spots (plus a shadowed key spot when key_spot), three overhead strips and the
+## red wash. The garage passes spots false: it lights the car with its own directional key and fill.
+## Returns {"env", "floor_material", "planar", "floor"}. Every node is added to `parent`.
+static func build_studio(parent: Node3D, q: String, key_spot: bool, spots: bool = true) -> Dictionary:
+	var e := Environment.new()
+	e.background_mode = Environment.BG_COLOR
+	e.background_color = BG
+	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	e.ambient_light_color = Color(0.11, 0.115, 0.13)
+	e.ambient_light_energy = 0.7
+	e.reflected_light_source = Environment.REFLECTION_SOURCE_BG
+	e.tonemap_mode = Environment.TONE_MAPPER_ACES
+	e.tonemap_white = 6.0
+	e.tonemap_exposure = 1.05
+	e.fog_enabled = true
+	e.fog_light_color = BG
+	e.fog_density = 0.035
+	e.fog_sky_affect = 0.0
+	e.glow_enabled = q == "full"  # no full-screen glow pass on the phone / Low tier
+	e.glow_intensity = 0.45
+	e.glow_bloom = 0.0
+	e.glow_hdr_threshold = 1.4
+	e.glow_hdr_scale = 1.6
 	var we := WorldEnvironment.new()
 	we.name = "Environment"
-	we.environment = env
-	add_child(we)
+	we.environment = e
+	parent.add_child(we)
 
-
-func _build_floor() -> void:
 	var mi := MeshInstance3D.new()
 	mi.name = "Floor"
 	var mesh := PlaneMesh.new()
 	mesh.size = Vector2(70.0, 70.0)
 	mi.mesh = mesh
-	floor_material = SHOWROOM_SET.make_floor_material(4.2, 22.0)
-	floor_material.set_shader_parameter("fade_start", 6.0)
-	floor_material.set_shader_parameter("light_specular", 0.06)  # the key mirrored as a hot white blob in front of the car
-	mi.material_override = floor_material
+	var fm: ShaderMaterial = SHOWROOM_SET.make_floor_material(4.2, 22.0)
+	fm.set_shader_parameter("fade_start", 6.0)
+	fm.set_shader_parameter("light_specular", 0.06)  # the key mirrored as a hot white blob in front of the car
+	mi.material_override = fm
 	mi.layers = SHOWROOM_SET.MIRROR_LAYER_BIT
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(mi)
-	if quality == "full":
-		planar = PLANAR.new()
-		planar.name = "FloorMirror"
-		planar.set("plane_height", 0.0)
-		planar.set("resolution_fraction", 0.5)
-		planar.set("max_distance_m", 40.0)
-		add_child(planar)
-		planar.call("add_target_material", floor_material)
-		planar.call("set_enabled", true)
+	parent.add_child(mi)
+	var pl: Node = null
+	if q == "full":
+		pl = PLANAR.new()
+		pl.name = "FloorMirror"
+		pl.set("plane_height", 0.0)
+		pl.set("resolution_fraction", 0.5)
+		pl.set("max_distance_m", 40.0)
+		parent.add_child(pl)
+		pl.call("add_target_material", fm)
+		pl.call("set_enabled", true)
 
+	if key_spot:
+		_spot(parent, Vector3(0.6, 7.5, 1.2), KEY_COLOUR, 7.0, 34.0, q == "full").name = "Key"
+	if spots:
+		var fill: SpotLight3D = _spot(parent, Vector3(-6.5, 2.6, 2.5), FILL_COLOUR, 3.2, 30.0, false)
+		fill.name = "FillL"
+		fill.spot_range = 9.0  # stops at the car: no pool on the far floor
+		var rim: SpotLight3D = _spot(parent, Vector3(0.0, 2.2, -7.5), RIM_COLOUR, 5.5, 32.0, false)
+		rim.name = "Rim"
+		rim.spot_range = 10.0  # rim only, no pool in front of the car
 
-func _spot(pos: Vector3, colour: Color, energy: float, angle: float, shadow: bool) -> SpotLight3D:
-	var s := SpotLight3D.new()
-	s.light_color = colour
-	s.light_energy = energy
-	s.spot_angle = angle
-	s.spot_range = 22.0
-	s.spot_attenuation = 0.6
-	s.shadow_enabled = shadow
-	s.shadow_blur = 2.0
-	add_child(s)
-	s.position = pos
-	s.look_at(TARGET, Vector3.UP if absf(pos.normalized().y) < 0.99 else Vector3.FORWARD)
-	return s
-
-
-func _build_lights() -> void:
-	_spot(Vector3(0.6, 7.5, 1.2), KEY_COLOUR, 7.0, 34.0, quality == "full").name = "Key"
-	_spot(Vector3(-6.5, 2.6, 2.5), FILL_COLOUR, 3.2, 30.0, false).spot_range = 9.0  # stops at the car: no pool on the far floor
-	_spot(Vector3(0.0, 2.2, -7.5), RIM_COLOUR, 5.5, 32.0, false).spot_range = 10.0  # rim only, no pool in front of the car
-
-
-func _build_set() -> void:
 	# Three long strips overhead along the car: the long highlights on the roof, bonnet and shoulders.
-	for x: float in [-1.5, 0.0, 1.5]:
-		var s: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(x, 6.2, 0.0), Vector2(0.35, 9.0), Vector3.DOWN, KEY_COLOUR, 2.6)
-		s.name = "Strip"
-		add_child(s)
+	for i: int in 3:
+		var st: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(-1.5 + 1.5 * float(i), 6.2, 0.0), Vector2(0.35, 9.0), Vector3.DOWN, KEY_COLOUR, 2.6)
+		st.name = "Strip%d" % i
+		parent.add_child(st)
 	# The brand light: a broad, faint racing-red wash on the far wall behind the car (a backlit cyclorama), so the
 	# silhouette sits on red-tinted dark instead of a void. Mirrored softly by the floor.
 	var wash: MeshInstance3D = SHOWROOM_SET.softbox(Vector3(0.0, 3.2, -16.0), Vector2(34.0, 9.0), Vector3.BACK, RED, 0.22)
 	wash.name = "RedWash"
 	wash.layers = SHOWROOM_SET.MIRROR_LAYER_BIT | 1
-	add_child(wash)
+	parent.add_child(wash)
+	return {"env": e, "floor_material": fm, "planar": pl, "floor": mi}
+
+
+static func _spot(parent: Node3D, pos: Vector3, colour: Color, energy: float, angle: float, shadow: bool) -> SpotLight3D:
+	var sp := SpotLight3D.new()
+	sp.light_color = colour
+	sp.light_energy = energy
+	sp.spot_angle = angle
+	sp.spot_range = 22.0
+	sp.spot_attenuation = 0.6
+	sp.shadow_enabled = shadow
+	sp.shadow_blur = 2.0
+	sp.position = pos
+	var up: Vector3 = Vector3.UP if absf(pos.normalized().y) < 0.99 else Vector3.FORWARD
+	sp.transform = Transform3D(Basis.looking_at(TARGET - pos, up), pos)
+	parent.add_child(sp)
+	return sp
 
 
 ## Equirectangular studio panorama for the paint mirror (u: atan(x, z), v: 0 up .. 1 down; see car_reflection.gdshader).

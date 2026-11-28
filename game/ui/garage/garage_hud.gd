@@ -51,7 +51,8 @@ const CARD_W: float = 232.0  ## collection card, before MSTheme.px
 const CARD_H: float = 124.0
 const CAPTION_H: float = 22.0
 const BAR_PX: float = 6.0  ## stat bar height
-const GRADIENT_H: float = 28.0  ## hue and value strips
+const GRADIENT_H: float = 40.0  ## hue and value strips: touch height (the drawn track is TRACK_H)
+const TRACK_H: float = 8.0
 const STEP_SATURATION: float = 0.85
 const VALUE_FLOOR: float = 0.1
 const SHAKE_S: float = 0.36
@@ -122,7 +123,7 @@ class GradientStrip extends Control:
 	func _init() -> void:
 		focus_mode = Control.FOCUS_ALL
 		mouse_filter = Control.MOUSE_FILTER_STOP
-		custom_minimum_size = Vector2(0.0, GarageHud.GRADIENT_H)
+		custom_minimum_size = Vector2(0.0, MSTheme.px(GarageHud.GRADIENT_H))
 
 	func set_position_t(v: float) -> void:
 		t = clampf(v, 0.0, 1.0)
@@ -138,9 +139,12 @@ class GradientStrip extends Control:
 		for x: int in 128:
 			img.set_pixel(x, 0, _colour_at(float(x) / 127.0))
 		_tex = ImageTexture.create_from_image(img)
-		draw_texture_rect(_tex, Rect2(Vector2.ZERO, size), false)
-		var mx: float = t * size.x
-		draw_rect(Rect2(mx - 3.0, -2.0, 6.0, size.y + 4.0), MSTheme.PEARL, false, 2.0)
+		var th: float = MSTheme.px(GarageHud.TRACK_H)
+		draw_texture_rect(_tex, Rect2(0.0, (size.y - th) * 0.5, size.x, th), false)
+		var c := Vector2(clampf(t * size.x, th, size.x - th), size.y * 0.5)
+		draw_circle(c, th * 1.35, MSTheme.GRAPHITE)
+		draw_circle(c, th * 1.05, MSTheme.PEARL)
+		draw_circle(c, th * 0.6, _colour_at(t))
 
 	func _gui_input(e: InputEvent) -> void:
 		var mb: InputEventMouseButton = e as InputEventMouseButton
@@ -239,11 +243,13 @@ func _build_top_bar(ins: Vector4) -> void:
 	for v: String in VIEWS:
 		var b: Button = _button(VIEW_KEYS[v], Vector2(0.0, _bar_h()))
 		b.theme_type_variation = &"GhostButton"
+		b.add_theme_font_override("font", MSTheme.font("tracked"))
+		b.add_theme_font_size_override("font_size", MSTheme.px(15))
 		var view: String = v
 		b.pressed.connect(func() -> void: view_pressed.emit(view))
 		views.add_child(b)
 		_views[v] = b
-	bar.add_child(_plate(views, "ViewsPlate"))
+	bar.add_child(views)  # quiet text row: the studio is dark, no plate needed
 	bar.add_child(_spacer())
 
 	var money := HBoxContainer.new()
@@ -271,7 +277,9 @@ func _build_top_bar(ins: Vector4) -> void:
 	_cash_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	cash.add_child(_cash_value)
 	money.add_child(cash)
-	bar.add_child(_plate(money, "MoneyPlate"))
+	var money_plate: PanelContainer = _plate(money, "MoneyPlate")
+	money_plate.custom_minimum_size.x = MSTheme.px(PANEL_W)  # same column as the configurator panel under it
+	bar.add_child(money_plate)
 
 
 ## Dark plate behind top-bar text: the room's ceiling lights wash out bare labels.
@@ -445,6 +453,7 @@ func _build_panel(ins: Vector4) -> void:
 	panel.add_theme_stylebox_override("panel", MSTheme.box(MSTheme.tint(MSTheme.GRAPHITE_2, 0.94), MSTheme.BORDER))
 	var top: float = _content_y(ins)
 	_place(panel, 1.0, 0.0, 1.0, 0.0, -(ins.z + MARGIN_PX + MSTheme.px(PANEL_W)), top, -(ins.z + MARGIN_PX), top)
+	panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN  # wider content (Turkish tabs) grows inward, never off the right edge
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", MSTheme.GRID_PX * 2)
 	panel.add_child(col)
@@ -887,6 +896,8 @@ func _refresh_car(state: Dictionary) -> void:
 	else:
 		_car_action.text = GarageText.t("garage.car_buy") % int(state.get("price", 0))
 		_car_action.disabled = false  ## short cash: pressing it shows the message
+	# A disabled action (already selected, locked by rep) only repeats the status chip: hide it instead of a grey slab.
+	_car_action.visible = not _car_action.disabled
 
 
 ## Stat bars and the numbers beside them. The bar is the 0..1 value; the number is the real unit (see GarageStats).

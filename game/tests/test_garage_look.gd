@@ -41,12 +41,11 @@ func test_garage_dressed() -> void:
 	if showroom != null:
 		check(showroom.contact_shadow != null and showroom.contact_shadow.get_parent() == g.get_node("Pivot"), "shadow follows the car's pivot")
 		var floors: int = 0
-		for n: Node in g.get_node("Room").find_children("*", "MeshInstance3D", true, false):
+		for n: Node in g.find_children("*", "MeshInstance3D", true, false):
 			var mi: MeshInstance3D = n as MeshInstance3D
-			for i: int in mi.get_surface_override_material_count():
-				if mi.get_surface_override_material(i) == showroom.floor_material:
-					floors += 1
-					check((mi.layers & ShowroomSet.MIRROR_LAYER_BIT) != 0, "mirrored floor is kept out of its own mirror")
+			if mi.material_override == showroom.floor_material:
+				floors += 1
+				check((mi.layers & ShowroomSet.MIRROR_LAYER_BIT) != 0, "mirrored floor is kept out of its own mirror")
 		check(floors > 0, "floor or plate surface carries the mirror material (%d)" % floors)
 		check(showroom.planar != null, "garage floor mirror exists")
 	var we: WorldEnvironment = g.get_node("Environment") as WorldEnvironment
