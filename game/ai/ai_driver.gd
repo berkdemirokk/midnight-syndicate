@@ -91,7 +91,7 @@ class NearCar extends RefCounted:
 @export var bend_bias_full: float = 0.0075  ## 1/m: the inside bias reaches bend_bias_m at this curvature
 @export var bend_bias_m: float = 1.5  ## m: inside lane bias in a tight bend, so a car that runs wide still has room to the kerb
 @export var use_racing_line: bool = false  ## steer on the track's racing line (apex line, line speed profile) instead of the centre line plus bend bias. Off: measured worse than base on 2026-11-28 (contacts, side-by-side), see docs/design/AI_RIVALS_2026-11-28.md
-@export var use_line_speed: bool = true  ## with use_racing_line: take the target speed from the line's own curvature (true) or the centre line's profile (false)
+@export var use_line_speed: bool = true  ## only with use_racing_line ON (ignored while it is OFF): target speed from the line's own curvature (true) or the centre line's profile (false)
 @export var pass_commit_s: float = 0.0  ## s, a started pass is not aborted for a side filling up or a bend before this (the timeout still applies). 0 = base behaviour; 1.5 measured worse
 @export var defence_shift: float = 0.0  ## m, the one lateral move toward a faster car up to 8 m behind (until it is alongside: car_length) in our lane. 0 = off (default; measured no gain)
 @export var defence_hold_s: float = 3.0  ## s, a defence move is held at most this long

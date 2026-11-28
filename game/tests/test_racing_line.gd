@@ -54,3 +54,12 @@ func test_racing_line_reversed_track() -> void:
 			"line not restored after a reverse round trip at %.0f m" % (float(i) * 9.0))
 	var nodes: Array[Node] = [track]
 	await cleanup(nodes)
+
+
+func test_racing_line_switches_default_off() -> void:
+	# Shipped defaults must stay the base path: the racing line, pass commitment and defence are measured worse (docs/design/AI_RIVALS_2026-11-28.md).
+	var d := AIDriver.new()
+	check(not d.use_racing_line, "use_racing_line must default OFF")
+	check(d.pass_commit_s == 0.0, "pass_commit_s must default 0 (base)")
+	check(d.defence_shift == 0.0, "defence_shift must default 0 (off)")
+	d.free()

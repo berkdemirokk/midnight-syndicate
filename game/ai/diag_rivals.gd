@@ -156,6 +156,16 @@ class Monitor extends Node:
 		get_tree().quit(0)
 
 
+## --set / --tset value: a number, or true / false (1 / 0). Anything else stops the run instead of silently giving 0.
+static func _num(text: String) -> float:
+	if text == "true":
+		return 1.0
+	if text == "false":
+		return 0.0
+	assert(text.is_valid_float(), "diag_rivals: value is not a number, true or false: " + text)
+	return text.to_float()
+
+
 func _initialize() -> void:
 	call_deferred("_start")
 
@@ -188,7 +198,7 @@ func _start() -> void:
 	var n: int = skills.size()
 	var city: Track = (load(TRACKS[track_key]) as PackedScene).instantiate() as Track
 	for kv: String in tsets:
-		city.set(kv.get_slice("=", 0), kv.get_slice("=", 1).to_float())
+		city.set(kv.get_slice("=", 0), _num(kv.get_slice("=", 1)))
 	root.add_child(city)
 	if reverse:
 		city.set_reversed(true)
@@ -205,7 +215,7 @@ func _start() -> void:
 		d.name = "AIDriver"
 		d.skill = skills[i]
 		for kv: String in sets:
-			d.set(kv.get_slice("=", 0), kv.get_slice("=", 1).to_float())
+			d.set(kv.get_slice("=", 0), _num(kv.get_slice("=", 1)))
 		car.add_child(d)
 		cars.append(car)
 		names.append("S%d" % i)
