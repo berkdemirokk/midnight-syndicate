@@ -203,6 +203,7 @@ func test_race_trace_20s() -> void:
 	var sum_us: int = 0
 	var shift_frames: int = 0
 	var two_band_frames: int = 0
+	var min_level: float = INF  ## quietest engine level outside the cut and the limiter dips (gap check)
 	var frames: int = int(round(20.0 / DT))
 	for f: int in frames:
 		var t: float = f * DT
@@ -221,6 +222,11 @@ func test_race_trace_20s() -> void:
 		max_voices = maxi(max_voices, voices)
 		if ca.throttle_effective() < p[2] - 0.01:
 			shift_frames += 1
+		if t > 0.3 and ca.duck() > 0.9 and ca.bounce() > 0.9:
+			var lv: float = 0.0
+			for v: int in 4:
+				lv += ca.voice_gain(v) * ca.voice_gain(v)
+			min_level = minf(min_level, sqrt(lv))
 		var sb: PackedInt32Array = ca.slot_bands()
 		rows.append("%.4f,%d,%.3f,%.0f,%.2f,%.2f,%.3f,%.3f,%d,%d,%.4f,%.4f,%.4f,%.4f,%.3f,%.3f,%d,%d" % [
 			t, car.gear, car.rpm_norm, ca.rpm_abs(), car.input.throttle, ca.throttle_effective(), ca.duck(), ca.bounce(),
@@ -231,8 +237,11 @@ func test_race_trace_20s() -> void:
 	metric("race20_two_band_seconds", snappedf(two_band_frames * DT, 0.01))
 	metric("race20_cut_seconds", snappedf(shift_frames * DT, 0.01))
 	metric("race20_update_us_avg_max", [snappedf(avg_us, 0.1), max_us])
+	metric("race20_min_engine_level", snappedf(min_level, 0.001))
 	check(max_voices <= 4, "race trace plays %d voices" % max_voices)
 	check(shift_frames >= 5 * 2, "upshift cuts not seen in the race trace: %d frames" % shift_frames)
+	# Before slot stealing both slots held the fading old bands after each upshift: level fell to 0.001 for ~150 ms.
+	check(min_level > 0.08, "engine drops out after an upshift: level %f" % min_level)
 	var path: String = _log_path()
 	if path != "":
 		var fa := FileAccess.open(path, FileAccess.WRITE)

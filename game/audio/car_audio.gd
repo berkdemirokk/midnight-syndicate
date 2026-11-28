@@ -22,6 +22,7 @@ const RIVAL_MID_FLOOR := 0.5  ## rival level floor (-6 dB): the mid weight is ze
 const HEAVY_HIT_IMPULSE := 6000.0
 const MIN_HIT_IMPULSE := 700.0
 const AUDIBLE_FLOOR := 0.0001  ## band weight below this counts as silent
+const STEAL_GAIN := 0.1  ## a silent band's slot may be taken by a new band once its voices are below this (-20 dB)
 const VOICE_FADE := 40.0  ## 1/s, layered voice gain smoothing (about 25 ms time constant)
 
 @export var is_player: bool = true
@@ -319,6 +320,8 @@ func _assign_slots(w: PackedFloat32Array) -> void:
 			continue
 		var s: int = _slot_band.find(-1)
 		if s < 0:
+			s = _steal_slot()
+		if s < 0:
 			break  # two adjacent bands at most; a band that finds no free slot waits until one frees
 		_slot_band[s] = b
 		for l: int in 2:
@@ -327,6 +330,22 @@ func _assign_slots(w: PackedFloat32Array) -> void:
 			_vgain[v] = 0.0
 			_lv[v].volume_db = -80.0
 			_lv[v].play()
+
+
+## After a fast rpm drop (upshift) both slots can still hold fading bands of the old rpm while the new band
+## waits, which left the engine near silent for about 150 ms. Take the quieter slot whose band is silent once
+## it is below STEAL_GAIN; -1 when no slot qualifies.
+func _steal_slot() -> int:
+	var best: int = -1
+	var best_g: float = STEAL_GAIN
+	for s: int in 2:
+		var g: float = maxf(_vgain[s * 2], _vgain[s * 2 + 1])
+		if _amp[_slot_band[s]] <= AUDIBLE_FLOOR and g < best_g:
+			best = s
+			best_g = g
+	if best >= 0:
+		_free_slot(best)
+	return best
 
 
 func _free_slot(s: int) -> void:
