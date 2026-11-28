@@ -6,6 +6,7 @@ PEAK = 10 ** (-1 / 20) * 32767  # -1 dBFS in 16-bit
 
 JOBS = [
     # (raw path relative to RAW, output name, is_loop)
+    # None of these ship (lead review 2026-11-28). The two "ambience" sources are music tracks (OpenGameArt Art Type: Music).
     ("racing-car-engine-sound-loops/loop_0.wav", "engine_loop_a", True),
     ("racing-car-engine-sound-loops/loop_2_0.wav", "engine_loop_b", True),
     ("engine-sounds2/engine_sound.mp3", "engine_loop_c", True),

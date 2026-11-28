@@ -7,7 +7,7 @@
   "licence_text_as_shown": "License(s): CC0",
   "licence_checked": "2026-11-28",
   "download_date": "2026-11-28",
-  "processing": "ffmpeg -ss 3.4 -t 3.2 -i siren.mp3 -ac 1 -ar 44100 trim.wav, then assets_src/third_party/audio_cc0/process_siren.py trim.wav game/assets/audio/cc0/police_siren_wail.ogg",
+  "processing": "ffmpeg -i siren.mp3 -ac 1 -ar 44100 full.wav; samples 221641 to 287987 (5.026 s to 6.530 s, one whole 660 to 1040 Hz sweep between two pitch resets, both at rising zero crossings) written to trim.wav; then assets_src/third_party/audio_cc0/process_siren.py trim.wav game/assets/audio/cc0/police_siren_wail.ogg",
   "status": "shipped as the police siren loop",
-  "note": "Pack holds several sweeping siren bursts; the 3.4 to 6.6 s rising wail was chosen by pitch analysis. A yelp loop was not found in this file. Not listened to by a person."
+  "note": "Pack holds several sweeping siren bursts; one sweep was cut between two pitch resets so the loop repeats the way the recording does. The first cut (3.4 to 6.6 s) started with 100 ms of silence, re-cut in lead review. A yelp loop was not found in this file. Not listened to by a person."
 }

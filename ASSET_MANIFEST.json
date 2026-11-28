@@ -5917,11 +5917,11 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 19535142,
-      "sha256": "f0f007f85d687484912bdb36622cdcbff712ccefd68d1068192915b0addd759e",
+      "bytes": 18369361,
+      "sha256": "d1fd00d8c58127fd8c9e0ea8f328b6fdac17f1616fe00b8b210e7872ec1b2313",
       "test_result": "pass",
       "added": "2026-11-25",
-      "notes": "25 procedurally synthesised SFX/UI/music WAVs, stdlib only, deterministic; per-file data in game/assets/audio/audio_manifest.json. Plus engine/: 48 layered engine loops (4 engines x 6 rpm bands x on/off load) by tools/audio_synth/engine_layers.py (numpy, deterministic). Hash and size re-taken 2026-11-28 after the CC0 OGG set (ambience and police siren) was added under game/assets/audio/cc0/"
+      "notes": "25 procedurally synthesised SFX/UI/music WAVs, stdlib only, deterministic; per-file data in game/assets/audio/audio_manifest.json. Plus engine/: 48 layered engine loops (4 engines x 6 rpm bands x on/off load) by tools/audio_synth/engine_layers.py (numpy, deterministic). Hash and size re-taken 2026-11-28 after the CC0 OGG set (police siren) was added under game/assets/audio/cc0/"
     },
     {
       "id": "branding_icon_1024",
@@ -12719,40 +12719,6 @@
       "notes": "StreetProps street furniture (LOD0); Poly Haven model street_lamp_02, decimated by assets_src/third_party/process_polyhaven_props.py, fetched 2026-11-28 (owner approved CC0 downloads)."
     },
     {
-      "id": "audio_cc0_ambience_city_loop",
-      "kind": "audio",
-      "path": "game/assets/audio/cc0/ambience_city_loop.ogg",
-      "source": "cc0:opengameart",
-      "source_url": "https://opengameart.org/content/city-loop-0",
-      "license": "CC0-1.0",
-      "author": "wipics",
-      "tris": 0,
-      "texture_sizes": {},
-      "material_count": 0,
-      "bytes": 599800,
-      "sha256": "a70586a40c2eed07e13b210b1782a204a4222bb3f88980a49adc7d0c0366bbbc",
-      "test_result": "pass",
-      "added": "2026-11-28",
-      "notes": "from city-loop-0 (city-loop_0.mp3), converted by assets_src/third_party/audio_cc0 processing: mono 44.1 kHz OGG q5, peak -1 dBFS, loop cut at zero crossings. Raw file not committed."
-    },
-    {
-      "id": "audio_cc0_ambience_rain_loop",
-      "kind": "audio",
-      "path": "game/assets/audio/cc0/ambience_rain_loop.ogg",
-      "source": "cc0:opengameart",
-      "source_url": "https://opengameart.org/content/rain-in-space",
-      "license": "CC0-1.0",
-      "author": "Tsorthan Grove",
-      "tris": 0,
-      "texture_sizes": {},
-      "material_count": 0,
-      "bytes": 550131,
-      "sha256": "9f1aaea8abb395ec6434f2b9cebbc59bb6d94982bc445283c925416415e542e6",
-      "test_result": "pass",
-      "added": "2026-11-28",
-      "notes": "from rain-in-space (rain_in_space_loop.wav), converted by assets_src/third_party/audio_cc0 processing: mono 44.1 kHz OGG q5, peak -1 dBFS, loop cut at zero crossings. Raw file not committed."
-    },
-    {
       "id": "audio_cc0_police_siren_wail",
       "kind": "audio",
       "path": "game/assets/audio/cc0/police_siren_wail.ogg",
@@ -12763,11 +12729,11 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 34194,
-      "sha256": "f8d5b1c026be728a8888509120525addd24a01ec41b3c58c654019c6fcb88903",
+      "bytes": 18344,
+      "sha256": "5ec97f766087b57fb30a7364cf983ac829c8ed39da69f2a858687bbf84bbc498",
       "test_result": "pass",
       "added": "2026-11-28",
-      "notes": "3.2 s wail cut from siren.mp3 (3.4 s to 6.6 s, rising sweep 660 to 1040 Hz) of the CC0 pack 'sirens and alarm noise', converted by assets_src/third_party/audio_cc0/process_siren.py: mono 44.1 kHz OGG q5, peak -1 dBFS, loop cut at zero crossings. Raw file not committed. Not listened to by a person."
+      "notes": "1.5 s loop: one whole rising sweep (660 to 1040 Hz) cut between two pitch resets (5.026 s to 6.530 s) of siren.mp3 from the CC0 pack 'sirens and alarm noise', converted by assets_src/third_party/audio_cc0/process_siren.py: mono 44.1 kHz OGG q5, peak -1 dBFS, cut at rising zero crossings. Raw file not committed. Not listened to by a person."
     }
   ]
 }

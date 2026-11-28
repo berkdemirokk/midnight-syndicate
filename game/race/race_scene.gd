@@ -304,7 +304,6 @@ func _build_race() -> void:
 		_world.add_child(pursuit)
 		pursuit.setup(track, player, cars, race)
 		pursuit.busted.connect(_on_pursuit_busted)
-	Ambience.start(_world, config_used.track_scene)
 	if config_used.traffic_enabled and not dev_track_used:
 		var traffic := TrafficSystem.new()
 		traffic.name = "Traffic"

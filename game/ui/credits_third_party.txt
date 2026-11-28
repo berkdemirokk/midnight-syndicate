@@ -31,6 +31,4 @@
 "Town Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Italianate Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Second Empire Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
-"City Loop" by wipics (https://opengameart.org/content/city-loop-0), CC0 1.0 public domain. Used: city ambience.
-"Rain in Space" by Tsorthan Grove (https://opengameart.org/content/rain-in-space), CC0 1.0 public domain. Used: Maslak ambience.
 "Sirens and Alarm Noise" by aquinn (https://opengameart.org/content/sirens-and-alarm-noise), CC0 1.0 public domain. Used: police siren.
