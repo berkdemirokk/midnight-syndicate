@@ -80,6 +80,7 @@ for car, number in PLATES.items():
 # Pipeline cars (assets_src/pipeline/prepare_vehicle.py): one plate image per car, 512 x 128, read by the config.
 PIPELINE_PLATES = {"kestrel_vanta": "34 KV 517", "arden_havoc": "34 AH 208", "noctra_tayfun": "34 NT 077",
                    "noctra_meridian": "34 NM 364", "kestrel_marten": "34 KM 428", "bosfor_yildirim": "34 BY 001",
+                   "bosfor_kivilcim": "34 BK 113", "bosfor_serce": "34 BS 226", "arden_ramjet": "34 AR 552", "arden_shaker": "34 AS 719",
                    "noctra_sable": "34 MS 2026", "noctra_vela": "34 NV 707", "arden_bruiser": "06 AB 458",
                    "kestrel_gtr": "35 KG 382", "atmaca_modified": "34 VS 034"}
 PLATE_DIRS = {"atmaca_modified": "bosfor_atmaca"}  # cars whose asset folder is not named after the car id

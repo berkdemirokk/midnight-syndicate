@@ -1,0 +1,278 @@
+{
+ "car_id": "bosfor_serce",
+ "source": "assets_src/third_party/vinish_cars/incoming2/pocket-rocket-hatch.glb",
+ "lod0": {
+  "tris": 78139,
+  "tris_by_node": {
+   "body": 16288,
+   "brake_FL": 1236,
+   "brake_FR": 1236,
+   "brake_RL": 1236,
+   "brake_RR": 1236,
+   "col_body": 90,
+   "exhaust": 12634,
+   "glass": 3144,
+   "interior": 8919,
+   "lights_front": 1228,
+   "lights_rear": 1387,
+   "plate_rear": 4,
+   "trim": 9701,
+   "underbody": 1491,
+   "wheel_FL": 4577,
+   "wheel_FR": 4578,
+   "wheel_RL": 4577,
+   "wheel_RR": 4577
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 22,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 12,
+  "box": [
+   [
+    -0.9633165597915649,
+    -1.7981922626495361,
+    0.00022029876708984375
+   ],
+   [
+    0.9633165597915649,
+    1.795419454574585,
+    1.6355392932891846
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 2
+ },
+ "lod1": {
+  "tris": 21782,
+  "tris_by_node": {
+   "body": 4069,
+   "col_body": 90,
+   "exhaust": 264,
+   "glass": 627,
+   "interior": 4459,
+   "lights_front": 808,
+   "lights_rear": 693,
+   "trim": 7112,
+   "wheel_FL": 915,
+   "wheel_FR": 915,
+   "wheel_RL": 915,
+   "wheel_RR": 915
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 15,
+  "materials": [
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 9,
+  "box": [
+   [
+    -0.9630441069602966,
+    -1.7951635122299194,
+    -0.0020432770252227783
+   ],
+   [
+    0.9630441069602966,
+    1.7934834957122803,
+    1.6355392932891846
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
+ },
+ "lod2": {
+  "tris": 6177,
+  "tris_by_node": {
+   "body": 2238,
+   "col_body": 90,
+   "exhaust": 62,
+   "glass": 314,
+   "interior": 393,
+   "lights_rear": 165,
+   "trim": 1300,
+   "wheel_FL": 404,
+   "wheel_FR": 404,
+   "wheel_RL": 403,
+   "wheel_RR": 404
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 10,
+  "materials": [
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 7,
+  "box": [
+   [
+    -0.9564560055732727,
+    -1.7951635122299194,
+    -0.010676860809326172
+   ],
+   [
+    0.9564560055732727,
+    1.7934834957122803,
+    1.6355392932891846
+   ]
+  ],
+  "stray_verts_moved": {
+   "body": 4,
+   "interior": 30,
+   "trim": 34
+  },
+  "tail_pipes": 0
+ }
+}
