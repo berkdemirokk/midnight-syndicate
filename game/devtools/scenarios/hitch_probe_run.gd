@@ -165,7 +165,8 @@ func _run() -> void:
 	get_tree().quit(0)
 
 
-## Spike frames only (this scan costs time, so it runs after the frame was timed): the nearest visual nodes to the car.
+## Spike frames only: the nearest visual nodes to the car. Its cost lands in the NEXT measured frame (dt is taken at
+## the top of the loop), as does _poll_events() in every frame; treat frames right after a scanned spike as probe echo.
 func _log_nearby(scene: RaceScene, dt_ms: float) -> void:
 	var at: Vector3 = scene.player.global_position
 	var own: String = str(scene.player.get_path())
