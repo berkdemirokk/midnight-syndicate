@@ -156,6 +156,13 @@ Recipe: 4 per-wheel voices (`max_polyphony` 1), rolling vs sliding by slip ratio
 crossfade, pitch +8 % at high slip, gain clamped 0..1. No per-frame allocation.
 Test: monotonic sweep 0 to 1.5, silence under 0.2, ≤ 4 voices; 20 s mix peak ≤ 0.891.
 Evidence: `evidence/audio/race20_player_mix.wav` stats. Deps: none. (Bus limiter and ducking: lead, section 4.)
+Scope reduction (pending owner sign-off): no rolling layer and no three per-range layers. ArcadeCar exposes no
+longitudinal slip ratio, and three layers per wheel would need 12 voices, over the 4-voice budget. Slip ranges are
+one equal-power pitch crossfade on each wheel's voice (`tyre_audio.gd` header).
+OPEN: the 20 s peak criterion is not measured. `evidence/audio/race20_player_mix.wav` does not exist. A real-time
+capture of the Master bus (Dummy driver) came back silent, so the capture path is not yet proven. Also seen: the
+`Engine` bus that `Settings.ensure_audio_buses` creates printed an empty send, so the engine layers may not reach
+Master in the game (lead to check on a real run).
 
 **WP-A6 Perf card and warm-up.** Goal: the next iPhone session returns numbers; no first-use hitches.
 Files: new `game/ui/hud/perf_card.gd`, new `game/core/pipeline_warmup.gd`, the loading screen script (hook only),

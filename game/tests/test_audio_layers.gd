@@ -95,6 +95,8 @@ func test_tyre_range_weights_equal_power() -> void:
 	check(worst < 1e-4, "tyre range weights are not equal-power: error %f" % worst)
 
 
+## Mapping check only: it reads the pitch constants back through range_pitch(). It does not prove the audible
+## pitch; the render evidence (game/devtools/audio_mix20.gd) is the proof of the sound.
 func test_tyre_high_slip_pitch_is_8_percent_over_mid() -> void:
 	var ratio: float = TyreAudio.range_pitch(0.9) / TyreAudio.range_pitch(0.6)
 	metric("tyre_high_over_mid", snappedf(ratio, 0.0001))
