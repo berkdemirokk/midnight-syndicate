@@ -28,7 +28,7 @@ Status words: DONE (verified tonight or earlier with evidence), PARTIAL, MISSING
 | 21 | Persistent progression across restarts | PARTIAL | save v2, backup, PR #8 save safety; cross-process restart test to add |
 | 22 | Offline play | DONE | the game needs no network; online is opt-in |
 | 23 | Mobile performance | PARTIAL | budgets met on the dev PC; no phone number exists (B2) |
-| 24 | iOS build compiles | IN PROGRESS | tag ios-check-5 (build only, no upload) on the RC |
+| 24 | iOS build compiles | DONE | tag ios-check-5 on the RC (3b71618 + docs): GitHub Actions run 46086560575 success, build only, no upload |
 | 25 | Real-device test | BLOCKED | needs the owner's iPhone (B1/B2) |
 | 26 | App Store readiness | BLOCKED | needs device numbers, owner decisions (price, bundle id, age rating) and owner-only submission |
 | 27 | Race-start hitch | MISSING | warm-up attempt gave no measurable gain (START_HITCH.md) |
