@@ -66,10 +66,12 @@ func test_touch_reaches_lock_fast_at_every_speed() -> void:
 
 func test_keyboard_ramp_unchanged() -> void:
 	_rig()
+	var pinned: Dictionary = {60.0: 11, 200.0: 17}  # pre-WP-A1 numbers from PRODUCTION_PLAN.md WP-A1
 	for kmh: float in [60.0, 200.0]:
 		var got: int = _ticks_to_lock(kmh, false)
 		var want: int = _keyboard_reference_ticks(kmh)
 		metric("keyboard_ticks_%dkmh" % int(kmh), got)
 		check(got == want, "keyboard ticks to 90 %% lock at %d km/h = %d, expected %d" % [int(kmh), got, want])
+		check(got == int(pinned[kmh]), "keyboard ticks at %d km/h = %d, pinned %d" % [int(kmh), got, int(pinned[kmh])])
 	await cleanup(_nodes)
 	_nodes.clear()
