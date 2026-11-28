@@ -70,3 +70,60 @@ func test_engine_loops_registered_and_load() -> void:
 				check(AudioLib.FILES.has(id), "missing engine loop id " + str(id))
 				check(AudioLib.get_stream(id) != null, "engine loop does not load: " + str(id))
 				check(AudioLib.is_loop(id), "engine loop not flagged as loop: " + str(id))
+
+
+## Per-wheel tyre voices (audio/tyre_audio.gd): gain is monotonic and clamped, silent under slip 0.2, the range
+## crossfade keeps equal power, high slip is pitched +8 % over mid, and the player owns exactly 4 voices.
+func test_tyre_gain_monotone_and_silent_under_0_2() -> void:
+	var prev: float = -1.0
+	for k: int in 151:  # 0.00 .. 1.50
+		var slip: float = k * 0.01
+		var g: float = TyreAudio.sliding_gain(slip)
+		check(g >= prev, "tyre gain falls as slip rises at %f" % slip)
+		check(g >= 0.0 and g <= 1.0, "tyre gain outside 0..1 at %f: %f" % [slip, g])
+		if slip <= 0.2:
+			check(g == 0.0, "tyre audible at slip %f: %f" % [slip, g])
+		prev = g
+
+
+func test_tyre_range_weights_equal_power() -> void:
+	var worst: float = 0.0
+	for k: int in 151:
+		var w: Vector3 = TyreAudio.range_weights(k * 0.01)
+		worst = maxf(worst, absf(w.x * w.x + w.y * w.y + w.z * w.z - 1.0))
+	metric("tyre_range_power_error", worst)
+	check(worst < 1e-4, "tyre range weights are not equal-power: error %f" % worst)
+
+
+func test_tyre_high_slip_pitch_is_8_percent_over_mid() -> void:
+	var ratio: float = TyreAudio.range_pitch(0.9) / TyreAudio.range_pitch(0.6)
+	metric("tyre_high_over_mid", snappedf(ratio, 0.0001))
+	check(absf(ratio - 1.08) < 1e-3, "high slip pitch ratio %f, expected 1.08" % ratio)
+
+
+func test_player_has_four_tyre_voices_and_quiet_squeal() -> void:
+	var car := ArcadeCar.new()
+	add(car)
+	car.is_grounded = true
+	car.speed_kmh = 120.0
+	var ca := CarAudio.new()
+	car.add_child(ca)
+	check(ca.tyre != null, "player has no tyre voices")
+	if ca.tyre != null:
+		check(ca.tyre.players.size() == 4, "tyre voices %d, expected 4" % ca.tyre.players.size())
+		for p: AudioStreamPlayer3D in ca.tyre.players:
+			check(p.max_polyphony == 1, "tyre voice polyphony %d" % p.max_polyphony)
+	car.wheel_slip = PackedFloat32Array([0.2, 0.2, 0.2, 0.2])
+	for i: int in 40:
+		ca.update_audio(0.05)
+	if ca.tyre != null:
+		for w: int in 4:
+			check(ca.tyre.gain(w) == 0.0, "wheel %d audible at slip 0.2" % w)
+	car.wheel_slip = PackedFloat32Array([0.9, 0.9, 0.9, 0.9])
+	for i: int in 40:
+		ca.update_audio(0.05)
+	if ca.tyre != null:
+		for w: int in 4:
+			check(ca.tyre.gain(w) > 0.5, "wheel %d too quiet at slip 0.9: %f" % [w, ca.tyre.gain(w)])
+	check(not ca.squeal.playing, "single squeal loop still plays beside the wheel voices")
+	await cleanup([car])

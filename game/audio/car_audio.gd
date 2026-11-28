@@ -69,6 +69,7 @@ var _cool_turbo: float = 0.0
 var _cool_bov: float = 0.0
 var _pops: Array[float] = []  ## pending backfire times (seconds from now)
 var _rng := RandomNumberGenerator.new()
+var tyre: TyreAudio  ## player only: 4 per-wheel sliding voices; they replace the squeal loop's sound
 
 
 func _ready() -> void:
@@ -126,6 +127,8 @@ func _build() -> void:
 	squeal = _loop_player(&"tyre_squeal_loop", -80.0, near)
 	if is_player:
 		hiss = _loop_player(&"tyre_hiss_wet_loop", -80.0, true)
+		tyre = TyreAudio.new()
+		tyre.setup(AudioLib.get_stream(&"tyre_squeal_loop"), _make_player.bind(true))
 		nitro = _loop_player(&"nitro_loop", -80.0, true)
 		scrape = _loop_player(&"scrape_loop", -80.0, true)
 		for i: int in 4:
@@ -157,6 +160,8 @@ func _all_players() -> Array[AudioStreamPlayer3D]:
 			out.append(p)
 	out.append_array(_lv)
 	out.append_array(_shots)
+	if tyre != null:
+		out.append_array(tyre.players)
 	return out
 
 
@@ -386,6 +391,13 @@ func _update_tyres(delta: float) -> void:
 	_squeal_gain = move_toward(_squeal_gain, target, (6.0 if target > _squeal_gain else 4.0) * delta)
 	squeal.pitch_scale = 0.88 + 0.3 * slip + 0.15 * clampf(car.speed_kmh / 250.0, 0.0, 1.0)
 	var db: float = _db(_squeal_gain * 0.8) + (0.0 if is_player else OPPONENT_DB)
+	if tyre != null:
+		# Wheel voices carry the sound. The squeal loop stays silent; its level is still set for the tests.
+		tyre.update(car.wheel_slip, car.speed_kmh, car.is_grounded, delta)
+		squeal.volume_db = db if _squeal_gain > 0.005 else -80.0
+		if squeal.playing:
+			squeal.stop()
+		return
 	_set_loop(squeal, db if _squeal_gain > 0.005 else -80.0)
 
 
