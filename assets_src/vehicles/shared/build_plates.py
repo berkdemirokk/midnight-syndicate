@@ -83,7 +83,9 @@ PIPELINE_PLATES = {"kestrel_vanta": "34 KV 517", "arden_havoc": "34 AH 208", "no
                    "bosfor_kivilcim": "34 BK 113", "bosfor_serce": "34 BS 226", "arden_ramjet": "34 AR 552", "arden_shaker": "34 AS 719",
                    "noctra_sable": "34 MS 2026", "noctra_vela": "34 NV 707", "arden_bruiser": "06 AB 458",
                    "kestrel_gtr": "35 KG 382", "atmaca_modified": "34 VS 034",
-                   "noctra_volta": "34 NV 901", "noctra_sovereign": "34 NS 903", "noctra_titan": "34 NT 905"}
+                   "noctra_volta": "34 NV 901", "noctra_sovereign": "34 NS 903", "noctra_titan": "34 NT 905",
+                   "bosfor_kartal": "34 KR 141", "bosfor_lale": "34 BA 616", "bosfor_galata": "34 GT 304",
+                   "bosfor_moda": "34 MA 211", "bosfor_pera": "34 TR 459", "bosfor_sahil": "34 SH 528"}
 PLATE_DIRS = {"atmaca_modified": "bosfor_atmaca"}  # cars whose asset folder is not named after the car id
 for car, number in PIPELINE_PLATES.items():
     d = os.path.join(ROOT, "game", "assets", "vehicles", PLATE_DIRS.get(car, car))

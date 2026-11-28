@@ -42,6 +42,42 @@ const CARS: Array[Dictionary] = [
 		"axle": 1.30, "front_r": 0.325, "rear_r": 0.325, "wheelbase": 2.60,
 	},
 	{
+		"id": "bosfor_kartal", "scene": "res://vehicles/bosfor_kartal/bosfor_kartal.tscn",
+		"spec": "res://vehicles/specs/bosfor_kartal.tres", "name": "Bosfor Kartal",
+		"len": 4.835, "width": 1.728, "height": 1.332,  # source GLB bounding box (metres), boattail speedster
+		"axle": 1.550, "front_r": 0.37, "rear_r": 0.37, "wheelbase": 3.1,
+	},
+	{
+		"id": "bosfor_lale", "scene": "res://vehicles/bosfor_lale/bosfor_lale.tscn",
+		"spec": "res://vehicles/specs/bosfor_lale.tres", "name": "Bosfor Lale",
+		"len": 4.28, "width": 1.728, "height": 1.372,  # source GLB bounding box (metres), vintage roadster
+		"axle": 1.375, "front_r": 0.36, "rear_r": 0.36, "wheelbase": 2.75,
+	},
+	{
+		"id": "bosfor_galata", "scene": "res://vehicles/bosfor_galata/bosfor_galata.tscn",
+		"spec": "res://vehicles/specs/bosfor_galata.tres", "name": "Bosfor Galata",
+		"len": 4.73, "width": 1.74, "height": 1.69,  # source GLB bounding box (metres), vintage coupe
+		"axle": 1.420, "front_r": 0.36, "rear_r": 0.36, "wheelbase": 2.84,
+	},
+	{
+		"id": "bosfor_moda", "scene": "res://vehicles/bosfor_moda/bosfor_moda.tscn",
+		"spec": "res://vehicles/specs/bosfor_moda.tres", "name": "Bosfor Moda",
+		"len": 4.635, "width": 1.768, "height": 1.391,  # source GLB bounding box (metres), vintage convertible
+		"axle": 1.450, "front_r": 0.36, "rear_r": 0.36, "wheelbase": 2.9,
+	},
+	{
+		"id": "bosfor_pera", "scene": "res://vehicles/bosfor_pera/bosfor_pera.tscn",
+		"spec": "res://vehicles/specs/bosfor_pera.tres", "name": "Bosfor Pera",
+		"len": 4.234, "width": 1.708, "height": 1.5,  # source GLB bounding box (metres), touring car
+		"axle": 1.500, "front_r": 0.4, "rear_r": 0.4, "wheelbase": 3.0,
+	},
+	{
+		"id": "bosfor_sahil", "scene": "res://vehicles/bosfor_sahil/bosfor_sahil.tscn",
+		"spec": "res://vehicles/specs/bosfor_sahil.tres", "name": "Bosfor Sahil",
+		"len": 4.68, "width": 1.78, "height": 1.72,  # source GLB bounding box (metres), woodie wagon
+		"axle": 1.480, "front_r": 0.36, "rear_r": 0.36, "wheelbase": 2.96,
+	},
+	{
 		"id": "bosfor_serce", "scene": "res://vehicles/bosfor_serce/bosfor_serce.tscn",
 		"spec": "res://vehicles/specs/bosfor_serce.tres", "name": "Bosfor Serçe",
 		"len": 3.594, "width": 1.927, "height": 1.636,  # source GLB bounding box (metres), pocket-rocket-hatch.glb
@@ -130,7 +166,7 @@ const PAINT_TEST: Color = Color(0.0, 0.0, 1.0)
 const HERO_SPEC: String = "res://vehicles/specs/noctra_sable.tres"
 const PLAIN_CAR: String = "res://vehicles/bosfor_atmaca/atmaca_stock.tscn"  ## a project-made model: no vertex colours
 const LOD_BOX_MARGIN_M: float = 0.1  ## a far LOD may reach this far beyond the LOD0 box
-const NO_TAIL_ATLAS: PackedStringArray = ["noctra_vela", "kestrel_gtr", "bosfor_kivilcim"]  ## no tail_cell in their config: plain red glow
+const NO_TAIL_ATLAS: PackedStringArray = ["noctra_vela", "kestrel_gtr", "bosfor_kivilcim", "bosfor_kartal", "bosfor_lale", "bosfor_galata", "bosfor_moda", "bosfor_pera", "bosfor_sahil"]  ## no tail_cell in their config: plain red glow
 ## No pipe markers: the Kestrel GT is an electric car, and the Bruiser's side pipes are hidden from the chase camera.
 const NO_TAIL_PIPES: PackedStringArray = ["kestrel_gtr", "arden_bruiser", "bosfor_kivilcim"]
 const FLAME_MAX_HEIGHT_M: float = 0.6  ## above the road; the plate and the lamps sit higher

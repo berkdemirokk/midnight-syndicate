@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.012,
+  "luma_min": 0.0,
+  "name": "lod2",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 36,
+    "draw_calls_min": 36,
+    "driver": "vulkan",
+    "fps": 2382.087,
+    "frame_ms_avg": 0.42,
+    "frame_ms_p95": 0.435,
+    "frame_ms_p99": 0.444,
+    "frames": 60,
+    "objects": 36,
+    "os": "Windows",
+    "primitives": 3354,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 461.459,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetF/evidence/screens/car_studio_lale/lod2.png",
+  "preset": "high",
+  "scenario": "car_studio_lale"
+}
