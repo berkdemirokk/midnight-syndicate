@@ -183,6 +183,7 @@ static func config_for(id: String) -> RaceConfig:
 	c.rival_class = str(ev.get("cls", ""))
 	c.traffic_enabled = bool(ev.get("traffic", false))
 	c.time_of_day = str(ev.get("tod", "night"))
+	c.reverse_route = bool(ev.get("reverse", false))
 	c.pursuit = bool(ev.get("pursuit", false))
 	c.pursuit_event = c.pursuit
 	return c

@@ -28,6 +28,8 @@ var _tan: PackedVector3Array = PackedVector3Array()
 var _curv: PackedFloat32Array = PackedFloat32Array()  ## 1/m, positive = turning right
 var _speed: PackedFloat32Array = PackedFloat32Array()  ## m/s target speed profile
 var _grid: Array[Transform3D] = []
+var _reversed: bool = false  ## true while the line and grid run the other way (set_reversed)
+var _grid_forward: Array[Transform3D] = []  ## the grid in the authored direction, kept while reversed
 
 
 func _ready() -> void:
@@ -198,3 +200,54 @@ func _nearest_sample(p: Vector2, hint: float) -> int:
 			nearest_d2 = d2
 			nearest = i
 	return nearest
+
+
+## Runs the track the other way round (route variants, no new geometry): the racing line is flipped, the curvature
+## sign follows, the speed profile is rebuilt and each grid slot moves to the mirror position behind the start line
+## facing the new direction. Call after the Track is in the tree (its _ready has built the line). Idempotent.
+func set_reversed(on: bool) -> void:
+	if on == _reversed or _count == 0:
+		_reversed = on
+		return
+	if on:
+		_grid_forward = _grid.duplicate()
+		var mirrored: Array[Transform3D] = []
+		for xf: Transform3D in _grid:
+			mirrored.append(_mirror_slot(xf))
+		_grid = mirrored
+	else:
+		_grid = _grid_forward.duplicate()
+	_flip_line()
+	_reversed = on
+
+
+func is_reversed() -> bool:
+	return _reversed
+
+
+## Grid slot xf moved to the mirror position of the line (same distance from progress 0 on the other side, same
+## lateral position on the road) and turned to face the reversed tangent there.
+func _mirror_slot(xf: Transform3D) -> Transform3D:
+	var s: float = get_progress(xf.origin)
+	var lat: float = get_lateral_offset(xf.origin)
+	var d: float = fposmod(-s, length)  # distance behind the start line in the authored direction
+	var c: Vector3 = get_point_at(d)
+	var t: Vector3 = get_tangent_at(d)
+	var origin: Vector3 = c + Vector3(-t.z, 0.0, t.x) * lat
+	origin.y = c.y + (xf.origin.y - get_point_at(s).y)  # keep the slot's height above the line, not its absolute height
+	return Transform3D(Basis.looking_at(-t, Vector3.UP), origin)
+
+
+## Sample j takes the old sample (count - j) so index 0 stays on the start line; tangent and curvature flip sign.
+func _flip_line() -> void:
+	var old_pos: PackedVector3Array = _pos.duplicate()
+	var old_xz: PackedVector2Array = _xz.duplicate()
+	var old_tan: PackedVector3Array = _tan.duplicate()
+	var old_curv: PackedFloat32Array = _curv.duplicate()
+	for j: int in _count:
+		var src: int = (_count - j) % _count
+		_pos[j] = old_pos[src]
+		_xz[j] = old_xz[src]
+		_tan[j] = -old_tan[src]
+		_curv[j] = -old_curv[src]
+	_build_speed_profile()

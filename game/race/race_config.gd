@@ -47,6 +47,7 @@ const MODE_DRIFT: String = "drift"  ## timed solo run, scored by the drift chain
 const MODE_ELIMINATION: String = "elimination"  ## last car out at the end of each lap; laps = cars - 1
 @export var mode: String = MODE_RACE  ## MODE_RACE, MODE_DRIFT or MODE_ELIMINATION (see RaceManager)
 @export var time_limit_s: float = 0.0  ## drift: race time limit in seconds; 0 = not timed
+@export var reverse_route: bool = false  ## the track runs the other way: Track.set_reversed (grid and racing line mirrored)
 @export var pursuit_event: bool = false  ## set by an event that opts in (EventCatalog "pursuit": true); the gate accepts it without ENABLED
 
 

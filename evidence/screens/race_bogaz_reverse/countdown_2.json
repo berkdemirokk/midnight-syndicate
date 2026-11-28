@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "countdown_2",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 290,
+    "draw_calls_min": 204,
+    "driver": "vulkan",
+    "fps": 343.379,
+    "frame_ms_avg": 2.912,
+    "frame_ms_p95": 4.081,
+    "frame_ms_p99": 5.743,
+    "frames": 60,
+    "objects": 17292,
+    "os": "Windows",
+    "primitives": 300630,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 748.353,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-routes/evidence/screens/race_bogaz_reverse/countdown_2.png",
+  "preset": "high",
+  "scenario": "race_bogaz_reverse"
+}
