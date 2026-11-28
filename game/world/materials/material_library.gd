@@ -11,6 +11,7 @@ const MATERIAL_JSON: Array[String] = [
 	"res://assets/world/kits/buildings/materials.json",
 	"res://assets/world/kits/props/materials.json",
 	"res://assets/world/kits/istanbul/materials.json",
+	"res://assets/world/istanbul_bogaz/road/materials.json",
 ]
 const CC0_ROOT: String = "res://assets/textures/cc0/"
 const BUILDING_TEX: String = "res://assets/world/kits/buildings/textures/"
@@ -30,6 +31,7 @@ const CC0_SETS: Dictionary = {
 	"M_Paving": "concrete_pavers_02",
 	"M_Ground": "concrete_pavement_03",
 	"M_Concrete_Wall": "concrete_wall_006",
+	"M_Stone_Plinth": "sandstone_blocks_08",
 }
 const ASPHALT_SET: String = "asphalt_02"
 const WATER_TEX: String = "res://assets/world/water/"  ## tools/gen_water_textures.py
@@ -48,7 +50,7 @@ static var _debug: StandardMaterial3D
 ## True when the name has a recipe in one of the materials.json files.
 const WOOD_LIFT: float = 2.6  ## dark timber photo set times a dark tint rendered the wooden houses black
 ## Materials of the road GLB: its vertex colours carry asphalt shader data (wear, lanes), so they must not be read as AO.
-const ROAD_VERTEX_DATA: PackedStringArray = ["M_Asphalt", "M_Cobble", "M_Concrete_Wall", "M_Curb", "M_Grate", "M_Ground", "M_Manhole", "M_Paving", "M_Rail", "M_RoadPaint", "M_Water"]
+const ROAD_VERTEX_DATA: PackedStringArray = ["M_Asphalt", "M_Cobble", "M_Concrete_Wall", "M_Curb", "M_Grate", "M_Ground", "M_Manhole", "M_Paving", "M_Rail", "M_RoadPaint", "M_Stone_Plinth", "M_Water"]
 
 
 static func is_bound(mat_name: String) -> bool:

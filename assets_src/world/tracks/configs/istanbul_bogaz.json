@@ -94,6 +94,7 @@
     "helper": null,
     "road_w": 14.0,
     "edge_barrier": 0.55,
+    "edge_barrier_material": "M_Stone_Plinth",
     "narrow_w": 10.0,
     "narrow_cp": [
       7,

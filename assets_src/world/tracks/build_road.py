@@ -81,6 +81,8 @@ MAT_SPEC = {
                              uv="metres", note="deck expansion joints"),
     "M_Rail": dict(hex="#7C8290", rough=0.4, metal=0.8, emis=None, strength=0.0,
                    uv="metres", note="steel top rail on parapets"),
+    "M_Stone_Plinth": dict(hex="#B8A98F", rough=0.8, metal=0.0, emis=None, strength=0.0,
+                           uv="U across (m), V along (m)", note="cut-stone quay plinth (Bogaz edge barrier, config road.edge_barrier_material)"),
 }
 if RCFG.get("cobble_cp"):   # cobbled street surface (Istanbul tracks): the engine binds M_Cobble from the Istanbul kit
     MAT_SPEC["M_Cobble"] = dict(hex="#6B665F", rough=0.7, metal=0.0, emis=None, strength=0.0,
@@ -88,7 +90,7 @@ if RCFG.get("cobble_cp"):   # cobbled street surface (Istanbul tracks): the engi
 SLOTS = {
     "road": ["M_Asphalt", "M_Curb"] + (["M_Cobble"] if RCFG.get("cobble_cp") else []),
     "sidewalk": ["M_Paving", "M_Concrete_Wall"],
-    "structure": ["M_Concrete_Wall", "M_Rail", "M_TunnelLight", "M_TunnelStripe"],
+    "structure": ["M_Concrete_Wall", "M_Rail", "M_TunnelLight", "M_TunnelStripe", "M_Stone_Plinth"],
     "wall": ["M_Concrete_Wall"],
     "markings": ["M_RoadPaint", "M_ExpansionJoint"],
     "decals": ["M_Manhole", "M_Grate"],
@@ -567,6 +569,7 @@ def build_edge_barriers():
     h = float(RCFG.get("edge_barrier") or 0.0)
     if h <= 0.0:
         return
+    mat = SLOTS["structure"].index(RCFG["edge_barrier_material"]) if RCFG.get("edge_barrier_material") else 0
     for i in range(NS):
         if TUBE[i] or CUT[i]:
             continue
@@ -574,7 +577,7 @@ def build_edge_barriers():
         for s in (1, -1):
             extrude(bld("structure", k), [i], rect(
                 lambda kk, s=s: s * (WID[kk] / 2.0 + KERB_OUT + 0.25), lambda kk: 0.25,
-                cz(0.15), cz(0.15 + h), 0, "RTL", flip=(s < 0)))
+                cz(0.15), cz(0.15 + h), mat, "RTL", flip=(s < 0)))
 
 
 # ----------------------------------------------------------------- structures
