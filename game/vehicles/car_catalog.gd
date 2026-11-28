@@ -6,7 +6,7 @@ extends RefCounted
 
 const STARTER: String = "noctra_tayfun"
 const DEFAULT_CARS: Array[Dictionary] = [
-	# All eleven are CC BY 4.0 models, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival
+	# Every listed car is a CC BY 4.0 model, see THIRD_PARTY_LICENSES.md. "rival": true marks the cars that fill the rival
 	# grid: all but the Strix S (170 km/h) and the Vela (232 km/h). A rival drives its own spec, and a car slower than
 	# the track speed profile (Track.max_speed, 252 km/h) falls off the back of every grid, the final included.
 	{"id": "noctra_tayfun", "class": "street", "price": 0, "rep": 0, "rival": true},
