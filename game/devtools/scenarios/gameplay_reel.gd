@@ -6,7 +6,7 @@ extends "res://devtools/capture_scenario.gd"
 ##   godot --path game --audio-driver Dummy --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=gameplay_reel --track=bogaz --side --timeout=240
 ## Args (after --): --track=bogaz|city|maslak, --tod=night|day|sunset (default night), --fps=8, --seconds=20, --side (static camera 9 m beside the player's car
 ## at GO, so the field passes it; default is the chase camera).
-## Output: evidence/screens/gameplay_reel/<track>_<side|chase>/frame_NNNN.jpg + reel_meta.json, and one real PNG shot.
+## Output: evidence/screens/gameplay_reel/<track>_<side|chase>_<tod>/frame_NNNN.jpg + reel_meta.json, and one real PNG shot.
 
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const CAR_SCENE: String = "res://vehicles/noctra_sable/noctra_sable.tscn"
