@@ -8,26 +8,26 @@
   "name": "net_remote",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 248,
-    "draw_calls_min": 191,
+    "draw_calls": 250,
+    "draw_calls_min": 185,
     "driver": "vulkan",
-    "fps": 402.879,
-    "frame_ms_avg": 2.482,
-    "frame_ms_p95": 3.043,
-    "frame_ms_p99": 3.481,
+    "fps": 332.784,
+    "frame_ms_avg": 3.005,
+    "frame_ms_p95": 3.73,
+    "frame_ms_p99": 4.059,
     "frames": 60,
-    "objects": 18839,
+    "objects": 18861,
     "os": "Windows",
-    "primitives": 278150,
+    "primitives": 279069,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 744.892,
+    "video_mem_mb": 745.642,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-netpolish/evidence/screens/net_client/net_remote.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-lobby/evidence/screens/net_client/net_remote.png",
   "preset": "high",
   "scenario": "net_client"
 }

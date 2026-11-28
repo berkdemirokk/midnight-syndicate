@@ -1,12 +1,14 @@
 """In-game online check: 1 headless server + 1 headless client (devtools/net_smoke.gd) + 1 RENDERED game client
 (capture scenario net_client: the real RaceScene and NetRaceGlue path), all on 127.0.0.1.
 
-Usage: py -3.10 tools/net_ingame_check.py [--godot PATH] [--port 24611] [--laps 1]
+Usage: py -3.10 tools/net_ingame_check.py [--godot PATH] [--port 24611] [--laps 1] [--code ABCDEF]
+The join code is random per run unless --code is given; it is passed on the command line only, never logged.
 Writes logs to evidence/net_ingame/ and the shots to evidence/screens/net_client/. Exit 0 when the rendered
 client took all four shots and every process exited 0. Run it while no other heavy GPU job runs.
 """
 import argparse
 import os
+import secrets
 import subprocess
 import sys
 import time
@@ -14,6 +16,7 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GAME = os.path.join(ROOT, "game")
 OUT = os.path.join(ROOT, "evidence", "net_ingame")
+CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  ## same as NetConfig.CODE_ALPHABET
 DEFAULT_GODOT = r"C:\Users\berk\tools\godot\Godot_v4.7.2-stable_win64_console.exe"
 
 
@@ -22,7 +25,9 @@ def main() -> int:
     ap.add_argument("--godot", default=DEFAULT_GODOT)
     ap.add_argument("--port", type=int, default=24611)
     ap.add_argument("--laps", type=int, default=1)
+    ap.add_argument("--code", default="")
     a = ap.parse_args()
+    code = a.code.strip().upper() or "".join(secrets.choice(CODE_ALPHABET) for _ in range(6))
     os.makedirs(OUT, exist_ok=True)
     base = [a.godot, "--audio-driver", "Dummy", "--path", GAME]
     smoke = base[:1] + ["--headless"] + base[1:] + ["-s", "res://devtools/net_smoke.gd", "--"]
@@ -33,12 +38,12 @@ def main() -> int:
         logs[key] = open(os.path.join(OUT, key + ".log"), "w", encoding="utf-8", errors="replace")
         procs[key] = subprocess.Popen(args, stdout=logs[key], stderr=subprocess.STDOUT, cwd=ROOT)
 
-    start("server", smoke + ["--role=server", "--port=%d" % a.port, "--laps=%d" % a.laps])
+    start("server", smoke + ["--role=server", "--port=%d" % a.port, "--laps=%d" % a.laps, "--code=" + code])
     time.sleep(2.0)
-    start("client_headless", smoke + ["--role=client", "--port=%d" % a.port, "--name=Ada"])
+    start("client_headless", smoke + ["--role=client", "--port=%d" % a.port, "--name=Ada", "--code=" + code])
     start("client_rendered", base + ["--resolution", "1920x1080", "--position", "20000,0",
                                      "res://devtools/capture_boot.tscn", "--", "--capture=net_client",
-                                     "--port=%d" % a.port, "--name=Berk"])
+                                     "--port=%d" % a.port, "--name=Berk", "--code=" + code])
     deadline = time.time() + 420
     codes = {}
     while len(codes) < len(procs) and time.time() < deadline:

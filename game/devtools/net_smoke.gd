@@ -2,6 +2,7 @@ extends SceneTree
 ## Multi-process LAN smoke test for the online race (game/net). Start one server and two clients on 127.0.0.1:
 ##   godot --headless --path game -s res://devtools/net_smoke.gd -- --role=server --port=24590 --laps=1
 ##   godot --headless --path game -s res://devtools/net_smoke.gd -- --role=client --port=24590 --name=Ada
+## Both take the join code with --code=ABCDEF (the server hosts it, the clients send it).
 ## (tools/net_smoke.py starts all three and checks the logs. No --fixed-fps: the server clock must be wall time.)
 ## Clients are real game processes: each drives a real ArcadeCar with the racing AI (AIDriver, RaceConfig.autopilot
 ## style) on the development circuit and sends its car state at SNAP_HZ. The server validates, relays, and decides
@@ -20,6 +21,7 @@ var _role: String = "server"
 var _name: String = "Client"
 var _port: int = NetConfig.DEFAULT_PORT
 var _laps: int = 1
+var _code: String = ""  ## the join code: the server hosts it, the clients send it
 var _track: Track = null
 var _car: ArcadeCar = null
 var _ai: AIDriver = null
@@ -44,9 +46,11 @@ func _initialize() -> void:
 			_port = int(a.trim_prefix("--port="))
 		elif a.begins_with("--laps="):
 			_laps = int(a.trim_prefix("--laps="))
+		elif a.begins_with("--code="):
+			_code = a.trim_prefix("--code=")
 	_session = NetSession.get_or_create(self)
 	if _role == "server":
-		var err: String = _session.start_server(NetConfig.DEFAULT_BIND, _port, _laps)
+		var err: String = _session.start_server(NetConfig.DEFAULT_BIND, _port, _laps, NetConfig.TRACK_SCENE, _code)
 		if err != "":
 			print("[smoke] server failed: %s" % err)
 			quit(2)
@@ -54,7 +58,7 @@ func _initialize() -> void:
 		_session.server_results.connect(_on_server_results)
 		print("[smoke] server up on %s:%d" % [NetConfig.DEFAULT_BIND, _port])
 	else:
-		var err2: String = _session.connect_to_server(NetConfig.DEFAULT_BIND, _port, _name)
+		var err2: String = _session.connect_to_server(NetConfig.DEFAULT_BIND, _port, _name, _code)
 		if err2 != "":
 			print("[smoke] client failed: %s" % err2)
 			quit(2)

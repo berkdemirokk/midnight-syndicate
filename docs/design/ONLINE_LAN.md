@@ -7,6 +7,10 @@ Do not expose the PC to the internet with this build.
 ## How to switch it on
 - `game/net/net_config.gd`: `ENABLED = false` (default). Set it to true only for a deliberate test build.
 - Or start the game with `--experimental-online` (after the user arguments: `-- --experimental-online`).
+- Join code: the host gets a 6-character code (random, from 23 letters and 8 digits, no 0, O, 1, I, L) shown in the
+  lobby overlay. Joining needs the same code in the Code field. `--code=ABCDEF` on the host or the joiner sets it
+  (tests only; the code is then the same for every run that uses it). The code is checked on the server only and is
+  never sent to other clients or written to the logs.
 - With either, the main menu shows "Online (LAN, experimental)" (Turkish: "Online (LAN, deneysel)"). Without them the
   button does not exist. All menu and lobby text goes through I18n (keys `net.*` in `ui/i18n.gd`).
 - The server binds 127.0.0.1. A LAN address is accepted only when the game is started with `--address=<LAN IP>`;
@@ -14,8 +18,8 @@ Do not expose the PC to the internet with this build.
 
 ## Smoke test
 `py -3 tools/net_smoke.py` starts 1 server and 2 client Godot processes on 127.0.0.1 (headless, no GPU lock needed),
-waits for them, and checks the logs: join, ready, start, GO, server results with a finished car, per-client
-snapshots and exit codes. Exit code 0 only when every check passes. Output: `evidence/net_smoke/<run>/`
+waits for them, and checks the logs: a client with a wrong code is refused first (`wrong_code_refused`), then join, ready,
+start, GO, server results with a finished car, per-client snapshots and exit codes. The join code is random per run. Exit code 0 only when every check passes. Output: `evidence/net_smoke/<run>/`
 (server and client logs, `summary.json`). Options: `--godot`, `--port`, `--laps`, `--run`, `--timeout`.
 
 ## Files
@@ -28,10 +32,12 @@ snapshots and exit codes. Exit code 0 only when every check passes. Output: `evi
 | game/net/net_session.gd | ENetConnection transport (create_host_bound), lobby and relay, rate cap, ping/pong |
 | game/net/net_race_glue.gd | client: grid slot, shared countdown, 20 Hz state send, remote car interpolation, live standings, results screen |
 | game/net/net_track.gd | the allow-listed track scene for the server and every client (`NetConfig.TRACK_ALLOW`); null falls back to DevTrack |
-| game/net/net_lobby_menu.gd | lobby overlay: host, join, ready, back |
+| game/net/net_lobby_menu.gd | lobby overlay: host (shows the join code), join (code field), ready, back |
+| game/net/net_hello_limiter.gd | hello attempts per remote address: 5 per 10 s (wrong codes count) |
 | tools/net_smoke.py | launcher: 1 server + 2 clients, log checks, `evidence/net_smoke/<run>/summary.json` |
 | game/devtools/net_smoke.gd | the Godot side of the smoke test (server or client role) |
 | game/tests/test_net_protocol.gd, test_net_race.gd, test_net_polish.gd | in-process unit tests (track allow-list, order rows, order validation) |
+| game/tests/test_net_join.gd | join code format, right and wrong code, hello rate limit |
 
 Small hooks in existing code: `race/race_config.gd` (net_hold_grid), `race/race_scene.gd` (no AI opponents and no
 own countdown when net_hold_grid, `start_net_countdown()`, glue attach, local results skipped, retry does nothing
@@ -48,8 +54,11 @@ Packets above 64 KB are dropped.
 - State is unreliable (FLAG_UNSEQUENCED); hello, ready, lobby, start and results are reliable.
 
 ## Server rules
-- Hello: a different protocol version is rejected with the reason. Names 1 to 24 characters. Lobby full or a race
-  running: rejected.
+- Hello: every hello counts toward the rate limit of its address (5 per 10 s, right or wrong code). Then a different
+  protocol version is rejected with the reason, names of 1 to 24 characters are required, and the hello must carry the
+  host's join code (`code`, compared after trim and upper-case). Wrong code: rejected with reason "wrong join code"
+  and key `code`; too many attempts: key `rate`. The client shows its own TR/EN text for both keys. Lobby full or a
+  race running: rejected.
 - Track: the race runs on the Bosphorus track (`res://world/istanbul_bogaz/istanbul_bogaz.tscn`). The server loads that scene
   for its racing line and grid, and names it in the start message (`track`). A client loads only an allow-listed name from
   that message; a client that cannot race the named track (off the allow-list or missing,
@@ -92,6 +101,9 @@ Packets above 64 KB are dropped.
   client does not know its finish; it sends until the results arrive, and the server drops those states silently.
 
 ## Measured (this PC, headless, Godot 4.7.2, 127.0.0.1, not a real network)
+Join code run (lobby branch): `py -3.10 tools/net_smoke.py --run wp_lobby_1`, `evidence/net_smoke/wp_lobby_1/`. All 20
+checks passed, including the wrong-code refusal. Ada 1st (47.35 s, 2205 m), Bo 2nd (48.06 s). In-game check with the
+code: `py -3.10 tools/net_ingame_check.py --port 24631` under the GPU lock, exit 0, 4 shots, the server results match.
 Latest run on the Bosphorus track: `evidence/net_smoke/wp_netpolish_2/` (`summary.json`, logs). Command:
 `py -3.10 tools/net_smoke.py --run wp_netpolish_2`. All 20 checks passed. Ada 1st (47.31 s, 2205 m), Bo 2nd (48.06 s,
 2207 m), both finished, 0 rejected, 0 rate limited, 189 order messages seen by each client (4 Hz).

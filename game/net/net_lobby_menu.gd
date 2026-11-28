@@ -10,6 +10,7 @@ const DEFAULT_NAME: String = "Player"
 var _address: LineEdit
 var _port: LineEdit
 var _name: LineEdit
+var _code: LineEdit
 var _ready_btn: Button
 var _players: Label
 var _status: Label
@@ -36,6 +37,7 @@ func _ready() -> void:
 	_address.text_changed.connect(_on_address_changed)
 	_port = _field(box, I18n.t("net.port"), str(NetConfig.DEFAULT_PORT))
 	_name = _field(box, I18n.t("net.name"), DEFAULT_NAME)
+	_code = _field(box, I18n.t("net.code"), NetConfig.cmdline_value("code", ""))
 	var row := HBoxContainer.new()
 	row.add_child(_button(I18n.t("net.host"), _on_host))
 	row.add_child(_button(I18n.t("net.join"), _on_join))
@@ -93,11 +95,12 @@ func _refresh_buttons() -> void:
 
 func _on_host() -> void:
 	var laps: int = int(NetConfig.cmdline_value("laps", "1"))
-	var err: String = _session.start_server(_address.text.strip_edges(), int(_port.text), laps, NetConfig.TRACK_SCENE)
+	var err: String = _session.start_server(_address.text.strip_edges(), int(_port.text), laps, NetConfig.TRACK_SCENE, NetConfig.cmdline_value("code", ""))
 	if err != "":
 		_status.text = err
 		return
-	_status.text = I18n.t("net.hosting") % [_address.text, _port.text, laps]
+	_status.text = I18n.t("net.hosting") % [_address.text, _port.text, laps] + "
+" + I18n.t("net.join_code") % _session.join_code()
 	_refresh_buttons()
 
 
@@ -108,7 +111,11 @@ func _on_address_changed(text: String) -> void:
 
 
 func _on_join() -> void:
-	var err: String = _session.connect_to_server(_address.text.strip_edges(), int(_port.text), _name.text)
+	var code: String = NetProtocol.normalize_code(_code.text)
+	if not NetProtocol.code_valid(code):
+		_status.text = I18n.t("net.code_needed")
+		return
+	var err: String = _session.connect_to_server(_address.text.strip_edges(), int(_port.text), _name.text, code)
 	if err != "":
 		_status.text = err
 		return
@@ -140,7 +147,12 @@ func _on_welcomed(pid: int) -> void:
 
 
 func _on_rejected(reason: String) -> void:
-	_status.text = I18n.t("net.rejected") % reason
+	var shown: String = reason
+	if _session.last_reject_key == NetProtocol.REJECT_CODE:
+		shown = I18n.t("net.reject_code")
+	elif _session.last_reject_key == NetProtocol.REJECT_RATE:
+		shown = I18n.t("net.reject_rate")
+	_status.text = I18n.t("net.rejected") % shown
 	_ready_on = false
 	_refresh_buttons()
 
