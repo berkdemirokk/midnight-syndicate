@@ -26,6 +26,7 @@ var _audio_state: Dictionary = {}  ## NodePath -> bool playing
 var _light_state: Dictionary = {}  ## NodePath -> "visible|shadow"
 var _t0: int = 0
 var _armed: bool = false  ## true from countdown start; event logging on
+var _last_res: int = -1  ## OBJECT_RESOURCE_COUNT last frame: a jump is a Resource created (a load or a new material)
 
 
 func _ready() -> void:
@@ -159,6 +160,10 @@ func _run() -> void:
 		var spec: int = int(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_SPECIALIZATION))
 		var surf: int = int(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_SURFACE))
 		var draw: int = int(RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_DRAW))
+		var res_n: int = int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
+		if _armed and res_n != _last_res:
+			_log("resource", "count %d -> %d" % [_last_res, res_n])
+		_last_res = res_n
 		var vp: Viewport = get_viewport()
 		frames.append([snappedf(_now_ms(), 0.1), snappedf(dt_ms, 0.01),
 			snappedf(Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0, 0.01),
@@ -167,7 +172,7 @@ func _run() -> void:
 			int(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)),
 			spec, surf, draw, int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)),
 			snappedf(vp.scaling_3d_scale, 0.001), _added_this_frame, state,
-			_player_xz(scene)])
+			_player_xz(scene), res_n])
 		if dt_ms > 25.0 and _armed and scene.player != null:
 			_log_nearby(scene, dt_ms)
 		_added_this_frame = 0
@@ -212,7 +217,7 @@ func _write(cd_ms: float, go_ms: float, frames: Array, scene: RaceScene) -> void
 "adapter": RenderingServer.get_video_adapter_name(),
 		"no_mirror": _no_mirror, "no_lamps": _no_lamps, "no_rain": _no_rain, "countdown_ms": snappedf(cd_ms, 0.1), "go_ms": snappedf(go_ms, 0.1),
 		"frame_fields": ["t_ms", "dt_ms", "proc_ms", "phys_ms", "draws", "primitives", "spec_cum", "surf_cum",
-			"draw_cum", "nodes", "scale", "nodes_added", "race_state", "player_xz_speed"],
+			"draw_cum", "nodes", "scale", "nodes_added", "race_state", "player_xz_speed", "res_count"],
 		"frames": frames, "events": _events}
 	if _out_path.is_empty():
 		push_error("hitch_probe: --out=<absolute path> is required")
