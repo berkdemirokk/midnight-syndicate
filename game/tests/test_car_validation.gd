@@ -1,13 +1,15 @@
 extends "res://tests/test_case.gd"
 ## Car validation (2026-11-28): every shipped catalog car (CarCatalog.DEFAULT_CARS) has a loadable scene with LOD0-2
 ## and the required nodes, a spec with physical values in range, wheels whose centres sit at their spec radius on the
-## ground, rivals fast enough for the final track speed, and at most 20 visible mesh objects at LOD0.
+## ground, rivals fast enough for the final track speed, and at most 20 visible mesh nodes at LOD0.
+## Not the render budget: the studio perf JSON counts 39 objects/draw calls per car at LOD0 (over 20), a known FAIL
+## recorded in docs/design/CAR_VALIDATION_2026-11-28.md. This test only guards the node count against growth.
 
 const REQUIRED: PackedStringArray = [
 	"body", "glass", "trim", "interior", "underbody", "exhaust", "plate_rear", "lights_front", "lights_rear",
 	"wheel_FL", "wheel_FR", "wheel_RL", "wheel_RR", "brake_FL", "brake_FR", "brake_RL", "brake_RR", "col_body",
 ]
-const LOD0_OBJECTS_MAX: int = 20
+const LOD0_NODES_MAX: int = 20
 const WHEEL_Y_TOL_M: float = 0.03
 const TRACK_MAX_SPEED_KMH: float = 252.0  ## Track.max_speed: a rival slower than this falls off the grid
 
@@ -100,7 +102,7 @@ func test_every_car_wheels_sit_on_the_ground() -> void:
 		await cleanup([car])
 
 
-func test_every_car_lod0_stays_within_object_budget() -> void:
+func test_every_car_lod0_node_count_stays_within_20() -> void:
 	for id: String in _ids():
 		var car: Node3D = _spawn(id)
 		if car == null:
@@ -112,5 +114,5 @@ func test_every_car_lod0_stays_within_object_budget() -> void:
 			var surfaces: int = _visible_surfaces(lod0)
 			metric("%s_lod0_objects" % id, n)
 			metric("%s_lod0_surfaces" % id, surfaces)
-			check(n <= LOD0_OBJECTS_MAX, "%s: LOD0 has %d visible objects, budget %d" % [id, n, LOD0_OBJECTS_MAX])
+			check(n <= LOD0_NODES_MAX, "%s: LOD0 has %d visible mesh nodes, limit %d" % [id, n, LOD0_NODES_MAX])
 		await cleanup([car])
