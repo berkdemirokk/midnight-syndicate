@@ -83,6 +83,16 @@ func test_pause_button_emits_pause_pressed() -> void:
 	await cleanup([t])
 
 
+func test_pause_drops_held_touches() -> void:
+	var t: TouchControls = _touch_at(DESKTOP_VP, false)
+	t._touches[0] = 1  # STEER_LEFT held when the pause starts
+	t._touches[1] = 3  # BRAKE held
+	t._push()
+	t.notification(Node.NOTIFICATION_PAUSED)
+	check(t._touches.is_empty() and t._held_mask == 0, "touches held at pause stay stuck after resume")
+	await cleanup([t])
+
+
 func test_pause_menu_actions() -> void:
 	var pm: PauseMenu = add((load(PAUSE_PATH) as PackedScene).instantiate()) as PauseMenu
 	await frames(1)

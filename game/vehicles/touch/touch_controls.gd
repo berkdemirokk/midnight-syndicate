@@ -51,6 +51,8 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_on_viewport_resized)
 	_on_viewport_resized()
 
+
+## Emits to this driver from now on.
 func bind(driver: PlayerDriver) -> void:
 	_driver = driver
 	_push()
@@ -69,6 +71,13 @@ func get_pause_rect() -> Rect2:
 func _exit_tree() -> void:
 	_touches.clear()
 	_push()
+
+
+## A paused tree stops _input, so releases during the pause menu or in the background are lost: drop every held touch.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PAUSED:
+		_touches.clear()
+		_push()
 
 
 func _input(event: InputEvent) -> void:
