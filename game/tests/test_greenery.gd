@@ -171,3 +171,32 @@ func test_photo_trees_in_bogaz() -> void:
 	var nodes: Array[Node] = [track]
 	cleanup(nodes)
 	await frames(2)
+
+
+func _pow2(n: int) -> bool:
+	return n > 0 and (n & (n - 1)) == 0
+
+
+## Foliage diet: LOD0 leaf cells at most 512 px, LOD2 impostor cells at most 256 px, photo cells at most 512 px, all power of two.
+func test_atlas_sizes_power_of_two() -> void:
+	for sp: String in SPECIES:
+		var leaf: Texture2D = load(DIR + "leaf_%s.png" % sp) as Texture2D
+		check(leaf != null, "leaf texture missing for " + sp)
+		if leaf != null:
+			check(_pow2(leaf.get_width()) and _pow2(leaf.get_height()), "%s leaf atlas %dx%d not power of two" % [sp, leaf.get_width(), leaf.get_height()])
+			check(leaf.get_height() <= 512 and leaf.get_width() <= 1024, "%s leaf atlas %dx%d above 512 px per cell" % [sp, leaf.get_width(), leaf.get_height()])
+		var imp: Texture2D = load(DIR + "impostor_%s.png" % sp) as Texture2D
+		check(imp != null, "impostor texture missing for " + sp)
+		if imp != null:
+			metric("impostor_%s_px" % sp, "%dx%d" % [imp.get_width(), imp.get_height()])
+			check(_pow2(imp.get_width()) and _pow2(imp.get_height()), "%s impostor %dx%d not power of two" % [sp, imp.get_width(), imp.get_height()])
+			check(imp.get_height() <= 256 and imp.get_width() <= 512, "%s impostor %dx%d above 256 px per card" % [sp, imp.get_width(), imp.get_height()])
+	for sp: String in Greenery.PHOTO:
+		var cfg: Dictionary = Greenery.PHOTO[sp]
+		var tex: Texture2D = load(Greenery.PHOTO_DIR + cfg.tex) as Texture2D
+		if tex == null:
+			continue
+		var cell_w: int = int(tex.get_width() / int(cfg.halves))
+		metric("photo_%s_px" % sp, "%dx%d" % [cell_w, tex.get_height()])
+		check(_pow2(tex.get_width()) and _pow2(tex.get_height()), "%s photo atlas not power of two" % sp)
+		check(cell_w <= 512 and tex.get_height() <= 512, "%s photo cell %dx%d above 512 px" % [sp, cell_w, tex.get_height()])
