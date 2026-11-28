@@ -13,6 +13,7 @@ const VIOLET: Color = Color(0.706, 0.361, 1.0)  ## #B45CFF, the accent; CYAN is 
 const GEAR_RING_COL: Color = Color(0.06, 0.43, 0.49)  ## BORDER pre-blended (translucent chords bead)
 const TRACK_LEN_FALLBACK: float = 2200.0  ## metres, for captures and tests whose track has no length
 const GAP_MIN_MS: float = 8.0  ## gaps divide by at least this speed, so a stopped car does not blow them up
+const GOOD_COL: Color = Color(0.263, 1.0, 0.478)  ## lap delta ahead of the best lap (DANGER is behind it)
 
 ## Three pixel sizes only: every size is one more draw call per pass, so the whole HUD uses 80, 40 and 20.
 const BIG_PX: int = 80  ## position, speed, countdown
@@ -140,6 +141,8 @@ var _out_label: HudText  ## elimination: the car that just went out
 var _out_t: float = 0.0
 var _wrong_label: HudText
 var _finish_label: HudText
+var _best_label: HudText  ## best lap of the player, top right
+var _delta_label: HudText  ## live delta to the best lap: green ahead, red behind
 
 
 func _ready() -> void:
@@ -199,6 +202,8 @@ func _build_texts() -> void:
 	_pct = _text("digits", PCT_PX, MSTheme.TEXT, "% 0")
 	_clock = _text("digits", CLOCK_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
 	_lap_val = _text("digits", ROW_PX, MSTheme.MUTED, "1 / 1")
+	_best_label = _text("digits", ROW_PX, MSTheme.MUTED, "")
+	_delta_label = _text("digits", ROW_PX, MSTheme.TEXT, "")
 	_track_label = _text("digits", ROW_PX, MSTheme.TEXT, "")
 	_speed_label = _text("digits", SPEED_PX, MSTheme.TEXT, "0")
 	_unit_label = _text("digits", ROW_PX, MSTheme.MUTED, I18n.t("hud.kmh"))
@@ -258,9 +263,15 @@ func _paint(c: Control) -> void:
 	_pct.pos = Vector2(sz.x - _pct.width(), 0.0)
 	_clock.pos = Vector2(sz.x - _clock.width(), _pct.height() - pad * 0.5)
 	_lap_val.pos = Vector2(sz.x - _lap_val.width(), _clock.pos.y + _clock.height())
-	var tr_w: float = maxf(_pct.width(), maxf(_clock.width(), _lap_val.width()))
+	_best_label.pos = Vector2(sz.x - _best_label.width(), _lap_val.pos.y + _lap_val.height())
+	_delta_label.pos = Vector2(sz.x - _delta_label.width(), _best_label.pos.y + _best_label.height())
+	var tr_w: float = maxf(maxf(_pct.width(), maxf(_clock.width(), _lap_val.width())),
+		maxf(_best_label.width(), _delta_label.width()))
+	var tr_bottom: float = _lap_val.pos.y + _lap_val.height()
+	if _best_label.text != "":
+		tr_bottom = _delta_label.pos.y + _delta_label.height()  # best and delta rows only once a lap has a time
 	var tr_plate: Rect2 = Rect2(sz.x - tr_w - PLATE_PAD * 1.5, -PLATE_PAD * 0.5, tr_w + PLATE_PAD * 2.5,
-		_lap_val.pos.y + _lap_val.height() + PLATE_PAD * 0.5)
+		tr_bottom + PLATE_PAD * 0.5)
 
 	# Bottom left: round minimap, N marker on the rim.
 	var mm_c: Vector2 = Vector2(MM_PAD + MM_R, sz.y - MM_PAD - MM_R)
@@ -536,8 +547,37 @@ func _refresh_race() -> void:
 	var total: int = _online_rows.size() if not _online_rows.is_empty() else _race.get_car_count()
 	if _int_changed("car_count", total):
 		_set_text("position_total", _pos_total, I18n.t("hud.of") % total)
+	_refresh_lap_delta(timed)
 	_refresh_position()
 	_refresh_leaderboard()
+
+
+## Best lap, and the live delta to it: elapsed time minus the best lap's time at the same progress. Green is ahead.
+func _refresh_lap_delta(timed: bool) -> void:
+	var best: float = _race.get_best_lap_time(_car)
+	var elapsed: float = _race.get_current_lap_time(_car)
+	var best_text: String = ""
+	if not timed:
+		best_text = "%s  %s" % [I18n.t("hud.best"), fmt_time(best) if best > 0.0 else I18n.t("hud.no_time")]
+	_set_text("best", _best_label, best_text)
+	var delta_text: String = ""
+	var delta_col: Color = MSTheme.TEXT
+	if not timed and best > 0.0 and elapsed > 0.0:
+		var d: float = lap_delta(elapsed, best, fposmod(_race.get_lap_progress(_car), 1.0))
+		delta_text = fmt_delta(d)
+		delta_col = GOOD_COL if d < 0.0 else MSTheme.DANGER
+	_delta_label.color = delta_col
+	_set_text("delta", _delta_label, delta_text)
+
+
+## Seconds ahead (negative) or behind (positive) the best lap at this lap progress (0..1 within the lap).
+static func lap_delta(elapsed_s: float, best_s: float, lap_progress: float) -> float:
+	return elapsed_s - best_s * clampf(lap_progress, 0.0, 1.0)
+
+
+## Signed, two decimals: "-0.18", "+0.42".
+static func fmt_delta(d: float) -> String:
+	return "%s%.2f" % ["-" if d < 0.0 else "+", absf(d)]
 
 
 func _refresh_position() -> void:
