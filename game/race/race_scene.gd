@@ -172,6 +172,24 @@ func reset_player() -> void:
 	_last_s = s
 
 
+## Touch pause button: opens or closes the pause menu. Nothing pauses after the finish.
+func _on_touch_pause() -> void:
+	if pause_menu == null or race == null or race.state == RaceManager.State.FINISHED:
+		return
+	if pause_menu.is_paused_menu_open():
+		pause_menu.resume()
+	else:
+		pause_menu.pause()
+
+
+## Background or lost focus: the race pauses itself. Only the RESUME button resumes it.
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_APPLICATION_FOCUS_OUT and what != NOTIFICATION_APPLICATION_PAUSED and what != NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		return
+	if pause_menu != null and race != null and race.state != RaceManager.State.FINISHED and not pause_menu.is_paused_menu_open():
+		pause_menu.pause()
+
+
 ## Fresh race from the grid with the same config. Used by RETRY and by the pause menu's restart.
 func retry() -> void:
 	if config_used.net_hold_grid:
@@ -221,6 +239,8 @@ func _build_chrome() -> void:
 	pause_menu = (load(PAUSE_SCENE) as PackedScene).instantiate() as PauseMenu
 	_overlay.add_child(pause_menu)
 	pause_menu.restart_requested.connect(retry)
+	pause_menu.reset_requested.connect(reset_player)
+	pause_menu.set_keeps_running(config_used.net_hold_grid)
 	results_screen = (load(RESULTS_SCENE) as PackedScene).instantiate() as ResultsScreen
 	_overlay.add_child(results_screen)
 	results_screen.visible = false
@@ -544,6 +564,7 @@ func _setup_player_driver() -> void:
 		_touch = (load(TOUCH_SCENE) as PackedScene).instantiate()
 		hud.add_child(_touch)
 		(_touch as TouchControls).bind(pd)
+		(_touch as TouchControls).pause_pressed.connect(_on_touch_pause)
 
 
 ## Orbit over the grid, chase at GO. The chase camera follows the player only.

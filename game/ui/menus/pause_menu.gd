@@ -6,6 +6,7 @@ extends Control
 signal resumed
 signal restart_requested
 signal quit_requested
+signal reset_requested
 
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
@@ -24,6 +25,9 @@ var _restart_btn: Button
 var _settings_btn: Button
 var _quit_btn: Button
 var _settings: Node = null
+var _reset_btn: Button = null
+var _note: Label = null
+var _keeps_running: bool = false  ## online race: the clock does not stop
 var _text_nodes: Array = []
 
 
@@ -63,8 +67,15 @@ func _ready() -> void:
 	_resume_btn = _button("pause.resume", _on_resume)
 	_resume_btn.theme_type_variation = &"PrimaryButton"
 	_restart_btn = _button("pause.restart", _on_restart)
+	_reset_btn = _button("pause.reset", _on_reset)
 	_settings_btn = _button("pause.settings", _on_settings)
 	_quit_btn = _button("pause.quit", _on_quit)
+
+	_note = MSTheme.make_label("", "digits", MSTheme.px(20), MSTheme.MUTED)
+	_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_note.custom_minimum_size = Vector2(BUTTON_W, 0.0)
+	_note.visible = false
+	_column.add_child(_note)
 
 	visible = false
 	Settings.changed.connect(_on_settings_changed)
@@ -100,7 +111,7 @@ func pause() -> void:
 		return
 	_open = true
 	visible = true
-	get_tree().paused = true
+	get_tree().paused = not _keeps_running
 	MusicPlayer.get_instance().duck(-8.0)
 	_resume_btn.grab_focus()
 
@@ -117,6 +128,7 @@ func resume() -> void:
 
 func _refresh_text() -> void:
 	_title.text = I18n.t("pause.title")
+	_note.text = I18n.t("pause.online_note")
 	for pair: Array in _text_nodes:
 		(pair[0] as Button).text = I18n.t(pair[1])
 
@@ -124,6 +136,18 @@ func _refresh_text() -> void:
 func _on_settings_changed(section: String) -> void:
 	if section == Settings.SECTION_GENERAL:
 		_refresh_text()
+
+
+## Online race: the race keeps running under this menu, and restart is not possible (no new grid).
+func set_keeps_running(on: bool) -> void:
+	_keeps_running = on
+	_restart_btn.visible = not on
+	_note.visible = on
+
+
+func _on_reset() -> void:
+	resume()
+	reset_requested.emit()
 
 
 func _on_resume() -> void:
