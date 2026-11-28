@@ -256,3 +256,8 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - Not done: 30 cars (owner approval for downloads), car LOD0 draw calls 59 vs budget 20 per car (needs a mesh/material
   merge pass), real-device test, App Store submission, internet multiplayer, the ~40 s frame spike, human playtest of
   modes/economy, sound by ear. Full list: docs/status/MASTER_CHECKLIST.md.
+
+## WP-B6 Shader Baker (wp/b6baker)
+- Changed: `game/export_presets.cfg` iOS preset `shader_baker/enabled=true` (3c3720d4); new test `game/tests/test_export_shader_baker.gd` (a4008e03) checks the key is on for iOS and nowhere else.
+- Key confirmed as a string in the Godot 4.7.2 binary. Effect on first launch: not measured (headless export may skip the bake).
+- CI iOS compile check: OPEN, no run id (build-ios.yml runs on `ios-check-*` tags only; the worker did not push).
