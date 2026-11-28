@@ -82,6 +82,7 @@ const PLATE_PAD: float = 14.0  ## backing plates under every cluster: HUD text s
 const PHONE_HUD_SCALE: float = 1.4  ## 20 px labels are about 6 pt on an iPhone at the 1080 px base: scale the whole frame
 const POPUP_PAD_X: float = 24.0
 const OUT_SHOW_S: float = 2.5  ## elimination: the "out" line stays this long after a car leaves the race
+const ELIM_SHOW_S: float = 15.0  ## elimination: the countdown to the next car out shows inside this many seconds
 
 
 ## The single canvas item the HUD paints into.
@@ -138,6 +139,7 @@ var _drift_label: HudText
 var _bank_label: HudText
 var _mode_label: HudText  ## drift score and chain, or cars left
 var _out_label: HudText  ## elimination: the car that just went out
+var _elim_label: HudText  ## elimination: seconds until the last car is out
 var _out_t: float = 0.0
 var _wrong_label: HudText
 var _finish_label: HudText
@@ -216,11 +218,12 @@ func _build_texts() -> void:
 	_bank_label = _text("digits", BANK_PX, MSTheme.MAGENTA, "")
 	_mode_label = _text("digits", MID_PX, MSTheme.CYAN, "")
 	_out_label = _text("digits", FINISH_PX, MSTheme.DANGER, "")
+	_elim_label = _text("digits", MID_PX, MSTheme.AMBER, "")
 	_wrong_label = _text("digits", WRONG_PX, MSTheme.DANGER, I18n.t("hud.wrong_way"))
 	_finish_label = _text("digits", FINISH_PX, MSTheme.TEXT, I18n.t("hud.finished"))
 	_countdown = _text("digits", COUNTDOWN_PX, MSTheme.TEXT, "")
 	_countdown.scale = COUNTDOWN_BASE
-	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label, _mode_label, _out_label, _countdown]:
+	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label, _mode_label, _out_label, _elim_label, _countdown]:
 		t.visible = false
 	_texts.sort_custom(func(a: HudText, b: HudText) -> bool: return a.size_px < b.size_px)
 
@@ -293,7 +296,7 @@ func _paint(c: Control) -> void:
 
 	# Centre column: drift popup, bank flash, wrong-way and finish text stack under the top strip.
 	var cy: float = CENTRE_TOP_PX
-	for t: HudText in [_mode_label, _drift_label, _out_label, _bank_label, _wrong_label, _finish_label]:
+	for t: HudText in [_mode_label, _elim_label, _drift_label, _out_label, _bank_label, _wrong_label, _finish_label]:
 		if t.visible:
 			t.pos = Vector2((sz.x - t.width()) * 0.5, cy)
 			cy += t.height() + pad * 2.0
@@ -308,7 +311,7 @@ func _paint(c: Control) -> void:
 	if _me_row >= 0:
 		var y: float = lb_top + float(_me_row) * LB_ROW_H
 		_paint_skew_fill(c, Rect2(0.0, y, LB_W, LB_ROW_H - 4.0), MSTheme.tint(VIOLET, 0.9))
-	for t: HudText in [_mode_label, _drift_label, _out_label, _bank_label, _wrong_label, _finish_label]:
+	for t: HudText in [_mode_label, _elim_label, _drift_label, _out_label, _bank_label, _wrong_label, _finish_label]:
 		if t.visible and t.text != "":
 			_paint_skew_fill(c, Rect2(t.pos.x - POPUP_PAD_X, t.pos.y, t.width() + POPUP_PAD_X * 2.0, t.height()),
 				MSTheme.tint(MSTheme.PLATE_BG, MSTheme.PLATE_BG.a * t.modulate.a))
@@ -563,7 +566,7 @@ func _refresh_lap_delta(timed: bool) -> void:
 	var delta_text: String = ""
 	var delta_col: Color = MSTheme.TEXT
 	if not timed and best > 0.0 and elapsed > 0.0:
-		var d: float = lap_delta(elapsed, best, fposmod(_race.get_lap_progress(_car), 1.0))
+		var d: float = lap_delta(elapsed, best, _race.get_lap_progress(_car))  # already clamped 0..1: no wrap at the line
 		delta_text = fmt_delta(d)
 		delta_col = GOOD_COL if d < 0.0 else MSTheme.DANGER
 	_delta_label.color = delta_col
@@ -661,10 +664,38 @@ func _refresh_mode(delta: float) -> void:
 	elif mode == RaceConfig.MODE_ELIMINATION:
 		_set_text("mode", _mode_label, I18n.t("hud.cars_left") % [_race.active_count(), _race.get_car_count()])
 		_mode_label.visible = true
+		_refresh_elim_eta()
 	else:
 		_mode_label.visible = false
+		_elim_label.visible = false
 	_out_t = maxf(_out_t - delta, 0.0)
 	_out_label.visible = _out_t > 0.0
+
+
+## Elimination: the last car across its line is out. Estimate of seconds until that: the trailing car's distance to
+## the next line over its speed. Hidden when more than ELIM_SHOW_S away or when one car is left.
+func _refresh_elim_eta() -> void:
+	var eta: float = -1.0
+	if _race.active_count() > 1:
+		var trailing: Dictionary = {}
+		for row: Dictionary in _race.get_standings():
+			if _race.is_eliminated(row["car"]):
+				continue
+			if trailing.is_empty() or float(row["distance"]) < float(trailing["distance"]):
+				trailing = row
+		if not trailing.is_empty():
+			var out_count: int = _race.get_car_count() - _race.active_count()
+			eta = elim_eta_s(float(trailing["distance"]), _track_length(), out_count, (trailing["car"] as ArcadeCar).forward_speed)
+	var show: bool = eta >= 0.0 and eta <= ELIM_SHOW_S
+	if show:
+		_set_text("elim", _elim_label, I18n.t("hud.elim_in") % ceili(eta))
+	_elim_label.visible = show
+
+
+## Seconds until the trailing car reaches line (out_count + 1) * lap_m, at speed_ms (floored at GAP_MIN_MS).
+static func elim_eta_s(trailing_m: float, lap_m: float, out_count: int, speed_ms: float) -> float:
+	var remaining: float = float(out_count + 1) * lap_m - trailing_m
+	return maxf(remaining, 0.0) / maxf(speed_ms, GAP_MIN_MS)
 
 
 func _on_car_eliminated(_car_out: ArcadeCar, place: int) -> void:
