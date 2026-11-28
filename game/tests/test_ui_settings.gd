@@ -151,16 +151,41 @@ func test_touch_targets_are_88_px_and_132_on_phone() -> void:
 		MSTheme.set_phone(phone)
 		var menu: SettingsMenu = add(load(SCENE).instantiate()) as SettingsMenu
 		await frames(2)
-		var targets: Array = []
-		_targets(menu, targets)
-		check(targets.size() >= MIN_TARGETS, "only %d touch targets found" % targets.size())
 		var want: float = MSTheme.px(TARGET_PX)
-		for t: Node in targets:
-			var h: float = (t as Control).custom_minimum_size.y
-			check(h >= want - 0.5, "%s target %.0f px, want %.0f (phone=%s)" % [t.get_class(), h, want, str(phone)])
-		metric("targets_phone" if phone else "targets_desktop", targets.size())
+		var seen: Array = []
+		for i: int in TAB_COUNT:
+			menu.show_tab(i)
+			await frames(2)
+			var targets: Array = []
+			_targets(menu, targets)
+			for t: Node in targets:
+				var c: Control = t as Control
+				if not c.is_visible_in_tree() or seen.has(c):
+					continue
+				seen.append(c)
+				check(c.custom_minimum_size.y >= want - 0.5, "%s minimum %.0f px, want %.0f (phone=%s)" % [c.get_class(), c.custom_minimum_size.y, want, str(phone)])
+				check(c.size.y >= want - 0.5, "%s rendered %.0f px, want %.0f (tab %d, phone=%s)" % [c.get_class(), c.size.y, want, i, str(phone)])
+		check(seen.size() >= MIN_TARGETS, "only %d touch targets found" % seen.size())
+		metric("targets_phone" if phone else "targets_desktop", seen.size())
 		await cleanup([menu])
 	MSTheme.set_phone(false)
+
+
+## Every text key the screen uses has a TR and an EN entry, so no label falls back to the raw key.
+func test_settings_text_has_tr_and_en() -> void:
+	var menu: SettingsMenu = add(load(SCENE).instantiate()) as SettingsMenu
+	await frames(2)
+	var keys: Array = []
+	for node: Object in menu.get("_texts"):
+		keys.append(menu.get("_texts")[node])
+	for opt: Object in menu.get("_options"):
+		keys.append_array(menu.get("_options")[opt])
+	keys.append_array(SettingsMenu.PRESET_DESC_KEYS)
+	check(keys.size() > 20, "settings screen uses only %d text keys" % keys.size())
+	for key: String in keys:
+		var entry: Dictionary = I18n.DICT.get(key, {})
+		check(entry.has("tr") and entry.has("en"), "text key %s missing TR or EN" % key)
+	await cleanup([menu])
 
 
 func test_credits_panel_shows_the_credits_file() -> void:
