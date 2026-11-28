@@ -11,6 +11,8 @@ const SECTION_GENERAL: String = "general"
 const PRESET_IDS: PackedStringArray = ["low", "medium", "high"]
 const STEERING_MODES: PackedStringArray = ["buttons", "tilt"]
 const LANGUAGES: PackedStringArray = ["tr", "en"]
+## Frame rate caps offered in the settings screen (Engine.max_fps).
+const FPS_CAPS: PackedInt32Array = [30, 60]
 ## Settings key -> AudioServer bus name. Missing buses are created at startup.
 const AUDIO_BUSES: Dictionary = {"master": "Master", "music": "Music", "sfx": "SFX", "engine": "Engine", "ui": "UI"}
 const DEFAULT_VOLUMES: Dictionary = {"master": 1.0, "music": 0.8, "sfx": 1.0, "engine": 1.0, "ui": 1.0}
@@ -39,6 +41,7 @@ var _presets: Dictionary = {}
 var _preset_id: String = "medium"
 var _dynamic_resolution: bool = false
 var _scale: float = 0.85
+var fps_cap: int = 60
 var _since_step: float = 0.0
 var _volumes: Dictionary = {}
 var _viewport: Viewport = null
@@ -55,6 +58,7 @@ func _init() -> void:
 func _ready() -> void:
 	ensure_audio_buses()
 	load_settings()
+	Engine.max_fps = fps_cap
 	for key: String in AUDIO_BUSES:
 		_apply_bus(key)
 	_apply_renderer()
@@ -82,6 +86,20 @@ func get_render_scale() -> float:
 
 func get_dynamic_resolution() -> bool:
 	return _dynamic_resolution
+
+
+func get_fps_cap() -> int:
+	return fps_cap
+
+
+## Caps the frame rate through Engine.max_fps. Only values in FPS_CAPS are accepted.
+func set_fps_cap(fps: int) -> bool:
+	if not FPS_CAPS.has(fps):
+		return false
+	fps_cap = fps
+	Engine.max_fps = fps
+	_changed(SECTION_GRAPHICS)
+	return true
 
 
 func set_preset(id: String) -> bool:
@@ -242,6 +260,7 @@ func save_settings() -> bool:
 	var cfg := ConfigFile.new()
 	cfg.set_value(SECTION_GRAPHICS, "preset", _preset_id)
 	cfg.set_value(SECTION_GRAPHICS, "dynamic_resolution", _dynamic_resolution)
+	cfg.set_value(SECTION_GRAPHICS, "fps_cap", fps_cap)
 	for key: String in AUDIO_BUSES:
 		cfg.set_value(SECTION_AUDIO, key, _volumes[key])
 	cfg.set_value(SECTION_CONTROLS, "steering_mode", steering_mode)
@@ -263,6 +282,7 @@ func load_settings() -> bool:
 	_loading = true
 	set_preset(_read_string(cfg, SECTION_GRAPHICS, "preset", _preset_id, PRESET_IDS))
 	set_dynamic_resolution(_read_bool(cfg, SECTION_GRAPHICS, "dynamic_resolution", _dynamic_resolution))
+	set_fps_cap(_read_fps(cfg))
 	for key: String in AUDIO_BUSES:
 		_volumes[key] = _read_float(cfg, SECTION_AUDIO, key, _volumes[key], 0.0, 1.0)
 		_apply_bus(key)
@@ -275,6 +295,13 @@ func load_settings() -> bool:
 	for section: String in [SECTION_GRAPHICS, SECTION_AUDIO, SECTION_CONTROLS, SECTION_GENERAL]:
 		changed.emit(section)
 	return true
+
+
+func _read_fps(cfg: ConfigFile) -> int:
+	var v: Variant = cfg.get_value(SECTION_GRAPHICS, "fps_cap", fps_cap)
+	if (v is int or v is float) and FPS_CAPS.has(int(v)):
+		return int(v)
+	return fps_cap
 
 
 func _read_bool(cfg: ConfigFile, section: String, key: String, fallback: bool) -> bool:
