@@ -19,6 +19,7 @@ const LANG_BTN_W: float = 300.0
 const LANG_KEYS: Dictionary = {"tr": "settings.lang_tr", "en": "settings.lang_en"}
 
 var store: Node = null
+var nav: Callable = Router.goto  ## scene change; tests swap in a recorder so the runner scene stays
 var step: int = STEP_LANGUAGE
 
 var _backdrop: MenuBackdrop
@@ -130,7 +131,7 @@ func _on_next() -> void:
 func _start_first_race() -> void:
 	var gs: Node = store if store != null else GameState
 	gs.set_onboarded()
-	Router.goto(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(FIRST_EVENT)})
+	nav.call(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(FIRST_EVENT)})
 
 
 func _refresh_text() -> void:

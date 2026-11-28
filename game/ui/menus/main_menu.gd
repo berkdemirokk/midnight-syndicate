@@ -29,6 +29,7 @@ var _backdrop: MenuBackdrop
 var _race_btn: Button
 var _garage_btn: Button
 var _records_btn: Button
+var nav: Callable = Router.goto  ## scene change; tests swap in a recorder so the runner scene stays
 var _settings_btn: Button
 var _quit_btn: Button
 var _tagline: Label
@@ -71,7 +72,7 @@ func _ready() -> void:
 ## Only the menu that is the running scene does this, so a menu loaded by a test or capture stays put.
 func _maybe_onboard() -> void:
 	if get_tree().current_scene == self and not GameState.is_onboarded():
-		Router.goto(ONBOARDING_SCENE)
+		nav.call(ONBOARDING_SCENE, {})
 
 
 func _build_foreground() -> void:
@@ -269,7 +270,7 @@ func _on_quit() -> void:
 ## Opens a scene through Router when it exists. Missing scenes show a short toast instead.
 func _open(path: String) -> void:
 	if ResourceLoader.exists(path):
-		Router.goto(path)
+		nav.call(path, {})
 	else:
 		_show_toast(I18n.t("menu.coming_soon"))
 

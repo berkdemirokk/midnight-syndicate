@@ -76,6 +76,10 @@ func test_records_screen_rows_and_values() -> void:
 	check(RecordsScreen.best_text(RACE, gs.career_record(RACE)) == RaceHUD.fmt_time(61.24), "race row shows the best time")
 	check(RecordsScreen.best_text(DRIFT, gs.career_record(DRIFT)).find("1250") >= 0, "drift row shows the best score")
 	check(RecordsScreen.best_text("wharf_sprint", {}) == I18n.t("records.none"), "an unplayed event shows the empty value")
+	var calls: Array = []
+	screen.nav = func(scene: String, _params: Dictionary) -> void: calls.append(scene)
+	screen._back_btn.pressed.emit()
+	check(calls == [RecordsScreen.MENU_SCENE], "BACK returns to the main menu")
 	await cleanup([screen as Node])
 	gs.free()
 	_wipe(path)

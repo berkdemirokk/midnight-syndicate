@@ -77,6 +77,20 @@ func test_onboarding_screen_steps_and_language() -> void:
 	screen.set_step(OnboardingScreen.STEP_LANGUAGE)
 	check(screen._touch == null, "leaving the second step removes the touch layout")
 	metric("default_language", Settings.language)
+	# The real buttons: language, CONTINUE, START (scene change recorded, not performed).
+	var calls: Array = []
+	screen.nav = func(scene: String, params: Dictionary) -> void: calls.append([scene, params])
+	(screen._lang_btns["en"] as Button).pressed.emit()
+	check(Settings.language == "en", "the EN button switches the language")
+	(screen._lang_btns["tr"] as Button).pressed.emit()
+	check(Settings.language == "tr", "the TR button switches the language")
+	screen._next_btn.pressed.emit()
+	check(screen.step == OnboardingScreen.STEP_CONTROLS and calls.is_empty(), "CONTINUE opens the controls step")
+	screen._next_btn.pressed.emit()
+	check(gs.is_onboarded(), "START saves onboarding as done")
+	check(calls.size() == 1 and calls[0][0] == OnboardingScreen.RACE_SCENE, "START goes to the race scene")
+	var cfg: RaceConfig = (calls[0][1] as Dictionary).get(RaceScene.CONFIG_PARAM) if calls.size() == 1 else null
+	check(cfg != null and cfg.event_id == FIRST_RACE, "START opens Ortakoy Night")
 	await cleanup([screen as Node])
 	gs.free()
 	_wipe(path)
@@ -102,7 +116,10 @@ func test_hints_show_once_in_first_race() -> void:
 	check(not h.is_showing() and h.current_step() == 1, "the steer hint ends and the nitro hint waits")
 	h._process(OnboardingHints.GAP_S + 0.1)
 	check(h.is_showing() and h.current_step() == 1, "the nitro hint shows after the gap")
-	h._finish()
+	h._ok.pressed.emit()
+	check(not h.is_showing() and h.current_step() == 2, "OK dismisses the nitro hint")
+	check(gs.hints_done(), "the set is saved as done once a hint has shown (quitting mid-race keeps it done)")
+	h._skip.pressed.emit()
 	check(h.is_done(), "skipping ends the set")
 	check(gs.hints_done(), "the set is saved as done")
 	check(OnboardingHints.attach(parent, EventCatalog.config_for(FIRST_RACE), null, gs) == null, "hints never come back")
@@ -128,4 +145,30 @@ func test_hints_end_when_results_show() -> void:
 	check(h.is_done() and gs.hints_done(), "the results screen ends the hints and saves it")
 	await cleanup([parent])
 	gs.free()
+	_wipe(path)
+
+
+func test_main_menu_first_launch_redirect_and_records_button() -> void:
+	var old: Dictionary = {"path": GameState.save_path, "profile": GameState.profile.duplicate(true)}
+	var path := _path("menu")
+	_wipe(path)
+	GameState.open_profile(path)  # fresh: no save file yet
+	var menu: Node = (load("res://ui/menus/main_menu.tscn") as PackedScene).instantiate()
+	var calls: Array = []
+	menu.set("nav", func(scene: String, _params: Dictionary) -> void: calls.append(scene))
+	var prev: Node = tree.current_scene
+	add(menu)
+	tree.current_scene = menu  # the redirect only fires for the running scene
+	await frames(3)
+	check(calls == ["res://ui/menus/onboarding.tscn"], "a fresh profile is sent to onboarding once")
+	calls.clear()
+	GameState.set_onboarded()
+	menu.call("_maybe_onboard")
+	check(calls.is_empty(), "an onboarded profile stays on the menu")
+	(menu.get("_records_btn") as Button).pressed.emit()
+	check(calls == ["res://ui/menus/records_screen.tscn"], "the RECORDS button opens the records screen")
+	tree.current_scene = prev
+	await cleanup([menu])
+	GameState.save_path = str(old["path"])
+	GameState.profile = old["profile"]
 	_wipe(path)

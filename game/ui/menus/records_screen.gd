@@ -19,6 +19,7 @@ const ROW_GAP_PX: int = 6
 const MAX_STARS: int = 3
 
 var store: Node = null
+var nav: Callable = Router.goto  ## scene change; tests swap in a recorder so the runner scene stays
 
 var _col: VBoxContainer
 var _list: VBoxContainer
@@ -138,4 +139,4 @@ func _cell(text: String, w: float, px: int, col: Color, kind: String) -> Label:
 
 
 func _on_back() -> void:
-	Router.goto(MENU_SCENE)
+	nav.call(MENU_SCENE, {})

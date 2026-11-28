@@ -2,11 +2,11 @@ class_name OnboardingHints
 extends CanvasLayer
 ## Three one-time hints in the first career race (Ortakoy Night) for a player who just finished onboarding.
 ## Steer, nitro, drift: each shows for HINT_S seconds or until OK, then the next one. SKIP or the end of the set
-## (or the results screen) marks GameState hints_done, so they never come back. attach() does nothing for any other
+## (or the results screen) ends the set. GameState hints_done is saved when the first hint shows, so they never come back. attach() does nothing for any other
 ## race, before onboarding, or once the hints are done. Pauses with the race because it runs in the race tree.
 
 const EVENT_ID: String = "ortakoy_night"
-const FIRST_DELAY_S: float = 4.0  ## the grid intro and countdown run first
+const FIRST_DELAY_S: float = 6.0  ## after the grid beat (1.5 s) and the 3 s countdown, plus a moment of driving
 const HINT_S: float = 7.0
 const GAP_S: float = 1.5
 const LAYER: int = 15
@@ -115,6 +115,8 @@ func _show() -> void:
 	_showing = true
 	_hold_s = HINT_S
 	_panel.visible = true
+	# Saved on the first hint, so quitting mid-race never brings the set back (show once).
+	_store.mark_hints_done()
 
 
 ## Hides the current hint and moves on. After the last one the set is finished.
