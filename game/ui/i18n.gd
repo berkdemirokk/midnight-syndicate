@@ -293,6 +293,7 @@ const DICT: Dictionary = {
 	"chapter.2.name": {"tr": "Bölüm 2: Finaller ve Boğaz", "en": "Chapter 2: Finals and the Bosphorus"},
 	"chapter.3.name": {"tr": "Bölüm 3: Maslak ve Boğaz Turu", "en": "Chapter 3: Maslak and the Bosphorus Tour"},
 	"chapter.4.name": {"tr": "Bölüm 4: İstanbul Finalleri", "en": "Chapter 4: Istanbul Finals"},
+	"chapter.0.name": {"tr": "Modlar ve Kovalama", "en": "Modes and Pursuit"},
 	"event.boss": {"tr": "PATRON DÜELLO", "en": "BOSS DUEL"},
 }
 

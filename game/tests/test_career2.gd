@@ -71,12 +71,22 @@ func test_chapters_and_bosses() -> void:
 	for ch: int in [1, 2, 3, 4]:
 		check(boss_of.get(ch, "") == last_of.get(ch, "?"), "chapter %d ends with its boss" % ch)
 		check(I18n.t("chapter.%d.name" % ch) != "chapter.%d.name" % ch, "chapter %d has a name" % ch)
-		var prev_chapter: int = EventCatalog.chapter_of(EventCatalog.previous_id(boss_of[ch])) if ch == 1 else ch - 1
 		if ch > 1:
 			check(EventCatalog.chapter_of(EventCatalog.id_at(EventCatalog.index_of(last_of[ch - 1]) + 1)) == ch, "chapters %d and %d are contiguous" % [ch - 1, ch])
 	for ch: int in [1, 2, 3]:
 		check((EventCatalog.find(boss_of[ch])["skills"] as Array).size() == 1, "boss of chapter %d is a one-rival duel" % ch)
 	check(I18n.t("event.boss") != "event.boss", "boss tag has text")
+
+
+func test_chapter_headers_in_select() -> void:
+	var starts: Array[int] = []
+	for i: int in EventCatalog.count():
+		if EventSelect.is_chapter_start(i):
+			starts.append(i)
+	check(starts == [0, 5, 13, 21, 30], "headers at chapters 1-4 and the tail, got %s" % str(starts))
+	for i: int in starts:
+		var key: String = EventCatalog.chapter_name_key(EventCatalog.chapter_of(EventCatalog.id_at(i)))
+		check(I18n.t(key) != key, "header %d has text" % i)
 
 
 func test_reverse_names_in_both_languages() -> void:
