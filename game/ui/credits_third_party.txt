@@ -33,8 +33,4 @@
 "Second Empire Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "City Loop" by wipics (https://opengameart.org/content/city-loop-0), CC0 1.0 public domain. Used: city ambience.
 "Rain in Space" by Tsorthan Grove (https://opengameart.org/content/rain-in-space), CC0 1.0 public domain. Used: Maslak ambience.
-"Racing Car Engine Sound Loops" by domasx2 (https://opengameart.org/content/racing-car-engine-sound-loops), CC0 1.0 public domain.
-"Engine Sounds" by pauliuw (https://opengameart.org/content/engine-sounds2), CC0 1.0 public domain.
-"Car Engine Start" by looneybits (https://opengameart.org/content/car-engine-start-01), CC0 1.0 public domain.
-"Car Sound Effects Pack" by GGBotNet (https://opengameart.org/content/car-sound-effects-pack-low-quality), CC0 1.0 public domain.
-"Sci-Fi Sounds" by Kenney (https://opengameart.org/content/sci-fi-sounds, kenney.nl), CC0 1.0 public domain.
+"Sirens and Alarm Noise" by aquinn (https://opengameart.org/content/sirens-and-alarm-noise), CC0 1.0 public domain. Used: police siren.
