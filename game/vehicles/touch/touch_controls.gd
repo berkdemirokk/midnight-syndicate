@@ -8,7 +8,6 @@ signal pause_pressed
 enum Zone { NONE, STEER_LEFT, STEER_RIGHT, BRAKE, NITRO, DRIFT }
 
 const ZONE_COUNT: int = 6
-const LABELS: PackedStringArray = ["", "<", ">", "BRAKE", "NITRO", "DRIFT"]
 const MIN_DIV: float = 0.0001  ## divisor floor, not a tunable
 const PAUSE_SIDE_PX: float = 88.0  ## the pause button at 1080 px; on a phone the 44 pt target (MSTheme.button_h) is larger
 const PAUSE_GAP_PX: float = 16.0  ## between the lap strip and the pause button
@@ -197,7 +196,23 @@ func _on_pad_draw() -> void:
 			continue
 		_pad.draw_rect(r, pressed_color if ((_held_mask >> z) & 1) == 1 else idle_color)
 		var label_pos := Vector2(r.position.x, r.position.y + r.size.y * 0.5 + label_size * 0.35)
-		_pad.draw_string(font, label_pos, LABELS[z], HORIZONTAL_ALIGNMENT_CENTER, r.size.x, label_size, label_color)
+		_pad.draw_string(font, label_pos, _label(z), HORIZONTAL_ALIGNMENT_CENTER, r.size.x, label_size, label_color)
+
+
+## Steer arrows stay as glyphs; the pedal labels go through I18n.
+func _label(zone: int) -> String:
+	match zone:
+		Zone.STEER_LEFT:
+			return "<"
+		Zone.STEER_RIGHT:
+			return ">"
+		Zone.BRAKE:
+			return I18n.t("touch.brake")
+		Zone.NITRO:
+			return I18n.t("touch.nitro")
+		Zone.DRIFT:
+			return I18n.t("touch.drift")
+	return ""
 
 
 ## Two bars and no text, so the pause glyph needs no translation.

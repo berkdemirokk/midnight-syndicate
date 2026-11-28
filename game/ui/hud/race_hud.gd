@@ -604,7 +604,9 @@ func _refresh_minimap() -> void:
 	_minimap.set_forward(Vector2(fwd.x, fwd.z))
 	_minimap.set_dot(0, _race.get_lap_progress(_car), true)
 	for i: int in _rivals.size():
-		_minimap.set_dot(i + 1, _race.get_lap_progress(_rivals[i]), false)
+		# An eliminated car is frozen on the track: hide its dot rather than leave it stuck there.
+		var out: bool = _race.is_eliminated(_rivals[i])
+		_minimap.set_dot(i + 1, _race.get_lap_progress(_rivals[i]), false, not out)
 
 
 ## Drift: the banked score and the running chain. Elimination: cars left, and the car that just went out.

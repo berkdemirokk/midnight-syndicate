@@ -262,6 +262,9 @@ const DICT: Dictionary = {
 	"records.score": {"tr": "%d puan", "en": "%d pts"},
 	"records.pos": {"tr": "%d. sıra", "en": "P%d"},
 	"records.empty": {"tr": "Henüz bir yarış bitmedi. Bitirdiğin her etkinlik burada kayıt olur.", "en": "No race finished yet. Every event you finish is recorded here."},
+	"touch.brake": {"tr": "FREN", "en": "BRAKE"},
+	"touch.nitro": {"tr": "NİTRO", "en": "NITRO"},
+	"touch.drift": {"tr": "DRİFT", "en": "DRIFT"},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}
