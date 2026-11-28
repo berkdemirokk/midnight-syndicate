@@ -240,6 +240,7 @@ Test: sign MultiMesh count halves; budgets still met. Evidence: the JSON per pre
 Files: `game/export_presets.cfg` (iOS preset only).
 Recipe: enable Shader Baker in the iOS preset; touch nothing else.
 Test: the CI iOS compile check stays green. Evidence: run id. Deps: lead approval of the preset edit.
+Status (wp/b6baker, a4008e03): local test `test_export_shader_baker` passes (reads the preset file; iOS only). CI run: OPEN, no run id. build-ios.yml runs only on tags `ios-check-*` / `ios-release-*`, and the worker may not push. The owner or lead must push a tag from wp/b6baker to get the run id. Lead approval of the preset edit: given in the task brief.
 
 ### Order and batching
 
