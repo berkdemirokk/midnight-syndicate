@@ -5917,11 +5917,11 @@
       "tris": 0,
       "texture_sizes": {},
       "material_count": 0,
-      "bytes": 14112041,
-      "sha256": "26b302b477c971d337eface8060285eb1c3a67acf3194ab97470aa3744de308d",
+      "bytes": 18351017,
+      "sha256": "3f677f1fd23933def7d429b93c7cce388596a5fc16993ae68504470dc700a34a",
       "test_result": "pass",
       "added": "2026-11-25",
-      "notes": "25 procedurally synthesised SFX/UI/music WAVs, stdlib only, deterministic; per-file data in game/assets/audio/audio_manifest.json"
+      "notes": "25 procedurally synthesised SFX/UI/music WAVs, stdlib only, deterministic; per-file data in game/assets/audio/audio_manifest.json. Plus engine/: 48 layered engine loops (4 engines x 6 rpm bands x on/off load) by tools/audio_synth/engine_layers.py (numpy, deterministic)"
     },
     {
       "id": "branding_icon_1024",

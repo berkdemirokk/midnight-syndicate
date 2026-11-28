@@ -3,7 +3,7 @@
 
 Synthesis is done in the frequency domain on an exact 1 s buffer (bin spacing = 1 Hz), so every firing
 harmonic and every noise bin is periodic: each loop is seamless by construction.
-Firing fundamental f0 = rpm / 60 * cylinders / 2 (4-stroke). Band reference rpms are multiples of 300,
+Firing fundamental f0 = rpm / 60 * cylinders / 2 (4-stroke). Band reference rpms are multiples of 60,
 so f0 is an exact integer for 4, 6, 8 and 12 cylinders. Intake noise is a lorentzian band; exhaust
 resonance is a sum of peaks applied to every spectral line. Off-load: softer harmonics, more crackle.
 
@@ -25,7 +25,7 @@ N = SR  # exactly one second
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.normpath(os.path.join(HERE, "..", "..", "game", "assets", "audio", "engine"))
 
-REF_RPM = (1500, 2100, 2900, 4000, 5500, 7200)  # band centres; neighbour ratio <= 1.4 (must stay below BAND_PITCH_MAX**2 = 1.5625, see engine_layers.gd)
+REF_RPM = (1500, 2100, 2880, 4020, 5520, 7200)  # band centres; neighbour ratio <= 1.4 (must stay below BAND_PITCH_MAX**2 = 1.5625, see engine_layers.gd)
 BANDS = ("b1", "b2", "b3", "b4", "b5", "b6")
 BAND_LEVEL = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)  # harmonic level per band (low rpm is softer)
 BAND_NOISE = (0.4, 0.5, 0.6, 0.7, 0.85, 1.0)  # intake/turbo noise grows with rpm
@@ -46,7 +46,9 @@ ENGINES = {
 
 
 def band_f0(eng, band):
-    return int(round(REF_RPM[band] / 60.0 * ENGINES[eng]["cyl"] / 2.0))
+    f0 = REF_RPM[band] * ENGINES[eng]["cyl"] / 120.0
+    assert f0 == int(f0), f"f0 {f0} Hz not an integer: loop would be detuned from REF_RPM or not periodic"
+    return int(f0)
 
 
 def build_spectrum(eng, band, load, rng):

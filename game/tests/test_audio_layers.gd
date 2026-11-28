@@ -24,6 +24,8 @@ func test_weights_equal_power() -> void:
 
 
 func test_zones_overlap_only_neighbours() -> void:
+	for r: float in EngineLayers.REF_RPM:  # synth f0 = rpm*cyl/120 must be an exact integer Hz, else the loop is off REF
+		check(fmod(r, 60.0) == 0.0, "REF_RPM %f is not a multiple of 60" % r)
 	for b: int in EngineLayers.BANDS - 1:
 		check(EngineLayers.zone_hi(b) > EngineLayers.zone_lo(b + 1), "zones %d and %d do not overlap" % [b, b + 1])
 	for b: int in EngineLayers.BANDS - 2:

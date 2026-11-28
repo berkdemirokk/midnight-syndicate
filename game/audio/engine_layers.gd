@@ -11,7 +11,7 @@ extends RefCounted
 ## Weights index: band * 2 + load, load 0 = off-load, 1 = on-load.
 
 const BANDS: int = 6
-const REF_RPM: Array[float] = [1500.0, 2100.0, 2900.0, 4000.0, 5500.0, 7200.0]
+const REF_RPM: Array[float] = [1500.0, 2100.0, 2880.0, 4020.0, 5520.0, 7200.0]  ## multiples of 60: f0 = rpm*cyl/120 is an exact integer Hz for 4/6/8/12 cyl, so the 1 s loop is exactly REF
 const BAND_PITCH_MAX: float = 1.25  ## loop pitch limit inside a zone (+3.9 semitones / -3.9 semitones)
 
 
