@@ -27,6 +27,10 @@ const RAY_MASK: int = 9  ## world 1 + props 8
 ## scrape from killing momentum; a little bounce gives the hit some life.
 const BODY_FRICTION: float = 0.05  ## shortcut: one value for every class, upgrade to a CarSpec field with car_spec.gd
 const BODY_BOUNCE: float = 0.1
+## Speed-sensitive turn-in: quick at a crawl, calmer at the top. Multiplies spec.steer_speed on turn-in only (centring
+## keeps steer_return_speed). Not a CarSpec field because car_spec.gd is outside this package.
+const STEER_TURN_IN_LOW_MULT: float = 1.35  ## shortcut: one curve for every class, upgrade to a CarSpec field
+const STEER_TURN_IN_HIGH_MULT: float = 0.8
 
 @export var spec: CarSpec
 
@@ -250,7 +254,7 @@ func _physics_process(delta: float) -> void:
 	if over > 0.0:
 		steer_cmd = lerpf(steer_in, -signf(slip), over * spec.counter_steer_assist)
 	var steer_target: float = steer_cmd * max_steer
-	var steer_rate: float = spec.steer_speed
+	var steer_rate: float = spec.steer_speed * lerpf(STEER_TURN_IN_LOW_MULT, STEER_TURN_IN_HIGH_MULT, t_speed)
 	if spec.steer_return_speed > 0.0 and absf(steer_target) < absf(steer_angle_rad):
 		steer_rate = spec.steer_return_speed  # centring is quicker than turn-in
 	steer_angle_rad = lerpf(steer_angle_rad, steer_target, clampf(steer_rate * delta, 0.0, 1.0))
