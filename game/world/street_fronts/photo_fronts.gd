@@ -14,14 +14,14 @@ const HOUSES_PER_ATLAS: int = 4  ## buildings side by side in one picture, 384 x
 ## plaster walls and tile roofs on the side, back and roof planes (metre UVs), instead of the plain vertex colours.
 const SETS: Dictionary = {
 	"istanbul_bogaz": {"layout": "res://assets/world/istanbul_bogaz/istanbul_bogaz_layout.json", "groups": [
-		{"match": [], "atlases": ["facade_row_01", "facade_row_02"], "w": 5.4, "h": 14.4, "depth": 7.0, "roof": 1.7, "textured": true}]},
+		{"match": [], "atlases": ["facade_row_01", "facade_row_02"], "w": 5.4, "h": 14.4, "depth": 7.0, "roof": 1.7, "textured": true, "shop": 0.22, "stone": Color(0.62, 0.57, 0.5)}]},
 	"istanbul_maslak": {"layout": "res://assets/world/istanbul_maslak/istanbul_maslak_layout.json", "groups": [
-		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0},
-		{"match": [], "atlases": ["modern_row_01", "neon_row_01"], "w": 8.0, "h": 21.3, "depth": 9.0, "roof": 0.0}]},
+		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0, "shop": 0.12, "stone": Color(0.36, 0.36, 0.37), "stone_tex": "marble_01"},
+		{"match": [], "atlases": ["modern_row_01", "neon_row_01"], "w": 8.0, "h": 21.3, "depth": 9.0, "roof": 0.0, "shop": 0.22, "stone": Color(0.45, 0.44, 0.43), "stone_tex": "marble_01"}]},
 	"city_01": {"layout": "res://assets/world/city_01/city_01_layout.json", "groups": [
-		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0},
+		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0, "shop": 0.12, "stone": Color(0.36, 0.36, 0.37), "stone_tex": "marble_01"},
 		{"match": ["bld_waterfront", "bld_parking"], "atlases": [], "w": 1.0, "h": 1.0, "depth": 1.0, "roof": 0.0},
-		{"match": [], "atlases": ["neon_row_01", "market_row_01"], "w": 6.6, "h": 17.6, "depth": 8.0, "roof": 0.0}]},
+		{"match": [], "atlases": ["neon_row_01", "market_row_01"], "w": 6.6, "h": 17.6, "depth": 8.0, "roof": 0.0, "shop": 0.22, "stone": Color(0.5, 0.46, 0.42)}]},
 }
 const EAVE_M: float = 0.8  ## a pitched roof comes this far out over the street face
 const FASCIA_M: float = 0.22  ## the board under the roof front edge; the soffit runs back from it under the eave
@@ -39,9 +39,16 @@ const WALL_UV_M: float = 2.5  ## metres per texture repeat on walls
 const ROOF_UV_M: float = 1.0  ## metres per texture repeat on roofs
 const NIGHT_GLOW: float = 1.6
 const SUNSET_GLOW: float = 0.7
+const GLASS_SHADER_3D: Shader = preload("res://world/street_fronts/storefront_glass.gdshader")
+const TRIM_SHADER: Shader = preload("res://world/street_fronts/storefront_trim.gdshader")
+const STONE_DIR: String = "res://assets/textures/cc0/"
+const SHOP_NIGHT: float = 1.0
+const SHOP_SUNSET: float = 0.55
 const NIGHT_TINT: Vector3 = Vector3(0.55, 0.5, 0.5)  ## unlit walls keep a little of the street warm light
 
 var _facades: Array[ShaderMaterial] = []
+var _shop_glass: Array[ShaderMaterial] = []  ## storefront glass per picture (index as _facades): the picture's shop is the room
+var _trims: Dictionary = {}  ## stone texture name -> storefront trim material
 var _groups: Array[Dictionary] = []  ## the track groups with "mats": indices into _facades of the shipped pictures
 
 
@@ -122,8 +129,20 @@ func _load_groups(groups: Array) -> void:
 					facade.set_shader_parameter("relief", 1.0)
 				by_name[atlas_name] = _facades.size()
 				_facades.append(facade)
+				var gl := ShaderMaterial.new()
+				gl.shader = GLASS_SHADER_3D
+				gl.set_shader_parameter("albedo_tex", facade.get_shader_parameter("albedo_tex"))
+				gl.set_shader_parameter("night_tex", facade.get_shader_parameter("night_tex") if ResourceLoader.exists(night_path) else facade.get_shader_parameter("albedo_tex"))
+				_shop_glass.append(gl)
 			mats.append(int(by_name[atlas_name]))
 		group["mats"] = mats
+		var stone_name: String = String(group.get("stone_tex", "sandstone_blocks_08"))
+		if float(group.get("shop", 0.0)) > 0.0 and not _trims.has(stone_name):
+			var tm := ShaderMaterial.new()
+			tm.shader = TRIM_SHADER
+			tm.set_shader_parameter("stone_tex", load(STONE_DIR + stone_name + "/basecolor.jpg"))
+			tm.set_shader_parameter("stone_nrm", load(STONE_DIR + stone_name + "/normal.jpg"))
+			_trims[stone_name] = tm
 		group["id"] = g
 		group["meshes"] = []
 		for h: int in HOUSES_PER_ATLAS:
@@ -145,6 +164,8 @@ func _apply_time() -> void:
 	for facade: ShaderMaterial in _facades:
 		facade.set_shader_parameter("night", glow)
 		facade.set_shader_parameter("tint", NIGHT_TINT if _tod == "night" else Vector3.ONE)
+	for gl: ShaderMaterial in _shop_glass:
+		gl.set_shader_parameter("night", SHOP_NIGHT if _tod == "night" else (SHOP_SUNSET if _tod == "sunset" else 0.0))
 
 
 ## A row of buildings sized to the frontage, picked from every picture of the group; seeded, so a frontage always gets
@@ -182,6 +203,14 @@ func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary,
 			(mi as MeshInstance3D).visible = false
 	_replaced.append(root)
 	var tools: Dictionary = {}  # facade index -> SurfaceTool
+	var glass_tools: Dictionary = {}  # facade index -> SurfaceTool of the storefront glass
+	var frac: float = float(group.get("shop", 0.0))
+	var trim: SurfaceTool = null
+	if frac > 0.0:
+		trim = SurfaceTool.new()
+		trim.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var shop_rng := RandomNumberGenerator.new()
+	shop_rng.seed = int(round(float(d["s_offset_m"]) * 10.0)) * 17 + 5
 	for slot: Dictionary in slots:
 		var mat: int = int(slot["mat"])
 		if not tools.has(mat):
@@ -192,6 +221,15 @@ func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary,
 		# the model street face is -Z as in StreetFronts; width and height scale together, the picture keeps its shape
 		var local := Transform3D(Basis(Vector3.UP, PI) * Basis.from_scale(Vector3(sx, sx, 1.0)), Vector3(float(slot["x"]), 0.0, 0.0))
 		(tools[mat] as SurfaceTool).append_from(group["meshes"][int(slot["house"])], 0, local)
+		if trim != null:
+			if not glass_tools.has(mat):
+				var gst := SurfaceTool.new()
+				gst.begin(Mesh.PRIMITIVE_TRIANGLES)
+				glass_tools[mat] = gst
+			var house: int = int(slot["house"])
+			Storefront.build(trim, glass_tools[mat], tools[mat], Transform3D(Basis(Vector3.UP, PI), Vector3(float(slot["x"]), 0.0, 0.0)),
+					float(group["w"]) * sx, float(group["h"]) * sx, float(house) / float(HOUSES_PER_ATLAS), float(house + 1) / float(HOUSES_PER_ATLAS),
+					frac, shop_rng, group.get("stone", Color(0.6, 0.56, 0.5)))
 		_shop_fronts.append(root.global_transform * local)
 	var mesh := ArrayMesh.new()
 	for mat: int in tools:
@@ -199,6 +237,14 @@ func _replace_with(group: Dictionary, track: Track, root: Node3D, d: Dictionary,
 		st.generate_tangents()  # the wall and roof normal maps need tangents
 		st.set_material(_facades[mat])
 		st.commit(mesh)
+	for mat: int in glass_tools:
+		var gst: SurfaceTool = glass_tools[mat]
+		gst.set_material(_shop_glass[mat])
+		gst.commit(mesh)
+	if trim != null:
+		trim.generate_tangents()
+		trim.set_material(_trims[String(group.get("stone_tex", "sandstone_blocks_08"))])
+		trim.commit(mesh)
 	var row := MeshInstance3D.new()
 	row.name = "Row_%03d" % _buildings.size()
 	row.mesh = mesh
@@ -241,8 +287,10 @@ func _house_mesh(index: int, group: Dictionary) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# seen from the street (looking along +Z) the model +X is on the left: u0 goes there
-	_quad(st, [Vector3(w, h, 0.0), Vector3(-w, h, 0.0), Vector3(-w, 0.0, 0.0), Vector3(w, 0.0, 0.0)],
-			[Vector2(u0, 0.0), Vector2(u1, 0.0), Vector2(u1, 1.0), Vector2(u0, 1.0)], Vector3(0.0, 0.0, -1.0), Color.WHITE)
+	var frac: float = float(group.get("shop", 0.0))  # the shop band is a 3D Storefront, the picture starts above it
+	var y0: float = frac * h
+	_quad(st, [Vector3(w, h, 0.0), Vector3(-w, h, 0.0), Vector3(-w, y0, 0.0), Vector3(w, y0, 0.0)],
+			[Vector2(u0, 0.0), Vector2(u1, 0.0), Vector2(u1, 1.0 - frac), Vector2(u0, 1.0 - frac)], Vector3(0.0, 0.0, -1.0), Color.WHITE)
 	# the plaster and tile band (roof alpha, lifted wall colour) is for the textured groups only; other tracks keep the plain look
 	var textured: bool = bool(group.get("textured", false))
 	var wall := Color(WALL_COLOUR if textured else PLAIN_WALL_COLOUR, 0.0)
