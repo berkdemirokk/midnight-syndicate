@@ -55,36 +55,65 @@ as `<track>_<tod>_grid|results|replay`), `--preset=low|medium|high` (the capture
 ## Per-track grade
 
 `TrackGrade` (game/world/time_of_day/track_grade.gd) adds a colour grade per track on top of the hour's preset.
-`RaceScene._build_race` calls `TrackGrade.apply_to_world` once the environment exists (one line). The table is keyed by
-the track scene file: `city_01` (Neon Wharf), `istanbul_maslak`, `istanbul_bogaz` (Ortakoy/Bogaz). The dev circuit and
-unknown tracks are not graded.
+`RaceScene._build_race` calls `TrackGrade.apply_to_world` once the environment exists, after `TimeOfDay` has written
+the hour (one line). The table is keyed by the track scene file: `city_01` (Neon Wharf), `istanbul_maslak`,
+`istanbul_bogaz` (Ortakoy/Bogaz). The dev circuit and unknown tracks are not graded.
 
 | Track | Day | Sunset | Night |
 |---|---|---|---|
 | Neon Wharf (city) | teal ambient in shade, cool fog | teal ambient, cool-grey fog | teal ambient, saturation 1.10, teal fog |
 | Maslak | steel-blue ambient, saturation 0.86 | steel-blue ambient, saturation 0.90 | cool ambient, saturation 0.84 |
-| Ortakoy/Bogaz | golden ambient, saturation 1.14 | golden ambient, saturation 1.16, amber fog | warm ambient, saturation 1.08 |
+| Ortakoy/Bogaz | warm shade ambient (blue cut 6 %), saturation 1.05, amber-tinted fog | warm shade ambient (blue cut 8 %), saturation 1.06, amber fog | warm shade ambient (blue cut 6 %), saturation 1.04 |
 
 Each entry sets exposure, contrast, saturation (Environment adjustments), the ambient light colour (rgb multiplier,
-at most 1.2) and the depth fog colour (mixed in by `fog_mix`). Values are absolute: the first call stores the
-environment's own values in meta, so a second race in the same process starts from the same base.
+at most 1.2) and the depth fog colour (mixed in by `fog_mix`). Values are absolute: each call starts from the
+environment's base, the values it held before the last grade. That base is reused only while the environment still
+holds exactly what that grade wrote. If `TimeOfDay` (or anything else) wrote the environment since, the current values
+become the base, so a race at another hour in the same process is graded from its own preset.
+`--no-grade` after the capture arguments skips the grade: the BEFORE switch for the evidence below (never passed by the game).
 
 Limits, stated plainly:
 
 - Split toning is shade only. A procedural 16x16x16 LUT on `adjustment_color_correction` was tried first and drew
-  heavy coloured noise on the Godot 4.7 Mobile renderer, so it was removed. Highlight tints and the magenta night
-  highlights of Neon Wharf are not done.
-- The shift is modest on the sunlit frames (see the before/after sheets in evidence/screens/before_after_grade):
-  the sky and the sun are untouched.
+  heavy coloured noise on the Godot 4.7 Mobile renderer, so it was removed. Highlight split tones and the magenta
+  night highlights of Neon Wharf are NOT done. Follow-up: a non-LUT highlight route (post-process or a 3D texture),
+  tested on a capture before anything is claimed.
+- The shift is modest. Maslak night (the "cool-white" target) is barely distinguishable from the base in the sheet.
+  Ortakoy day is warmer on the walls and less blue on the road, and the sky and the sun are untouched.
+- An earlier Ortakoy setting (ambient blue cut 20 %, saturation 1.14) turned the asphalt brown and dimmed the road plane.
+  It was reduced to the values above; the road now reads neutral dark asphalt again.
+- Performance: see the Grade evidence section. Not established as free on Maslak night.
 
 ## Car contact shadow
 
 Already in place before this grade: `ContactShadow` (game/fx/contact_shadow.gd) gives every race car a blob that follows
 the road (`attach(car, true)`), traffic cars a child blob and parked cars one MultiMesh per cell, strength by hour
 (0.92 day, 0.7 sunset, 0.95 night). It is not duplicated. Covered by test_contact_shadow.gd.
+Not verified in this branch: a close car34 shadow-on / shadow-off pair and a wet night road shot. The existing
+car34 sheet shows the dark blob under the wheels, but that is not an on/off comparison.
 
 ## Grade evidence
 
 `evidence/screens/before_after_grade/`: nine track x hour sheets (`city_*`, `maslak_*`, `bogaz_*`, BEFORE | AFTER,
-`--capture=tod_tracks`) and three Ortakoy day sheets (`bench_day_car34`, `bench_day_hero`, `bench_day_street`).
-Base 49cd221 vs wp/grade. luma_max in the capture JSON stays at 1.0 or below; the largest rise is 0.002 (bogaz_day), so nothing new clips.
+`--capture=tod_tracks`) and five Ortakoy day sheets (`bench_day_hero`, `bench_day_street`, `bench_day_car34`,
+`bench_day_mosque`, `bench_day_gameplay`, `--capture=ortakoy_benchmark --tod=day`). BEFORE is the same build with
+`--no-grade`, AFTER is the grade. Raw captures' perf JSON is in `raw/before` and `raw/after`; the PNGs are not committed.
+
+Machine: RTX 5060 Ti (dev PC, not a phone), Vulkan, Mobile renderer, preset high, 1920x1080. Each figure is one
+60-frame probe, so frame times carry run-to-run noise of about 0.5 to 1 ms on this PC.
+
+Draw calls, one probe each (before / after): bogaz day 300 / 300, bogaz sunset 310 / 310, bogaz night 355 / 355,
+maslak day 326 / 326, maslak night 366 / 366, city night 420 / 419, city day 373 / 375. The grade adds no draw calls.
+
+Frame time, average ms, runs in order (before / after):
+- bogaz night (3 runs each): 3.95, 4.13, 3.57 / 4.18, 3.65, 3.36. Median 3.95 / 3.65. No slower.
+- maslak night (3 runs each): 4.11, 4.48, 4.18 / 7.04, 7.74, 3.97. Median 4.18 / 7.04. Two of three after runs are slower
+  and this is not explained by draw calls. Not resolved: other sessions were using the GPU at the same time, so this is
+  not a clean measurement. Treat Maslak night as NOT shown to be free until re-measured on an idle GPU.
+- city night (1 run each): 4.87 / 4.76.
+
+Clipping: luma_max in the capture JSON. Bogaz day 1.000 / 1.000, bogaz sunset 0.997 / 0.997, bogaz night 1.0 / 1.0, city day
+1.000 / 1.000, maslak sunset 0.960 / 0.989 (rises, still below 1.0), maslak night 1.0 / 1.0. No shot reaches a
+new hard clip, but the highlight regions of the sheets were not inspected one by one, so "highlights preserved" is not claimed.
+
+Ortakoy day sheets: `bench_day_car34` now keeps the road neutral; the earlier brown road is gone. The change is subtle.

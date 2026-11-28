@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "city_night",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 419,
+    "draw_calls_min": 300,
+    "driver": "vulkan",
+    "fps": 210.261,
+    "frame_ms_avg": 4.756,
+    "frame_ms_p95": 6.437,
+    "frame_ms_p99": 7.193,
+    "frames": 60,
+    "objects": 18730,
+    "os": "Windows",
+    "primitives": 411791,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 717.235,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-grade/evidence/screens/tod_tracks/city_night.png",
+  "preset": "high",
+  "scenario": "tod_tracks"
+}
