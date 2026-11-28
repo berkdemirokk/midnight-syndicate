@@ -95,7 +95,7 @@ func _build() -> void:
 
 	var head := HBoxContainer.new()
 	col.add_child(head)
-	_title = MSTheme.make_label("", "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT)
+	_title = MSTheme.make_label("", "display", MSTheme.px(TITLE_PX), MSTheme.TEXT)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(_title)
@@ -267,11 +267,11 @@ func _section(parent: Container, text_key: String) -> void:
 		var gap := Control.new()
 		gap.custom_minimum_size = Vector2(0.0, SECTION_GAP_PX)
 		parent.add_child(gap)
-	var l: Label = MSTheme.make_label("", "tracked", MSTheme.px(SECTION_PX), MSTheme.CYAN)
+	var l: Label = MSTheme.make_label("", "tracked", MSTheme.px(SECTION_PX), MSTheme.RED)
 	parent.add_child(l)
 	_texts[l] = text_key
 	var rule := ColorRect.new()
-	rule.color = MSTheme.tint(MSTheme.CYAN, 0.35)
+	rule.color = MSTheme.tint(MSTheme.RED, 0.35)
 	rule.custom_minimum_size = Vector2(0.0, 2.0)
 	parent.add_child(rule)
 

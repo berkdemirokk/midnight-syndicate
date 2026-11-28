@@ -51,3 +51,7 @@
 "Vintage Convertible" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Moda.
 "Touring Car" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Pera.
 "Woodie Wagon" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Sahil.
+
+Fonts (SIL Open Font License 1.1, files and licence in game/assets/branding/fonts/):
+Anton, Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont).
+Manrope, Copyright 2019 The Manrope Project Authors (https://github.com/googlefonts/manrope).

@@ -1,7 +1,7 @@
 class_name GarageStats
 extends RefCounted
-## Four 0..1 stat bars from the CarSpec and the upgrade levels. Pure functions, so tests can check them.
-## Upgrade effects (per level): engine +4 km/h top speed and +5% drive force, tyres +4% grip,
+## Four 0..1 stat bars from the CarSpec and the upgrade levels, plus the same stats in real units. Pure functions, so
+## tests can check them. Upgrade effects (per level): engine +4 km/h top speed and +5% drive force, tyres +4% grip,
 ## nitro +10% capacity, weight -2% mass. Reference values map a stat to a full bar.
 
 const KMH_FULL: float = 320.0
@@ -13,6 +13,8 @@ const ENGINE_FORCE: float = 0.05
 const TYRE_GRIP: float = 0.04
 const NITRO_CAP: float = 0.1
 const WEIGHT_MASS: float = 0.02
+## Value of a full bar in the stat's own unit: bar = value / FULL.
+const FULL: Dictionary = {"speed": KMH_FULL, "accel": ACCEL_FULL, "handling": GRIP_FULL, "nitro": NITRO_FULL_S}
 
 
 ## Returns {speed, accel, handling, nitro} in 0..1. upgrades maps part name to level (0..5).
@@ -28,6 +30,17 @@ static func compute(spec: CarSpec, upgrades: Dictionary) -> Dictionary:
 		"accel": clampf(force / maxf(mass, 1.0) / ACCEL_FULL, 0.0, 1.0),
 		"handling": clampf(grip / GRIP_FULL, 0.0, 1.0),
 		"nitro": clampf(nitro_s / NITRO_FULL_S, 0.0, 1.0),
+	}
+
+
+## The same four stats in real units, unclamped: km/h, m/s^2 (drive force per kg), grip (average peak grip), seconds.
+static func values(spec: CarSpec, upgrades: Dictionary) -> Dictionary:
+	var tuned: CarSpec = tuned_spec(spec, upgrades)
+	return {
+		"speed": tuned.top_speed_kmh,
+		"accel": tuned.engine_force / maxf(tuned.mass_kg, 1.0),
+		"handling": (tuned.grip_front + tuned.grip_rear) * 0.5,
+		"nitro": tuned.nitro_capacity_s,
 	}
 
 

@@ -123,7 +123,8 @@ func test_event_select_phone_window_follows_selection() -> void:
 	for b: Button in rows:
 		if b.visible:
 			visible_n += 1
-	check(visible_n == EventSelect.PHONE_WINDOW_ROWS, "phone shows %d rows, expected %d" % [visible_n, EventSelect.PHONE_WINDOW_ROWS])
+	var want: int = mini(EventSelect.PHONE_WINDOW_ROWS, es.get_district_event_count())
+	check(visible_n == want, "phone shows %d rows, expected %d" % [visible_n, want])
 	var last: int = es.get_row_count() - 1
 	es.select(last)
 	await frames(2)
@@ -141,12 +142,12 @@ func test_event_select_desktop_window_follows_selection() -> void:
 	var es: EventSelect = add(load(EVENTS).instantiate()) as EventSelect
 	await frames(3)
 	var rows: Array[Button] = es.get("_row_btns")
-	check(es.get_visible_row_count() == EventSelect.DESKTOP_WINDOW_ROWS, "desktop window bounds the long career")
+	check(es.get_visible_row_count() == mini(EventSelect.DESKTOP_WINDOW_ROWS, es.get_district_event_count()), "desktop window bounds the district list")
 	var last: int = es.get_row_count() - 1
 	es.select(last)
 	await frames(2)
 	check(rows[last].visible and not rows[0].visible, "desktop can reach final event")
-	check(es.get_visible_row_count() == EventSelect.DESKTOP_WINDOW_ROWS, "desktop window stays bounded at end")
+	check(es.get_visible_row_count() == mini(EventSelect.DESKTOP_WINDOW_ROWS, es.get_district_event_count()), "desktop window stays bounded at end")
 	es.select(0)
 	await frames(2)
 	check(rows[0].visible and not rows[last].visible, "desktop window returns to top")

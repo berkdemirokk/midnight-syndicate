@@ -242,3 +242,15 @@ https://vinish.dev/free-3d-models/. Each row has the exact credit line; the game
 | vinish_town_mansion_source | model | cc-by:vinish.dev | https://vinish.dev/free-3d-models/ | CC-BY-4.0 | vinish.dev | "Town Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped. Turned into the street-front LODs by assets_src/pipeline/prepare_static.py. | 2026-11-26 | bb1063fcb7ab |
 | vinish_widebody_drift_coupe | model | cc-by:vinish.dev | https://vinish.dev/free-3d-models/realistic-cars | CC-BY-4.0 | vinish.dev | "Widebody Drift Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped; Shipped as Noctra Cyclon (modified). | 2026-11-26 | 835cf7e7fa31 |
 | vinish_young_staked_tree | model | cc-by:vinish.dev | https://vinish.dev/free-3d-models/ | CC-BY-4.0 | vinish.dev | "Young Staked Tree" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Source file, not shipped. Shipped as the street tree (tree_street_*); stakes and planting disc dropped. | 2026-11-26 | b804cb6e469a |
+
+## SIL Open Font License 1.1 (fonts)
+
+Licence: https://openfontlicense.org. The copyright lines and the full licence ship next to the font files
+(game/assets/branding/fonts/OFL.txt); the fonts are not sold on their own.
+
+| id | kind | source | URL | licence | author | where used | added | sha256 (first 12) |
+|---|---|---|---|---|---|---|---|---|
+| font_anton_regular | font | ofl:google-fonts | https://github.com/googlefonts/AntonFont | OFL-1.1 | The Anton Project Authors | STREET EMPIRE UI (display face: wordmark, headlines, big numbers). SIL OFL 1.1, licence in game/assets/branding/fonts/OFL.txt. Copied from a local OFL copy, no download. | 2026-11-28 | 97aae409210d |
+| font_manrope_bold | font | ofl:google-fonts | https://github.com/googlefonts/manrope | OFL-1.1 | The Manrope Project Authors | STREET EMPIRE UI (UI captions and labels). SIL OFL 1.1, licence in game/assets/branding/fonts/OFL.txt. Copied from a local OFL copy, no download. | 2026-11-28 | 42f1d9457585 |
+| font_manrope_extrabold | font | ofl:google-fonts | https://github.com/googlefonts/manrope | OFL-1.1 | The Manrope Project Authors | STREET EMPIRE UI (UI buttons, titles and figures). SIL OFL 1.1, licence in game/assets/branding/fonts/OFL.txt. Copied from a local OFL copy, no download. | 2026-11-28 | 3182b364667e |
+| font_manrope_medium | font | ofl:google-fonts | https://github.com/googlefonts/manrope | OFL-1.1 | The Manrope Project Authors | STREET EMPIRE UI (UI body text). SIL OFL 1.1, licence in game/assets/branding/fonts/OFL.txt. Copied from a local OFL copy, no download. | 2026-11-28 | 107539ab6cbc |

@@ -5,10 +5,10 @@ extends RefCounted
 ## No nodes here: garage.gd reads camera_position() and looks at target. Limits come from garage_layout.json.
 
 const PRESETS: Dictionary = {
-	"front": {"yaw": 3.14159265, "pitch": 7.0, "dist": 5.4},
-	"side": {"yaw": 1.5707963, "pitch": 9.0, "dist": 5.4},
-	"rear34": {"yaw": 0.3, "pitch": 10.0, "dist": 5.4},
-	"overview": {"yaw": -2.5, "pitch": 10.0, "dist": 5.4},
+	"front": {"yaw": 3.14159265, "pitch": 7.0, "dist": 7.0},
+	"side": {"yaw": 1.5707963, "pitch": 8.0, "dist": 8.2},
+	"rear34": {"yaw": 0.45, "pitch": 8.0, "dist": 7.4},
+	"overview": {"yaw": -2.45, "pitch": 8.0, "dist": 7.4},  ## STREET EMPIRE studio, 38 deg lens: the car between the panels
 }
 const PRESET_SECONDS: float = 0.9
 const DRAG_RAD_PER_PX: float = 0.008

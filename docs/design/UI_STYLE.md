@@ -1,34 +1,20 @@
-# UI style (MIDNIGHT SYNDICATE)
+# UI style (STREET EMPIRE)
 
 Code: `game/ui/`. Shared theme: `ui/theme/ms_theme.gd` (`MSTheme.build()`). Strings: `ui/i18n.gd` (`I18n.t`).
+Brand rules (colour, type, shapes, motion, imagery): `docs/brand/BRAND_GUIDELINES.md`. Integration: `docs/brand/INTEGRATION.md`.
 
-## Colour tokens
-| token | hex | use |
-|---|---|---|
-| BG | #0A0D14 | backdrop, screen background |
-| PANEL_BG | #111827 at 82% | panels, buttons |
-| CYAN | #19E6FF | primary accent, focus fill, speed arc |
-| MAGENTA | #FF2BD6 | focus ring, secondary accent |
-| AMBER | #FFC23D | warning, cash |
-| DANGER | #FF3B30 | redline, wrong way |
-| TEXT | #F2F5FA | primary text |
-| MUTED | #8A94A6 | captions, secondary text |
+## Colour tokens (2026-11-28 STREET EMPIRE overhaul)
+Graphite #101216 base, racing red #F04432 accent, titanium #C4C8CE, pearl #F4F4F4, steel #8E949D captions, gold
+#E9B856 money/stars, go #55C78E owned/gained, danger #FF5440. The old names stay as aliases: `CYAN` = red,
+`MAGENTA` = pearl, `AMBER` = gold. No neon.
 
-## Type scale (px at 1920x1080 base)
-- 112 HUD speed digits (largest HUD element)
-- 96 logotype, 200 countdown (transient overlay only)
-- 72 race position, 56 reward values
-- 40 titles and lap value, 28 buttons and the total position
-- 24 body and HUD times, 18 to 20 captions (tracked)
-
-Fonts: Godot fallback font through `FontVariation`. Bold uses `variation_embolden`, slant uses
-`variation_transform`, digits use the `tnum` OpenType feature (`MSTheme.font(kind)`).
-No downloaded fonts or images.
+## Type
+Anton (`display`, `slant`) for headlines and big numbers; Manrope (`body`, `bold`, `digits`, `tracked`) for the UI.
+SIL OFL 1.1 files in `game/assets/branding/fonts/`. Scale: see the brand guidelines.
 
 ## Components
-- Buttons and chips: 12 degree lean (`SKEW_RATIO`), 1 px cyan border, min 360x64, 24/12 padding.
-  Focus: 2 px magenta ring, no fill. Hover and pressed: cyan tint 16% and 32%.
-- Large containers (tables, pause panel): half the lean, so tall panels do not tilt too far.
+- Buttons and panels: chamfered corners (`MSTheme.box`, 10 px cut top-right and bottom-left), hairline titanium border.
+  Focus: 2 px pearl ring. Hover: lifted graphite with a 4 px edge; pressed: red edge. Primary: solid red (`PrimaryButton`).
 - HUD labels: no panel, 4 px dark outline for contrast on night backdrops.
 - Grid: 8 px. Gaps: 16 between rows, 32 between sections.
 - Thumb zones: keep bottom-left and bottom-right corners free. The speedometer sits centre-right,

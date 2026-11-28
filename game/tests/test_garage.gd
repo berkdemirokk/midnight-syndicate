@@ -51,7 +51,7 @@ func test_scene_instantiates() -> void:
 	await frames(3)
 	check(g.get("car") != null, "garage spawns the car")
 	check(g.get_hud() != null, "garage builds the HUD")
-	check(g.get_probe() != null and g.get_probe().box_projection, "room has a box-projected reflection probe")
+	check(g.get_probe() != null and g.get_probe().box_projection, "studio has a box-projected reflection probe")
 	var lights: Node3D = g.get_node("Lights") as Node3D
 	var omni_spot: int = 0
 	var directional: int = 0
@@ -66,7 +66,12 @@ func test_scene_instantiates() -> void:
 		if n is DirectionalLight3D and (n as DirectionalLight3D).shadow_enabled:
 			shadowed += 1
 	check(directional == 2 and shadowed == 1, "one shadowed key and one shadowless fill, got %d lights, %d shadowed" % [directional, shadowed])
-	check(_mat_named(g.get_node("Room"), "M_Light_Emit") != null, "room fixtures are bound by material name")
+	# STREET EMPIRE (2026-11-28): the workshop room was replaced by the studio set shared with the main menu.
+	check(g.get_node_or_null("Room") == null, "the retired workshop room is not loaded")
+	check(g.find_children("CeilingPanel*", "MeshInstance3D", true, false).size() == 4, "showroom: four ceiling light panels light the paint")
+	check(g.find_child("CityView", true, false) != null, "showroom: the Istanbul skyline behind the glass")
+	check(g.find_child("BrandSign", true, false) is Label3D, "showroom: STREET EMPIRE sign on the wall")
+	check(g.find_child("Turntable", true, false) != null, "studio: the car stands on a turntable")
 	metric("omni_spot_lights", omni_spot)
 	await cleanup([g])
 	_restore(old)

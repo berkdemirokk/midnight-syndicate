@@ -3,31 +3,31 @@
     1920,
     1080
   ],
-  "luma_max": 1.0,
+  "luma_max": 0.965,
   "luma_min": 0.0,
   "name": "shop_owned",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 277,
-    "draw_calls_min": 277,
+    "draw_calls": 219,
+    "draw_calls_min": 219,
     "driver": "vulkan",
-    "fps": 558.69,
-    "frame_ms_avg": 1.79,
-    "frame_ms_p95": 1.804,
-    "frame_ms_p99": 1.866,
+    "fps": 1143.729,
+    "frame_ms_avg": 0.874,
+    "frame_ms_p95": 1.065,
+    "frame_ms_p99": 1.122,
     "frames": 60,
-    "objects": 423,
+    "objects": 593,
     "os": "Windows",
-    "primitives": 348618,
+    "primitives": 346396,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 579.695,
+    "video_mem_mb": 494.547,
     "viewport_size": [
       1920,
       1080
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/garage_shop/shop_owned.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/garage_shop/shop_owned.png",
   "preset": "high",
   "scenario": "garage_shop"
 }

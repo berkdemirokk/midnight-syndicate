@@ -11,7 +11,7 @@ signal reset_requested
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
 const DIM_ALPHA: float = 0.62
-const TITLE_PX: int = 40
+const TITLE_PX: int = 56
 const PANEL_W: float = 520.0
 const BUTTON_W: float = 440.0
 const GAP_PX: int = 14
@@ -46,8 +46,9 @@ func _ready() -> void:
 	centre.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(centre)
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(PANEL_W, 0.0)
-	panel.add_theme_stylebox_override("panel", MSTheme.card(Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.9), MSTheme.BORDER))
+	panel.custom_minimum_size = Vector2(PANEL_W * MSTheme.k(), 0.0)
+	# Chamfered graphite panel, the same shape as the buttons it holds.
+	panel.add_theme_stylebox_override("panel", MSTheme.box(Color(MSTheme.GRAPHITE_2.r, MSTheme.GRAPHITE_2.g, MSTheme.GRAPHITE_2.b, 0.96), MSTheme.tint(MSTheme.TITANIUM, 0.18)))
 	centre.add_child(panel)
 	var pad := MarginContainer.new()
 	for side: String in ["left", "right", "top", "bottom"]:
@@ -57,10 +58,10 @@ func _ready() -> void:
 	_column.add_theme_constant_override("separation", GAP_PX)
 	pad.add_child(_column)
 
-	_title = MSTheme.make_label("", "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT)
+	_title = MSTheme.make_label("", "display", MSTheme.px(TITLE_PX), MSTheme.TEXT)
 	_column.add_child(_title)
 	var rule := ColorRect.new()
-	rule.color = MSTheme.MAGENTA
+	rule.color = MSTheme.RED
 	rule.custom_minimum_size = Vector2(PANEL_W * 0.3, RULE_H)
 	rule.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	_column.add_child(rule)
@@ -84,7 +85,7 @@ func _ready() -> void:
 
 func _button(key: String, handler: Callable) -> Button:
 	var b := Button.new()
-	b.custom_minimum_size = Vector2(BUTTON_W, MSTheme.button_h())
+	b.custom_minimum_size = Vector2(BUTTON_W * MSTheme.k(), MSTheme.button_h())
 	b.pressed.connect(func() -> void: UiSounds.click())
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	b.pressed.connect(handler)

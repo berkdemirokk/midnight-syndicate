@@ -52,6 +52,7 @@ func _ready() -> void:
 	_panel.custom_minimum_size = Vector2(PANEL_W * MSTheme.k(), 0.0)
 	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	_panel.visible = false
+	_panel.add_theme_stylebox_override("panel", MSTheme.edged(MSTheme.PANEL_BG, MSTheme.RED, 4))  # graphite card, red edge
 	add_child(_panel)
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", int(MSTheme.GRID_PX * 2))

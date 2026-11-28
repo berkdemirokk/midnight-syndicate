@@ -90,10 +90,10 @@ func _build() -> void:
 	col.add_child(MSTheme.make_label(I18n.t("menu.loading"), "tracked", MSTheme.px(LABEL_PX), MSTheme.CYAN, false))
 	var cfg: RaceConfig = _next.get(RaceScene.CONFIG_PARAM, null) as RaceConfig
 	var ev: Dictionary = EventCatalog.find(cfg.event_id) if cfg != null else {}
-	_track = MSTheme.make_label(_place_name(ev), "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT, true)
+	_track = MSTheme.make_label(_place_name(ev), "slant", MSTheme.px(TITLE_PX), MSTheme.TEXT, false)
 	_track.name = "Track"
 	col.add_child(_track)
-	_event = MSTheme.make_label(_event_name(cfg, ev), "tracked", MSTheme.px(EVENT_PX), MSTheme.AMBER, true)
+	_event = MSTheme.make_label(_event_name(cfg, ev), "tracked", MSTheme.px(EVENT_PX), MSTheme.TITANIUM, false)
 	_event.name = "Event"
 	col.add_child(_event)
 	_tip_label = MSTheme.make_label(I18n.t(tip_keys()[_tip]), "tracked", MSTheme.px(TIP_PX), MSTheme.MUTED, false)

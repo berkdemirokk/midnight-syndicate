@@ -1,45 +1,34 @@
 extends Node3D
-## Interactive 3D garage. The room (GLB, materials bound by name), a turntable with the Noctra Sable at its centre,
-## eight lights matched to the room fixtures, one soft shadowed key, a box-projected reflection probe, and the
-## orbit camera. The 2D layer is GarageHud. Game state changes go through GameState; paint goes through CarMaterials.
+## Interactive 3D garage, STREET EMPIRE showroom: the same graphite studio as the main menu (ShowroomStage.build_studio:
+## glossy mirror floor, overhead strips, red wash, fill and rim spots), a dark turntable with a red edge, one soft
+## shadowed directional key plus a shadowless fill, a box-projected probe, the studio panorama in the paint, and the
+## orbit camera. The old workshop room is gone (owner, 2026-11-28: "garaj çok kötü"); garage_layout.json still gives
+## the orbit target and pitch limits. The 2D layer is GarageHud. State changes go through GameState and CarMaterials.
 
 const LAYOUT_PATH: String = "res://assets/world/garage/garage_layout.json"
 const MAIN_MENU: String = "res://ui/menus/main_menu.tscn"
 const RACE_SCENE: String = "res://ui/menus/event_select.tscn"  ## RACE opens the career ladder (rewards count there)
 const CAR_Y: float = 0.065  ## turntable plate top, from garage_layout.json
 const CAR_TURN: float = PI  ## the car model faces +Z in Godot; the garage stand faces -Z
-const CAMERA_FOV: float = 50.0
-const LOOK_SHIFT_M: float = 0.45  ## looks this far right of the car, so the car sits left of centre beside the panel
+const CAMERA_FOV: float = 38.0  ## long lens: the configurator look (less distortion on the body)
+const LOOK_SHIFT_M: float = 0.0  ## centred car: the stats column (left) and the configurator (right) frame it
 const TURN_RATE: float = 0.12  ## rad/s of the turntable once idle spin is on
 const TURN_EASE: float = 1.5  ## 1/s, how fast the turntable reaches its speed
 const KEY_ORBIT_RATE: float = 1.4  ## rad/s while steer keys are held
 const KEY_ZOOM_RATE: float = 0.6  ## fraction per second while accelerate or brake is held
+const STAGE_SCRIPT: Script = preload("res://ui/showroom/showroom_stage.gd")
+const GARAGE_ROOM: Script = preload("res://ui/showroom/garage_showroom.gd")  ## glass, city view, sign wall, ceiling panels
+const ORBIT_MIN_DIST: float = 4.6  ## studio has no walls: the orbit may pull back further than the old room allowed
+const ORBIT_MAX_DIST: float = 10.5
+const TURNTABLE_R: float = 2.85
 const DOUBLE_TAP_MS: int = 320
 const DOUBLE_TAP_PX: float = 40.0
-const SPOT_NAMES: PackedStringArray = ["ceiling_strip_y0", "ceiling_strip_y4"]
-const LIGHT_NAMES: PackedStringArray = [
-	"ceiling_strip_y0", "ceiling_strip_y4", "ceiling_strip_y2", "warm_tube_back_L",
-	"warm_tube_back_R", "neon_sign_magenta", "neon_sign_underline", "work_lamp_bench",
-]
-const SPOT_ENERGY: float = 5.0  ## 8 made hot pools on the glossy floor in the rear view
-const SPOT_RANGE: float = 9.0
-const SPOT_ANGLE_DEG: float = 55.0
-const OMNI_ENERGY: float = 3.0
-const OMNI_RANGE: float = 6.0
 const KEY_ENERGY: float = 2.4 ## the paint is metallic: with a dark room it reads black, so the key does real work
 const KEY_COLOUR: Color = Color(1.0, 0.96, 0.92)  ## near white: a cool key turns the red paint into navy
 const FILL_ENERGY: float = 3.0  ## shadowless fill from the viewer's side, so the front and flanks catch light
 const FILL_COLOUR: Color = Color(1.0, 0.98, 0.95)
 const PROBE_INTENSITY: float = 3.5 ## metal reflects the probe only; the room is dark, so the probe needs gain
-const GLOW_INTENSITY: float = 0.6
-const GLOW_BLOOM: float = 0.06
-const BG_COLOUR: Color = Color(0.012, 0.014, 0.022)
-const AMBIENT_COLOUR: Color = Color(0.05, 0.06, 0.09)
 const KEY_SHADOW_DISTANCE_M: float = 18.0  ## the farthest corner of the room is 15.9 m from the camera; a longer reach only coarsens the map
-const WORKSHOP_PANO: String = "res://assets/vehicles/shared/workshop_pano.jpg"  ## mirrored in the car paint
-const WORKSHOP_REFLECTION: float = 0.6
-const WORKSHOP_BLUR: float = 1.5  ## sharper than on the road: the car stands still and is looked at up close
-const WORKSHOP_HIGHLIGHT: float = 3.0  ## the tube lights draw bright streaks along the body
 
 var layout: Dictionary = {}
 var orbit: GarageOrbit = GarageOrbit.new()
@@ -48,7 +37,6 @@ var _pano: Texture2D = null
 var spec: CarSpec = null
 var car_id: String = ""
 
-var _room: Node3D
 var _turntable: Node3D = null
 var _pivot: Node3D
 var _lights: Node3D
@@ -68,25 +56,22 @@ var _preview_part: String = ""  ## upgrade row under the finger or cursor: its g
 
 
 func _ready() -> void:
-	_room = $Room
 	_pivot = $Pivot
 	_lights = $Lights
 	_camera = $Camera
 	layout = _read_json(LAYOUT_PATH)
 	orbit.configure(layout)
+	orbit.min_dist = ORBIT_MIN_DIST
+	orbit.max_dist = ORBIT_MAX_DIST
 	orbit.set_pose(GarageOrbit.PRESETS["overview"]["yaw"], GarageOrbit.PRESETS["overview"]["pitch"], GarageOrbit.PRESETS["overview"]["dist"])
 	car_id = CarCatalog.race_car_id()
 	spec = load(CarCatalog.spec_path(car_id)) as CarSpec
-	_turntable = _room.find_child("turntable", true, false) as Node3D
-	GarageMaterials.bind(_room)
-	for n: Node in _room.find_children("*", "MeshInstance3D", true, false):
-		(n as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_pivot.position = Vector3(0.0, CAR_Y, 0.0)
 	_spawn_car()
+	_build_showroom()
 	_build_lights()
 	_build_probe()
 	_build_environment()
-	_build_showroom()
 	_camera.fov = CAMERA_FOV
 	_camera.current = true
 	_build_hud()
@@ -294,43 +279,15 @@ func _spawn_car() -> void:
 	car.rotation.y = CAR_TURN
 	_pivot.add_child(car)
 	CarMaterials.set_rim_color(car, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
-	# the workshop's tube lights and windows in the paint; one more pass over the body, so not on the Low preset
+	# the studio strips in the paint; one more pass over the body, so not on the Low preset
 	if Settings.get_preset_id() != "low":
-		if _pano == null and ResourceLoader.exists(WORKSHOP_PANO):
-			_pano = load(WORKSHOP_PANO) as Texture2D  # kept: switching car must not read the picture again
-		if _pano != null:
-			CarMaterials.set_reflection(car, _pano, WORKSHOP_REFLECTION, WORKSHOP_BLUR, WORKSHOP_HIGHLIGHT)
+		if _pano == null:
+			_pano = STAGE_SCRIPT.studio_pano()  # built once per run, shared with the main menu showroom
+		CarMaterials.set_reflection(car, _pano, 0.85, 1.4, 2.2)
 
 
+## Directional key (the one shadow) and a shadowless fill; the studio set adds no spots in the garage.
 func _build_lights() -> void:
-	var by_name: Dictionary = {}
-	for l: Variant in layout.get("lights", []):
-		by_name[str((l as Dictionary)["name"])] = l
-	for nm: String in LIGHT_NAMES:
-		var d: Dictionary = by_name[nm]
-		var p: Vector3 = _v3(d["position"])
-		var c: Array = d["colour"]
-		var col: Color = Color(float(c[0]), float(c[1]), float(c[2]))
-		if SPOT_NAMES.has(nm):
-			var s := SpotLight3D.new()
-			s.name = nm
-			s.light_color = col
-			s.light_energy = SPOT_ENERGY
-			s.spot_range = SPOT_RANGE
-			s.spot_angle = SPOT_ANGLE_DEG
-			s.shadow_enabled = false
-			s.position = p
-			s.rotation_degrees = Vector3(-90.0, 0.0, 0.0)  ## spot points along -Z by default, turn it down
-			_lights.add_child(s)
-		else:
-			var o := OmniLight3D.new()
-			o.name = nm
-			o.light_color = col
-			o.light_energy = OMNI_ENERGY
-			o.omni_range = OMNI_RANGE
-			o.shadow_enabled = false
-			o.position = p
-			_lights.add_child(o)
 	_key = DirectionalLight3D.new()
 	_key.name = "Key"
 	_key.light_color = KEY_COLOUR
@@ -353,44 +310,64 @@ func _build_lights() -> void:
 
 
 func _build_probe() -> void:
-	var c: Array = layout["reflection_probe"]["centre"]
-	var h: Array = layout["reflection_probe"]["half_extents"]
 	_probe = ReflectionProbe.new()
-	_probe.name = "RoomProbe"
-	_probe.position = _v3(c)
-	_probe.size = _v3(h) * 2.0
+	_probe.name = "StudioProbe"
+	_probe.position = Vector3(0.0, 3.0, 0.0)
+	_probe.size = Vector3(26.0, 8.0, 26.0)
+	_probe.cull_mask = ((1 << 20) - 1) & ~ShowroomSet.MIRROR_LAYER_BIT  # strips and wash in the probe, not the floor
 	_probe.box_projection = true
 	_probe.intensity = PROBE_INTENSITY
 	_probe.update_mode = ReflectionProbe.UPDATE_ONCE
 	add_child(_probe)
 
 
+## The studio environment from build_studio, with the player's graphics preset applied (glow on or off).
 func _build_environment() -> void:
-	_env = Environment.new()
-	_env.background_mode = Environment.BG_COLOR
-	_env.background_color = BG_COLOUR
-	_env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	_env.ambient_light_color = AMBIENT_COLOUR
-	_env.ambient_light_energy = 0.5
-	_env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	_env.fog_enabled = false
 	Settings.apply_to_environment(_env)
-	_env.glow_intensity = GLOW_INTENSITY
-	_env.glow_bloom = GLOW_BLOOM
-	_env.glow_hdr_threshold = 1.5  ## only genuinely hot pixels bloom: the lamp strips no longer clip into flat sprites
-	_env.glow_hdr_scale = 1.5
-	var we := WorldEnvironment.new()
-	we.name = "Environment"
-	we.environment = _env
-	add_child(we)
+	_env.glow_hdr_threshold = 1.4  ## only genuinely hot pixels bloom
 
 
-## Mirror floor and turntable plate, soft contact shadow, warm rim and cool fill lights, neon accents.
+## Studio set (shared with the main menu), turntable, contact shadow under the car. The ShowroomSet node keeps the
+## floor material, mirror and shadow references other code and tests read.
 func _build_showroom() -> void:
 	_set = ShowroomSet.new()
 	_set.name = "Showroom"
 	add_child(_set)
-	_set.attach_garage(_room, _pivot, CAR_Y, Settings.get_preset_id() != "low")
+	var built: Dictionary = STAGE_SCRIPT.build_studio(_set, "lite" if Settings.get_preset_id() == "low" else "full", false, false, false)
+	_env = built["env"]
+	var we: Node = _set.get_node("Environment")
+	we.reparent(self)  # the garage's WorldEnvironment lives at the scene root, as before ($Environment)
+	_set.floor_material = built["floor_material"]
+	_set.floor_material.set_shader_parameter("light_specular", 0.0)  # the directional key would glint on the floor near the lens
+	_set.planar = built["planar"]
+	_set.contact_shadow = ShowroomSet.make_contact_shadow(0.004)
+	_pivot.add_child(_set.contact_shadow)
+	_turntable = _make_turntable()
+	add_child(_turntable)
+	GARAGE_ROOM.build(_set, _set.floor_material, TURNTABLE_R, CAR_Y)
+
+
+## Satin black disc the car stands on (top at CAR_Y); it turns with the car. Its chrome lip and the red floor glow come
+## from garage_showroom.gd.
+func _make_turntable() -> Node3D:
+	var root := Node3D.new()
+	root.name = "Turntable"
+	var disc := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = TURNTABLE_R
+	cyl.bottom_radius = TURNTABLE_R
+	cyl.height = CAR_Y
+	cyl.radial_segments = 96
+	disc.mesh = cyl
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.03, 0.032, 0.038)
+	m.metallic = 0.0
+	m.roughness = 0.75  # matte black: any gloss mirrors the ceiling panels as a white patch in the rear views
+	disc.material_override = m
+	disc.position.y = CAR_Y * 0.5
+	disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(disc)
+	return root
 
 
 func _build_hud() -> void:

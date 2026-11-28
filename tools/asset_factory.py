@@ -32,12 +32,13 @@ import zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
-KINDS = ("texture", "model", "hdri", "audio", "generated")
-SOURCES = ("cc0:polyhaven", "cc0:ambientcg", "cc-by:vinish.dev", "generated:blender", "generated:script", "generated:ai")
-LICENCES = ("CC0-1.0", "CC-BY-4.0", "project-owned")
+KINDS = ("texture", "model", "hdri", "audio", "generated", "font")
+SOURCES = ("cc0:polyhaven", "cc0:ambientcg", "cc-by:vinish.dev", "generated:blender", "generated:script", "generated:ai",
+           "ofl:google-fonts")
+LICENCES = ("CC0-1.0", "CC-BY-4.0", "OFL-1.1", "project-owned")
 THIRD_PARTY_PREFIX = "cc0:"
 # third-party source prefix -> the one licence it may carry (CC BY needs a credit line: see cmd_licenses)
-THIRD_PARTY_LICENCE = {"cc0:": "CC0-1.0", "cc-by:": "CC-BY-4.0"}
+THIRD_PARTY_LICENCE = {"cc0:": "CC0-1.0", "cc-by:": "CC-BY-4.0", "ofl:": "OFL-1.1"}  # OFL: fonts only, licence text ships beside them
 
 
 def _third_party_licence(source):
@@ -382,12 +383,28 @@ def cmd_licenses(args, root, manifest_path, out_path):
             lines.append("| %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
                 r["id"], r["kind"], r["source"], r["source_url"], r["license"], r["author"] or "-",
                 (r.get("notes") or "-").replace("|", "/"), r["added"], r["sha256"][:12]))
+    oflrecs = [r for r in third if r["license"] == "OFL-1.1"]
+    if oflrecs:  # fonts: the licence text and copyright lines ship beside the files (OFL.txt)
+        lines += [
+            "",
+            "## SIL Open Font License 1.1 (fonts)",
+            "",
+            "Licence: https://openfontlicense.org. The copyright lines and the full licence ship next to the font files",
+            "(game/assets/branding/fonts/OFL.txt); the fonts are not sold on their own.",
+            "",
+            "| id | kind | source | URL | licence | author | where used | added | sha256 (first 12) |",
+            "|---|---|---|---|---|---|---|---|---|",
+        ]
+        for r in sorted(oflrecs, key=lambda r: r["id"]):
+            lines.append("| %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
+                r["id"], r["kind"], r["source"], r["source_url"], r["license"], r["author"] or "-",
+                (r.get("notes") or "-").replace("|", "/"), r["added"], r["sha256"][:12]))
     lines.append("")
     tmp = out_path + ".tmp"
     with open(tmp, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines))
     os.replace(tmp, out_path)
-    print("wrote %s (%d CC0 rows, %d CC BY rows)" % (out_path, len(recs), len(byrecs)))
+    print("wrote %s (%d CC0 rows, %d CC BY rows, %d OFL rows)" % (out_path, len(recs), len(byrecs), len(oflrecs)))
     return 0
 
 

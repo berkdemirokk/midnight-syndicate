@@ -3,31 +3,31 @@
     2532,
     1170
   ],
-  "luma_max": 0.96,
-  "luma_min": 0.008,
+  "luma_max": 0.957,
+  "luma_min": 0.012,
   "name": "loading_iphone_2532x1170",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
     "draw_calls": 10,
     "draw_calls_min": 10,
     "driver": "vulkan",
-    "fps": 2251.914,
-    "frame_ms_avg": 0.444,
-    "frame_ms_p95": 0.507,
-    "frame_ms_p99": 0.656,
+    "fps": 2786.421,
+    "frame_ms_avg": 0.359,
+    "frame_ms_p95": 0.377,
+    "frame_ms_p99": 0.429,
     "frames": 60,
     "objects": 108,
     "os": "Windows",
     "primitives": 216,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 85.935,
+    "video_mem_mb": 86.06,
     "viewport_size": [
       2532,
       1170
     ]
   },
-  "png": "C:/Users/berk/car race/.claude/worktrees/wp-mainmenu/evidence/screens/ui_loading/loading_iphone_2532x1170.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/street-empire-ui-overhaul-55fa2f/evidence/screens/ui_loading/loading_iphone_2532x1170.png",
   "preset": "high",
   "scenario": "ui_loading"
 }

@@ -9,14 +9,14 @@ const PULSE_HZ: float = 4.0
 const SEGMENTS: int = 10  ## blocks around the ring
 const SEG_GAP_RAD: float = 0.12  ## gap between two blocks, radians
 const STEPS_PER_SEG: int = 6  ## chords per block
-const VIOLET: Color = Color(0.706, 0.361, 1.0)  ## #B45CFF, the HUD accent
-const TRACK_RING_COL: Color = Color(0.14, 0.15, 0.18)  ## empty block, pre-blended (translucent chords bead)
-const GLOW_RING_COL: Color = Color(0.38, 0.2, 0.52)  ## violet glow while firing, pre-blended
+const VIOLET: Color = MSTheme.RED  ## the HUD accent (name kept from the release; STREET EMPIRE racing red)
+const TRACK_RING_COL: Color = Color(0.17, 0.18, 0.2)  ## empty block: titanium 20 % over graphite, pre-blended
+const GLOW_RING_COL: Color = Color(0.42, 0.13, 0.10)  ## red glow while firing, pre-blended
 const BOLT_UNITS: Array[Vector2] = [Vector2(0.18, -0.55), Vector2(-0.22, 0.08), Vector2(0.04, 0.08),
 	Vector2(-0.18, 0.55), Vector2(0.24, -0.06), Vector2(-0.02, -0.06)]  ## in units of the radius, from the centre
 
 var radius_px: float = 50.0
-var ring_px: float = 9.0
+var ring_px: float = 8.0
 var amount: float = 0.0
 var active: bool = false
 var _pulse_t: float = 0.0

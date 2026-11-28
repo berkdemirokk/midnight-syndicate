@@ -17,9 +17,9 @@ const PAUSE_GAP_PX: float = 16.0  ## between the lap strip and the pause button
 @export var pedal_width_frac: float = 0.2
 @export var zone_height_frac: float = 0.36  ## steer zones and pedal, fraction of the usable height
 @export var button_size_frac: float = 0.12  ## nitro and drift, fraction of the smaller usable side
-@export var idle_color: Color = Color(1.0, 1.0, 1.0, 0.12)
-@export var pressed_color: Color = Color(1.0, 1.0, 1.0, 0.35)
-@export var label_color: Color = Color(1.0, 1.0, 1.0, 0.55)
+@export var idle_color: Color = MSTheme.tint(MSTheme.GRAPHITE_2, 0.42)  ## translucent graphite
+@export var pressed_color: Color = MSTheme.tint(MSTheme.RED, 0.55)  ## racing red while held
+@export var label_color: Color = MSTheme.tint(MSTheme.PEARL, 0.9)
 @export var label_size: int = 28
 
 var _driver: PlayerDriver = null
@@ -42,8 +42,9 @@ func _ready() -> void:
 	_pause_btn.name = "PauseButton"
 	_pause_btn.tooltip_text = I18n.t("touch.pause")
 	_pause_btn.focus_mode = Control.FOCUS_NONE
-	for state: String in ["normal", "hover", "pressed", "focus"]:
-		_pause_btn.add_theme_stylebox_override(state, MSTheme.card(MSTheme.PLATE_BG, MSTheme.CYAN, 2))
+	for state: String in ["normal", "hover", "focus"]:
+		_pause_btn.add_theme_stylebox_override(state, MSTheme.card(MSTheme.PLATE_BG, MSTheme.tint(MSTheme.TITANIUM, 0.5), 2))
+	_pause_btn.add_theme_stylebox_override("pressed", MSTheme.card(MSTheme.tint(MSTheme.RED, 0.85), MSTheme.RED, 2))
 	_pause_btn.draw.connect(_on_pause_draw)
 	_pause_btn.pressed.connect(func() -> void: pause_pressed.emit())
 	add_child(_pause_btn)
@@ -189,12 +190,14 @@ func _push() -> void:
 
 
 func _on_pad_draw() -> void:
-	var font: Font = ThemeDB.fallback_font
+	var font: Font = MSTheme.font("tracked")
 	for z: int in range(1, ZONE_COUNT):
 		var r: Rect2 = _rects[z]
 		if r.size == Vector2.ZERO:
 			continue
-		_pad.draw_rect(r, pressed_color if ((_held_mask >> z) & 1) == 1 else idle_color)
+		var held: bool = ((_held_mask >> z) & 1) == 1
+		_pad.draw_rect(r, pressed_color if held else idle_color)
+		_pad.draw_rect(r, MSTheme.RED if held else MSTheme.tint(MSTheme.TITANIUM, 0.4), false, 2.0)  # titanium hairline
 		var label_pos := Vector2(r.position.x, r.position.y + r.size.y * 0.5 + label_size * 0.35)
 		_pad.draw_string(font, label_pos, _label(z), HORIZONTAL_ALIGNMENT_CENTER, r.size.x, label_size, label_color)
 
@@ -220,5 +223,5 @@ func _on_pause_draw() -> void:
 	var s: Vector2 = _pause_btn.size
 	var bar: Vector2 = Vector2(s.x * 0.14, s.y * 0.42)
 	var y: float = s.y * 0.29
-	_pause_btn.draw_rect(Rect2(Vector2(s.x * 0.31, y), bar), MSTheme.CYAN)
-	_pause_btn.draw_rect(Rect2(Vector2(s.x * 0.55, y), bar), MSTheme.CYAN)
+	_pause_btn.draw_rect(Rect2(Vector2(s.x * 0.31, y), bar), MSTheme.PEARL)
+	_pause_btn.draw_rect(Rect2(Vector2(s.x * 0.55, y), bar), MSTheme.PEARL)
