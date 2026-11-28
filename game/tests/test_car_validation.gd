@@ -17,13 +17,20 @@ const TRACK_MAX_SPEED_KMH: float = 252.0  ## Track.max_speed: a rival slower tha
 const LOD0_SURFACES_MAX: Dictionary = {
 	"arden_bruiser": 21, "arden_havoc": 22, "atmaca_modified": 23, "bosfor_yildirim": 23, "kestrel_gtr": 23, "kestrel_marten": 22,
 	"kestrel_vanta": 23, "noctra_meridian": 23, "noctra_sable": 23, "noctra_tayfun": 23, "noctra_vela": 22,
+	"bosfor_kivilcim": 22, "bosfor_serce": 22, "arden_ramjet": 21, "arden_shaker": 21,
+	"noctra_volta": 23, "noctra_sovereign": 23, "noctra_titan": 22,
+	"police_patrol": 23, "police_interceptor": 23, "police_suv": 23,
 }
+
+## Police cars are not for sale: they are not in the catalog, but they carry the same LOD and surface contract.
+const POLICE_IDS: Array[String] = ["police_patrol", "police_interceptor", "police_suv"]
 
 
 func _ids() -> Array[String]:
 	var out: Array[String] = []
 	for c: Dictionary in CarCatalog.DEFAULT_CARS:
 		out.append(str(c["id"]))
+	out.append_array(POLICE_IDS)
 	return out
 
 

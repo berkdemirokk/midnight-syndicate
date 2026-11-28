@@ -91,9 +91,9 @@ func test_elimination_stars_follow_the_place() -> void:
 func test_drift_reward_uses_the_star_tier() -> void:
 	var old: Dictionary = _open_temp_profile()
 	var r: Dictionary = GameState.record_result("drift_harbour", 60.0, 1, 700.0)
-	# 2 stars pay the second tier (2400) times the event multiplier 2.0
+	# 2 stars pay the second tier (3360) times the event multiplier 2.0
 	check(int(r.get("stars", 0)) == 2, "700 points should give 2 stars, got %s" % str(r.get("stars")))
-	check(int(r.get("cash", 0)) == 4800, "drift cash = 2400 x 2.0, got %s" % str(r.get("cash")))
+	check(int(r.get("cash", 0)) == 6720, "drift cash = 3360 x 2.0, got %s" % str(r.get("cash")))
 	check(GameState.event_stars("drift_harbour") == 2, "stars saved to the career")
 	_restore_profile(old)
 
@@ -101,7 +101,7 @@ func test_drift_reward_uses_the_star_tier() -> void:
 func test_elimination_reward_uses_the_place() -> void:
 	var old: Dictionary = _open_temp_profile()
 	var r: Dictionary = GameState.record_result("elim_wharf", 100.0, 4)
-	check(int(r.get("cash", 0)) == 1000, "4th place cash = 400 x 2.5, got %s" % str(r.get("cash")))
+	check(int(r.get("cash", 0)) == 1400, "4th place cash = 560 x 2.5, got %s" % str(r.get("cash")))
 	check(GameState.best_time("elim_wharf") == 0.0 and not bool(r.get("new_best", true)), "an early elimination is not a best time")
 	_restore_profile(old)
 

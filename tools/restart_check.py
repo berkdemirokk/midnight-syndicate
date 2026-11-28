@@ -5,7 +5,7 @@
 # save file (an absolute path outside user://, so the real save is never written):
 #   1. setup  - process A starts a career (car, paint, rim, upgrades, event results, selection) and saves it.
 #   2. verify - process B loads the save; its snapshot must equal the setup snapshot. Cash is also checked
-#               against an independently computed 57080.
+#               against an independently computed 62072.
 #   3. crash  - process C saves in a loop and is killed while save.json.tmp exists (retried up to 5 times).
 #               The main file must still parse, and the backup must be the last good save (equal to main
 #               or one behind). Then a verify run must load the main file.
@@ -26,7 +26,7 @@ GODOT = os.environ.get("GODOT", r"C:\Users\berk\tools\godot\Godot_v4.7.2-stable_
 GAME = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "game"))
 DRIVER = "res://tests/persist_restart_driver.gd"
 REAL_SAVE = os.path.join(os.environ.get("APPDATA", ""), "Godot", "app_userdata", "Midnight Syndicate", "save.json")
-EXPECTED_CASH = 57080  # 5000 + 50000 - 8000 car - 800 - 1600 upgrades + 3600 + 6000 + 2880 rewards (reward table x4, ECONOMY_2026-11-28.md)
+EXPECTED_CASH = 62072  # 5000 + 50000 - 8000 car - 800 - 1600 upgrades + 17472 rewards (12480 x1.4: reward table x1.4 for the 18-car roster, 2026-11-28)
 
 results = []
 

@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.961,
+  "luma_min": 0.0,
+  "name": "police_interceptor_side",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 50,
+    "draw_calls_min": 50,
+    "driver": "vulkan",
+    "fps": 905.018,
+    "frame_ms_avg": 1.105,
+    "frame_ms_p95": 1.265,
+    "frame_ms_p99": 1.455,
+    "frames": 60,
+    "objects": 50,
+    "os": "Windows",
+    "primitives": 169594,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 493.875,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/car_studio_police/police_interceptor_side.png",
+  "preset": "high",
+  "scenario": "car_studio_police"
+}

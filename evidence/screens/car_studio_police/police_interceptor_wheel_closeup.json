@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.965,
+  "luma_min": 0.0,
+  "name": "police_interceptor_wheel_closeup",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 56,
+    "draw_calls_min": 56,
+    "driver": "vulkan",
+    "fps": 575.424,
+    "frame_ms_avg": 1.738,
+    "frame_ms_p95": 2.041,
+    "frame_ms_p99": 2.166,
+    "frames": 60,
+    "objects": 56,
+    "os": "Windows",
+    "primitives": 169816,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 493.875,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/car_studio_police/police_interceptor_wheel_closeup.png",
+  "preset": "high",
+  "scenario": "car_studio_police"
+}

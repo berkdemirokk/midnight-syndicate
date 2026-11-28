@@ -74,7 +74,7 @@ func test_full_career_survives_restart() -> void:
 	var again: Node = _open(path)
 	check(_snapshot(again) == before, "every progression field matches after restart")
 	# 5000 start + 50000 grant - 8000 car - 800 - 1600 upgrades + 3600 (2nd) + 6000 (1st) + 2880 (time trial, 2 stars)
-	check(again.get_cash() == 57080, "cash is 57080 after restart, got %d" % again.get_cash())
+	check(again.get_cash() == 62072, "cash is 62072 after restart, got %d" % again.get_cash())
 	check(again.has_car(CAR) and again.has_car(CarCatalog.STARTER), "both owned cars survive")
 	check(again.get_selected_car() == CAR, "selected car survives")
 	check(again.get_setup(CAR)["paint_color"] == "1e5aa0", "paint survives, got %s" % again.get_setup(CAR)["paint_color"])
@@ -86,7 +86,7 @@ func test_full_career_survives_restart() -> void:
 	check(again.total_stars() == 5, "total stars is 5, got %d" % again.total_stars())
 	var stats: Dictionary = again.profile["stats"]
 	check(stats["races"] == 3 and stats["wins"] == 1, "stats races 3 wins 1, got %s" % str(stats))
-	check(stats["cash_earned"] == 12480, "cash_earned is 12480, got %d" % stats["cash_earned"])
+	check(stats["cash_earned"] == 17472, "cash_earned is 17472, got %d" % stats["cash_earned"])
 	metric("cash_after_restart", again.get_cash())
 	metric("total_stars", again.total_stars())
 	_close(again)

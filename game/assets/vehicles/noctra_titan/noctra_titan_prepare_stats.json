@@ -1,0 +1,272 @@
+{
+ "car_id": "noctra_titan",
+ "source": "assets_src/third_party/vinish_cars/incoming2/super-suv.glb",
+ "lod0": {
+  "tris": 67087,
+  "tris_by_node": {
+   "body": 17412,
+   "brake_FL": 1084,
+   "brake_FR": 1084,
+   "brake_RL": 1030,
+   "brake_RR": 1030,
+   "col_body": 90,
+   "exhaust": 3168,
+   "glass": 6060,
+   "interior": 8262,
+   "lights_front": 996,
+   "lights_rear": 2470,
+   "plate_rear": 2,
+   "trim": 9280,
+   "underbody": 1851,
+   "wheel_FL": 3317,
+   "wheel_FR": 3317,
+   "wheel_RL": 3317,
+   "wheel_RR": 3317
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 22,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 12,
+  "box": [
+   [
+    -1.177018642425537,
+    -2.4511218070983887,
+    0.00023031234741210938
+   ],
+   [
+    1.177018642425537,
+    2.5134706497192383,
+    1.8481097221374512
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 2
+ },
+ "lod1": {
+  "tris": 19231,
+  "tris_by_node": {
+   "body": 5220,
+   "col_body": 90,
+   "glass": 1211,
+   "interior": 3302,
+   "lights_front": 468,
+   "lights_rear": 988,
+   "trim": 4768,
+   "wheel_FL": 796,
+   "wheel_FR": 796,
+   "wheel_RL": 796,
+   "wheel_RR": 796
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 14,
+  "materials": [
+   "M_Glass",
+   "M_Interior",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 8,
+  "box": [
+   [
+    -1.1736085414886475,
+    -2.4482197761535645,
+    0.0008510947227478027
+   ],
+   [
+    1.1736992597579956,
+    2.512833595275879,
+    1.8481097221374512
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
+ },
+ "lod2": {
+  "tris": 6887,
+  "tris_by_node": {
+   "body": 2963,
+   "col_body": 90,
+   "glass": 484,
+   "interior": 448,
+   "lights_rear": 197,
+   "trim": 1957,
+   "wheel_FL": 187,
+   "wheel_FR": 187,
+   "wheel_RL": 187,
+   "wheel_RR": 187
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "col_body": [],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 9,
+  "materials": [
+   "M_Glass",
+   "M_Interior",
+   "M_LightRear",
+   "M_Paint",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 6,
+  "box": [
+   [
+    -1.1849911212921143,
+    -2.4482197761535645,
+    -0.0021308958530426025
+   ],
+   [
+    1.1849911212921143,
+    2.50494647026062,
+    1.8481097221374512
+   ]
+  ],
+  "stray_verts_moved": {
+   "body": 6,
+   "interior": 52,
+   "trim": 35,
+   "wheel_FL": 1,
+   "wheel_FR": 1,
+   "wheel_RL": 1,
+   "wheel_RR": 1
+  },
+  "tail_pipes": 0
+ }
+}

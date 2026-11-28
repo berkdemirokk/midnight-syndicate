@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.965,
+  "luma_max": 0.976,
   "luma_min": 0.0,
   "name": "contact_sheet_view",
   "perf": {
@@ -11,10 +11,10 @@
     "draw_calls": 2,
     "draw_calls_min": 2,
     "driver": "vulkan",
-    "fps": 2900.232,
-    "frame_ms_avg": 0.345,
-    "frame_ms_p95": 0.509,
-    "frame_ms_p99": 0.632,
+    "fps": 842.129,
+    "frame_ms_avg": 1.187,
+    "frame_ms_p95": 1.905,
+    "frame_ms_p99": 2.04,
     "frames": 60,
     "objects": 2,
     "os": "Windows",

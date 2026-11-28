@@ -1,6 +1,9 @@
 "Mid-Engine Supercar" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Kestrel Vanta.
 "Muscle Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Arden Havoc.
 "Widebody Drift Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Noctra Cyclon.
+"Electric Sports Saloon" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Noctra Volta.
+"Super Saloon" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Noctra Sovereign.
+"Super SUV" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Noctra Titan.
 "Grand Tourer" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Noctra Meridian.
 "Rear-Engine Sports Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Kestrel Marten.
 "Hypercar" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Velmar Fulmen.
@@ -32,6 +35,16 @@
 "Italianate Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Second Empire Mansion" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Ortakoy street front, LODs.
 "Sirens and Alarm Noise" by aquinn (https://opengameart.org/content/sirens-and-alarm-noise), CC0 1.0 public domain. Used: police siren.
+"EV Hatchback" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Kıvılcım.
+"Pocket Rocket Hatch" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Bosfor Serçe.
+"Ram-Air Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Arden Ramjet.
+"Shaker Hood Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Arden Shaker.
+"Police Car" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Polis Devriye (police patrol).
+"Pursuit Coupe" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Polis Takip (police interceptor).
+"Police SUV" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Polis SUV (police heavy unit).
+"Yellow City Cab" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Taksi (traffic cab).
+"City Van" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Minibus (traffic van).
+"Panel Van" by vinish.dev (https://vinish.dev/free-3d-models/), CC BY 4.0. Modified: Panelvan (traffic panel van).
 
 Fonts (SIL Open Font License 1.1, files and licence in game/assets/branding/fonts/):
 Anton, Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont).

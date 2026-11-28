@@ -36,4 +36,4 @@ func test_minimap_hides_eliminated_rival() -> void:
 
 
 func test_cash_reward_table() -> void:
-	check(GameState.REWARD_CASH == PackedInt32Array([4000, 2400, 1200, 400]), "cash reward table 4000/2400/1200/400")
+	check(GameState.REWARD_CASH == PackedInt32Array([5600, 3360, 1680, 560]), "cash reward table 5600/3360/1680/560 (x1.4 for the 18-car roster)")
