@@ -11,6 +11,8 @@ var _params: Dictionary = {}
 var _busy: bool = false
 var _fade_enabled: bool = true
 var _rect: ColorRect = null
+var _card: Control = null
+const LOADING_CARD: String = "res://ui/menus/loading_card.gd"
 
 
 func _ready() -> void:
@@ -22,6 +24,12 @@ func _ready() -> void:
 	_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layer.add_child(_rect)
+	# STREET EMPIRE loading card inside the fade: shown while the next scene loads, faded with the rect.
+	if ResourceLoader.exists(LOADING_CARD):
+		_card = (load(LOADING_CARD) as Script).new() as Control
+		_card.modulate.a = 0.0
+		_card.visible = false
+		_rect.add_child(_card)
 	_fade_enabled = DisplayServer.get_name() != "headless" and fade_seconds > 0.0 and not _is_capture_run()
 	get_tree().scene_changed.connect(_on_tree_scene_changed)
 
@@ -80,7 +88,12 @@ func _fade(alpha: float) -> void:
 		return
 	var tw: Tween = create_tween()
 	tw.tween_property(_rect, "color:a", alpha, fade_seconds)
+	if _card != null:
+		_card.visible = true
+		tw.parallel().tween_property(_card, "modulate:a", alpha, fade_seconds)
 	await tw.finished
+	if _card != null and alpha <= 0.0:
+		_card.visible = false
 
 
 func _is_capture_run() -> bool:

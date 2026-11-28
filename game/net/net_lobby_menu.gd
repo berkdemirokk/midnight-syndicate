@@ -20,8 +20,9 @@ var _session: NetSession
 
 func _ready() -> void:
 	_session = NetSession.get_or_create(get_tree())
+	theme = MSTheme.build()
 	var shade := ColorRect.new()
-	shade.color = Color(0.02, 0.03, 0.05, 0.92)
+	shade.color = Color(MSTheme.GRAPHITE.r, MSTheme.GRAPHITE.g, MSTheme.GRAPHITE.b, 0.96)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(shade)
 	var box := VBoxContainer.new()
@@ -31,7 +32,7 @@ func _ready() -> void:
 	box.grow_vertical = Control.GROW_DIRECTION_BOTH
 	box.add_theme_constant_override("separation", 10)
 	add_child(box)
-	box.add_child(_label(I18n.t("net.title"), 26))
+	box.add_child(MSTheme.make_label(I18n.t("net.title"), "display", MSTheme.px(44), MSTheme.TEXT))
 	box.add_child(_label(I18n.t("net.local_only"), 14))
 	_address = _field(box, I18n.t("net.address"), NetConfig.cmdline_value("address", NetConfig.DEFAULT_BIND))
 	_address.text_changed.connect(_on_address_changed)
@@ -42,6 +43,7 @@ func _ready() -> void:
 	row.add_child(_button(I18n.t("net.host"), _on_host))
 	row.add_child(_button(I18n.t("net.join"), _on_join))
 	_ready_btn = _button(I18n.t("net.ready"), _on_ready)
+	_ready_btn.theme_type_variation = &"PrimaryButton"  # the one primary action on this panel
 	row.add_child(_ready_btn)
 	row.add_child(_button(I18n.t("net.back"), _on_back))
 	box.add_child(row)

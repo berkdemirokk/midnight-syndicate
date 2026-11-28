@@ -10,6 +10,7 @@ const BLADE_W_EM: float = 0.16  ## blade width as a fraction of the word size
 const GAP_EM: float = 0.10  ## gap on each side of the blade
 const TAG_GAP_PX: float = 10.0
 const PAD_PX: float = 4.0
+const CAP_RATIO: float = 0.73  ## Anton cap height / ascent (measured from the font file), so the blade matches the letters
 
 var scale_k: float = 1.0
 var show_tagline: bool = true
@@ -39,7 +40,7 @@ func measure() -> Vector2:
 	var w: float = f.get_string_size(word_a, HORIZONTAL_ALIGNMENT_LEFT, -1, wp).x \
 		+ f.get_string_size(word_b, HORIZONTAL_ALIGNMENT_LEFT, -1, wp).x \
 		+ float(wp) * (BLADE_W_EM + GAP_EM * 2.0)
-	var h: float = f.get_ascent(wp) * 0.98 + PAD_PX * 2.0
+	var h: float = f.get_ascent(wp) * CAP_RATIO + PAD_PX * 2.0
 	if show_tagline:
 		h += TAG_GAP_PX * scale_k + MSTheme.font("tracked").get_height(_tag_px())
 	return Vector2(ceilf(w + PAD_PX * 2.0 + f.get_ascent(wp) * MSTheme.SKEW_RATIO), ceilf(h))
@@ -52,7 +53,7 @@ func _shear(baseline: float) -> Transform2D:
 func _draw() -> void:
 	var f: Font = MSTheme.font("display")
 	var wp: int = _word_px()
-	var cap: float = f.get_ascent(wp) * 0.98  ## Anton capitals fill the ascent
+	var cap: float = f.get_ascent(wp) * CAP_RATIO
 	var base: float = PAD_PX + cap
 	var x: float = PAD_PX
 	var wa: float = f.get_string_size(word_a, HORIZONTAL_ALIGNMENT_LEFT, -1, wp).x

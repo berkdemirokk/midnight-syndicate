@@ -36,6 +36,16 @@ func run() -> void:
 		race.race_time += 1.0 / 60.0
 		await cap.wait_frames(1)
 	await cap.shot("desktop_%dx%d" % [DESKTOP_W, DESKTOP_H])
+	# The same HUD in English: the labels are read when the HUD is built, so rebuild it under the language.
+	var saved_language: String = Settings.language
+	Settings.set_language("en")
+	race = await _build()
+	await cap.wait_frames(SETTLE_FRAMES)
+	for i: int in TICK_FRAMES:
+		race.race_time += 1.0 / 60.0
+		await cap.wait_frames(1)
+	await cap.shot("desktop_en_%dx%d" % [DESKTOP_W, DESKTOP_H])
+	Settings.set_language(saved_language)
 	MSTheme.set_phone(true)
 	cap.set_size(PHONE_W, PHONE_H)
 	race = await _build()

@@ -198,7 +198,7 @@ func test_long_career_list_keeps_selected_row_visible() -> void:
 		await frames(2)
 		check(screen.get_selected_id() == EventCatalog.id_at(i), "selection reachable: %d" % i)
 		check(screen.is_selected_row_visible(), "selected row visible: %d" % i)
-		check(screen.get_visible_row_count() == capacity, "bounded event window")
+		check(screen.get_visible_row_count() == mini(capacity, screen.get_district_event_count()), "bounded event window in its district")
 	cleanup([screen])
 	await frames(2)
 	_end()

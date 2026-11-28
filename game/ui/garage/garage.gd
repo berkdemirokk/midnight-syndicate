@@ -8,8 +8,8 @@ const MAIN_MENU: String = "res://ui/menus/main_menu.tscn"
 const RACE_SCENE: String = "res://ui/menus/event_select.tscn"  ## RACE opens the career ladder (rewards count there)
 const CAR_Y: float = 0.065  ## turntable plate top, from garage_layout.json
 const CAR_TURN: float = PI  ## the car model faces +Z in Godot; the garage stand faces -Z
-const CAMERA_FOV: float = 50.0
-const LOOK_SHIFT_M: float = 0.45  ## looks this far right of the car, so the car sits left of centre beside the panel
+const CAMERA_FOV: float = 54.0  ## wide enough that the car clears the stats column and the configurator
+const LOOK_SHIFT_M: float = 0.0  ## centred car: the stats column (left) and the configurator (right) frame it
 const TURN_RATE: float = 0.12  ## rad/s of the turntable once idle spin is on
 const TURN_EASE: float = 1.5  ## 1/s, how fast the turntable reaches its speed
 const KEY_ORBIT_RATE: float = 1.4  ## rad/s while steer keys are held
@@ -391,6 +391,80 @@ func _build_showroom() -> void:
 	_set.name = "Showroom"
 	add_child(_set)
 	_set.attach_garage(_room, _pivot, CAR_Y, Settings.get_preset_id() != "low")
+	_rebrand_room()
+
+
+## Facing direction of a flat sign panel: its thinnest local axis, turned toward the room centre (the turntable).
+func _panel_normal(n: Node3D, at: Vector3) -> Vector3:
+	var axis := Vector3.BACK
+	var mi: MeshInstance3D = n as MeshInstance3D
+	if mi != null and mi.mesh != null:
+		var sz: Vector3 = mi.mesh.get_aabb().size
+		axis = Vector3.RIGHT if sz.x <= sz.y and sz.x <= sz.z else (Vector3.UP if sz.y <= sz.z else Vector3.BACK)
+	var nrm: Vector3 = (n.global_transform.basis * axis)
+	nrm.y = 0.0
+	nrm = nrm.normalized() if nrm.length() > 0.01 else Vector3.BACK
+	if nrm.dot(Vector3(-at.x, 0.0, -at.z)) < 0.0:
+		nrm = -nrm
+	return nrm
+
+
+## STREET EMPIRE pass on the room: the old neon "SYNDICATE GARAGE" sign becomes a STREET EMPIRE sign in the brand
+## face, the sign lights turn warm white, and the showroom's cyan/magenta/amber floor neon turns racing red (the ring)
+## and dim titanium (the strips). Geometry and draw calls unchanged; the room GLB is not edited.
+func _rebrand_room() -> void:
+	var sign_mesh: MeshInstance3D = _room.find_child("sign_syndicate", true, false) as MeshInstance3D
+	for nm: String in ["sign_syndicate", "sign_underline"]:
+		var n: Node3D = _room.find_child(nm, true, false) as Node3D
+		if n != null:
+			n.visible = false
+	var panel: Node3D = _room.find_child("sign_panel", true, false) as Node3D
+	var anchor: Node3D = panel if panel != null else sign_mesh
+	if anchor != null and anchor.is_inside_tree():
+		var at: Vector3 = anchor.global_position
+		if anchor is MeshInstance3D and (anchor as MeshInstance3D).mesh != null:
+			at = anchor.global_transform * (anchor as MeshInstance3D).mesh.get_aabb().get_center()
+		var label := Label3D.new()
+		label.name = "BrandSign"
+		label.text = "STREET EMPIRE"
+		label.font = MSTheme.font("slant")
+		label.font_size = 128
+		label.outline_size = 0
+		label.modulate = MSTheme.PEARL
+		label.pixel_size = 0.0034
+		label.shaded = false
+		label.double_sided = false
+		var to_room: Vector3 = _panel_normal(panel if panel != null else anchor, at)
+		add_child(label)
+		label.global_transform = Transform3D(Basis.looking_at(-to_room, Vector3.UP), at + to_room * 0.06)
+		var bar := MeshInstance3D.new()
+		bar.name = "BrandBlade"
+		var bm := BoxMesh.new()
+		bm.size = Vector3(1.7, 0.04, 0.01)
+		bar.mesh = bm
+		var bmat := StandardMaterial3D.new()
+		bmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		bmat.albedo_color = MSTheme.RED
+		bar.material_override = bmat
+		add_child(bar)
+		bar.global_transform = Transform3D(Basis.looking_at(-to_room, Vector3.UP), at + to_room * 0.06 + Vector3(0.0, -0.3, 0.0))
+	for l: Node in _lights.get_children():
+		if l is Light3D and str(l.name).begins_with("neon_sign"):
+			(l as Light3D).light_color = Color(1.0, 0.93, 0.86)
+	for n: Node in _set.get_children():
+		var mi: MeshInstance3D = n as MeshInstance3D
+		if mi == null or mi.mesh == null:
+			continue
+		var mat: StandardMaterial3D = (mi.material_override if mi.material_override != null else mi.mesh.surface_get_material(0)) as StandardMaterial3D
+		if mat == null or not mat.emission_enabled or mat.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED:
+			continue
+		var ring: bool = mi.mesh is TorusMesh
+		var col: Color = MSTheme.RED if ring else MSTheme.TITANIUM
+		var m2: StandardMaterial3D = mat.duplicate() as StandardMaterial3D
+		m2.albedo_color = col * 0.15
+		m2.emission = col
+		m2.emission_energy_multiplier = 1.4 if ring else 0.6
+		mi.material_override = m2
 
 
 func _build_hud() -> void:

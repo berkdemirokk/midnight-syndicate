@@ -24,6 +24,7 @@ var step: int = STEP_LANGUAGE
 
 var _backdrop: MenuBackdrop
 var _col: VBoxContainer
+var _logo: Control
 var _title: Label
 var _body: Label
 var _lang_row: HBoxContainer
@@ -56,7 +57,9 @@ func _ready() -> void:
 	_col.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	_col.add_theme_constant_override("separation", int(MSTheme.GRID_PX * 3))
 	margin.add_child(_col)
-	_title = MSTheme.make_label("", "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT)
+	_logo = Logotype.new(MSTheme.k() * 0.6, true)
+	_col.add_child(_logo)
+	_title = MSTheme.make_label("", "display", MSTheme.px(TITLE_PX), MSTheme.TEXT)
 	_col.add_child(_title)
 	_body = MSTheme.make_label("", "body", MSTheme.px(BODY_PX), MSTheme.MUTED)
 	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -94,6 +97,10 @@ func _exit_tree() -> void:
 func set_step(s: int) -> void:
 	step = s
 	_lang_row.visible = step == STEP_LANGUAGE
+	# Step 2 draws the real touch pads over the upper and middle screen: the text moves to the free bottom band.
+	_logo.visible = step == STEP_LANGUAGE
+	_col.size_flags_vertical = Control.SIZE_SHRINK_END if step == STEP_CONTROLS else Control.SIZE_FILL
+	_col.add_theme_constant_override("separation", int(MSTheme.GRID_PX * (1.5 if step == STEP_CONTROLS else 3.0)))
 	if step == STEP_CONTROLS:
 		_show_touch_layout()
 	elif is_instance_valid(_touch):
@@ -135,9 +142,10 @@ func _start_first_race() -> void:
 
 
 func _refresh_text() -> void:
+	# One primary per screen: CONTINUE. The chosen language is marked in red text instead.
 	for code: String in _lang_btns:
 		var b: Button = _lang_btns[code]
-		b.theme_type_variation = &"PrimaryButton" if code == Settings.language else &""
+		b.add_theme_color_override("font_color", MSTheme.RED if code == Settings.language else MSTheme.TEXT)
 	if step == STEP_LANGUAGE:
 		_title.text = I18n.t("onboard.title")
 		_body.text = I18n.t("onboard.lang_body")

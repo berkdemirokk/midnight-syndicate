@@ -6,10 +6,10 @@ extends RefCounted
 
 const ARC_POINTS_PER_TURN: int = 120  ## arc segments for a full sweep, scaled by the arc span
 const JOIN_PX: float = 0.6  ## segments overlap by this much so no seam shows (needs opaque colours: alpha beads)
-## Opaque stand-ins for MUTED at 25 percent and DANGER at 50 percent over the night scene. Pre-blended so the arc
-## pieces do not double-blend where they meet at their antialiased ends.
-const TRACK_COL: Color = Color(0.18, 0.205, 0.253)
-const REDLINE_COL: Color = Color(0.53, 0.156, 0.154)
+## Opaque pre-blends (translucent arc pieces double-blend where they meet): the track is titanium at 18 percent over
+## graphite, the redline band is racing red at 45 percent over graphite.
+static var TRACK_COL: Color = MSTheme.GRAPHITE_3.lerp(MSTheme.TITANIUM, 0.18)
+static var REDLINE_COL: Color = MSTheme.GRAPHITE_3.lerp(MSTheme.RED, 0.45)
 
 var start_deg: float = 135.0  ## bottom-left, clockwise in screen space
 var sweep_deg: float = 270.0
@@ -31,18 +31,18 @@ func paint_lines(c: CanvasItem, centre: Vector2) -> void:
 	var red0: float = a0 + a_full * redline_norm
 	var a_rpm: float = a0 + a_full * rpm_norm
 	_arc(c, centre, a0, a0 + a_full, TRACK_COL, arc_width_px)
+	_arc(c, centre, red0, a0 + a_full, REDLINE_COL, arc_width_px)  # the redline band shows even below it
 	if rpm_norm > 0.0:
-		_arc(c, centre, a0, minf(a_rpm, red0), MSTheme.CYAN, arc_width_px)
+		_arc(c, centre, a0, minf(a_rpm, red0), MSTheme.PEARL, arc_width_px)
 	if rpm_norm > redline_norm:
-		_arc(c, centre, red0, a_rpm, MSTheme.DANGER, arc_width_px)
-	_arc(c, centre, red0, a0 + a_full, REDLINE_COL, 2.0)
+		_arc(c, centre, red0, a_rpm, MSTheme.RED, arc_width_px)
 	var ticks := PackedVector2Array()
 	for i: int in tick_count:
 		var a: float = a0 + a_full * float(i) / float(tick_count - 1)
 		var dir: Vector2 = Vector2(cos(a), sin(a))
 		ticks.append(centre + dir * (radius_px - arc_width_px * 0.5 - tick_len_px))
 		ticks.append(centre + dir * (radius_px - arc_width_px * 0.5 - 2.0))
-	c.draw_multiline(ticks, MSTheme.tint(MSTheme.TEXT, 0.5), 2.0, true)
+	c.draw_multiline(ticks, MSTheme.tint(MSTheme.TITANIUM, 0.5), 2.0, true)
 
 
 func _arc(c: CanvasItem, centre: Vector2, a_from: float, a_to: float, col: Color, width: float) -> void:

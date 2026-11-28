@@ -223,7 +223,7 @@ static func check_texture(px: int, filled: bool) -> ImageTexture:
 		var s: float = float(px)
 		for i: int in 200:
 			var t: float = float(i) / 199.0
-			var p: Vector2 = Vector2(0.24, 0.52).lerp(Vector2(0.42, 0.70), t) if t < 0.35 else Vector2(0.42, 0.70).lerp(Vector2(0.78, 0.30), (t - 0.35) / 0.65)
+			var p: Vector2 = Vector2(0.24, 0.52).lerp(Vector2(0.42, 0.70), t / 0.35) if t < 0.35 else Vector2(0.42, 0.70).lerp(Vector2(0.78, 0.30), (t - 0.35) / 0.65)
 			for oy: int in range(-1, 2):
 				for ox: int in range(-1, 2):
 					var q := Vector2i(int(p.x * s) + ox, int(p.y * s) + oy)
@@ -370,13 +370,20 @@ static func build() -> Theme:
 	th.set_stylebox("background", "ProgressBar", slider_bg)
 	th.set_stylebox("fill", "ProgressBar", slider_fill)
 
-	var scroll_grab: StyleBoxFlat = card(tint(TITANIUM, 0.35), Color(0, 0, 0, 0), 0)
-	var scroll_bg: StyleBoxFlat = card(tint(TITANIUM, 0.06), Color(0, 0, 0, 0), 0)
+	# Slim scroll bars: 6 px wide (12 on a phone, still draggable), no padding from box().
+	var bar_w: float = 3.0 * k()
 	for sb_name: String in ["VScrollBar", "HScrollBar"]:
-		th.set_stylebox("scroll", sb_name, scroll_bg)
-		th.set_stylebox("grabber", sb_name, scroll_grab)
-		th.set_stylebox("grabber_highlight", sb_name, card(tint(PEARL, 0.6), Color(0, 0, 0, 0), 0))
-		th.set_stylebox("grabber_pressed", sb_name, card(RED, Color(0, 0, 0, 0), 0))
+		var styles: Dictionary = {
+			"scroll": tint(TITANIUM, 0.06), "grabber": tint(TITANIUM, 0.35),
+			"grabber_highlight": tint(PEARL, 0.6), "grabber_pressed": RED,
+		}
+		for key: String in styles:
+			var sb: StyleBoxFlat = card(styles[key], Color(0, 0, 0, 0), 0)
+			sb.content_margin_left = bar_w
+			sb.content_margin_right = bar_w
+			sb.content_margin_top = bar_w
+			sb.content_margin_bottom = bar_w
+			th.set_stylebox(key, sb_name, sb)
 
 	th.set_constant("separation", "VBoxContainer", GRID_PX * 2)
 	th.set_constant("separation", "HBoxContainer", GRID_PX * 2)

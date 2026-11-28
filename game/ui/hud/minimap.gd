@@ -7,10 +7,12 @@ extends RefCounted
 
 const DISC_PX: int = 32
 const FIT: float = 0.78  ## outline radius as a share of the ring, so the track never touches the rim
-const TRACK_COL: Color = Color(0.374, 0.395, 0.434)  ## TEXT at 35 percent over PLATE_BG, pre-blended
-const RING_COL: Color = Color(0.06, 0.43, 0.49)  ## BORDER (cyan at 45 percent) pre-blended: translucent chords bead
-const ARROW_COL: Color = Color(0.706, 0.361, 1.0)  ## violet accent
-const RIVAL_COL: Color = Color(0.85, 0.87, 0.9)
+## Opaque pre-blends (translucent chords bead where they meet): the route is titanium over graphite, the rim a
+## hairline of titanium at 30 percent. The player arrow is racing red, rivals pearl.
+static var TRACK_COL: Color = MSTheme.GRAPHITE_2.lerp(MSTheme.TITANIUM, 0.6)
+static var RING_COL: Color = MSTheme.GRAPHITE_2.lerp(MSTheme.TITANIUM, 0.3)
+static var ARROW_COL: Color = MSTheme.RED
+static var RIVAL_COL: Color = MSTheme.PEARL
 
 static var _disc: ImageTexture = null
 

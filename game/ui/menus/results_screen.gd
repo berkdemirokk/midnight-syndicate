@@ -4,7 +4,7 @@ extends Control
 ## that count up. Emits retry_pressed, garage_pressed or menu_pressed.
 ## Draw cost: containers only place empty slots and the four buttons. Every panel, row and text is painted by one
 ## canvas item (_paint_board) in passes (rects, lines, text by size), so the overlay batches to a handful of draws.
-## The buttons draw only their label; their skewed backgrounds are painted under them by the same board.
+## The buttons draw only their label; their chamfered backgrounds are painted under them by the same board.
 
 signal retry_pressed
 signal garage_pressed
@@ -39,7 +39,6 @@ const REWARD_W: float = 340.0
 const EDGE_PX: float = 96.0
 const EDGE_Y_PX: float = 56.0
 const BUTTON_GAP_PX: float = 16.0
-const PANEL_SKEW: float = MSTheme.SKEW_RATIO * 0.5  ## same shear as MSTheme.box()
 const ROW_PAD_Y: float = MSTheme.BUTTON_PAD_Y * 0.5
 const FOCUS_COL_PX: float = 2.0
 
@@ -111,8 +110,8 @@ func _ready() -> void:
 	col.add_theme_constant_override("separation", int(MSTheme.GRID_PX * 2))
 	margin.add_child(col)
 
-	_title = _text("bold", TITLE_PX, MSTheme.TEXT)
-	_subtitle = _text("tracked", SUB_PX, MSTheme.CYAN)
+	_title = _text("display", TITLE_PX + 16, MSTheme.TEXT)
+	_subtitle = _text("tracked", SUB_PX, MSTheme.TITANIUM)
 	_title_slot = _slot(col, Vector2(0.0, _title.height()))
 	_sub_slot = _slot(col, Vector2(0.0, _subtitle.height()))
 
@@ -124,12 +123,12 @@ func _ready() -> void:
 	_table_slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_reward_slot = _slot(body, Vector2(REWARD_W * (1.0 + (MSTheme.k() - 1.0) * 0.6), 0.0))
 
-	_hero_pos = _ptext("digits", HERO_PX, MSTheme.TEXT)
-	_hero_suffix = _ptext("digits", HERO_SUFFIX_PX, MSTheme.CYAN)
+	_hero_pos = _ptext("display", HERO_PX, MSTheme.TEXT)
+	_hero_suffix = _ptext("display", HERO_SUFFIX_PX, MSTheme.TITANIUM)
 	_cash_caption = _ptext("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
-	_cash_val = _ptext("digits", REWARD_PX, MSTheme.AMBER)
+	_cash_val = _ptext("digits", REWARD_PX, MSTheme.GOLD)
 	_rep_caption = _ptext("tracked", REWARD_LABEL_PX, MSTheme.MUTED)
-	_rep_val = _ptext("digits", REWARD_PX, MSTheme.CYAN)
+	_rep_val = _ptext("digits", REWARD_PX, MSTheme.TEXT)
 	_cash_val.set_text("0")
 	_rep_val.set_text("0")
 	for i: int in 5:
@@ -297,9 +296,9 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 		if bool(r.get("is_player", false)):
 			player_pos = int(r.get("position", 0))
 	_hero_pos.set_text(str(player_pos) if player_pos > 0 else "-")
-	_hero_pos.color = MSTheme.AMBER if player_pos == 1 else MSTheme.TEXT
+	_hero_pos.color = MSTheme.GOLD if player_pos == 1 else MSTheme.TEXT
 	_hero_suffix.set_text(I18n.ordinal(player_pos) if player_pos > 0 else "")
-	_hero_suffix.color = MSTheme.AMBER if player_pos == 1 else MSTheme.CYAN
+	_hero_suffix.color = MSTheme.GOLD if player_pos == 1 else MSTheme.TITANIUM
 	_pop_stars()
 	_board.queue_redraw()
 
@@ -309,7 +308,7 @@ func _result_row(r: Dictionary, leader_time: float) -> Array[HudText]:
 	var pos: int = int(r.get("position", 0))
 	var total: float = float(r.get("total_time", 0.0))
 	var best: float = float(r.get("best_lap", 0.0))
-	var ink: Color = MSTheme.CYAN if is_player else MSTheme.TEXT
+	var ink: Color = MSTheme.RED if is_player else MSTheme.TEXT
 	var out_lap: int = int(r.get("out_lap", 0))
 	var gap_text: String = I18n.t("results.leader") if pos == 1 else "+%.3f" % (total - leader_time)
 	var time_text: String = RaceHUD.fmt_time(total) if total > 0.0 else I18n.t("hud.no_time")
@@ -394,24 +393,27 @@ func _local_rect(n: Control) -> Rect2:
 	return Rect2(g.position - _board.get_global_rect().position, g.size)
 
 
-## The four corners of r sheared like a StyleBoxFlat with MSTheme.SKEW_RATIO (about the vertical centre).
-static func _skewed(r: Rect2) -> PackedVector2Array:
-	var mid: float = r.position.y + r.size.y * 0.5
-	var pts := PackedVector2Array()
-	for p: Vector2 in [r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y)]:
-		pts.append(Vector2(p.x + PANEL_SKEW * (p.y - mid), p.y))
-	return pts
+## Chamfered outline of r like MSTheme.box(): top-right and bottom-left corners cut, straight sides.
+static func _chamfer_pts(r: Rect2) -> PackedVector2Array:
+	var cut: float = minf(float(MSTheme.CHAMFER_PX), minf(r.size.x, r.size.y) * 0.5)
+	return PackedVector2Array([
+		r.position,
+		Vector2(r.end.x - cut, r.position.y),
+		Vector2(r.end.x, r.position.y + cut),
+		r.end,
+		Vector2(r.position.x + cut, r.end.y),
+		Vector2(r.position.x, r.end.y - cut)])
 
 
-static func _fill_skewed(c: CanvasItem, r: Rect2, col: Color) -> void:
-	c.draw_set_transform_matrix(Transform2D(Vector2(1.0, 0.0), Vector2(PANEL_SKEW, 1.0), Vector2(-PANEL_SKEW * (r.position.y + r.size.y * 0.5), 0.0)))
-	c.draw_rect(r, col)
-	c.draw_set_transform_matrix(Transform2D.IDENTITY)
+static func _fill_chamfer(c: CanvasItem, r: Rect2, col: Color) -> void:
+	c.draw_colored_polygon(_chamfer_pts(r), col)
 
 
-static func _outline_skewed(c: CanvasItem, r: Rect2, col: Color, width: float) -> void:
-	var p: PackedVector2Array = _skewed(r.grow(-width * 0.5))
-	c.draw_multiline(PackedVector2Array([p[0], p[1], p[1], p[2], p[2], p[3], p[3], p[0]]), col, width, true)
+static func _outline_chamfer(c: CanvasItem, r: Rect2, col: Color, width: float) -> void:
+	var p: PackedVector2Array = _chamfer_pts(r.grow(-width * 0.5))
+	var loop: PackedVector2Array = p.duplicate()
+	loop.append(p[0])
+	c.draw_polyline(loop, col, width, true)
 
 
 func _paint_board(c: Control) -> void:
@@ -475,38 +477,38 @@ func _paint_board(c: Control) -> void:
 
 	# Pass 1: rects.
 	c.draw_rect(Rect2(Vector2.ZERO, c.size), Color(MSTheme.BG.r, MSTheme.BG.g, MSTheme.BG.b, 0.84))
-	_fill_skewed(c, table, MSTheme.PLATE_BG)
-	_fill_skewed(c, rewards, MSTheme.PLATE_BG)
+	_fill_chamfer(c, table, MSTheme.PLATE_BG)
+	_fill_chamfer(c, rewards, MSTheme.PLATE_BG)
 	if has_highlight:
-		_fill_skewed(c, highlight, MSTheme.tint(MSTheme.CYAN, 0.14))
+		_fill_chamfer(c, highlight, MSTheme.tint(MSTheme.RED, 0.14))
 	if _show_stars:
 		for i: int in GameState.MAX_STARS:
 			var cx: float = star_right - star_r - float(GameState.MAX_STARS - 1 - i) * star_step
 			if i < _stars:
 				var sc: float = pop_scale(_star_pop[i])
 				if sc > 0.0:
-					c.draw_colored_polygon(EventSelect.star_points(Vector2(cx, star_y), star_r * sc), MSTheme.AMBER)
+					c.draw_colored_polygon(EventSelect.star_points(Vector2(cx, star_y), star_r * sc), MSTheme.GOLD)
 			else:
 				c.draw_colored_polygon(EventSelect.star_points(Vector2(cx, star_y), star_r), EventSelect.STAR_OFF)
 	for b: Button in _buttons:
 		if b.visible:
-			_fill_skewed(c, _local_rect(b), _button_fill(b))
+			_fill_chamfer(c, _local_rect(b), _button_fill(b))
 	# Pass 2: lines.
-	_outline_skewed(c, table, MSTheme.BORDER, 1.0)
-	_outline_skewed(c, rewards, MSTheme.BORDER, 1.0)
+	_outline_chamfer(c, table, MSTheme.BORDER, 1.0)
+	_outline_chamfer(c, rewards, MSTheme.BORDER, 1.0)
 	if has_highlight:
-		_outline_skewed(c, highlight, MSTheme.CYAN, 1.0)
+		_outline_chamfer(c, highlight, MSTheme.RED, 1.0)
 	if _show_stars:
 		for i: int in mini(_stars, GameState.MAX_STARS):
 			var t: float = _star_pop[i]
 			if t > 0.0 and t < 1.0:
 				var cx2: float = star_right - star_r - float(GameState.MAX_STARS - 1 - i) * star_step
-				c.draw_arc(Vector2(cx2, star_y), star_r * (1.0 + t * BURST_GROW), 0.0, TAU, 40, MSTheme.tint(MSTheme.AMBER, 1.0 - t), 3.0, true)
+				c.draw_arc(Vector2(cx2, star_y), star_r * (1.0 + t * BURST_GROW), 0.0, TAU, 40, MSTheme.tint(MSTheme.GOLD, 1.0 - t), 3.0, true)
 	for b: Button in _buttons:
 		if b.visible:
-			_outline_skewed(c, _local_rect(b), _button_edge(b), 1.0)
+			_outline_chamfer(c, _local_rect(b), _button_edge(b), 1.0)
 			if b.has_focus():
-				_outline_skewed(c, _local_rect(b), MSTheme.MAGENTA, FOCUS_COL_PX)
+				_outline_chamfer(c, _local_rect(b), MSTheme.PEARL, FOCUS_COL_PX)
 	# Pass 3: text, one draw per pixel size.
 	HudText.paint(c, _all_texts)
 
@@ -518,12 +520,12 @@ static func _aligned_x(x: float, w: float, text_w: float, right: bool) -> float:
 func _button_fill(b: Button) -> Color:
 	if b == _primary and not b.disabled:
 		var hot: bool = b.get_draw_mode() in [BaseButton.DRAW_HOVER, BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED]
-		return Color(0.45, 0.95, 1.0, 1.0) if hot else MSTheme.PRIMARY_FILL
+		return Color(1.0, 0.36, 0.29, 1.0) if hot else MSTheme.PRIMARY_FILL
 	match b.get_draw_mode():
 		BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED:
-			return MSTheme.tint(MSTheme.CYAN, 0.32)
+			return MSTheme.tint(MSTheme.RED, 0.32)
 		BaseButton.DRAW_HOVER:
-			return MSTheme.tint(MSTheme.CYAN, 0.16)
+			return MSTheme.tint(MSTheme.RED, 0.16)
 		BaseButton.DRAW_DISABLED:
 			return MSTheme.DISABLED_BG
 	return MSTheme.PANEL_BG
@@ -532,7 +534,7 @@ func _button_fill(b: Button) -> Color:
 func _button_edge(b: Button) -> Color:
 	match b.get_draw_mode():
 		BaseButton.DRAW_PRESSED, BaseButton.DRAW_HOVER_PRESSED, BaseButton.DRAW_HOVER:
-			return MSTheme.CYAN
+			return MSTheme.RED
 		BaseButton.DRAW_DISABLED:
 			return MSTheme.tint(MSTheme.MUTED, 0.3)
 	return MSTheme.BORDER

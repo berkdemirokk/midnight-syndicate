@@ -17,6 +17,7 @@ const COL_STARS_W: float = 120.0
 const COL_CAR_W: float = 320.0
 const ROW_GAP_PX: int = 6
 const MAX_STARS: int = 3
+const STAR_PIPS: GDScript = preload("res://ui/theme/star_pips.gd")  ## drawn stars: the brand fonts have no star glyph
 
 var store: Node = null
 var nav: Callable = Router.goto  ## scene change; tests swap in a recorder so the runner scene stays
@@ -41,7 +42,7 @@ func _ready() -> void:
 	_col = VBoxContainer.new()
 	_col.add_theme_constant_override("separation", int(MSTheme.GRID_PX * 2))
 	margin.add_child(_col)
-	_col.add_child(MSTheme.make_label(I18n.t("records.title"), "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT))
+	_col.add_child(MSTheme.make_label(I18n.t("records.title"), "display", MSTheme.px(TITLE_PX), MSTheme.TEXT))
 	_col.add_child(_header())
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -123,9 +124,17 @@ func _row(id: String, rec: Dictionary) -> Control:
 	card.add_child(row)
 	var has: bool = not rec.is_empty()
 	row.add_child(_cell(I18n.t(EventCatalog.name_key(id)), COL_EVENT_W, ROW_PX, MSTheme.TEXT, "bold"))
-	row.add_child(_cell(best_text(id, rec) if has else I18n.t("records.none"), COL_BEST_W, ROW_PX, MSTheme.CYAN if has else MSTheme.MUTED, "digits"))
+	row.add_child(_cell(best_text(id, rec) if has else I18n.t("records.none"), COL_BEST_W, ROW_PX, MSTheme.RED if has else MSTheme.MUTED, "digits"))
 	var stars: int = clampi(int(rec.get("stars", 0)), 0, MAX_STARS)
-	row.add_child(_cell("%d / %d" % [stars, MAX_STARS], COL_STARS_W, ROW_PX, MSTheme.AMBER if stars > 0 else MSTheme.MUTED, "digits"))
+	var star_cell := HBoxContainer.new()
+	star_cell.custom_minimum_size = Vector2(COL_STARS_W * MSTheme.k(), 0.0)
+	star_cell.add_theme_constant_override("separation", MSTheme.GRID_PX)
+	var pips: Control = STAR_PIPS.new(MSTheme.px(ROW_PX * 0.9), MAX_STARS)
+	pips.call("set_earned", stars)
+	pips.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	star_cell.add_child(pips)
+	star_cell.add_child(_cell("%d/%d" % [stars, MAX_STARS], COL_STARS_W * 0.4, ROW_PX, MSTheme.MUTED, "digits"))
+	row.add_child(star_cell)
 	var car: String = str(rec.get("car", ""))
 	row.add_child(_cell(car_name(car) if has else I18n.t("records.none"), COL_CAR_W, ROW_PX, MSTheme.TEXT if has else MSTheme.MUTED, "body"))
 	return card

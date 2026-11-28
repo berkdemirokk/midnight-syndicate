@@ -28,4 +28,13 @@ func run() -> void:
 	await cap.wait_frames(40)
 	g.orbit.touch()
 	await cap.shot("shop_locked")
+	# purchase confirmation: an affordable unowned car (demo_hatch, 8000) opens the modal before anything is spent
+	GameState.profile["cash"] = 50000
+	g.step_car(-1)
+	await cap.wait_frames(40)
+	g.get_hud().find_child("CarAction", true, false).pressed.emit()
+	await cap.wait_frames(40)
+	g.orbit.touch()
+	await cap.shot("shop_confirm")
+	g.get_hud().find_child("ConfirmCancel", true, false).pressed.emit()
 	CarCatalog.cars = old_cars

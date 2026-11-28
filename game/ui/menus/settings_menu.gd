@@ -49,7 +49,7 @@ const LANG_KEYS: Array[String] = ["settings.lang_tr", "settings.lang_en"]
 
 
 const CREDITS_PATH: String = "res://ui/credits_third_party.txt"  ## one credit line per CC BY asset
-const CREDITS_PX: int = 13
+const CREDITS_PX: int = 16
 
 
 func _ready() -> void:
@@ -95,7 +95,7 @@ func _build() -> void:
 
 	var head := HBoxContainer.new()
 	col.add_child(head)
-	_title = MSTheme.make_label("", "bold", TITLE_PX, MSTheme.TEXT)
+	_title = MSTheme.make_label("", "display", TITLE_PX, MSTheme.TEXT)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(_title)
@@ -143,7 +143,8 @@ func _build() -> void:
 	# Third-party models under CC BY 4.0 need their credit shown in the game.
 	if FileAccess.file_exists(CREDITS_PATH):
 		_section(right, "credits", "settings.credits")
-		var credits: Label = MSTheme.make_label(FileAccess.get_file_as_string(CREDITS_PATH).strip_edges(), "bold", MSTheme.px(CREDITS_PX), MSTheme.TEXT)
+		var credits: Label = MSTheme.make_label(FileAccess.get_file_as_string(CREDITS_PATH).strip_edges(), "body", MSTheme.px(CREDITS_PX), MSTheme.MUTED)
+		credits.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		credits.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		right.add_child(credits)
 
@@ -182,7 +183,7 @@ func _option() -> OptionButton:
 
 
 func _value_label() -> Label:
-	var v: Label = MSTheme.make_label("", "digits", MSTheme.px(VALUE_PX), MSTheme.CYAN)
+	var v: Label = MSTheme.make_label("", "digits", MSTheme.px(VALUE_PX), MSTheme.RED)
 	v.custom_minimum_size = Vector2(VALUE_W, 0.0)
 	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	v.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -212,10 +213,10 @@ func _section(parent: Container, key: String, text_key: String) -> void:
 		var gap := Control.new()
 		gap.custom_minimum_size = Vector2(0.0, SECTION_GAP_PX)
 		parent.add_child(gap)
-	var l: Label = MSTheme.make_label("", "tracked", MSTheme.px(SECTION_PX), MSTheme.CYAN)
+	var l: Label = MSTheme.make_label("", "tracked", MSTheme.px(SECTION_PX), MSTheme.RED)
 	parent.add_child(l)
 	var rule := ColorRect.new()
-	rule.color = MSTheme.tint(MSTheme.CYAN, 0.35)
+	rule.color = MSTheme.tint(MSTheme.RED, 0.35)
 	rule.custom_minimum_size = Vector2(0.0, 2.0)
 	parent.add_child(rule)
 	_section_labels[key] = [l, text_key]
