@@ -345,7 +345,7 @@ func _build_upgrades_page() -> Control:
 		row.add_theme_constant_override("separation", 12)
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
 		var name_l: Label = _keyed_label(PART_KEYS[part], "bold", 20, MSTheme.TEXT)
-		name_l.custom_minimum_size = Vector2(150.0, 0.0)
+		name_l.custom_minimum_size = Vector2(118.0, 0.0)  # the widest name fits; BUY must stay inside the panel
 		row.add_child(name_l)
 		var pips := HBoxContainer.new()
 		pips.add_theme_constant_override("separation", 4)
