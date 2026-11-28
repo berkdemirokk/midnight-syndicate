@@ -151,6 +151,11 @@ Recipe: target heading = racing line point 12 m ahead; assist steer capped at 6 
 nitro stay manual. Settings label TR/EN.
 Test: headless zero-input lap on `istanbul_bogaz` within 15 % of the autopilot lap, ≤ 2 wall hits.
 Evidence: probe JSON. Deps: WP-A1 merged.
+Implemented deviations (approved by the lead review, 2026-11-28): look-ahead 0.6 s x speed, 12..45 m (a fixed 12 m gave
+21 contacts, a fixed 30 m 2 to 20: the 30 m result flipped with tiny Jolt contact differences, which is why the full suite
+failed and the solo run passed; it was not a leaked state). Speed hold at 0.9 x the autopilot line speed, and only while no
+accelerate or brake input is held, so manual pedal input is not capped. Dev PC: 53.8 s vs 52.38 s (1.027), 0 contacts,
+the same in 6 of 6 runs with and without race scenes run first.
 
 **WP-A5 Tyre audio and mix guard.** Goal: drifts sound like drifts; nothing clips.
 Files: new `game/audio/tyre_audio.gd`, `game/audio/car_audio.gd` (hook only), `game/tests/test_audio_layers.gd`.

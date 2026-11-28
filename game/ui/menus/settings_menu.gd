@@ -29,7 +29,7 @@ const VOLUME_LABEL_KEYS: Dictionary = {
 	"ui": "settings.ui"}
 const PRESET_KEYS: Array[String] = ["settings.preset_low", "settings.preset_medium", "settings.preset_high"]
 const PRESET_DESC_KEYS: Array[String] = ["settings.preset_desc_low", "settings.preset_desc_medium", "settings.preset_desc_high"]
-const STEER_KEYS: Array[String] = ["settings.steer_buttons", "settings.steer_tilt"]
+const STEER_KEYS: Array[String] = ["settings.steer_buttons", "settings.steer_tilt", "settings.steer_assist"]
 const LANG_KEYS: Array[String] = ["settings.lang_tr", "settings.lang_en"]
 
 @export var overlay: bool = false
