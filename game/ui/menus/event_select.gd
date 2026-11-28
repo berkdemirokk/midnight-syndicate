@@ -237,7 +237,7 @@ func start_race() -> void:
 	if params.is_empty():
 		return
 	UiSounds.click()
-	Router.goto(RACE_SCENE, params)
+	Router.goto(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, params))
 
 
 ## District of an event: the Pursuit district for every pursuit event, else by "place" (no place = Arden Bay).

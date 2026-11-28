@@ -3,9 +3,9 @@ extends Control
 ## STREET EMPIRE main screen. The player's selected car stands in the 3D showroom (ui/showroom/showroom_stage.gd)
 ## and is the centrepiece; the UI frames it:
 ## - top: wordmark, then REP with the next real car unlock, cash and stars (opens the profile card);
-## - left: navigation (CAREER, GARAGE, POLICE PURSUIT, RECORDS, ONLINE when enabled, SETTINGS, QUIT on desktop);
+## - left: navigation (CAREER, QUICK RACE, GARAGE, POLICE PURSUIT, RECORDS, ONLINE when enabled, SETTINGS, QUIT on desktop);
 ## - bottom left: district progress from real event stars (desktop; the career screen has it on phones);
-## - bottom right: the featured event (next unfinished career event) and PLAY, which starts it directly;
+## - bottom right: the featured event (next unfinished career event) and PLAY, which starts it through the loading screen;
 ## - bottom centre: the car's name and class; drag anywhere on the car to orbit it.
 ## Without a GPU scene (headless tests) the graphite MenuBackdrop shows instead. set_backdrop() still swaps in any
 ## 3D scene behind the UI. Keyboard, gamepad and touch reach every control through Godot's focus navigation.
@@ -47,6 +47,7 @@ var _orbit: Control
 var _fg: Control
 var _race_btn: Button  ## PLAY: starts the featured event (kept name: tests and focus rules refer to it)
 var _career_btn: Button
+var _quick_btn: Button  ## QUICK RACE: the next unwon ladder race (release wp/mainmenu), through the loading screen
 var _garage_btn: Button
 var _pursuit_btn: Button  ## police pursuit runs (the pursuit select screen)
 var _records_btn: Button
@@ -288,9 +289,10 @@ func _build_foreground() -> void:
 	navbox.anchor_top = 0.5
 	navbox.anchor_bottom = 0.5
 	navbox.offset_left = ex - MSTheme.px(16)
-	navbox.offset_top = -365.0 if not MSTheme.phone else -360.0
+	navbox.offset_top = -400.0 if not MSTheme.phone else -380.0
 	_fg.add_child(navbox)
 	_career_btn = _nav_button(navbox, "menu.career", _on_career)
+	_quick_btn = _nav_button(navbox, "menu.quick_race", _on_quick_race)
 	_garage_btn = _nav_button(navbox, "menu.garage", _on_garage)
 	_pursuit_btn = _nav_button(navbox, "menu.pursuit", _on_pursuit)
 	_records_btn = _nav_button(navbox, "menu.records", _on_records)
@@ -807,7 +809,33 @@ func _on_play() -> void:
 	if _featured_id == "" or not GameState.is_event_unlocked(_featured_id):
 		_open(EVENT_SELECT_SCENE)
 		return
-	nav.call(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(_featured_id)})
+	nav.call(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, {RaceScene.CONFIG_PARAM: EventCatalog.config_for(_featured_id)}))
+
+
+## QUICK RACE: the first unlocked ladder race not yet won (else the first unlocked one), straight to the loading card.
+func _on_quick_race() -> void:
+	var id: String = quick_race_id()
+	var cfg: RaceConfig = EventCatalog.config_for(id) if id != "" else null
+	if cfg == null:
+		_show_toast(I18n.t("menu.coming_soon"))
+		return
+	nav.call(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, {RaceScene.CONFIG_PARAM: cfg}))
+
+
+## Id of the race QUICK RACE starts, or "" when none is unlocked. Pursuit runs and showcase events are skipped.
+static func quick_race_id() -> String:
+	var fallback: String = ""
+	for i: int in EventCatalog.count():
+		var id: String = EventCatalog.id_at(i)
+		if EventCatalog.is_open(id) or not GameState.is_event_unlocked(id):
+			continue
+		if bool(EventCatalog.find(id).get("pursuit", false)):
+			continue
+		if GameState.event_stars(id) == 0:
+			return id
+		if fallback == "":
+			fallback = id
+	return fallback
 
 
 func _on_career() -> void:

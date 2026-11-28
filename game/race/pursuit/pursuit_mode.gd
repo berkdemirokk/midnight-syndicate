@@ -239,6 +239,7 @@ func spawn_police() -> bool:
 	add_child(car)
 	car.global_transform = spot
 	_add_lights(car)
+	PursuitSiren.attach(car)
 	var drv := PoliceDriver.new()
 	drv.name = DRIVER_NAME
 	drv.noise_seed = police.size() + 1
@@ -326,6 +327,7 @@ func _track_scene() -> String:
 
 func _stop_chase() -> void:
 	_active = false
+	PursuitSiren.stop_all(police)
 	for c: ArcadeCar in police:
 		var drv: AIDriver = c.get_node_or_null(DRIVER_NAME) as AIDriver
 		if drv != null:
