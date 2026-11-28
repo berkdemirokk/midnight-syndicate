@@ -268,7 +268,8 @@ func test_cornering() -> void:
 		w_sum += absf(car.angular_velocity.y)
 	var radius: float = (v_sum / w_sum) if w_sum > 0.0 else -1.0
 	metric("corner_60_radius_m", radius)
-	check_range(radius, 12.0, 30.0, "steady circle radius at 60 km/h, full lock (m)")
+	# 30.5 not 30.0: the 2026-11-28 top-speed retune (lower Sable drag) moved the measured radius to 30.01 m. Intentional, see HANDLING doc.
+	check_range(radius, 12.0, 30.5, "steady circle radius at 60 km/h, full lock (m)")
 	await cleanup([car])
 
 	# 200 km/h, full right lock. Lateral acceleration is the horizontal velocity change per tick,

@@ -1,0 +1,597 @@
+{
+  "adapter": "NVIDIA GeForce RTX 5060 Ti",
+  "car": "noctra_tayfun",
+  "cpu": "AMD Ryzen 5 7600 6-Core Processor",
+  "frames_total": 61388,
+  "godot": "4.7.2-stable (official)",
+  "grid": 6,
+  "laps": 2,
+  "machine": "Windows 11 dev PC, NVIDIA RTX 5060 Ti 8 GB, Godot 4.7.2. Desktop numbers, not a phone.",
+  "minute_memory": [
+    {
+      "minute": 0,
+      "nodes": 4246,
+      "objects": 9976,
+      "orphan_nodes": 0,
+      "resources": 1326,
+      "static_mb": 689.21,
+      "video_mem_mb": 0.0
+    },
+    {
+      "minute": 1,
+      "nodes": 4256,
+      "objects": 10035,
+      "orphan_nodes": 0,
+      "resources": 1333,
+      "static_mb": 710.14,
+      "video_mem_mb": 750.49
+    },
+    {
+      "minute": 2,
+      "nodes": 4256,
+      "objects": 10035,
+      "orphan_nodes": 0,
+      "resources": 1333,
+      "static_mb": 710.69,
+      "video_mem_mb": 750.56
+    },
+    {
+      "minute": 3,
+      "nodes": 4256,
+      "objects": 10053,
+      "orphan_nodes": 0,
+      "resources": 1334,
+      "static_mb": 715.88,
+      "video_mem_mb": 753.46
+    },
+    {
+      "minute": 4,
+      "nodes": 4256,
+      "objects": 10056,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 716.64,
+      "video_mem_mb": 753.53
+    },
+    {
+      "minute": 5,
+      "nodes": 4256,
+      "objects": 10054,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 716.17,
+      "video_mem_mb": 753.51
+    },
+    {
+      "minute": 6,
+      "nodes": 4256,
+      "objects": 10053,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 716.87,
+      "video_mem_mb": 753.49
+    },
+    {
+      "minute": 7,
+      "nodes": 4256,
+      "objects": 10056,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 716.24,
+      "video_mem_mb": 753.49
+    },
+    {
+      "minute": 8,
+      "nodes": 4256,
+      "objects": 10055,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 717.1,
+      "video_mem_mb": 753.51
+    },
+    {
+      "minute": 9,
+      "nodes": 4256,
+      "objects": 10060,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 715.83,
+      "video_mem_mb": 753.42
+    },
+    {
+      "minute": 10,
+      "nodes": 4256,
+      "objects": 10054,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 717.24,
+      "video_mem_mb": 753.48
+    },
+    {
+      "minute": 11,
+      "nodes": 4256,
+      "objects": 10059,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 715.65,
+      "video_mem_mb": 753.41
+    },
+    {
+      "minute": 12,
+      "nodes": 4256,
+      "objects": 10055,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 717.55,
+      "video_mem_mb": 753.51
+    },
+    {
+      "minute": 13,
+      "nodes": 4256,
+      "objects": 10057,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 717.9,
+      "video_mem_mb": 753.57
+    },
+    {
+      "minute": 14,
+      "nodes": 4256,
+      "objects": 10056,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 717.78,
+      "video_mem_mb": 753.57
+    },
+    {
+      "minute": 15,
+      "nodes": 4256,
+      "objects": 10055,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 718.03,
+      "video_mem_mb": 753.56
+    },
+    {
+      "minute": 16,
+      "nodes": 4256,
+      "objects": 10056,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 717.74,
+      "video_mem_mb": 753.56
+    },
+    {
+      "minute": 17,
+      "nodes": 4256,
+      "objects": 10057,
+      "orphan_nodes": 0,
+      "resources": 1335,
+      "static_mb": 718.13,
+      "video_mem_mb": 753.57
+    }
+  ],
+  "mode": "render",
+  "per_minute": [
+    {
+      "frame_ms_max": 81.08,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3373,
+      "frames_over_33ms": 3,
+      "minute": 0
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 1
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3450,
+      "frames_over_33ms": 3,
+      "minute": 2
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 3
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3444,
+      "frames_over_33ms": 3,
+      "minute": 4
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 5
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3449,
+      "frames_over_33ms": 2,
+      "minute": 6
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 7
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3424,
+      "frames_over_33ms": 3,
+      "minute": 8
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 9
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3441,
+      "frames_over_33ms": 3,
+      "minute": 10
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 11
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 12
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3444,
+      "frames_over_33ms": 3,
+      "minute": 13
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3600,
+      "frames_over_33ms": 0,
+      "minute": 14
+    },
+    {
+      "frame_ms_max": 66.66,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3433,
+      "frames_over_33ms": 3,
+      "minute": 15
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 3601,
+      "frames_over_33ms": 0,
+      "minute": 16
+    },
+    {
+      "frame_ms_max": 16.67,
+      "frame_ms_p50": 16.67,
+      "frame_ms_p95": 16.67,
+      "frame_ms_p99": 16.67,
+      "frames": 1529,
+      "frames_over_33ms": 0,
+      "minute": 17
+    }
+  ],
+  "preset": "high",
+  "races": [
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1940,
+        "orphan_nodes": 0,
+        "resources": 200,
+        "static_mb": 662.39,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10116,
+        "orphan_nodes": 0,
+        "resources": 1334,
+        "static_mb": 717.04,
+        "video_mem_mb": 753.58
+      },
+      "before": {
+        "nodes": 9,
+        "objects": 1632,
+        "orphan_nodes": 0,
+        "resources": 98,
+        "static_mb": 605.41,
+        "video_mem_mb": 0.0
+      },
+      "player_position": 4,
+      "race_time_s": 128.05,
+      "tag": "render_01",
+      "ticks": 7937,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 662.61,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10117,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 717.05,
+        "video_mem_mb": 753.56
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1941,
+        "orphan_nodes": 0,
+        "resources": 200,
+        "static_mb": 662.4,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 6,
+      "race_time_s": 124.07,
+      "tag": "render_02",
+      "ticks": 7700,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.01,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10119,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 717.58,
+        "video_mem_mb": 753.6
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1943,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 662.62,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 2,
+      "race_time_s": 118.77,
+      "tag": "render_03",
+      "ticks": 7382,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.22,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10119,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 717.58,
+        "video_mem_mb": 753.55
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1943,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.02,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 4,
+      "race_time_s": 123.37,
+      "tag": "render_04",
+      "ticks": 7658,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.47,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10118,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 717.79,
+        "video_mem_mb": 753.56
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1943,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.22,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 4,
+      "race_time_s": 116.33,
+      "tag": "render_05",
+      "ticks": 7236,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.77,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10119,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 718.08,
+        "video_mem_mb": 753.57
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1943,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.48,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 3,
+      "race_time_s": 124.95,
+      "tag": "render_06",
+      "ticks": 7753,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.81,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10119,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 718.36,
+        "video_mem_mb": 753.58
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1943,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.77,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 3,
+      "race_time_s": 122.27,
+      "tag": "render_07",
+      "ticks": 7592,
+      "timed_out": false
+    },
+    {
+      "after_free": {
+        "nodes": 19,
+        "objects": 1942,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 664.06,
+        "video_mem_mb": 587.86
+      },
+      "at_finish": {
+        "nodes": 4256,
+        "objects": 10119,
+        "orphan_nodes": 0,
+        "resources": 1335,
+        "static_mb": 718.54,
+        "video_mem_mb": 753.57
+      },
+      "before": {
+        "nodes": 19,
+        "objects": 1943,
+        "orphan_nodes": 0,
+        "resources": 201,
+        "static_mb": 663.82,
+        "video_mem_mb": 587.86
+      },
+      "player_position": 6,
+      "race_time_s": 125.95,
+      "tag": "render_08",
+      "ticks": 7813,
+      "timed_out": false
+    }
+  ],
+  "renderer": "mobile",
+  "run_minutes_target": 16.0,
+  "screen_refresh_hz": 180.061004638672,
+  "time_of_day": "night",
+  "track": "istanbul_bogaz.tscn",
+  "vsync_note": "frame cap is project run/max_fps=60 (project.godot line 12), not vsync (screen 180 Hz); vsync left at project default; frame times are real frame deltas. Note corrected in lead review after the run, data unchanged",
+  "wall_seconds": 1045.5
+}

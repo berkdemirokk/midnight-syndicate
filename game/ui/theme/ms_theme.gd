@@ -9,6 +9,7 @@ const CYAN: Color = Color(0.098, 0.902, 1.0)
 const MAGENTA: Color = Color(1.0, 0.169, 0.839)
 const AMBER: Color = Color(1.0, 0.761, 0.239)
 const DANGER: Color = Color(1.0, 0.231, 0.188)
+const GOOD: Color = Color(0.263, 1.0, 0.478)  ## ahead / positive (HUD lap delta); DANGER is behind
 const TEXT: Color = Color(0.949, 0.961, 0.98)
 const MUTED: Color = Color(0.541, 0.580, 0.651)
 const BORDER: Color = Color(0.098, 0.902, 1.0, 0.45)

@@ -1,0 +1,332 @@
+{
+ "car_id": "police_interceptor",
+ "source": "assets_src/third_party/vinish_cars/incoming2/pursuit-coupe.glb",
+ "lod0": {
+  "tris": 84545,
+  "tris_by_node": {
+   "body": 20563,
+   "brake_FL": 2280,
+   "brake_FR": 2280,
+   "brake_RL": 2215,
+   "brake_RR": 2215,
+   "col_body": 90,
+   "exhaust": 8148,
+   "glass": 3872,
+   "interior": 8403,
+   "lights_front": 2386,
+   "lights_rear": 2108,
+   "plate_rear": 2,
+   "trim": 13423,
+   "underbody": 653,
+   "wheel_FL": 3980,
+   "wheel_FR": 3980,
+   "wheel_RL": 3973,
+   "wheel_RR": 3974
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior",
+    "M_Trim"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "underbody": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 23,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 12,
+  "box": [
+   [
+    -1.0549373626708984,
+    -2.4169998168945312,
+    0.00022137165069580078
+   ],
+   [
+    1.0549373626708984,
+    2.514500141143799,
+    1.5563760995864868
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 2
+ },
+ "lod1": {
+  "tris": 34195,
+  "tris_by_node": {
+   "body": 10280,
+   "brake_FL": 286,
+   "brake_FR": 281,
+   "brake_RL": 287,
+   "brake_RR": 280,
+   "col_body": 90,
+   "exhaust": 3269,
+   "glass": 774,
+   "interior": 5042,
+   "lights_front": 1472,
+   "lights_rear": 1054,
+   "plate_rear": 2,
+   "trim": 7898,
+   "wheel_FL": 796,
+   "wheel_FR": 796,
+   "wheel_RL": 794,
+   "wheel_RR": 794
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior",
+    "M_Trim"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Rim",
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Rim",
+    "M_Tire"
+   ]
+  },
+  "surfaces": 22,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Rim",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 12,
+  "box": [
+   [
+    -1.0548138618469238,
+    -2.4169998168945312,
+    -0.003295987844467163
+   ],
+   [
+    1.0548138618469238,
+    2.5148489475250244,
+    1.5563760995864868
+   ]
+  ],
+  "stray_verts_moved": {},
+  "tail_pipes": 0
+ },
+ "lod2": {
+  "tris": 10976,
+  "tris_by_node": {
+   "body": 3290,
+   "brake_FL": 286,
+   "brake_FR": 281,
+   "brake_RL": 287,
+   "brake_RR": 262,
+   "col_body": 90,
+   "exhaust": 784,
+   "glass": 386,
+   "interior": 1561,
+   "lights_front": 98,
+   "lights_rear": 252,
+   "plate_rear": 2,
+   "trim": 1990,
+   "wheel_FL": 353,
+   "wheel_FR": 352,
+   "wheel_RL": 351,
+   "wheel_RR": 351
+  },
+  "slots_by_node": {
+   "body": [
+    "M_Paint"
+   ],
+   "brake_FL": [
+    "M_BrakeDisc"
+   ],
+   "brake_FR": [
+    "M_BrakeDisc"
+   ],
+   "brake_RL": [
+    "M_BrakeDisc"
+   ],
+   "brake_RR": [
+    "M_BrakeDisc"
+   ],
+   "col_body": [],
+   "exhaust": [
+    "M_Chrome"
+   ],
+   "glass": [
+    "M_Glass"
+   ],
+   "interior": [
+    "M_Interior"
+   ],
+   "lights_front": [
+    "M_Lens",
+    "M_LightFront"
+   ],
+   "lights_rear": [
+    "M_LightRear"
+   ],
+   "plate_rear": [
+    "M_Plate"
+   ],
+   "trim": [
+    "M_Trim"
+   ],
+   "wheel_FL": [
+    "M_Tire"
+   ],
+   "wheel_FR": [
+    "M_Tire"
+   ],
+   "wheel_RL": [
+    "M_Tire"
+   ],
+   "wheel_RR": [
+    "M_Tire"
+   ]
+  },
+  "surfaces": 17,
+  "materials": [
+   "M_BrakeDisc",
+   "M_Chrome",
+   "M_Glass",
+   "M_Interior",
+   "M_Lens",
+   "M_LightFront",
+   "M_LightRear",
+   "M_Paint",
+   "M_Plate",
+   "M_Tire",
+   "M_Trim"
+  ],
+  "material_count": 11,
+  "box": [
+   [
+    -1.0585556030273438,
+    -2.4169998168945312,
+    -0.008514255285263062
+   ],
+   [
+    1.0585556030273438,
+    2.5179734230041504,
+    1.5538330078125
+   ]
+  ],
+  "stray_verts_moved": {
+   "interior": 11,
+   "trim": 29
+  },
+  "tail_pipes": 0
+ }
+}

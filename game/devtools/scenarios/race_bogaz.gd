@@ -68,6 +68,7 @@ func run() -> void:
 	cfg.laps = LAPS
 	cfg.opponent_count = OPPONENTS
 	cfg.track_scene = CITY_SCENE
+	cfg.reverse_route = _reverse()
 	cfg.car_scene = CAR_SCENE
 	cfg.car_spec_path = CAR_SPEC
 	var packed: PackedScene = load(SCENE) as PackedScene
@@ -327,6 +328,11 @@ func _results_shot() -> void:
 	await cap.wait_seconds(RESULTS_SETTLE_S)
 	print("race_bogaz: run summary top_kmh=%.1f lap2_top_kmh=%.1f lap2_nitro_shot=%s hits=%d" % [_top_kmh, _lap2_top_kmh, str(_lap2_nitro_seen), _hits])
 	await cap.shot("results")
+
+
+## Route variant: race_bogaz_reverse overrides this to run the coast road the other way.
+func _reverse() -> bool:
+	return false
 
 
 func _has_arg(name: String) -> bool:

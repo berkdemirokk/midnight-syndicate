@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "reel_end",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 194,
+    "draw_calls_min": 145,
+    "driver": "vulkan",
+    "fps": 182.895,
+    "frame_ms_avg": 5.468,
+    "frame_ms_p95": 7.388,
+    "frame_ms_p99": 8.705,
+    "frames": 60,
+    "objects": 17993,
+    "os": "Windows",
+    "primitives": 236764,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 754.884,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-perf/evidence/screens/gameplay_reel/reel_end.png",
+  "preset": "high",
+  "scenario": "gameplay_reel"
+}

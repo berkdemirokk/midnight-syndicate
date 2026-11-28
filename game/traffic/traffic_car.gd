@@ -79,8 +79,8 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
 
-## Builds the three LODs under a turned Visual node. paint_slot picks the colour.
-func build_visual(paint_slot: int) -> void:
+## Builds the LODs of a pool model under a turned Visual node. paint_slot picks the colour.
+func build_visual(paint_slot: int, model: int = 0) -> void:
 	var visual := Node3D.new()
 	visual.name = "Visual"
 	visual.basis = Basis(Vector3.UP, PI)
@@ -94,8 +94,9 @@ func build_visual(paint_slot: int) -> void:
 	_head.emission_enabled = true
 	_head.emission = Color(0.85, 0.93, 1.0)
 	var first_lod: int = 1 if Settings.get_preset_id() == "low" else 0  # Low: no LOD0 (draw budget 250)
+	first_lod = maxi(first_lod, TrafficModels.first_lod_of(model))
 	for i: int in range(first_lod, TrafficModels.LOD_COUNT):
-		var m: Dictionary = TrafficModels.lod(i)
+		var m: Dictionary = TrafficModels.lod(i, model)
 		var box: AABB = m["aabb"]
 		_lift = maxf(_lift, -box.position.y)
 		var holder := Node3D.new()

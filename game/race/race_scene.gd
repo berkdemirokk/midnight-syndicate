@@ -26,6 +26,7 @@ const ENV_AMBIENT_ENERGY: float = 0.5
 const HUD_SCENE: String = "res://ui/hud/race_hud.tscn"
 const PAUSE_SCENE: String = "res://ui/menus/pause_menu.tscn"
 const RESULTS_SCENE: String = "res://ui/menus/results_screen.tscn"
+const PURSUIT_BUST_SHOW_S: float = 3.0  ## the BUSTED banner shows this long before the results screen
 const TOUCH_SCENE: String = "res://vehicles/touch/touch_controls.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
@@ -76,6 +77,7 @@ var tod: TimeOfDay = TimeOfDay.preset("night")  ## the hour of this race, from c
 var track: Track
 var race: RaceManager
 var player: ArcadeCar
+var _car_paint: Dictionary = {}  ## car node -> paint colour, for the results chips
 var cars: Array[ArcadeCar] = []
 var camera: ChaseCamera
 var hud: RaceHUD
@@ -104,6 +106,7 @@ var _reflection: PlanarReflection = null  ## wet road mirror; null unless High, 
 var _road_mats: Array[ShaderMaterial] = []
 var _nitro_forced: bool = false
 var _results_up: bool = false  ## results overlay showing: mirror off, HUD hidden
+var _pursuit_busted: bool = false  ## police caught the player: no result, no reward
 
 
 func _ready() -> void:
@@ -139,7 +142,7 @@ func _process(delta: float) -> void:
 		WheelSpray.update_nearest(cars, player)
 	if race.state == RaceManager.State.GRID:
 		_grid_t += delta
-		if _grid_t >= GRID_BEAT_S:
+		if _grid_t >= GRID_BEAT_S and not config_used.net_hold_grid:
 			race.start_countdown()
 			_start_grid_intro()
 
@@ -170,8 +173,37 @@ func reset_player() -> void:
 	_last_s = s
 
 
+## Touch pause button: opens or closes the pause menu. Nothing pauses after the finish.
+func _on_touch_pause() -> void:
+	if pause_menu == null or race == null or race.state == RaceManager.State.FINISHED or _pursuit_busted:
+		return
+	if pause_menu.is_paused_menu_open():
+		pause_menu.resume()
+	else:
+		pause_menu.pause()
+
+
+## Background or lost focus: the race pauses itself. Only the RESUME button resumes it.
+func _notification(what: int) -> void:
+	if what != NOTIFICATION_APPLICATION_FOCUS_OUT and what != NOTIFICATION_APPLICATION_PAUSED and what != NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		return
+	if _is_capture_run():  # the capture harness opens an off-screen window that never has focus
+		return
+	if pause_menu != null and race != null and race.state != RaceManager.State.FINISHED and not _pursuit_busted and not pause_menu.is_paused_menu_open():
+		pause_menu.pause()
+
+
+static func _is_capture_run() -> bool:
+	for a: String in OS.get_cmdline_user_args():
+		if a.begins_with("--capture="):
+			return true
+	return false
+
+
 ## Fresh race from the grid with the same config. Used by RETRY and by the pause menu's restart.
 func retry() -> void:
+	if config_used.net_hold_grid:
+		return  ## online: the session is closed, so no new grid; NetRaceGlue leaves to the menu instead
 	_release_reflection()
 	if _world != null:
 		_world.queue_free()
@@ -217,6 +249,8 @@ func _build_chrome() -> void:
 	pause_menu = (load(PAUSE_SCENE) as PackedScene).instantiate() as PauseMenu
 	_overlay.add_child(pause_menu)
 	pause_menu.restart_requested.connect(retry)
+	pause_menu.reset_requested.connect(reset_player)
+	pause_menu.set_keeps_running(config_used.net_hold_grid)
 	results_screen = (load(RESULTS_SCENE) as PackedScene).instantiate() as ResultsScreen
 	_overlay.add_child(results_screen)
 	results_screen.visible = false
@@ -229,6 +263,8 @@ func _build_chrome() -> void:
 		var garage_btn: Button = results_screen.get("_garage_btn") as Button
 		if garage_btn != null:
 			garage_btn.visible = false
+	# First career race only, once: the three onboarding hints (no-op for every other race and after they are done).
+	OnboardingHints.attach(self, config_used, results_screen)
 
 
 func _build_race() -> void:
@@ -237,6 +273,7 @@ func _build_race() -> void:
 	wrong_way = false
 	_nitro_forced = false
 	_results_up = false
+	_pursuit_busted = false
 	hud.visible = true
 	_reflection = null
 	_road_mats.clear()
@@ -246,15 +283,27 @@ func _build_race() -> void:
 	add_child(_world)
 	track = _load_track()
 	_world.add_child(track)
+	track.set_reversed(config_used.reverse_route)  ## route variant: line and grid run the other way
 	_collect_road()
 	_tag_mirror_skipped()
 	_ensure_environment()
+	TrackGrade.apply_to_world(_world, config_used.track_scene, tod.id)  # per-track colour grade on the hour's preset
 	_spawn_cars()
 	race = RaceManager.new()
 	race.name = "RaceManager"
 	race.total_laps = config_used.laps
+	race.mode = config_used.mode
+	race.time_limit_s = config_used.time_limit_s
 	_world.add_child(race)
 	race.setup(track, cars, player, _names)
+	if config_used.net_hold_grid:
+		NetRaceGlue.attach(self, _world)  ## online race: visuals for the others, countdown on the server start message
+	if config_used.pursuit and (PursuitMode.ENABLED or config_used.pursuit_event):
+		var pursuit := PursuitMode.new()
+		pursuit.name = "PursuitMode"
+		_world.add_child(pursuit)
+		pursuit.setup(track, player, cars, race)
+		pursuit.busted.connect(_on_pursuit_busted)
 	if config_used.traffic_enabled and not dev_track_used:
 		var traffic := TrafficSystem.new()
 		traffic.name = "Traffic"
@@ -362,8 +411,9 @@ func _ensure_environment() -> void:
 func _spawn_cars() -> void:
 	var spec: CarSpec = load(config_used.car_spec_path) as CarSpec
 	cars.clear()
+	_car_paint.clear()
 	_names = PackedStringArray()
-	var opponents: int = clampi(config_used.opponent_count, 0, MAX_OPPONENTS)
+	var opponents: int = 0 if config_used.net_hold_grid else clampi(config_used.opponent_count, 0, MAX_OPPONENTS)  ## net: remote players are spawned by NetRaceGlue
 	var rivals: Array[Dictionary] = []
 	if config_used.rival_mix:
 		rivals = CarCatalog.rival_models(opponents, hash(config_used.event_id), config_used.rival_class)
@@ -376,10 +426,21 @@ func _spawn_cars() -> void:
 				r_scene = str(rivals[i]["scene"])
 				r_spec = loaded
 		var car: ArcadeCar = CarFactory.create(r_scene, r_spec, config_used.opponent_paint(i))
+		_car_paint[car] = config_used.opponent_paint(i)
 		_add_car(car, true)
 		_names.append(_opponent_name(i))
-	player = CarFactory.create(config_used.car_scene, spec, _player_paint())
+	# Apply purchased upgrades only to the actual selected, owned player car, never to rivals or dev mules.
+	var selected: String = GameState.get_selected_car()
+	var use_setup: bool = config_used.use_garage_paint and GameState.has_car(selected) and config_used.car_scene == CarCatalog.scene_path(selected) and config_used.car_spec_path == CarCatalog.spec_path(selected)
+	var player_spec: CarSpec = spec
+	if use_setup and spec != null:
+		player_spec = GarageStats.tuned_spec(spec, GameState.get_setup(selected)["upgrades"])
+	player = CarFactory.create(config_used.car_scene, player_spec, _player_paint())
+	_car_paint[player] = _player_paint()
 	_add_car(player)
+	if use_setup:
+		var setup: Dictionary = GameState.get_setup(selected)
+		CarMaterials.set_rim_color(player, Color.from_string(str(setup["rim_color"]), CarMaterials.DEFAULT_RIM))
 	_names.append(config_used.player_name)
 	dev_car_used = bool(player.get_meta("dev_car", false))
 
@@ -397,6 +458,8 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 				lod.lod2_start_m = config_used.rival_lod2_start_low_m
 			lod.set_forced(lod.force_lod)  # rewrites the visibility ranges with the new switch distance
 		lod.build_mirror_lod()
+		if not rival:
+			_cheap_player_mirror(lod)
 		# The mirror-only copies are never drawn by the race camera: they must not cast a second sun shadow beside the real LOD.
 		for n: Node in lod.find_children("*", "MeshInstance3D", true, false):
 			var cm: MeshInstance3D = n as MeshInstance3D
@@ -412,7 +475,7 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	if pano_path == STREET_PANO and ResourceLoader.exists(district_pano):
 		pano_path = district_pano
 	if lod != null and Settings.get_preset_id() != "low" and ResourceLoader.exists(pano_path):
-		CarMaterials.set_reflection(lod, load(pano_path) as Texture2D, 0.55 if tod.is_night() else (0.3 if config_used.time_of_day == "sunset" else 0.16))  # the street in the paint
+		CarMaterials.set_reflection(lod, load(pano_path) as Texture2D, tod.car_reflection, 2.5, tod.car_reflection_highlight)  # the street in the paint (TimeOfDay per hour)
 	# Engine, tyres, nitro and impacts; rivals get the cheaper, quieter positional set.
 	var audio := CarAudio.new()
 	audio.name = "CarAudio"
@@ -440,7 +503,9 @@ func _add_car(car: ArcadeCar, rival: bool = false) -> void:
 	if ResourceLoader.exists(FX_CAR_SCENE):
 		var fx: Node = (load(FX_CAR_SCENE) as PackedScene).instantiate()
 		if fx is CarFx:
-			(fx as CarFx).headlights_on = tod.headlights_on  # only at sunset and night
+			var cfx: CarFx = fx as CarFx
+			cfx.lamp_pools = rival  # rivals light the wet road with pools, the player keeps two spots
+			cfx.headlights_on = tod.headlights_on and (not rival or Settings.get_preset_id() != "low")  # sunset and night; no rival lamps on Low
 		car.add_child(fx)
 		# Smoke, sparks and flames are particles: they must not be drawn again in the sun's shadow pass.
 		for g: Node in fx.find_children("*", "GeometryInstance3D", true, false):
@@ -518,6 +583,7 @@ func _setup_player_driver() -> void:
 		_touch = (load(TOUCH_SCENE) as PackedScene).instantiate()
 		hud.add_child(_touch)
 		(_touch as TouchControls).bind(pd)
+		(_touch as TouchControls).pause_pressed.connect(_on_touch_pause)
 
 
 ## Orbit over the grid, chase at GO. The chase camera follows the player only.
@@ -584,6 +650,21 @@ func _tag_mirror_skipped() -> void:
 			copy.visibility_range_begin = 0.0
 			copy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			gi.get_parent().add_child(copy)
+
+
+## The player car in the wet road mirror: the 7k-tri LOD2 copy at every distance. The LOD1 copy (about 20k primitives)
+## only showed a blurred reflection of the car 5 m behind the camera. Rivals keep the mirror LOD1/LOD2 split.
+func _cheap_player_mirror(lod: CarLod) -> void:
+	var copy1: Node3D = lod.get_mirror_lod()
+	var copy2: Node3D = lod.find_child(CarLod.MIRROR_LOD2_NAME, true, false) as Node3D
+	if copy1 == null or copy2 == null:
+		return
+	copy1.visible = false
+	copy2.visible = true
+	for n: Node in copy2.find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = n as MeshInstance3D
+		mi.visibility_range_begin = 0.0
+		mi.visibility_range_end = lod.lod2_start_m
 
 
 ## "LOD0" / "LOD1" / "LOD2" when the node is a building LOD mesh or sits under one, else "".
@@ -683,6 +764,10 @@ func _force_nitro_gate() -> void:
 
 
 func _attach_optional() -> void:
+	if not tod.is_night() and not tod.rain and track != null and track.scene_file_path.contains("istanbul_bogaz") and get_node_or_null("Petals") == null:
+		var petals := Petals.new()  # erguvan petals from the blossom rows, day and sunset on the Ortakoy route
+		petals.name = "Petals"
+		_world.add_child(petals)
 	if tod.rain and ResourceLoader.exists(FX_RAIN_SCENE):
 		_world.add_child((load(FX_RAIN_SCENE) as PackedScene).instantiate())
 	if tod.rain and get_node_or_null("RainOnLens") == null:
@@ -708,6 +793,14 @@ func _ensure_watermark() -> void:
 	layer.layer = OVERLAY_LAYER + 1
 	add_child(layer)
 	layer.add_child(_watermark)
+
+
+## Online race: the server start message starts the countdown (NetRaceGlue calls this). Local races never need it.
+func start_net_countdown() -> void:
+	if race == null or race.state != RaceManager.State.GRID:
+		return
+	race.start_countdown()
+	_start_grid_intro()
 
 
 ## Countdown camera: from high behind the pack, down over the cars to the chase pose at GO (see ChaseCamera).
@@ -763,7 +856,34 @@ func _on_race_started() -> void:
 		player_ai.set_racing(true)
 
 
+## Police caught the player: the race stops and the BUSTED banner shows, then the results screen with no time, no
+## reward and no record, so the event can be retried.
+func _on_pursuit_busted() -> void:
+	if _pursuit_busted or race.state == RaceManager.State.FINISHED:
+		return
+	_pursuit_busted = true
+	race.set_physics_process(false)
+	if player_ai != null:
+		player_ai.set_racing(false)  # autopilot stops with the race, as on a finish
+	get_tree().create_timer(PURSUIT_BUST_SHOW_S).timeout.connect(_show_busted)
+
+
+func _show_busted() -> void:
+	if not _pursuit_busted:
+		return  ## retried or left before the banner ended
+	last_results.clear()
+	results_screen.set_replay_enabled(false)
+	results_screen.show_results([], {})
+	results_screen.get("_subtitle").set_text(I18n.t("pursuit.busted.result"))
+	results_screen.visible = true
+	_set_results_up(true)
+
+
 func _on_race_finished(results: Array[Dictionary]) -> void:
+	if config_used.net_hold_grid:
+		return  ## online: NetRaceGlue shows the server results instead
+	if _pursuit_busted:
+		return  ## busted: the result screen is already up with no reward
 	last_results = results
 	MusicPlayer.get_instance().duck(-10.0, 0.15)
 	UiSounds.finish()
@@ -775,7 +895,14 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 	var rewards: Dictionary = {}
 	for r: Dictionary in results:
 		if bool(r.get("is_player", false)):
-			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)))
+			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)), float(r.get("score", -1.0)))
+	rewards["mode"] = config_used.mode  # the results screen labels the mode and shows the drift score
+	for r: Dictionary in results:
+		if _car_paint.has(r.get("car")):
+			r["paint"] = _car_paint[r["car"]]  # the chip beside each driver name
+	var pursuit_node: PursuitMode = _world.get_node_or_null("PursuitMode") as PursuitMode
+	if pursuit_node != null and pursuit_node.evade_bonus() > 0:
+		rewards["evade_bonus"] = pursuit_node.evade_bonus()  # cash already paid on ESCAPED: shown, not added again
 	if player_ai != null:
 		player_ai.set_racing(false)
 	if camera != null:

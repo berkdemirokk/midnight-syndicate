@@ -11,6 +11,7 @@ const MATERIAL_JSON: Array[String] = [
 	"res://assets/world/kits/buildings/materials.json",
 	"res://assets/world/kits/props/materials.json",
 	"res://assets/world/kits/istanbul/materials.json",
+	"res://assets/world/istanbul_bogaz/road/materials.json",
 ]
 const CC0_ROOT: String = "res://assets/textures/cc0/"
 const BUILDING_TEX: String = "res://assets/world/kits/buildings/textures/"
@@ -30,6 +31,7 @@ const CC0_SETS: Dictionary = {
 	"M_Paving": "concrete_pavers_02",
 	"M_Ground": "concrete_pavement_03",
 	"M_Concrete_Wall": "concrete_wall_006",
+	"M_Stone_Plinth": "sandstone_blocks_08",
 }
 const ASPHALT_SET: String = "asphalt_02"
 const WATER_TEX: String = "res://assets/world/water/"  ## tools/gen_water_textures.py
@@ -48,7 +50,7 @@ static var _debug: StandardMaterial3D
 ## True when the name has a recipe in one of the materials.json files.
 const WOOD_LIFT: float = 2.6  ## dark timber photo set times a dark tint rendered the wooden houses black
 ## Materials of the road GLB: its vertex colours carry asphalt shader data (wear, lanes), so they must not be read as AO.
-const ROAD_VERTEX_DATA: PackedStringArray = ["M_Asphalt", "M_Cobble", "M_Concrete_Wall", "M_Curb", "M_Grate", "M_Ground", "M_Manhole", "M_Paving", "M_Rail", "M_RoadPaint", "M_Water"]
+const ROAD_VERTEX_DATA: PackedStringArray = ["M_Asphalt", "M_Cobble", "M_Concrete_Wall", "M_Curb", "M_Grate", "M_Ground", "M_Manhole", "M_Paving", "M_Rail", "M_RoadPaint", "M_Stone_Plinth", "M_Water"]
 
 
 static func is_bound(mat_name: String) -> bool:
@@ -300,6 +302,16 @@ static func _standard(mat_name: String, r: Dictionary) -> StandardMaterial3D:
 		m.albedo_color = Color(tuning.road_paint_albedo, tuning.road_paint_albedo, tuning.road_paint_albedo * 0.97)
 		m.roughness = tuning.road_paint_roughness
 		emit_strength = tuning.road_paint_glow
+		# Paint lies on the asphalt grain: the asphalt normal map in world metres keeps the start squares and lines
+		# from reading as flat stickers under the sun.
+		var paint_set: Dictionary = _cc0_set(ASPHALT_SET)
+		m.normal_enabled = true
+		m.normal_texture = _tex(paint_set["normal"])
+		m.normal_scale = 0.8
+		m.uv1_triplanar = true
+		m.uv1_world_triplanar = true
+		var k: float = 1.0 / maxf(tuning.asphalt_tile_m, 0.5)
+		m.uv1_scale = Vector3(k, k, k)
 	if emit_strength > 0.0:
 		m.emission_enabled = true
 		m.emission = r["emit"]
@@ -376,6 +388,20 @@ static func _scale_rgb(c: Color, s: float) -> Color:
 	return Color(c.r * s, c.g * s, c.b * s, c.a)
 
 
+## Binds the road's baked contact AO (UV2 atlas PNG) to every wet asphalt surface under root. Called per track, after apply().
+static func bind_road_ao(root: Node, ao_path: String) -> int:
+	var bound: int = 0
+	# M_Asphalt is one shared material: a road without a PNG clears the previous track's atlas (white = no AO).
+	var ao: Texture2D = _tex(ao_path) if ResourceLoader.exists(ao_path) else null
+	for mi: MeshInstance3D in _meshes(root):
+		for s: int in mi.get_surface_override_material_count():
+			var m: ShaderMaterial = mi.get_surface_override_material(s) as ShaderMaterial
+			if m != null and m.resource_name == "M_Asphalt":
+				m.set_shader_parameter("ao_tex", ao)
+				bound += 1 if ao != null else 0
+	return bound
+
+
 static func _asphalt() -> ShaderMaterial:
 	var sm := ShaderMaterial.new()
 	sm.resource_name = "M_Asphalt"
@@ -388,6 +414,7 @@ static func _asphalt() -> ShaderMaterial:
 	sm.set_shader_parameter("wetness", 1.0)
 	sm.set_shader_parameter("puddle_level", tuning.asphalt_puddle_level)
 	sm.set_shader_parameter("rain_intensity", tuning.asphalt_rain)
+	sm.set_shader_parameter("specular_scale", 1.0)  # authored, so TimeOfDay can scale it per hour
 	return sm
 
 
@@ -404,6 +431,8 @@ static func _paving(mat_name: String, r: Dictionary) -> ShaderMaterial:
 	sm.set_shader_parameter("stone_m", 1.0 if kerb else 0.4)
 	sm.set_shader_parameter("joints", 0.0 if kerb else 1.0)
 	sm.set_shader_parameter("roughness_value", float(r["roughness"]))
+	sm.set_shader_parameter("specular_scale", 1.0)  # authored values: TimeOfDay scales both per hour
+	sm.set_shader_parameter("wetness", 0.8)
 	return sm
 
 

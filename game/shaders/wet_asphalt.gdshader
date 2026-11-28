@@ -10,6 +10,8 @@ uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, r
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D roughness_tex : hint_default_white, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D planar_reflection : source_color, filter_linear_mipmap, repeat_disable;
+// Baked contact AO of the road (assets_src/pipeline/bake_road_ao.py): one atlas per track on UV2. White = no AO.
+uniform sampler2D ao_tex : hint_default_white, filter_linear_mipmap, repeat_disable;
 
 // One texture tile per this many metres.
 uniform float tile_metres : hint_range(0.5, 20.0) = 4.0;
@@ -33,6 +35,14 @@ uniform float reflection_grain : hint_range(0.0, 0.1) = 0.012;
 uniform float damp_reflectivity : hint_range(0.0, 1.0) = 0.55;
 // Daylight wear: macro tone, repair patches, drain grates, oil band and surface grain. 0 = flat.
 uniform float dry_detail : hint_range(0.0, 1.0) = 1.0;
+// Share of the stock specular (0.5). TimeOfDay lowers it by day: dry asphalt mirrored the blue sky and facades.
+uniform float specular_scale : hint_range(0.0, 1.0) = 1.0;
+// Mirror colour: share of the reflection's saturation kept (1 = as the mirror sees it; neon sheets read less orange).
+uniform float reflection_saturation : hint_range(0.0, 1.0) = 0.85;
+// Damp road mirrors in metre-scale patches instead of one even sheet (0 = even).
+uniform float damp_patchiness : hint_range(0.0, 1.0) = 0.45;
+// How much the baked contact AO darkens the road (kerbs, wall bases). 0 = off.
+uniform float ao_strength : hint_range(0.0, 1.0) = 0.8;
 
 varying vec3 world_pos;
 
@@ -90,6 +100,8 @@ void fragment() {
 	float dd = dry_detail * (1.0 - 0.6 * wetness);
 	float macro = vnoise(wp / 14.0) * 0.6 + vnoise(wp / 4.5) * 0.3 + vnoise(wp / 1.3) * 0.1 - 0.5;
 	float tone = 1.0 + macro * 0.24 * dd;
+	// Wet patches in world metres: shared by the damp darkening and the mirror amount.
+	float wet_noise = smoothstep(0.38, 0.62, vnoise(wp / 7.0) * 0.65 + vnoise(wp / 2.2) * 0.35);
 	// Repair patches: one hashed rectangle per 8 m cell, about a third of the cells, tone shifted.
 	vec2 pc = wp / 8.0;
 	vec2 pcell = floor(pc);
@@ -111,7 +123,7 @@ void fragment() {
 	tone *= 1.0 - grate * (disc * (0.55 - 0.3 * bars) + 0.3 * rim);
 
 	// Damp asphalt: darker, a little glossy. Groove: darker and smoother.
-	float damp = wetness * (1.0 - puddle * 0.5);
+	float damp = wetness * mix(1.0 - damp_patchiness * 0.9, 1.0, wet_noise) * (1.0 - puddle * 0.5);
 	vec3 col = alb.rgb * tint.rgb * mix(1.0, 0.3, damp);
 	// Rubber laid on the racing groove (was a 7 % tint: invisible) and oil stains in the lanes.
 	float rubber = wear * (0.17 + 0.11 * vnoise(wp * 2.5)) * dd;
@@ -125,6 +137,8 @@ void fragment() {
 	rough = mix(rough, 0.08, puddle);
 	rough *= mix(1.0, 0.6, wear * wetness);
 	rough *= (1.0 - 0.18 * rubber * 4.0) * (1.0 - 0.3 * oil);  // polished rubber and oil are smoother than the stone
+	// Dry road: roughness follows the macro tone and the polished racing groove, so the low sun shows patches, not a flat sheet.
+	rough = clamp(rough + macro * 0.18 * dd - wear * 0.08 * dd, 0.05, 1.0);
 
 	// World-space normal for a flat road: texture x -> world X, texture y -> world Z, up = Y.
 	// Puddles flatten it to up and carry ripples.
@@ -144,10 +158,11 @@ void fragment() {
 		wn = normalize(wn + vec3(rip.x, 0.0, rip.y));
 	}
 
-	ALBEDO = col;
+	float ao = mix(1.0, texture(ao_tex, UV2).r, ao_strength);
+	ALBEDO = col * ao;
 	ROUGHNESS = rough;
 	// Specular is left on: real lamp lights give long GGX streaks on the low-roughness puddles.
-	SPECULAR = 0.5;
+	SPECULAR = 0.5 * specular_scale;
 	METALLIC = 0.0;
 	NORMAL = normalize((VIEW_MATRIX * vec4(wn, 0.0)).xyz);
 
@@ -166,17 +181,21 @@ void fragment() {
 		// Per-pixel jitter of the taps (interleaved gradient noise): turns the visible stack of
 		// discrete copies into fine grain, which reads as wet asphalt texture.
 		float jit = fract(52.9829189 * fract(dot(FRAGCOORD.xy, vec2(0.06711056, 0.00583715)))) - 0.5;
-		for (int i = -4; i <= 4; i++) {
-			float fi = float(i) + jit;
+		// 5 taps at double spacing cover the same +-4.5 step kernel as 9 (the jitter turns the gaps into grain).
+		for (int i = -2; i <= 2; i++) {
+			float fi = (float(i) + jit) * 2.0;
 			float w = exp(-fi * fi * 0.18);
 			refl += texture(planar_reflection, suv + vec2(0.0, fi * smear)).rgb * w;
 			wsum += w;
 		}
 		refl /= wsum;
+		float rl = dot(refl, vec3(0.2126, 0.7152, 0.0722));
+		refl = mix(vec3(rl), refl, reflection_saturation);
+		refl /= (1.0 + rl * 0.35);  // soft shoulder: clipped windows stay bright without a blown sheet
 		float ndv = clamp(dot(normalize(VIEW), NORMAL), 0.0, 1.0);
 		float fres = 0.04 + 0.96 * pow(1.0 - ndv, 5.0);
 		// The whole wet road reflects, puddles most. Dry road: nothing.
-		float amount = mix(damp_reflectivity, 1.0, puddle) * wetness;
-		EMISSION = refl * fres * amount * reflection_strength;
+		float amount = mix(damp_reflectivity * mix(1.0 - damp_patchiness, 1.0, wet_noise), 1.0, puddle) * wetness;
+		EMISSION = refl * fres * amount * reflection_strength * ao;
 	}
 }

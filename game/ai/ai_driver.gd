@@ -57,6 +57,7 @@ class NearCar extends RefCounted:
 @export var lane_margin: float = 0.6  ## m, lateral overlap margin for a car ahead in our lane
 @export var side_clearance: float = 0.8  ## m, lateral clearance kept from a car alongside (body gap)
 @export var side_long_range: float = 7.0  ## m, a car this close along the track counts as alongside (overlaps longitudinally)
+@export var follow_decel: float = 4.0  ## m/s^2, braking that stops short of a car ahead in our lane: the brake needed for the closing speed over the bumper gap, at this deceleration = full brake
 @export var ttc_brake: float = 1.5  ## s, a car ahead in our lane closer than this in time is matched in speed unless a side is free
 @export var pass_timeout_s: float = 8.0  ## s, a pass that is not finished by then is aborted
 @export var pass_cooldown_s: float = 3.0  ## s, after an aborted pass no new pass starts
@@ -89,6 +90,11 @@ class NearCar extends RefCounted:
 @export var bend_bias_start: float = 0.006  ## 1/m: tighter bends than this start to move the lane to the inside
 @export var bend_bias_full: float = 0.0075  ## 1/m: the inside bias reaches bend_bias_m at this curvature
 @export var bend_bias_m: float = 1.5  ## m: inside lane bias in a tight bend, so a car that runs wide still has room to the kerb
+@export var use_racing_line: bool = false  ## steer on the track's racing line (apex line, line speed profile) instead of the centre line plus bend bias. Off: measured worse than base on 2026-11-28 (contacts, side-by-side), see docs/design/AI_RIVALS_2026-11-28.md
+@export var use_line_speed: bool = true  ## only with use_racing_line ON (ignored while it is OFF): target speed from the line's own curvature (true) or the centre line's profile (false)
+@export var pass_commit_s: float = 0.0  ## s, a started pass is not aborted for a side filling up or a bend before this (the timeout still applies). 0 = base behaviour; 1.5 measured worse
+@export var defence_shift: float = 0.0  ## m, the one lateral move toward a faster car up to 8 m behind (until it is alongside: car_length) in our lane. 0 = off (default; measured no gain)
+@export var defence_hold_s: float = 3.0  ## s, a defence move is held at most this long
 
 var stuck_count: int = 0  ## recovery starts so far
 
@@ -123,6 +129,11 @@ var _go_lat: float = 0.0  ## lateral offset at GO (the grid lane)
 var _grid_hold: bool = false  ## started behind the line: keep the grid lane for grid_hold_m
 var _race_m: float = 0.0  ## m along the race since GO, unwrapped (a lap is not wrapped back to zero)
 var _race_s_prev: float = 0.0  ## track progress on the last tick, for _race_m
+var _follow_brake: float = 0.0  ## this tick: brake (0..1) the car ahead needs from us, from the closing speed and the bumper gap
+var _held: bool = false  ## last tick: the car ahead caps our speed (a queue, not a wedge), so it is not counted as stuck
+var _defend_side: int = SIDE_NONE  ## side of the defence move (-1 = left, +1 = right), SIDE_NONE when not defending
+var _defend_car: ArcadeCar = null  ## the attacker the defence move is for
+var _defend_t: float = 0.0  ## s since the defence move started
 
 
 func _init() -> void:
@@ -146,6 +157,7 @@ func setup(track: Track) -> void:
 	_idle_t = 0.0
 	_anchor_s = -1.0
 	_clear_pass()
+	_clear_defence()
 	_cooldown_t = 0.0
 	_grid_hold = false
 
@@ -170,6 +182,7 @@ func set_racing(on: bool) -> void:
 	_idle_t = 0.0
 	_anchor_s = -1.0
 	_clear_pass()
+	_clear_defence()
 	_cooldown_t = 0.0
 	if on and _track != null and _car != null:
 		var pos: Vector3 = _car.global_position
@@ -202,7 +215,8 @@ func _physics_process(delta: float) -> void:
 	if _anchor_s < 0.0:
 		_anchor_s = s
 	# Progress-based stuck check: no forward progress along the line for stuck_time while racing.
-	if _wrap_signed(s - _anchor_s) >= stuck_progress_m:
+	# A car held behind traffic is queued, not wedged: the car ahead is what stops it, and that car is counted itself.
+	if _held or _wrap_signed(s - _anchor_s) >= stuck_progress_m:
 		_anchor_s = s
 		_idle_t = 0.0
 	else:
@@ -232,7 +246,7 @@ func _physics_process(delta: float) -> void:
 	if _grid_hold and _race_m < grid_hold_m:
 		lane = _go_lat
 	else:
-		lane = lane_offset + _shift + _bend_bias(s)
+		lane = lane_offset + _shift + _line_base(s, v)
 	lane = _clamp_lane(lane)
 	_drive(pos, s, v, lane)
 
@@ -242,8 +256,7 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	var inp: VehicleInput = _car.input
 	var top_ms: float = spec.top_speed_kmh / KMH_PER_MS
 	# Steering: pure pursuit to a look-ahead point on the lane. Positive lateral is right.
-	var look: float = clampf(look_ahead_min + look_ahead_time * v, look_ahead_min, look_ahead_max)
-	var o: float = s + look
+	var o: float = s + _look_ahead(v)
 	var c: Vector3 = _track.get_point_at(o)
 	var t: Vector3 = _track.get_tangent_at(o)
 	var tg: Vector3 = _track.get_tangent_at(s)
@@ -262,9 +275,10 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 	steer = clampf(steer + steer_noise * _noise(NOISE_STEER), -1.0, 1.0)
 	# Speed: target speed read a little ahead, scaled by skill, rubber band and braking-point noise.
 	var ahead: float = s + clampf(target_look_ahead_time * v, 0.0, target_look_ahead_max)
-	var want: float = minf(_track.get_target_speed(s), _track.get_target_speed(ahead)) * skill * get_rubber_band()
+	var want: float = minf(_target_speed(s), _target_speed(ahead)) * skill * get_rubber_band()
 	want *= 1.0 + brake_noise * _noise(NOISE_BRAKE)
 	var cap: float = _traffic_cap(v)
+	_held = cap < want
 	want = minf(want, cap)
 	want = minf(want, top_ms)
 	var err: float = want - v
@@ -281,11 +295,31 @@ func _drive(pos: Vector3, s: float, v: float, lane: float) -> void:
 		inp.brake = clampf(-err * brake_gain, 0.0, 1.0)
 	# Sliding sideways: brake too, so the tyres get back the grip the lateral slide is using.
 	inp.brake = maxf(inp.brake, clampf((absf(lat_v) - slide_lift_ms) * slide_brake_gain, 0.0, 1.0))
+	# Closing on the car ahead: brake for the closing speed, not only toward its speed (no throttle while doing so).
+	if _follow_brake > 0.0:
+		inp.brake = maxf(inp.brake, clampf(_follow_brake, 0.0, 1.0))
+		inp.throttle = 0.0
 	# Start nitro above NITRO_MIN_AMOUNT, then keep it running until the charge is gone (the car ends it at 0).
 	var charged: bool = _car.nitro_amount > 0.0 if _car.nitro_active else _car.nitro_amount > NITRO_MIN_AMOUNT
 	# No nitro while a slower car is in follow range: it would arrive too fast to pass it cleanly.
 	var fast_enough: bool = _car.nitro_active or _car.speed_kmh >= nitro_min_start_kmh
 	inp.nitro = err > nitro_min_gap_ms and charged and fast_enough and is_inf(cap) and _straight_ahead(s)
+
+
+func _look_ahead(v: float) -> float:
+	return clampf(look_ahead_min + look_ahead_time * v, look_ahead_min, look_ahead_max)
+
+
+## Lane base from the track: the racing line at the look-ahead point, or the bend bias when the line is off.
+func _line_base(s: float, v: float) -> float:
+	if use_racing_line:
+		return _track.get_line_offset(s + _look_ahead(v))
+	return _bend_bias(s)
+
+
+## Target speed along the racing line, or along the centre profile when the line is off.
+func _target_speed(offset: float) -> float:
+	return _track.get_line_speed(offset) if use_racing_line and use_line_speed else _track.get_target_speed(offset)
 
 
 func _tick_reverse(delta: float) -> void:
@@ -300,7 +334,8 @@ func _tick_reverse(delta: float) -> void:
 		return
 	# Free only if it gained progress since the recovery started and faces along the line.
 	var s: float = _track.get_progress(_car.global_position, _last_s)
-	var free: bool = _wrap_signed(s - _anchor_s) >= stuck_progress_m and _heading_error_deg(s) <= reset_yaw_deg
+	# Reversing moves the car back along the line, so the test is distance moved, not forward progress.
+	var free: bool = absf(_wrap_signed(s - _anchor_s)) >= stuck_progress_m and _heading_error_deg(s) <= reset_yaw_deg
 	if not free:
 		_reset_to_line()  # last resort: teleport back onto the line
 	_mode = Mode.RACE
@@ -315,18 +350,24 @@ func _heading_error_deg(s: float) -> float:
 	return rad_to_deg(acos(clampf(fwd.dot(t), -1.0, 1.0)))
 
 
-func _reset_to_line() -> void:
-	# Search near the last known progress: parts of the lap pass close to each other (underpass and
-	# hairpin are about 43 m apart), so an unhinted search can land on the wrong part of the track.
+func _reset_to_line() -> bool:
+	# Search near the last known progress: parts of the lap pass close to each other.
 	var hint: float = _last_s if _last_s >= 0.0 else _anchor_s
 	var s0: float = _track.get_progress(_car.global_position, hint) if hint >= 0.0 else _track.get_progress(_car.global_position)
-	# Land ahead of the stuck spot, on a piece of line that no other car occupies (a reset onto a
-	# stopped car was how one car got stuck 110 times in a row).
+	# Check every candidate, including the last one (previously it could be used unchecked).
 	var s: float = s0 + reset_advance_m
-	for k: int in reset_probe_tries:
+	var found: bool = false
+	for k: int in range(maxi(reset_probe_tries, 0) + 1):
 		if _spot_free(_track.get_point_at(s)):
+			found = true
 			break
 		s += reset_probe_step_m
+	if not found:
+		# Stay put instead of teleporting into another car. Normal recovery can retry later.
+		_clear_pass()
+		_shift = 0.0
+		_car.input.clear()
+		return false
 	var c: Vector3 = _track.get_point_at(s)
 	var t: Vector3 = _track.get_tangent_at(s)
 	var rgt: Vector3 = Vector3(-t.z, 0.0, t.x)
@@ -334,6 +375,7 @@ func _reset_to_line() -> void:
 	_shift = 0.0
 	_car.reset_to(Transform3D(Basis(rgt, Vector3.UP, -t), c + Vector3.UP * reset_height))
 	_last_s = s
+	return true
 
 
 func _spot_free(p: Vector3) -> bool:
@@ -388,6 +430,7 @@ func _lead_index() -> int:
 ## Speed cap from the cars ahead in our lane. Gap rule: match the car ahead at follow_gap, more gap allows more speed.
 ## Time rule: a car ahead closer than ttc_brake in time is matched in speed, unless a pass to a free side is possible.
 func _traffic_cap(v: float) -> float:
+	_follow_brake = 0.0
 	if _pass_side != SIDE_NONE:
 		return INF  # already passing: the lane shift is the answer, not braking behind the car
 	var limit: float = INF
@@ -400,6 +443,9 @@ func _traffic_cap(v: float) -> float:
 			limit = minf(limit, n.speed + follow_gain * (n.along - follow_gap))
 		if n.ttc < ttc_brake and not (_pass_ok and _pick_side(n.car, n.dl) != SIDE_NONE):
 			limit = minf(limit, n.speed)
+		var closing: float = v - n.speed
+		if closing > 0.0 and not (_pass_ok and _pick_side(n.car, n.dl) != SIDE_NONE):
+			_follow_brake = maxf(_follow_brake, closing * closing / (2.0 * maxf(n.along - car_length, 0.05) * follow_decel))
 	return limit
 
 
@@ -427,6 +473,8 @@ func _update_shift(s: float, v: float, delta: float) -> void:
 					_pass_anchor = _lat_me
 					_pass_t = 0.0
 					want = float(side) * overtake_shift
+	if _pass_side == SIDE_NONE and defence_shift > 0.0:  # off by default: the base path does no defence work
+		want = _defence_shift(v, delta)
 	# Moving out of the lane is damped by the bend curvature (none here: the pass is refused above);
 	# returning to the lane is always at full rate, so a shift is never held into a bend.
 	_shift = move_toward(_shift, want, shift_rate * delta)
@@ -444,11 +492,53 @@ func _continue_pass(s: float, delta: float) -> float:
 		_clear_pass()  # passed: back to the lane
 		return 0.0
 	var bend: bool = absf(_zone_curv) >= shift_stop_curvature
-	if _pass_t >= pass_timeout_s or bend or not _side_free(_pass_side, _pass_anchor, _pass_car):
+	if _pass_t >= pass_timeout_s or (_pass_t >= pass_commit_s and (bend or not _side_free(_pass_side, _pass_anchor, _pass_car))):
 		_clear_pass()
 		_cooldown_t = pass_cooldown_s  # abort: fall back behind
 		return 0.0
 	return float(_pass_side) * overtake_shift
+
+
+## Defence: a faster car up to 8 m behind in our lane, not yet alongside (closer than car_length is alongside), gets one lateral move toward its side,
+## held until it passes, leaves sensing range, or defence_hold_s is up. Lane clamping stops the move into a car alongside.
+func _defence_shift(v: float, delta: float) -> float:
+	if _defend_side != SIDE_NONE:
+		_defend_t += delta
+		var held: NearCar = _near_car(_defend_car)
+		if held == null or held.along > 0.0 or _defend_t >= defence_hold_s or absf(_zone_curv) >= shift_stop_curvature:
+			_clear_defence()
+			return 0.0
+		return float(_defend_side) * defence_shift
+	if absf(_zone_curv) >= shift_stop_curvature:
+		return 0.0
+	var band: float = car_width + lane_margin
+	for i: int in _near_n:
+		var n: NearCar = _near[i]
+		if n.along < -SIDE_BEHIND_M or n.along > -car_length or n.speed <= v or absf(n.dl) >= band:
+			continue
+		_defend_car = n.car
+		_defend_side = 1 if n.dl > 0.0 else -1
+		_defend_t = 0.0
+		return float(_defend_side) * defence_shift
+	return 0.0
+
+
+## Lateral shift currently commanded by the defence move (metres, positive = right); 0 when not defending.
+func get_defence_shift() -> float:
+	return _shift if _defend_side != SIDE_NONE else 0.0
+
+
+func _near_car(car: ArcadeCar) -> NearCar:
+	for i: int in _near_n:
+		if _near[i].car == car:
+			return _near[i]
+	return null
+
+
+func _clear_defence() -> void:
+	_defend_side = SIDE_NONE
+	_defend_car = null
+	_defend_t = 0.0
 
 
 func _clear_pass() -> void:

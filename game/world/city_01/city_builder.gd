@@ -222,7 +222,8 @@ func _ready() -> void:
 	_dress_districts(inst, lap, n_chunks)
 	_build_parked_cars(lap)
 	_build_lights(d["lights"], inst)
-	_build_probes(d["reflection_probes"])
+	if Settings.get_preset().reflection_probes_enabled:
+		_build_probes(d["reflection_probes"])
 	_build_environment()
 	_apply_time_of_day()
 	load_time_ms = float(Time.get_ticks_usec() - t0) / 1000.0
@@ -284,6 +285,7 @@ func _build_road() -> void:
 	var road: Node3D = _scene(road_glb).instantiate() as Node3D
 	road.name = "Road"
 	stats["road_surfaces"] = MaterialLibrary.apply(road)
+	stats["road_ao_surfaces"] = MaterialLibrary.bind_road_ao(road, road_glb.get_basename() + "_ao.png")
 	# The "ground" plane collider sits at about -0.3 m, above the underpass approach where the road drops below it,
 	# so cars stepped off it. The road and sidewalk colliders cover the drivable surface; the ground mesh stays.
 	var ground: Node = road.get_node_or_null("ground")
@@ -550,6 +552,25 @@ func _load_corridor() -> void:
 		_c_land.append(Vector2(rb.x, rb.z).dot(rt))
 		_c_water.append(-Vector2(lb.x, lb.z).dot(rt))
 		_c_dist.append(String(s.get("district_name", "")))
+
+
+## Kerb lines from the centreline file, relative to the racing line at offset: the racing line is not the road centre.
+func get_road_span(offset: float) -> Vector2:
+	if _c_pos.is_empty():
+		return super.get_road_span(offset)
+	var p: Vector3 = get_point_at(offset)
+	var q: Vector2 = Vector2(p.x, p.z)
+	var best: int = 0
+	var best_d2: float = INF
+	for i: int in _c_pos.size():  # shortcut: full scan (about 1100 samples), fine for a rare roadblock query
+		var d2: float = q.distance_squared_to(_c_pos[i])
+		if d2 < best_d2:
+			best_d2 = d2
+			best = i
+	var t: Vector3 = get_tangent_at(offset)
+	var centre_lat: float = (_c_pos[best] - q).dot(Vector2(-t.z, t.x))
+	var half: float = _c_half[best] - CORRIDOR_MARGIN_M
+	return Vector2(centre_lat - half, centre_lat + half)
 
 
 ## Signed margin of point q (x, z) inside the corridor: positive = inside kerb line + margin.

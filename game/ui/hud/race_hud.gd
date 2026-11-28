@@ -80,6 +80,8 @@ const PANEL_SKEW: float = MSTheme.SKEW_RATIO * 0.5  ## same shear as MSTheme.box
 const PLATE_PAD: float = 14.0  ## backing plates under every cluster: HUD text stays readable on bright signage
 const PHONE_HUD_SCALE: float = 1.4  ## 20 px labels are about 6 pt on an iPhone at the 1080 px base: scale the whole frame
 const POPUP_PAD_X: float = 24.0
+const OUT_SHOW_S: float = 2.5  ## elimination: the "out" line stays this long after a car leaves the race
+const ELIM_SHOW_S: float = 15.0  ## elimination: the countdown to the next car out shows inside this many seconds
 
 
 ## The single canvas item the HUD paints into.
@@ -96,6 +98,7 @@ var _race: RaceManager = null
 var _track: Node3D = null
 var _cars: Array[ArcadeCar] = []  ## every car in the race, player included
 var _rivals: Array[ArcadeCar] = []
+var _online_rows: Array = []  ## online race: the server's live order, rows of {car, name, place, distance}; empty offline
 var _connections: Array = []  ## [Signal, Callable] pairs made by bind()
 var _shown: Dictionary = {}
 var _pulse_t: float = 0.0
@@ -133,8 +136,14 @@ var _nitro_label: HudText
 var _countdown: HudText
 var _drift_label: HudText
 var _bank_label: HudText
+var _mode_label: HudText  ## drift score and chain, or cars left
+var _out_label: HudText  ## elimination: the car that just went out
+var _elim_label: HudText  ## elimination: seconds until the last car is out
+var _out_t: float = 0.0
 var _wrong_label: HudText
 var _finish_label: HudText
+var _best_label: HudText  ## best lap of the player, top right
+var _delta_label: HudText  ## live delta to the best lap: green ahead, red behind
 
 
 func _ready() -> void:
@@ -194,6 +203,8 @@ func _build_texts() -> void:
 	_pct = _text("digits", PCT_PX, MSTheme.TEXT, "% 0")
 	_clock = _text("digits", CLOCK_PX, MSTheme.TEXT, I18n.t("hud.no_time"))
 	_lap_val = _text("digits", ROW_PX, MSTheme.MUTED, "1 / 1")
+	_best_label = _text("digits", ROW_PX, MSTheme.MUTED, "")
+	_delta_label = _text("digits", ROW_PX, MSTheme.TEXT, "")
 	_track_label = _text("digits", ROW_PX, MSTheme.TEXT, "")
 	_speed_label = _text("digits", SPEED_PX, MSTheme.TEXT, "0")
 	_unit_label = _text("digits", ROW_PX, MSTheme.MUTED, I18n.t("hud.kmh"))
@@ -204,11 +215,14 @@ func _build_texts() -> void:
 	_nitro_label = _text("digits", ROW_PX, MSTheme.CYAN, I18n.t("hud.nitro"))
 	_drift_label = _text("digits", DRIFT_PX, MSTheme.CYAN, "")
 	_bank_label = _text("digits", BANK_PX, MSTheme.MAGENTA, "")
+	_mode_label = _text("digits", MID_PX, MSTheme.CYAN, "")
+	_out_label = _text("digits", FINISH_PX, MSTheme.DANGER, "")
+	_elim_label = _text("digits", MID_PX, MSTheme.AMBER, "")
 	_wrong_label = _text("digits", WRONG_PX, MSTheme.DANGER, I18n.t("hud.wrong_way"))
 	_finish_label = _text("digits", FINISH_PX, MSTheme.TEXT, I18n.t("hud.finished"))
 	_countdown = _text("digits", COUNTDOWN_PX, MSTheme.TEXT, "")
 	_countdown.scale = COUNTDOWN_BASE
-	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label, _countdown]:
+	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label, _mode_label, _out_label, _elim_label, _countdown]:
 		t.visible = false
 	_texts.sort_custom(func(a: HudText, b: HudText) -> bool: return a.size_px < b.size_px)
 
@@ -251,9 +265,15 @@ func _paint(c: Control) -> void:
 	_pct.pos = Vector2(sz.x - _pct.width(), 0.0)
 	_clock.pos = Vector2(sz.x - _clock.width(), _pct.height() - pad * 0.5)
 	_lap_val.pos = Vector2(sz.x - _lap_val.width(), _clock.pos.y + _clock.height())
-	var tr_w: float = maxf(_pct.width(), maxf(_clock.width(), _lap_val.width()))
+	_best_label.pos = Vector2(sz.x - _best_label.width(), _lap_val.pos.y + _lap_val.height())
+	_delta_label.pos = Vector2(sz.x - _delta_label.width(), _best_label.pos.y + _best_label.height())
+	var tr_w: float = maxf(maxf(_pct.width(), maxf(_clock.width(), _lap_val.width())),
+		maxf(_best_label.width(), _delta_label.width()))
+	var tr_bottom: float = _lap_val.pos.y + _lap_val.height()
+	if _best_label.text != "":
+		tr_bottom = _delta_label.pos.y + _delta_label.height()  # best and delta rows only once a lap has a time
 	var tr_plate: Rect2 = Rect2(sz.x - tr_w - PLATE_PAD * 1.5, -PLATE_PAD * 0.5, tr_w + PLATE_PAD * 2.5,
-		_lap_val.pos.y + _lap_val.height() + PLATE_PAD * 0.5)
+		tr_bottom + PLATE_PAD * 0.5)
 
 	# Bottom left: round minimap, N marker on the rim.
 	var mm_c: Vector2 = Vector2(MM_PAD + MM_R, sz.y - MM_PAD - MM_R)
@@ -275,7 +295,7 @@ func _paint(c: Control) -> void:
 
 	# Centre column: drift popup, bank flash, wrong-way and finish text stack under the top strip.
 	var cy: float = CENTRE_TOP_PX
-	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label]:
+	for t: HudText in [_mode_label, _elim_label, _drift_label, _out_label, _bank_label, _wrong_label, _finish_label]:
 		if t.visible:
 			t.pos = Vector2((sz.x - t.width()) * 0.5, cy)
 			cy += t.height() + pad * 2.0
@@ -290,7 +310,7 @@ func _paint(c: Control) -> void:
 	if _me_row >= 0:
 		var y: float = lb_top + float(_me_row) * LB_ROW_H
 		_paint_skew_fill(c, Rect2(0.0, y, LB_W, LB_ROW_H - 4.0), MSTheme.tint(VIOLET, 0.9))
-	for t: HudText in [_drift_label, _bank_label, _wrong_label, _finish_label]:
+	for t: HudText in [_mode_label, _elim_label, _drift_label, _out_label, _bank_label, _wrong_label, _finish_label]:
 		if t.visible and t.text != "":
 			_paint_skew_fill(c, Rect2(t.pos.x - POPUP_PAD_X, t.pos.y, t.width() + POPUP_PAD_X * 2.0, t.height()),
 				MSTheme.tint(MSTheme.PLATE_BG, MSTheme.PLATE_BG.a * t.modulate.a))
@@ -354,6 +374,7 @@ func bind(car: ArcadeCar, race: RaceManager, track: Node3D = null) -> void:
 		_connect(race.race_started, _on_race_started)
 		_connect(race.position_changed, _on_position_changed)
 		_connect(race.race_finished, _on_race_finished)
+		_connect(race.car_eliminated, _on_car_eliminated)
 	_cars = _all_cars()
 	_rivals.clear()
 	for c: ArcadeCar in _cars:
@@ -420,6 +441,8 @@ func _track_length() -> float:
 
 ## Race standings in place order. Without a set-up race, the cars ordered by lap progress.
 func _standings() -> Array:
+	if not _online_rows.is_empty():
+		return _online_rows
 	var rows: Array = []
 	if _race == null:
 		return rows
@@ -465,6 +488,7 @@ func _process(delta: float) -> void:
 	_refresh_speed()
 	_nitro.set_state(_car.nitro_amount, _car.nitro_active, _pulse_t)
 	_refresh_drift()
+	_refresh_mode(delta)
 	if _race != null:
 		_refresh_race()
 		_refresh_minimap()
@@ -507,26 +531,74 @@ func _refresh_race() -> void:
 	var laps_total: int = maxi(_race.total_laps, 1)
 	var lap_p: float = _race.get_lap_progress(_car)
 	_strip_p = fposmod(lap_p, 1.0)
+	var timed: bool = _race.mode == RaceConfig.MODE_DRIFT
 	var lap_changed: bool = _int_changed("lap", lap)
 	var laps_changed: bool = _int_changed("laps_total", laps_total)
 	if lap_changed or laps_changed:
-		_set_text("lap", _lap_val, I18n.t("hud.lap_of") % [lap, laps_total])
+		# A timed drift session has no laps: its clock and percent count the time limit instead.
+		_set_text("lap", _lap_val, "" if timed else I18n.t("hud.lap_of") % [lap, laps_total])
 	var pct: int = clampi(roundi((float(lap - 1) + lap_p) / float(laps_total) * 100.0), 0, 100)
+	var clock_s: float = _race.race_time
+	if timed:
+		clock_s = maxf(_race.time_limit_s - _race.race_time, 0.0)
+		pct = clampi(roundi(_race.race_time / maxf(_race.time_limit_s, 0.1) * 100.0), 0, 100)
 	if _int_changed("pct", pct):
 		_set_text("pct", _pct, I18n.t("hud.percent") % pct)
-	if _int_changed("time", _centis(_race.race_time)):
-		_set_text("time", _clock, fmt_time(_race.race_time))
-	var total: int = _race.get_car_count()
+	if _int_changed("time", _centis(clock_s)):
+		_set_text("time", _clock, fmt_time(clock_s))
+	var total: int = _online_rows.size() if not _online_rows.is_empty() else _race.get_car_count()
 	if _int_changed("car_count", total):
 		_set_text("position_total", _pos_total, I18n.t("hud.of") % total)
+	_refresh_lap_delta(timed)
 	_refresh_position()
 	_refresh_leaderboard()
 
 
+## Best lap, and the live delta to it: elapsed time minus the best lap's time at the same progress. Green is ahead.
+func _refresh_lap_delta(timed: bool) -> void:
+	var best: float = _race.get_best_lap_time(_car)
+	var elapsed: float = _race.get_current_lap_time(_car)
+	var best_text: String = ""
+	if not timed:
+		best_text = "%s  %s" % [I18n.t("hud.best"), fmt_time(best) if best > 0.0 else I18n.t("hud.no_time")]
+	_set_text("best", _best_label, best_text)
+	var delta_text: String = ""
+	var delta_col: Color = MSTheme.TEXT
+	if not timed and best > 0.0 and elapsed > 0.0:
+		var d: float = lap_delta(elapsed, best, _race.get_lap_progress(_car))  # already clamped 0..1: no wrap at the line
+		delta_text = fmt_delta(d)
+		delta_col = MSTheme.GOOD if d < 0.0 else MSTheme.DANGER
+	_delta_label.color = delta_col
+	_set_text("delta", _delta_label, delta_text)
+
+
+## Seconds ahead (negative) or behind (positive) the best lap at this lap progress (0..1 within the lap).
+static func lap_delta(elapsed_s: float, best_s: float, lap_progress: float) -> float:
+	return elapsed_s - best_s * clampf(lap_progress, 0.0, 1.0)
+
+
+## Signed, two decimals: "-0.18", "+0.42".
+static func fmt_delta(d: float) -> String:
+	return "%s%.2f" % ["-" if d < 0.0 else "+", absf(d)]
+
+
 func _refresh_position() -> void:
-	var pos: int = _race.get_position(_car)
+	var pos: int = _online_place() if not _online_rows.is_empty() else _race.get_position(_car)
 	if _int_changed("position", pos):
 		_set_text("position", _pos_num, str(pos))
+
+
+## Place of the player in the online order (the race only knows the local car online).
+func _online_place() -> int:
+	for row: Dictionary in _online_rows:
+		if row["car"] == _car:
+			return int(row["place"])
+	return _race.get_position(_car)
+
+
+## Online race: the server's live order replaces the race's own standings, which hold only the local car.
+func set_online_rows(rows: Array) -> void:
+	_online_rows = rows
 
 
 ## Four rows around the player: the window starts one place above the player, or at the top of the order.
@@ -557,7 +629,8 @@ func _refresh_leaderboard() -> void:
 		var shown_name: String = I18n.t("hud.you") if mine else str(row["name"])
 		_lb_place[i].set_text(str(int(row["place"])))
 		_lb_name[i].set_text(shown_name.left(LB_NAME_CHARS))
-		_lb_gap[i].set_text("0.00" if mine else _gap_text(float(row["distance"]) - my_d, v))
+		var out: bool = _race != null and _race.is_eliminated(row["car"] as ArcadeCar)
+		_lb_gap[i].set_text(I18n.t("hud.out_tag") if out else "0.00" if mine else _gap_text(float(row["distance"]) - my_d, v))
 		_lb_gap[i].color = MSTheme.TEXT if mine else MSTheme.MUTED
 
 
@@ -573,11 +646,65 @@ func _refresh_minimap() -> void:
 	_minimap.set_forward(Vector2(fwd.x, fwd.z))
 	_minimap.set_dot(0, _race.get_lap_progress(_car), true)
 	for i: int in _rivals.size():
-		_minimap.set_dot(i + 1, _race.get_lap_progress(_rivals[i]), false)
+		# An eliminated car is frozen on the track: hide its dot rather than leave it stuck there.
+		var out: bool = _race.is_eliminated(_rivals[i])
+		_minimap.set_dot(i + 1, _race.get_lap_progress(_rivals[i]), false, not out)
+
+
+## Drift: the banked score and the running chain. Elimination: cars left, and the car that just went out.
+func _refresh_mode(delta: float) -> void:
+	var mode: String = _race.mode if _race != null else RaceConfig.MODE_RACE
+	if mode == RaceConfig.MODE_DRIFT:
+		var text: String = "%s  %s" % [I18n.t("mode.drift"), group_int(int(_race.drift_score_now()))]
+		if _car.is_drifting:
+			text += "  ·  %s +%s" % [I18n.t("hud.chain"), group_int(int(_car.drift_score))]
+		_set_text("mode", _mode_label, text)
+		_mode_label.visible = true
+	elif mode == RaceConfig.MODE_ELIMINATION:
+		_set_text("mode", _mode_label, I18n.t("hud.cars_left") % [_race.active_count(), _race.get_car_count()])
+		_mode_label.visible = true
+		_refresh_elim_eta()
+	else:
+		_mode_label.visible = false
+		_elim_label.visible = false
+	_out_t = maxf(_out_t - delta, 0.0)
+	_out_label.visible = _out_t > 0.0
+
+
+## Elimination: the last car across its line is out. Estimate of seconds until that: the trailing car's distance to
+## the next line over its speed. Hidden when more than ELIM_SHOW_S away or when one car is left.
+func _refresh_elim_eta() -> void:
+	var eta: float = -1.0
+	if _race.active_count() > 1:
+		var trailing: Dictionary = {}
+		for row: Dictionary in _race.get_standings():
+			if _race.is_eliminated(row["car"]):
+				continue
+			if trailing.is_empty() or float(row["distance"]) < float(trailing["distance"]):
+				trailing = row
+		if not trailing.is_empty():
+			var out_count: int = _race.get_car_count() - _race.active_count()
+			eta = elim_eta_s(float(trailing["distance"]), _track_length(), out_count, (trailing["car"] as ArcadeCar).forward_speed)
+	var show: bool = eta >= 0.0 and eta <= ELIM_SHOW_S
+	if show:
+		_set_text("elim", _elim_label, I18n.t("hud.elim_in") % ceili(eta))
+	_elim_label.visible = show
+
+
+## Seconds until the trailing car reaches line (out_count + 1) * lap_m, at speed_ms (floored at GAP_MIN_MS).
+static func elim_eta_s(trailing_m: float, lap_m: float, out_count: int, speed_ms: float) -> float:
+	var remaining: float = float(out_count + 1) * lap_m - trailing_m
+	return maxf(remaining, 0.0) / maxf(speed_ms, GAP_MIN_MS)
+
+
+func _on_car_eliminated(_car_out: ArcadeCar, place: int) -> void:
+	_set_text("out", _out_label, I18n.t("hud.out") % ("%d%s" % [place, I18n.ordinal(place)]))
+	_out_t = OUT_SHOW_S
 
 
 func _refresh_drift() -> void:
-	var drifting: bool = _car.is_drifting
+	# A timed drift session shows the chain in the mode readout instead of a second popup.
+	var drifting: bool = _car.is_drifting and (_race == null or _race.mode != RaceConfig.MODE_DRIFT)
 	_drift_label.visible = drifting
 	_shown["drift_visible"] = drifting
 	if drifting and _int_changed("drift", int(_car.drift_score)):
@@ -663,7 +790,7 @@ func _on_race_finished(_results: Array[Dictionary]) -> void:
 
 
 func _set_text(key: String, label: HudText, text: String) -> void:
-	if _shown.get(key, "") == text:
+	if _shown.has(key) and _shown[key] == text:  # has(): a first "" must still clear the label's initial text
 		return
 	_shown[key] = text
 	label.set_text(text)

@@ -197,3 +197,17 @@ func test_five_ai_race_with_traffic_finishes() -> void:
 	for car: ArcadeCar in cars:
 		nodes.append(car)
 	await cleanup(nodes)
+
+
+func test_pool_models_have_lods_and_length() -> void:
+	# Cabs and vans ship LOD1 and LOD2 only (no LOD0): the pool starts them at LOD1, and each bakes with the lamp surfaces.
+	check(TrafficModels.MODEL_IDS.size() == 4, "the three new traffic models must be baked: %d ids" % TrafficModels.MODEL_IDS.size())
+	check(TrafficModels.model_count() == 1, "only the Arden Civic is in the pool until the new models pass the studio gate")
+	for model: int in range(1, TrafficModels.MODEL_IDS.size()):
+		check(TrafficModels.first_lod_of(model) == 1, "model %d must start at LOD1" % model)
+		for i: int in range(1, TrafficModels.LOD_COUNT):
+			var m: Dictionary = TrafficModels.lod(i, model)
+			check((m["body"] as ArrayMesh).get_surface_count() >= 3, "model %d LOD%d body has fewer than 3 surfaces" % [model, i])
+			check((m["tail"] as ArrayMesh).get_surface_count() >= 1, "model %d LOD%d has no tail lamp surface" % [model, i])
+		var box: AABB = TrafficModels.lod(1, model)["aabb"]
+		check_range(box.size.z, 3.8, 6.0, "model %d length" % model)

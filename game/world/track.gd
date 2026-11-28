@@ -9,6 +9,10 @@ extends Node3D
 const UNSET_HINT: float = -1.0  ## get_progress without a hint searches the whole line
 const CURVATURE_FLOOR: float = 1e-4  ## 1/m, radius 10 km; keeps divisions finite
 const PROFILE_LAPS: int = 2  ## the closed-loop speed passes run this many laps around
+var line_gain: float = 150.0  ## m of apex offset per 1/m of curvature (radius 50 m gives 3 m); a var so diag_rivals can sweep it
+var line_look_m: float = 25.0  ## m, the outside entry and exit of a bend sit this far before and after its apex
+const LINE_MARGIN_M: float = 1.5  ## m, the racing line keeps this far inside the road edges
+const LINE_SMOOTH: int = 2  ## samples either side averaged before the line offset is taken (shortcut: fixed box, not a spline fit)
 
 @export var width: float = 14.0  ## drivable width in m; AI lane offsets stay inside it
 @export var sample_spacing: float = 4.0  ## m between line samples
@@ -28,6 +32,10 @@ var _tan: PackedVector3Array = PackedVector3Array()
 var _curv: PackedFloat32Array = PackedFloat32Array()  ## 1/m, positive = turning right
 var _speed: PackedFloat32Array = PackedFloat32Array()  ## m/s target speed profile
 var _grid: Array[Transform3D] = []
+var _reversed: bool = false  ## true while the line and grid run the other way (set_reversed)
+var _grid_forward: Array[Transform3D] = []  ## the grid in the authored direction, kept while reversed
+var _line_off: PackedFloat32Array = PackedFloat32Array()  ## m, racing line offset per sample (positive = right)
+var _line_speed: PackedFloat32Array = PackedFloat32Array()  ## m/s, target speed profile along the racing line
 
 
 func _ready() -> void:
@@ -62,22 +70,69 @@ func _build_line() -> void:
 		var b: Vector3 = _tan[(i + 1) % _count]
 		_curv[i] = -a.signed_angle_to(b, Vector3.UP) / (2.0 * _ds)  # a right turn is a negative angle about UP
 	_build_speed_profile()
+	_build_apex_line()
 
 
-## Corner limit, then a backward pass for braking and a forward pass for acceleration around the loop.
 func _build_speed_profile() -> void:
+	_speed = _profile(_curv)
+
+
+## Corner limit, then the braking and acceleration passes around the loop. Returns the speed per sample.
+func _profile(curv: PackedFloat32Array) -> PackedFloat32Array:
+	var speed: PackedFloat32Array = PackedFloat32Array()
+	speed.resize(_count)
 	for i: int in _count:
-		_speed[i] = minf(max_speed, sqrt(lateral_accel_limit / maxf(absf(_curv[i]), CURVATURE_FLOOR)))
+		speed[i] = minf(max_speed, sqrt(lateral_accel_limit / maxf(absf(curv[i]), CURVATURE_FLOOR)))
 	var brake_step: float = 2.0 * brake_decel * _ds
 	for k: int in _count * PROFILE_LAPS:
 		var i: int = posmod(-k - 1, _count)
 		var j: int = (i + 1) % _count
-		_speed[i] = minf(_speed[i], sqrt(_speed[j] * _speed[j] + brake_step))
+		speed[i] = minf(speed[i], sqrt(speed[j] * speed[j] + brake_step))
 	var accel_step: float = 2.0 * accel_limit * _ds
 	for k: int in _count * PROFILE_LAPS:
 		var i: int = k % _count
 		var j: int = (i + 1) % _count
-		_speed[j] = minf(_speed[j], sqrt(_speed[i] * _speed[i] + accel_step))
+		speed[j] = minf(speed[j], sqrt(speed[i] * speed[i] + accel_step))
+	return speed
+
+
+## Racing line: the centre line pushed to the inside of each bend, with the entry and exit pushed outside
+## (outside, inside, outside). Kept inside the road edges. Its own curvature gives the line speed profile.
+func _build_apex_line() -> void:
+	var k: PackedFloat32Array = PackedFloat32Array()
+	k.resize(_count)
+	for i: int in _count:
+		var sum: float = 0.0
+		for d: int in range(-LINE_SMOOTH, LINE_SMOOTH + 1):
+			sum += _curv[posmod(i + d, _count)]
+		k[i] = sum / float(2 * LINE_SMOOTH + 1)
+	var m: int = maxi(1, roundi(line_look_m / _ds))
+	_line_off.resize(_count)
+	for i: int in _count:
+		var raw: float = line_gain * (k[i] - 0.5 * (k[posmod(i - m, _count)] + k[(i + m) % _count]))
+		var span: Vector2 = get_road_span(float(i) * _ds)
+		_line_off[i] = clampf(raw, span.x + LINE_MARGIN_M, span.y - LINE_MARGIN_M)
+	_build_line_speed()
+
+
+## Speed profile from the curvature of the racing line itself (its points are centre + right normal * offset).
+func _build_line_speed() -> void:
+	var pts: PackedVector3Array = PackedVector3Array()
+	pts.resize(_count)
+	for i: int in _count:
+		var right: Vector3 = Vector3(-_tan[i].z, 0.0, _tan[i].x)
+		pts[i] = Vector3(_xz[i].x, 0.0, _xz[i].y) + right * _line_off[i]
+	var tans: PackedVector3Array = PackedVector3Array()
+	tans.resize(_count)
+	for i: int in _count:
+		var d: Vector3 = pts[(i + 1) % _count] - pts[(i - 1 + _count) % _count]
+		d.y = 0.0
+		tans[i] = d.normalized() if d.length_squared() > 0.0 else Vector3(0.0, 0.0, -1.0)
+	var curv: PackedFloat32Array = PackedFloat32Array()
+	curv.resize(_count)
+	for i: int in _count:
+		curv[i] = -tans[(i - 1 + _count) % _count].signed_angle_to(tans[(i + 1) % _count], Vector3.UP) / (2.0 * _ds)
+	_line_speed = _profile(curv)
 
 
 func _build_grid() -> void:
@@ -144,6 +199,12 @@ func get_curvature(offset: float) -> float:
 	return _curv[_index_of(offset)]
 
 
+## Road edges at offset as signed metres from the line (x = left kerb, y = right kerb, positive = right). Default:
+## the line is the road centre and the road is width wide. A track whose line is not the road centre overrides it.
+func get_road_span(offset: float) -> Vector2:
+	return Vector2(-width * 0.5, width * 0.5)
+
+
 ## Signed metres from the line, positive = right of the race direction.
 func get_lateral_offset(world_pos: Vector3, hint: float = UNSET_HINT) -> float:
 	if _count == 0:
@@ -152,6 +213,20 @@ func get_lateral_offset(world_pos: Vector3, hint: float = UNSET_HINT) -> float:
 	var c: Vector3 = get_point_at(s)
 	var t: Vector3 = get_tangent_at(s)
 	return Vector3(world_pos.x - c.x, 0.0, world_pos.z - c.z).dot(Vector3(-t.z, 0.0, t.x))
+
+
+## Racing line lateral offset at offset along the line, metres right of the centre line (0 without a line).
+func get_line_offset(offset: float) -> float:
+	if _count == 0:
+		return 0.0
+	return _line_off[_index_of(offset)]
+
+
+## Target speed in m/s along the racing line at offset.
+func get_line_speed(offset: float) -> float:
+	if _count == 0:
+		return 0.0
+	return _line_speed[_index_of(offset)]
 
 
 ## Start grid slot, Grid0 first in child order. Index wraps.
@@ -192,3 +267,57 @@ func _nearest_sample(p: Vector2, hint: float) -> int:
 			nearest_d2 = d2
 			nearest = i
 	return nearest
+
+
+## Runs the track the other way round (route variants, no new geometry): the racing line is flipped, the curvature
+## sign follows, the speed profile is rebuilt and each grid slot moves to the mirror position behind the start line
+## facing the new direction. Call after the Track is in the tree (its _ready has built the line). Idempotent.
+func set_reversed(on: bool) -> void:
+	if on == _reversed or _count == 0:
+		_reversed = on
+		return
+	if on:
+		_grid_forward = _grid.duplicate()
+		var mirrored: Array[Transform3D] = []
+		for xf: Transform3D in _grid:
+			mirrored.append(_mirror_slot(xf))
+		_grid = mirrored
+	else:
+		_grid = _grid_forward.duplicate()
+	_flip_line()
+	_reversed = on
+
+
+func is_reversed() -> bool:
+	return _reversed
+
+
+## Grid slot xf moved to the mirror position of the line (same distance from progress 0 on the other side, same
+## lateral position on the road) and turned to face the reversed tangent there.
+func _mirror_slot(xf: Transform3D) -> Transform3D:
+	var s: float = get_progress(xf.origin)
+	var lat: float = get_lateral_offset(xf.origin)
+	var d: float = fposmod(-s, length)  # distance behind the start line in the authored direction
+	var c: Vector3 = get_point_at(d)
+	var t: Vector3 = get_tangent_at(d)
+	var origin: Vector3 = c + Vector3(-t.z, 0.0, t.x) * lat
+	origin.y = c.y + (xf.origin.y - get_point_at(s).y)  # keep the slot's height above the line, not its absolute height
+	return Transform3D(Basis.looking_at(-t, Vector3.UP), origin)
+
+
+## Sample j takes the old sample (count - j) so index 0 stays on the start line; tangent and curvature flip sign.
+func _flip_line() -> void:
+	var old_pos: PackedVector3Array = _pos.duplicate()
+	var old_xz: PackedVector2Array = _xz.duplicate()
+	var old_tan: PackedVector3Array = _tan.duplicate()
+	var old_curv: PackedFloat32Array = _curv.duplicate()
+	var old_off: PackedFloat32Array = _line_off.duplicate()
+	for j: int in _count:
+		var src: int = (_count - j) % _count
+		_pos[j] = old_pos[src]
+		_xz[j] = old_xz[src]
+		_tan[j] = -old_tan[src]
+		_curv[j] = -old_curv[src]
+		_line_off[j] = -old_off[src]
+	_build_speed_profile()
+	_build_line_speed()

@@ -1,21 +1,75 @@
 shader_type spatial;
 render_mode cull_disabled;
 // Photo-textured row-house front: the albedo is a straight-on facade picture, the night picture of the same facade is
-// its glow map (lit windows and shop fronts), scaled by `night`. Vertex alpha 1 = textured street face, alpha 0 = plain
-// side wall or roof in the vertex colour (same surface, one draw call a row).
+// its glow map (lit windows and shop fronts), scaled by `night`. Vertex alpha 1 = textured street face, 0.5 = roof,
+// 0 = plain side wall, back wall, gable or eave in the vertex colour (same surface, one draw call a row). With
+// textured_walls (Istanbul rows) walls and roofs take plaster and tile from their metre UVs, walls darker at the foot.
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
 uniform sampler2D night_tex : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_disable;
+uniform sampler2D wall_tex : source_color, filter_linear_mipmap, repeat_enable;
+uniform sampler2D wall_nrm : hint_normal, filter_linear_mipmap, repeat_enable;
+uniform sampler2D roof_tex : source_color, filter_linear_mipmap, repeat_enable;
+uniform bool textured_walls = false;
 uniform float relief = 0.0;  // 0 when no relief map is set
 uniform float night = 0.0;
 uniform vec3 tint = vec3(1.0);
+uniform float wall_saturation = 0.3;  // the CC0 clay plaster is ochre: most of its hue goes; brick keeps its own
+uniform float wall_gain = 2.6;
+// Lit windows at night show a room behind the glass (interior mapping, cheap form): the night picture is sampled again
+// one room depth behind the facade along the view ray, inside the lit-window mask, so lamps and walls inside shift with
+// the view instead of glowing as a flat poster. Near rows only (fades out by interior_end_m). uv_per_m is set per picture.
+uniform vec2 uv_per_m = vec2(0.0);
+uniform float room_depth_m = 2.6;
+uniform float interior_end_m = 45.0;
+
+varying float wall_height;
+
+void vertex() {
+	wall_height = VERTEX.y;
+}
 
 void fragment() {
-	ALBEDO = mix(COLOR.rgb, texture(albedo_tex, UV).rgb, COLOR.a) * tint;
+	float face = step(0.75, COLOR.a);
+	float roof = step(0.25, COLOR.a) - face;
+	float wall = 1.0 - step(0.25, COLOR.a);
+	vec3 photo = texture(albedo_tex, UV).rgb;
+	vec3 plain = COLOR.rgb;
 	NORMAL_MAP = texture(normal_tex, UV).rgb;
-	NORMAL_MAP_DEPTH = relief * COLOR.a;
-	ROUGHNESS = 0.85;
-	SPECULAR = 0.2;
-	// plain side walls get a faint warm lift after dark, or the steps between rows read as black holes
-	EMISSION = texture(night_tex, UV).rgb * night * COLOR.a + COLOR.rgb * vec3(1.0, 0.8, 0.6) * (1.0 - COLOR.a) * night * 0.08;
+	NORMAL_MAP_DEPTH = relief * face;
+	if (textured_walls && face < 0.5) {
+		if (roof > 0.5) {
+			plain = COLOR.rgb * texture(roof_tex, UV).rgb * 2.2;
+			NORMAL_MAP = vec3(0.5, 0.5, 1.0);
+		} else {
+			float grime = mix(0.6, 1.0, smoothstep(0.0, 2.5, wall_height));  // grime and shade at the foot of a wall
+			// the CC0 clay plaster is ochre: keep its grain, take most of its hue out so the vertex colour sets the paint
+			vec3 wt = texture(wall_tex, UV).rgb;
+			wt = mix(vec3(dot(wt, vec3(0.2126, 0.7152, 0.0722))), wt, wall_saturation);
+			plain = COLOR.rgb * wt * wall_gain * grime;
+			NORMAL_MAP = texture(wall_nrm, UV).rgb;
+			NORMAL_MAP_DEPTH = 0.8;
+		}
+	}
+	ALBEDO = (face * photo + (1.0 - face) * plain) * tint;
+	// dark glass and shop windows catch the sky at grazing angles; the lum band is linear, about sRGB 0.12 to 0.25
+	float lum = dot(photo, vec3(0.2126, 0.7152, 0.0722));
+	float glass = face * (1.0 - smoothstep(0.012, 0.05, lum)) * clamp(1.0 - night * 0.5, 0.0, 1.0);
+	ROUGHNESS = mix(0.85, 0.3, glass);
+	SPECULAR = mix(0.2, 0.5, glass);
+	// the glow only on the street face (roofs never glow); plain walls get a faint warm lift after dark, or the steps between rows read as black holes
+	vec3 glow = texture(night_tex, UV).rgb;
+	if (night > 0.0 && face > 0.5 && uv_per_m.x > 0.0) {
+		float near = 1.0 - smoothstep(interior_end_m * 0.6, interior_end_m, -VERTEX.z);
+		if (near > 0.0) {
+			vec3 vts = vec3(dot(VIEW, TANGENT), dot(VIEW, BINORMAL), dot(VIEW, NORMAL));  // toward the camera, tangent space
+			vec2 offset = -vts.xy / max(vts.z, 0.2) * room_depth_m * uv_per_m;
+			float window = smoothstep(0.06, 0.22, dot(glow, vec3(0.2126, 0.7152, 0.0722)));
+			vec3 back = texture(night_tex, UV + offset).rgb;
+			float back_lit = smoothstep(0.06, 0.22, dot(back, vec3(0.2126, 0.7152, 0.0722)));
+			vec3 room = mix(glow * 0.3, back * 1.15, back_lit);  // the far wall where the ray lands in a lit room, dim side wall elsewhere
+			glow = mix(glow, room, window * near);
+		}
+	}
+	EMISSION = glow * night * face + COLOR.rgb * vec3(1.0, 0.8, 0.6) * wall * night * 0.08;
 }

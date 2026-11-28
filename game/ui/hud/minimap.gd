@@ -10,6 +10,7 @@ const FIT: float = 0.78  ## outline radius as a share of the ring, so the track 
 const TRACK_COL: Color = Color(0.374, 0.395, 0.434)  ## TEXT at 35 percent over PLATE_BG, pre-blended
 const RING_COL: Color = Color(0.06, 0.43, 0.49)  ## BORDER (cyan at 45 percent) pre-blended: translucent chords bead
 const ARROW_COL: Color = Color(0.706, 0.361, 1.0)  ## violet accent
+const ARROW_OUTLINE_COL: Color = Color(0.0, 0.0, 0.0, 0.75)
 const RIVAL_COL: Color = Color(0.85, 0.87, 0.9)
 
 static var _disc: ImageTexture = null
@@ -26,6 +27,7 @@ var _cs: float = 0.0
 var _sn: float = -1.0  ## heading 0: the map is turned so forward is up
 var _dot_t: PackedFloat32Array = PackedFloat32Array()
 var _dot_player: PackedByteArray = PackedByteArray()
+var _dot_shown: PackedByteArray = PackedByteArray()  ## 0 hides a rival, e.g. one eliminated from the race
 
 
 func set_track(points: PackedVector2Array) -> void:
@@ -59,13 +61,19 @@ func set_track(points: PackedVector2Array) -> void:
 func set_dot_count(n: int) -> void:
 	_dot_t.resize(n)
 	_dot_player.resize(n)
+	_dot_shown.resize(n)
 
 
-func set_dot(index: int, progress: float, is_player: bool) -> void:
+func dot_shown(index: int) -> bool:
+	return index >= 0 and index < _dot_shown.size() and _dot_shown[index] == 1
+
+
+func set_dot(index: int, progress: float, is_player: bool, shown: bool = true) -> void:
 	if index < 0 or index >= _dot_t.size():
 		return
 	_dot_t[index] = fposmod(progress, 1.0)
 	_dot_player[index] = 1 if is_player else 0
+	_dot_shown[index] = 1 if shown else 0
 
 
 ## forward: the player's heading on the map plane (x, z). Turns the whole map so that heading points up.
@@ -102,7 +110,7 @@ func paint_rects(c: CanvasItem, centre: Vector2) -> void:
 
 
 func paint_lines(c: CanvasItem, centre: Vector2) -> void:
-	c.draw_multiline(SpeedGauge.ring_segments(centre, radius_px, 0.0, TAU, 64), RING_COL, 2.0, true)
+	c.draw_multiline(SpeedGauge.ring_segments(centre, radius_px, 0.0, TAU, 64), RING_COL, 3.0, true)
 	if _rot.size() < 2:
 		return
 	var pts := PackedVector2Array()
@@ -117,13 +125,19 @@ func paint_dots(c: CanvasItem, centre: Vector2) -> void:
 	if _rot.size() >= 2:
 		var tex: ImageTexture = _disc_texture()
 		for i: int in _dot_t.size():
-			if _dot_player[i] == 0:
+			if _dot_player[i] == 0 and _dot_shown[i] == 1:
 				var p: Vector2 = centre + _turn(_point_at(_dot_t[i]))
 				c.draw_texture_rect(tex, Rect2(p - Vector2.ONE * rival_radius_px, Vector2.ONE * rival_radius_px * 2.0), false, RIVAL_COL)
 	# Player arrow, pointing up the screen (the map turns, so forward is always up).
+	# Dark outline under the arrow first, so it reads on bright signage and on the track line.
 	var a: float = arrow_px
-	c.draw_colored_polygon(PackedVector2Array([centre + Vector2(0.0, -a), centre + Vector2(a * 0.75, a * 0.7),
-		centre + Vector2(0.0, a * 0.3), centre + Vector2(-a * 0.75, a * 0.7)]), ARROW_COL)
+	c.draw_colored_polygon(_arrow(centre, a * 1.3), ARROW_OUTLINE_COL)
+	c.draw_colored_polygon(_arrow(centre, a), ARROW_COL)
+
+
+static func _arrow(centre: Vector2, a: float) -> PackedVector2Array:
+	return PackedVector2Array([centre + Vector2(0.0, -a), centre + Vector2(a * 0.75, a * 0.7),
+		centre + Vector2(0.0, a * 0.3), centre + Vector2(-a * 0.75, a * 0.7)])
 
 
 ## White disc with an anti-aliased rim, tinted per dot.

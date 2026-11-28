@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    2532,
+    1170
+  ],
+  "luma_max": 0.96,
+  "luma_min": 0.02,
+  "name": "hud_touch_2532x1170",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 32,
+    "draw_calls_min": 32,
+    "driver": "vulkan",
+    "fps": 1248.232,
+    "frame_ms_avg": 0.801,
+    "frame_ms_p95": 1.03,
+    "frame_ms_p99": 1.08,
+    "frames": 60,
+    "objects": 9937,
+    "os": "Windows",
+    "primitives": 10414,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 85.492,
+    "viewport_size": [
+      2532,
+      1170
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-touch/evidence/screens/ui_touch/hud_touch_2532x1170.png",
+  "preset": "high",
+  "scenario": "ui_touch"
+}

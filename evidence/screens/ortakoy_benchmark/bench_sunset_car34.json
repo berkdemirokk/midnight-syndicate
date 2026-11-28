@@ -11,23 +11,23 @@
     "draw_calls": 83,
     "draw_calls_min": 83,
     "driver": "vulkan",
-    "fps": 487.211,
-    "frame_ms_avg": 2.053,
-    "frame_ms_p95": 2.706,
-    "frame_ms_p99": 4.206,
+    "fps": 401.432,
+    "frame_ms_avg": 2.491,
+    "frame_ms_p95": 3.967,
+    "frame_ms_p99": 4.967,
     "frames": 60,
     "objects": 83,
     "os": "Windows",
-    "primitives": 201928,
+    "primitives": 206024,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 770.917,
+    "video_mem_mb": 771.591,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_sunset_car34.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-nightdiet/evidence/screens/ortakoy_benchmark/bench_sunset_car34.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

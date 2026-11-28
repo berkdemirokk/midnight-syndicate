@@ -11,23 +11,23 @@
     "draw_calls": 55,
     "draw_calls_min": 55,
     "driver": "vulkan",
-    "fps": 625.45,
-    "frame_ms_avg": 1.599,
-    "frame_ms_p95": 1.617,
-    "frame_ms_p99": 1.639,
+    "fps": 636.159,
+    "frame_ms_avg": 1.572,
+    "frame_ms_p95": 1.593,
+    "frame_ms_p99": 1.627,
     "frames": 60,
     "objects": 55,
     "os": "Windows",
     "primitives": 178374,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 512.764,
+    "video_mem_mb": 492.632,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/car_studio_bruiser/wheel_closeup.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-cars/evidence/screens/car_studio_bruiser/wheel_closeup.png",
   "preset": "high",
   "scenario": "car_studio_bruiser"
 }

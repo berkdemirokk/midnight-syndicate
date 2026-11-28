@@ -1,0 +1,10 @@
+Final LAN smoke: run7_realtime (py -3 tools/net_smoke.py --run run7_realtime), 1 server + 2 clients on 127.0.0.1,
+1 lap, DevTrack, headless at real time (no --fixed-fps). Full analysis: docs/design/ONLINE_LAN.md.
+This is LAN/localhost only, not internet multiplayer.
+- 16/16 checks passed; server, Ada and Bo exit 0.
+- Clients sent 20.0 Hz: 939 states each.
+- Server accepted 939 (Ada) and 938 (Bo); rate limited 0; rejected 0; progress_jumps 0.
+- Snapshots received: Ada 938, Bo 939 (20.0 Hz).
+- Server results (server wall clock): Bo 1st 47.05 s, Ada 2nd 47.08 s, both finished, 1300 m lap.
+- RTT on localhost: avg 16.9 ms, min 16.7 ms (frame polling at 60 fps on both ends, not network latency).
+Earlier runs run4, run5, run6 are not evidence (see ONLINE_LAN.md).

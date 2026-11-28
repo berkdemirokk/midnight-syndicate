@@ -3,31 +3,31 @@
     1920,
     1061
   ],
-  "luma_max": 0.997,
-  "luma_min": 0.024,
+  "luma_max": 0.996,
+  "luma_min": 0.0,
   "name": "bench_sunset_mosque",
   "perf": {
     "adapter": "NVIDIA GeForce RTX 5060 Ti",
-    "draw_calls": 238,
-    "draw_calls_min": 238,
+    "draw_calls": 241,
+    "draw_calls_min": 241,
     "driver": "vulkan",
-    "fps": 584.288,
-    "frame_ms_avg": 1.711,
-    "frame_ms_p95": 1.982,
-    "frame_ms_p99": 2.013,
+    "fps": 531.938,
+    "frame_ms_avg": 1.88,
+    "frame_ms_p95": 2.265,
+    "frame_ms_p99": 2.74,
     "frames": 60,
-    "objects": 238,
+    "objects": 241,
     "os": "Windows",
-    "primitives": 231843,
+    "primitives": 257028,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 770.917,
+    "video_mem_mb": 771.591,
     "viewport_size": [
       1920,
       1061
     ]
   },
-  "png": "C:/Users/berk/car race/evidence/screens/ortakoy_benchmark/bench_sunset_mosque.png",
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-nightdiet/evidence/screens/ortakoy_benchmark/bench_sunset_mosque.png",
   "preset": "high",
   "scenario": "ortakoy_benchmark"
 }

@@ -40,6 +40,18 @@ func test_glb_names_all_bound() -> void:
 	check(missing.is_empty(), "GLB material names with no library material: %s" % str(missing))
 
 
+func test_stone_plinth_is_textured_sandstone() -> void:
+	# Bogaz edge barrier: once rendered black (road vertex colours read as albedo); must be the sandstone CC0 set.
+	check(MaterialLibrary.is_bound("M_Stone_Plinth"), "M_Stone_Plinth has no recipe")
+	var m := MaterialLibrary.get_material("M_Stone_Plinth") as StandardMaterial3D
+	check(m != null, "M_Stone_Plinth is not a StandardMaterial3D (wet_facade or debug)")
+	if m == null:
+		return
+	check(not m.vertex_color_use_as_albedo, "M_Stone_Plinth multiplies road vertex data into albedo")
+	check(m.albedo_texture != null and m.albedo_texture.resource_path.contains("sandstone_blocks_08"), "M_Stone_Plinth is not bound to sandstone_blocks_08")
+	check(m.albedo_color.get_luminance() > 0.6, "M_Stone_Plinth tint too dark: %s" % str(m.albedo_color))
+
+
 func test_shared_instances_across_buildings() -> void:
 	var a: Material = MaterialLibrary.get_material("M_WindowAtlas")
 	var b: Material = MaterialLibrary.get_material("M_WindowAtlas")

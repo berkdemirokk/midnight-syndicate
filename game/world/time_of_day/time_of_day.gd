@@ -13,6 +13,8 @@ const DAY: String = "day"
 const SUNSET: String = "sunset"
 const NIGHT: String = "night"
 const IDS: PackedStringArray = ["day", "sunset", "night"]
+## water.gdshader defaults: the shipped night sea
+const NIGHT_WATER: Dictionary = {"sky_fill": 0.0, "deep_colour": Color(0.016, 0.032, 0.040), "shallow_colour": Color(0.085, 0.130, 0.140), "far_roughness": 0.30, "swell_strength": 0.22}
 
 const DAY_SKY: Shader = preload("res://world/time_of_day/day_sky.gdshader")
 const WINDOW_SHADER: String = "res://world/materials/window_atlas.gdshader"
@@ -20,6 +22,7 @@ const WATER_SHADER: String = "res://world/materials/water.gdshader"
 const NEON_SHADER: String = "res://shaders/neon.gdshader"
 const ASPHALT_SHADER: String = "res://shaders/wet_asphalt.gdshader"
 const FACADE_SHADER: String = "res://shaders/wet_facade.gdshader"
+const PAVING_SHADER: String = "res://shaders/paving.gdshader"
 const BASE_META: StringName = &"tod_base"
 const SHADOW_BOX_NAME: String = "ShadowBox"
 const SKYLINE_PREFIX: String = "M_Skyline"
@@ -50,6 +53,13 @@ var fog_begin_m: float = 220.0
 var fog_end_m: float = 1200.0
 var fog_sky_affect: float = 0.4
 var exposure: float = 1.0
+var tonemap_white: float = 1.0  ## ACES white point; 1.0 (night) clips sunlit cream walls and dome tips to flat white by day
+var glow_bloom: float = -1.0  ## below 0 keeps the track value (Bogaz 0.14 veils a daylight frame)
+var fog_density: float = -1.0  ## depth fog maximum; below 0 keeps the track value (0.01: no aerial depth at all)
+var fog_aerial: float = 0.0  ## fog takes the sky colour toward the view direction
+var fog_sun_scatter: float = 0.0
+var grade_contrast: float = 1.0  ## Environment adjustments; 1 and 1 = off (night: untouched)
+var grade_saturation: float = 1.0
 var glow_scale: float = 1.0  ## multiplies the graphics preset's glow intensity
 var glow_threshold: float = 1.3
 # --- emissive strength, 1 = as authored for night ---
@@ -85,6 +95,9 @@ var car_fill_scale: float = 1.0
 var car_rim_scale: float = 1.0
 var car_fill_color: Color = Color(0, 0, 0, 0)  ## alpha 0 = the RaceConfig colour
 var car_rim_color: Color = Color(0, 0, 0, 0)
+var water: Dictionary = {}  ## water.gdshader uniforms for this hour (absolute values; night = the shader defaults)
+var car_reflection: float = 0.55  ## strength of the street panorama pass on the car paint
+var car_reflection_highlight: float = 0.0
 var audio_wetness: float = 1.0
 
 
@@ -118,33 +131,42 @@ func sun_vector(heading_deg: float = 0.0) -> Vector3:
 func _make_day() -> void:
 	id = DAY
 	label = "Day"
-	sun_elevation_deg = 44.0
-	sun_azimuth_deg = 140.0  # behind the start grid on the land side: the mosque and the faces the driver looks at are lit
-	sun_color = Color(1.0, 0.95, 0.84)
+	sun_elevation_deg = 34.0  # afternoon: long shadows across the road instead of flat noon (was 44)
+	sun_azimuth_deg = 130.0  # behind the start grid on the land side: the mosque and the faces the driver looks at are lit
+	sun_color = Color(1.0, 0.92, 0.80)
 	sun_energy = 3.0
 	ambient_energy = 1.15  # sky fill: with baked AO the shaded street fronts need it, or they read near black
 	ambient_sky_mix = 0.3
 	ambient_color = Color(0.78, 0.83, 0.95)  # sky fill: a little cool, not blue paint
-	road_brightness = 0.85
+	road_brightness = 1.0
 	reflection_energy = 1.0
 	sky_params = {
-		"zenith_colour": Color(0.14, 0.44, 1.0), "horizon_colour": Color(0.62, 0.80, 1.0),
-		"ground_colour": Color(0.52, 0.60, 0.70), "sun_colour": Color(1.0, 0.96, 0.88),
+		# hazy Bosphorus horizon, a deep but not candy zenith; the ground half is street-dark so the cars' lower
+		# body, rims and tyres stop mirroring a light blue-grey "ground" (it was 0.52, 0.60, 0.70)
+		"zenith_colour": Color(0.10, 0.30, 0.76), "horizon_colour": Color(0.64, 0.77, 0.92),
+		"ground_colour": Color(0.27, 0.255, 0.235), "sun_colour": Color(1.0, 0.96, 0.88),
 		"sun_disk_energy": 9.0, "halo_energy": 0.5, "halo_power": 30.0,
-		"band_energy": 0.0, "cloud_cover": 0.32,
+		"band_energy": 0.0, "cloud_cover": 0.38,
 		"cloud_lit": Color(1.0, 0.995, 0.98), "cloud_shade": Color(0.72, 0.80, 0.92),
 	}
-	fog_color = Color(0.62, 0.76, 0.95)
-	fog_begin_m = 260.0
-	fog_end_m = 1500.0
-	fog_sky_affect = 0.15
-	exposure = 0.8  # the night albedo lifts on walls clipped to white at 1.0
+	fog_color = Color(0.80, 0.84, 0.90)
+	fog_begin_m = 60.0
+	fog_end_m = 1400.0
+	fog_sky_affect = 0.08  # the haze sits on the far shore, not on the sky (0.25 washed the sky white)
+	fog_density = 0.42  # aerial depth: the bridge and far shore recede instead of staying as sharp as the street
+	fog_aerial = 0.6
+	fog_sun_scatter = 0.1  # low: the day fill and car rim are directional lights too and add their own lobes
+	exposure = 1.2  # with white 6 (ACES midtones about 0.8 of white 1); 0.8 at white 1 clipped the walls anyway
+	tonemap_white = 6.0
+	glow_bloom = 0.0
+	grade_contrast = 1.1  # the haze and white 6 flatten the frame; arcade-bright colour like the reference frames
+	grade_saturation = 1.12
 	glow_scale = 0.35
 	glow_threshold = 2.2
 	window_scale = 0.0
 	neon_scale = 0.18
 	skyline_scale = 0.0
-	skyline_brighten = 2.6
+	skyline_brighten = 2.0  # the haze now lifts the far cards itself
 	pane_albedo_scale = 4.0
 	pane_reflect = -0.2
 	glass_sky_reflect = 0.75
@@ -157,17 +179,21 @@ func _make_day() -> void:
 	parked_metal = 0.45
 	lamps_on = false
 	sign_light_scale = 0.0
-	road_wetness = 0.12
+	road_wetness = 0.0  # dry by day: 0.12 kept a damp sky sheen on the whole road
 	road_puddles = 0.0
 	wall_wet = 0.1
 	road_mirror = false
 	rain = false
 	headlights_on = false
-	car_fill_scale = 0.35
-	car_rim_scale = 0.3
-	car_fill_color = Color(0.85, 0.92, 1.0)
-	car_rim_color = Color(1.0, 0.96, 0.9)
+	car_fill_scale = 0.6
+	car_rim_scale = 1.2  # the chase-view car separates from the road (0.3 left the rim light effectively off)
+	car_fill_color = Color(1.0, 0.95, 0.88)  # neutral-warm: the cool fill painted the rims, tyres and arches blue
+	car_rim_color = Color(1.0, 0.92, 0.82)
 	audio_wetness = 0.1
+	car_reflection = 0.32  # the Ortakoy street reads in the clearcoat (0.16 was a uniform wash)
+	car_reflection_highlight = 0.35
+	water = {"sky_fill": 0.12, "deep_colour": Color(0.008, 0.035, 0.050), "shallow_colour": Color(0.045, 0.105, 0.125),
+		"far_roughness": 0.30, "swell_strength": 0.30}
 
 
 func _make_sunset() -> void:
@@ -183,7 +209,7 @@ func _make_sunset() -> void:
 	reflection_energy = 1.0
 	sky_params = {
 		"zenith_colour": Color(0.05, 0.09, 0.30), "horizon_colour": Color(0.66, 0.50, 0.52),
-		"ground_colour": Color(0.40, 0.25, 0.30), "sun_colour": Color(1.0, 0.62, 0.32),
+		"ground_colour": Color(0.22, 0.15, 0.15), "sun_colour": Color(1.0, 0.62, 0.32),
 		"sun_disk_energy": 10.0, "halo_energy": 1.6, "halo_power": 10.0,
 		"band_colour": Color(1.0, 0.42, 0.22), "band_energy": 0.8, "band_height": 0.2, "band_spread": 1.6,
 		"cloud_cover": 0.42, "cloud_lit": Color(0.98, 0.66, 0.56), "cloud_shade": Color(0.22, 0.24, 0.46),
@@ -192,7 +218,13 @@ func _make_sunset() -> void:
 	fog_begin_m = 240.0
 	fog_end_m = 1250.0
 	fog_sky_affect = 0.5
+	fog_density = 0.4
+	fog_aerial = 0.5
+	fog_sun_scatter = 0.25
 	exposure = 1.0
+	tonemap_white = 2.5
+	glow_bloom = 0.06
+	grade_contrast = 1.04
 	glow_scale = 1.0
 	glow_threshold = 1.2
 	window_scale = 0.9
@@ -212,8 +244,8 @@ func _make_sunset() -> void:
 	parked_metal = 0.55
 	lamps_on = true
 	sign_light_scale = 0.8
-	road_wetness = 0.85
-	road_puddles = 0.7
+	road_wetness = 0.6  # patchy damp, not an even purple sky channel
+	road_puddles = 0.5
 	wall_wet = 0.35
 	road_mirror = false  # the planar mirror turned the whole road into a pink sky channel and broke the primitive budget
 	rain = false
@@ -223,6 +255,9 @@ func _make_sunset() -> void:
 	car_fill_color = Color(0.95, 0.85, 0.9)
 	car_rim_color = Color(1.0, 0.7, 0.5)
 	audio_wetness = 0.5
+	car_reflection = 0.3
+	water = {"sky_fill": 0.15, "deep_colour": Color(0.016, 0.032, 0.040), "shallow_colour": Color(0.085, 0.130, 0.140),
+		"far_roughness": 0.30, "swell_strength": 0.22}
 
 
 ## Environment, sky and the sun. NIGHT leaves everything the builder made untouched. sun is the builder's directional
@@ -251,13 +286,26 @@ func apply_environment(env: Environment, sun: DirectionalLight3D, heading_deg: f
 	env.fog_sky_affect = fog_sky_affect
 	env.glow_hdr_threshold = glow_threshold
 	env.tonemap_exposure = exposure
+	env.tonemap_white = tonemap_white
+	if glow_bloom >= 0.0:
+		env.glow_bloom = glow_bloom
+	if fog_density >= 0.0:
+		env.fog_density = fog_density
+	env.fog_aerial_perspective = fog_aerial
+	env.fog_sun_scatter = fog_sun_scatter
+	env.adjustment_enabled = grade_contrast != 1.0 or grade_saturation != 1.0
+	env.adjustment_contrast = grade_contrast
+	env.adjustment_saturation = grade_saturation
 	sun.name = "Sun"
 	sun.light_color = sun_color
 	sun.light_energy = sun_energy
 	sun.basis = Basis.looking_at(-sun_vector(heading_deg), Vector3.UP)
 	var low: bool = Settings.get_preset_id() == "low"
 	sun.shadow_enabled = sun_shadows and not low
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	# two splits: the near one (12 % of the range, about 8 m) gives the hero car a crisp shadow, the far one the street
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+	sun.directional_shadow_split_1 = 0.12
+	sun.directional_shadow_blend_splits = false
 	sun.directional_shadow_max_distance = shadow_max_distance_m
 	sun.shadow_blur = 1.2
 	sun.shadow_bias = 0.05
@@ -425,14 +473,19 @@ func tune_material(m: Material) -> void:
 				if sky_params.has("zenith_colour"):
 					sm.set_shader_parameter("zenith_colour", sky_params["zenith_colour"])
 					sm.set_shader_parameter("horizon_colour", sky_params["horizon_colour"])
-					sm.set_shader_parameter("sky_fill", 0.3 if id == DAY else 0.2)
-				else:
-					sm.set_shader_parameter("sky_fill", 0.0)
+				# absolute values every hour, so night returns to the shader defaults after a day race
+				var w: Dictionary = water if not water.is_empty() else NIGHT_WATER
+				for k: String in w:
+					sm.set_shader_parameter(k, w[k])
 			ASPHALT_SHADER:
 				_scale_param(sm, "wetness", road_wetness)
 				_scale_param(sm, "puddle_level", road_puddles)
 				_scale_param(sm, "rain_intensity", 1.0 if rain else 0.0)
 				_scale_tint(sm, "tint", road_brightness)
+				_scale_param(sm, "specular_scale", std_specular)
+			PAVING_SHADER:
+				_scale_param(sm, "specular_scale", std_specular)
+				_scale_param(sm, "wetness", road_wetness)
 			FACADE_SHADER:
 				for k: String in ["wall_darken", "wall_gloss", "wet_darken", "wet_gloss", "streak_darken", "streak_gloss", "grime"]:
 					_scale_param(sm, k, wall_wet)

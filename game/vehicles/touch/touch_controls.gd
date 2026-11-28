@@ -1,20 +1,21 @@
 class_name TouchControls
 extends CanvasLayer
-## On-screen controls for a PlayerDriver. Bottom-left: two steer zones. Bottom-right: brake pedal.
-## Above the pedal: nitro and drift (handbrake). Touches are tracked by index in _input, so several
-## fingers work together. The layout stays inside the display safe area.
+## On-screen controls for a PlayerDriver. Bottom-left: two steer zones above the minimap. Bottom-right: brake pedal
+## above the tachometer, nitro and drift above the pedal. Top centre: the pause button, beside the lap strip.
+## Every zone keeps clear of the HUD gauges (minimap, tachometer, nitro) by the RaceHUD offsets.
+signal pause_pressed
 
 enum Zone { NONE, STEER_LEFT, STEER_RIGHT, BRAKE, NITRO, DRIFT }
 
 const ZONE_COUNT: int = 6
-const LABELS: PackedStringArray = ["", "<", ">", "BRAKE", "NITRO", "DRIFT"]
 const MIN_DIV: float = 0.0001  ## divisor floor, not a tunable
-
+const PAUSE_SIDE_PX: float = 88.0  ## the pause button at 1080 px; on a phone the 44 pt target (MSTheme.button_h) is larger
+const PAUSE_GAP_PX: float = 16.0  ## between the lap strip and the pause button
 @export var force_visible: bool = false  ## show even when the device reports no touchscreen
 @export var margin_px: float = 24.0
 @export var steer_width_frac: float = 0.22  ## each steer zone, fraction of the usable width
 @export var pedal_width_frac: float = 0.2
-@export var zone_height_frac: float = 0.42  ## steer zones and pedal, fraction of the usable height
+@export var zone_height_frac: float = 0.36  ## steer zones and pedal, fraction of the usable height
 @export var button_size_frac: float = 0.12  ## nitro and drift, fraction of the smaller usable side
 @export var idle_color: Color = Color(1.0, 1.0, 1.0, 0.12)
 @export var pressed_color: Color = Color(1.0, 1.0, 1.0, 0.35)
@@ -23,6 +24,7 @@ const MIN_DIV: float = 0.0001  ## divisor floor, not a tunable
 
 var _driver: PlayerDriver = null
 var _pad: Control = null
+var _pause_btn: Button = null
 var _rects: Array[Rect2] = []
 var _touches: Dictionary = {}  ## touch index -> Zone
 var _held_mask: int = 0  ## bit z set when zone z is held, for the redraw without allocating
@@ -36,13 +38,17 @@ func _ready() -> void:
 	_pad.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_pad.draw.connect(_on_pad_draw)
+	_pause_btn = Button.new()
+	_pause_btn.name = "PauseButton"
+	_pause_btn.tooltip_text = I18n.t("touch.pause")
+	_pause_btn.focus_mode = Control.FOCUS_NONE
+	for state: String in ["normal", "hover", "pressed", "focus"]:
+		_pause_btn.add_theme_stylebox_override(state, MSTheme.card(MSTheme.PLATE_BG, MSTheme.CYAN, 2))
+	_pause_btn.draw.connect(_on_pause_draw)
+	_pause_btn.pressed.connect(func() -> void: pause_pressed.emit())
+	add_child(_pause_btn)
 	get_viewport().size_changed.connect(_on_viewport_resized)
 	_on_viewport_resized()
-
-
-func _exit_tree() -> void:
-	_touches.clear()
-	_push()
 
 
 ## Emits to this driver from now on.
@@ -54,6 +60,23 @@ func bind(driver: PlayerDriver) -> void:
 ## Zone rectangle in viewport pixels (Rect2() before the first layout).
 func get_zone_rect(zone: int) -> Rect2:
 	return _rects[zone]
+
+
+## Pause button rectangle in viewport pixels.
+func get_pause_rect() -> Rect2:
+	return _pause_btn.get_rect()
+
+
+func _exit_tree() -> void:
+	_touches.clear()
+	_push()
+
+
+## A paused tree stops _input, so releases during the pause menu or in the background are lost: drop every held touch.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PAUSED:
+		_touches.clear()
+		_push()
 
 
 func _input(event: InputEvent) -> void:
@@ -90,21 +113,32 @@ func _layout(vp: Vector2) -> void:
 	var m: float = margin_px
 	var uw: float = usable.size.x
 	var uh: float = usable.size.y
+	var k: float = RaceHUD.hud_scale()
+	# HUD gauge boxes in viewport pixels, from the RaceHUD offsets (they scale with the HUD frame).
+	var mm_h: float = (RaceHUD.MM_PAD * 2.0 + RaceHUD.MM_R * 2.0) * k  ## minimap, bottom left
+	var tach_h: float = (RaceHUD.TACH_OFF_Y + RaceHUD.TACH_PLATE_R) * k  ## tachometer plate, bottom right
 	var zone_h: float = uh * zone_height_frac
-	var base_y: float = usable.end.y - m - zone_h
 	var zone_w: float = uw * steer_width_frac
 	var left_x: float = usable.position.x + m
+	var steer_bottom: float = usable.end.y - mm_h - m
 	var pedal_w: float = uw * pedal_width_frac
+	var pedal_bottom: float = usable.end.y - tach_h - m
 	var btn: float = minf(uw, uh) * button_size_frac
-	var brake := Rect2(usable.end.x - m - pedal_w, base_y, pedal_w, zone_h)
-	var nitro := Rect2(brake.end.x - btn, brake.position.y - m - btn, btn, btn)
-	var drift := Rect2(nitro.position.x - m - btn, nitro.position.y, btn, btn)
+	var brake := Rect2(usable.end.x - m - pedal_w, pedal_bottom - zone_h, pedal_w, zone_h)
+	# Nitro and drift stack in the gap left of the pedal, bottom-aligned with it: the top corners hold the HUD clock.
+	var nitro := Rect2(brake.position.x - m - btn, brake.end.y - btn, btn, btn)
+	var drift := Rect2(nitro.position.x, nitro.position.y - m - btn, btn, btn)
 	_rects[Zone.NONE] = Rect2()
-	_rects[Zone.STEER_LEFT] = Rect2(left_x, base_y, zone_w, zone_h)
-	_rects[Zone.STEER_RIGHT] = Rect2(left_x + zone_w + m, base_y, zone_w, zone_h)
+	_rects[Zone.STEER_LEFT] = Rect2(left_x, steer_bottom - zone_h, zone_w, zone_h)
+	_rects[Zone.STEER_RIGHT] = Rect2(left_x + zone_w + m, steer_bottom - zone_h, zone_w, zone_h)
 	_rects[Zone.BRAKE] = brake
 	_rects[Zone.NITRO] = nitro
 	_rects[Zone.DRIFT] = drift
+	# Beside the lap strip, right of centre; the position board and the clock keep the two top corners.
+	var side: float = maxf(PAUSE_SIDE_PX, MSTheme.button_h())
+	var strip_edge: float = (RaceHUD.STRIP_W * 0.5 + RaceHUD.PLATE_PAD + PAUSE_GAP_PX) * k
+	_pause_btn.position = Vector2(vp.x * 0.5 + strip_edge, usable.position.y + m * 0.5)
+	_pause_btn.size = Vector2(side, side)
 
 
 ## The display safe area in viewport pixels; the whole pad when the platform reports none.
@@ -162,4 +196,29 @@ func _on_pad_draw() -> void:
 			continue
 		_pad.draw_rect(r, pressed_color if ((_held_mask >> z) & 1) == 1 else idle_color)
 		var label_pos := Vector2(r.position.x, r.position.y + r.size.y * 0.5 + label_size * 0.35)
-		_pad.draw_string(font, label_pos, LABELS[z], HORIZONTAL_ALIGNMENT_CENTER, r.size.x, label_size, label_color)
+		_pad.draw_string(font, label_pos, _label(z), HORIZONTAL_ALIGNMENT_CENTER, r.size.x, label_size, label_color)
+
+
+## Steer arrows stay as glyphs; the pedal labels go through I18n.
+func _label(zone: int) -> String:
+	match zone:
+		Zone.STEER_LEFT:
+			return "<"
+		Zone.STEER_RIGHT:
+			return ">"
+		Zone.BRAKE:
+			return I18n.t("touch.brake")
+		Zone.NITRO:
+			return I18n.t("touch.nitro")
+		Zone.DRIFT:
+			return I18n.t("touch.drift")
+	return ""
+
+
+## Two bars and no text, so the pause glyph needs no translation.
+func _on_pause_draw() -> void:
+	var s: Vector2 = _pause_btn.size
+	var bar: Vector2 = Vector2(s.x * 0.14, s.y * 0.42)
+	var y: float = s.y * 0.29
+	_pause_btn.draw_rect(Rect2(Vector2(s.x * 0.31, y), bar), MSTheme.CYAN)
+	_pause_btn.draw_rect(Rect2(Vector2(s.x * 0.55, y), bar), MSTheme.CYAN)

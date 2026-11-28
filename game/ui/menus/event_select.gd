@@ -9,6 +9,7 @@ extends Control
 
 const RACE_SCENE: String = "res://race/race_scene.tscn"
 const MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
+const DESKTOP_WINDOW_ROWS: int = 10
 const PHONE_WINDOW_ROWS: int = 4  ## rows shown at once on a phone: 44 pt rows do not fit ten at a time
 const TITLE_PX: int = 40
 const SUB_PX: int = 18
@@ -31,6 +32,7 @@ const FOCUS_PX: float = 2.0
 const RULE_LINES: int = 3
 const ARROW_R: float = 16.0
 const STAR_OFF: Color = Color(0.541, 0.580, 0.651, 0.3)
+const HEADER_PX: float = 30.0  ## chapter header slot above the first row of a chapter
 
 ## The single canvas item the screen paints into.
 class Board:
@@ -52,6 +54,8 @@ var _row_num: Array[HudText] = []
 var _row_name: Array[HudText] = []
 var _row_info: Array[HudText] = []
 var _row_lock: Array[HudText] = []
+var _header_slots: Dictionary = {}  ## row index -> spacer above that row (chapter starts only)
+var _header_texts: Dictionary = {}  ## row index -> chapter name painted in its spacer
 var _d_title: HudText
 var _d_state: HudText
 var _d_caps: Array[HudText] = []  ## rival level, laps, rivals, winner pays, best time
@@ -104,6 +108,9 @@ func _ready() -> void:
 	list.add_theme_constant_override("separation", int(ROW_GAP_PX))
 	body.add_child(list)
 	for i: int in EventCatalog.count():
+		if is_chapter_start(i):
+			_header_slots[i] = _slot(list, Vector2(ROW_W, HEADER_PX * MSTheme.k()))
+			_header_texts[i] = _text("tracked", ROW_INFO_PX, MSTheme.CYAN)
 		_row_btns.append(_row_button(list, i))
 		_row_num.append(_text("digits", ROW_PX, MSTheme.CYAN))
 		_row_name.append(_text("bold", ROW_PX, MSTheme.TEXT))
@@ -135,8 +142,8 @@ func _ready() -> void:
 	_up_btn.pressed.connect(_step.bind(-1))
 	_down_btn = _plain_button(footer, Vector2(MSTheme.button_h(), MSTheme.button_h()))
 	_down_btn.pressed.connect(_step.bind(1))
-	_up_btn.visible = MSTheme.phone
-	_down_btn.visible = MSTheme.phone
+	_up_btn.visible = true
+	_down_btn.visible = true
 	_up_btn.focus_mode = Control.FOCUS_ALL
 	_start_btn = _button(footer, "event.start", start_race)
 	_start_btn.custom_minimum_size.x = MSTheme.BUTTON_MIN_W * 0.75
@@ -175,24 +182,36 @@ func select(index: int) -> void:
 	_refresh_text()
 
 
-## Phone only: keeps the selected row inside the window of visible rows. Desktop shows every row.
+## Keep the selected row in a bounded window on both phone and desktop.
 func _update_window() -> void:
 	var n: int = _row_btns.size()
-	if not MSTheme.phone:
-		_win = 0
-		for b: Button in _row_btns:
-			b.visible = true
-		return
-	_win = clampi(_win, 0, maxi(n - PHONE_WINDOW_ROWS, 0))
+	var capacity: int = PHONE_WINDOW_ROWS if MSTheme.phone else DESKTOP_WINDOW_ROWS
+	_win = clampi(_win, 0, maxi(n - capacity, 0))
 	if _sel < _win:
 		_win = _sel
-	elif _sel >= _win + PHONE_WINDOW_ROWS:
-		_win = _sel - PHONE_WINDOW_ROWS + 1
+	elif _sel >= _win + capacity:
+		_win = _sel - capacity + 1
 	for i: int in n:
-		_row_btns[i].visible = i >= _win and i < _win + PHONE_WINDOW_ROWS
+		_row_btns[i].visible = i >= _win and i < _win + capacity
+	for i: int in _header_slots.keys():
+		_header_slots[i].visible = _row_btns[i].visible
 	if _up_btn != null:
 		_up_btn.disabled = _sel <= 0
 		_down_btn.disabled = _sel >= n - 1
+		_start_btn.focus_neighbor_top = _start_btn.get_path_to(_row_btns[_sel])
+		_back_btn.focus_neighbor_top = _back_btn.get_path_to(_row_btns[_sel])
+
+
+func get_visible_row_count() -> int:
+	var count: int = 0
+	for b: Button in _row_btns:
+		if b.visible:
+			count += 1
+	return count
+
+
+func is_selected_row_visible() -> bool:
+	return _row_btns[_sel].visible
 
 
 func _step(delta: int) -> void:
@@ -215,7 +234,13 @@ func start_race() -> void:
 	if params.is_empty():
 		return
 	UiSounds.click()
-	Router.goto(RACE_SCENE, params)
+	Router.goto(LoadingScreen.SCENE, LoadingScreen.params_for(RACE_SCENE, params))
+
+
+## True when the list shows a chapter header above this row: the first row and each row whose chapter differs from the
+## row before (the modes and pursuit tail, chapter 0, gets its own header too).
+static func is_chapter_start(index: int) -> bool:
+	return index == 0 or EventCatalog.chapter_of(EventCatalog.id_at(index)) != EventCatalog.chapter_of(EventCatalog.id_at(index - 1))
 
 
 # --- build ---------------------------------------------------------------------------------------------
@@ -275,7 +300,7 @@ func _wire_neighbours() -> void:
 	_start_btn.focus_neighbor_top = _start_btn.get_path_to(last)
 	_back_btn.focus_neighbor_top = _back_btn.get_path_to(last)
 	_row_btns[0].focus_neighbor_top = _row_btns[0].get_path_to(_row_btns[0])
-	if MSTheme.phone:
+	if _up_btn.visible:
 		_start_btn.focus_neighbor_left = _start_btn.get_path_to(_down_btn)
 		_down_btn.focus_neighbor_left = _down_btn.get_path_to(_up_btn)
 		_up_btn.focus_neighbor_left = _up_btn.get_path_to(_back_btn)
@@ -314,6 +339,8 @@ func _refresh_text() -> void:
 		_row_info[i].set_text(_info_line(ev))
 		_row_lock[i].set_text(I18n.t("event.locked"))
 		_row_lock[i].visible = not open
+	for i: int in _header_texts.keys():
+		(_header_texts[i] as HudText).set_text(I18n.t(EventCatalog.chapter_name_key(EventCatalog.chapter_of(EventCatalog.id_at(i)))))
 	_refresh_detail()
 	_start_btn.disabled = not GameState.is_event_unlocked(get_selected_id())
 	_board.queue_redraw()
@@ -321,7 +348,11 @@ func _refresh_text() -> void:
 
 func _info_line(ev: Dictionary) -> String:
 	var laps: int = int(ev["laps"])
-	return "%s  ·  %s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), I18n.t("tod.%s" % str(ev.get("tod", "night"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
+	var mode: String = str(ev.get("mode", RaceConfig.MODE_RACE))
+	if mode == RaceConfig.MODE_DRIFT:
+		return "%s  ·  %s  ·  %s" % [I18n.t("mode.drift"), I18n.t("tod.%s" % str(ev.get("tod", "night"))), I18n.t("event.time_limit_value") % int(ev["time_limit"])]
+	var prefix: String = I18n.t("mode.elimination") + "  ·  " if mode == RaceConfig.MODE_ELIMINATION else ""
+	return prefix + "%s  ·  %s  ·  %d %s  ·  %d %s" % [I18n.t("place.%s" % str(ev.get("place", "arden"))), I18n.t("tod.%s" % str(ev.get("tod", "night"))), laps, I18n.t("event.lap" if laps == 1 else "event.laps"), (ev["skills"] as Array).size(), I18n.t("event.rival" if (ev["skills"] as Array).size() == 1 else "event.rivals")]
 
 
 func _refresh_detail() -> void:
@@ -331,12 +362,15 @@ func _refresh_detail() -> void:
 	_d_title.set_text(I18n.t(EventCatalog.name_key(id)))
 	_d_state.set_text("" if open else I18n.t("event.locked_hint"))
 	var caps: Array[String] = ["event.ai", "event.laps", "event.rivals", "event.win_reward", "event.best"]
+	var mode: String = EventCatalog.mode_of(id)
+	if mode == RaceConfig.MODE_DRIFT:
+		caps[1] = "event.time_limit"
 	for i: int in caps.size():
 		_d_caps[i].set_text(I18n.t(caps[i]))
 	var reward: Dictionary = EventCatalog.win_rewards(id)
 	var best: float = GameState.best_time(id)
 	_d_vals[0].set_text(I18n.t("event.level_%d" % int(ev["level"])))
-	_d_vals[1].set_text(str(ev["laps"]))
+	_d_vals[1].set_text(I18n.t("event.time_limit_value") % int(ev["time_limit"]) if mode == RaceConfig.MODE_DRIFT else str(ev["laps"]))
 	_d_vals[2].set_text(str((ev["skills"] as Array).size()))
 	_d_vals[3].set_text(I18n.t("garage.money") % int(reward["cash"]))
 	_d_rep.set_text("%s %s" % [RaceHUD.group_int(int(reward["rep"])), I18n.t("results.reward_rep")])
@@ -347,6 +381,13 @@ func _refresh_detail() -> void:
 		for i: int in limits.size():
 			var n: int = 3 - i
 			rules.append(I18n.t("event.rule_time") % [RaceHUD.fmt_time(float(limits[i])), n, I18n.t("event.star" if n == 1 else "event.stars")])
+	elif EventCatalog.is_score_event(id):
+		var scores: Array = ev["star_scores"]
+		for i: int in scores.size():
+			var n: int = 3 - i
+			rules.append(I18n.t("event.rule_score") % [RaceHUD.group_int(int(scores[i])), n, I18n.t("event.star" if n == 1 else "event.stars")])
+	elif mode == RaceConfig.MODE_ELIMINATION:
+		rules = [I18n.t("event.rule_win"), I18n.t("event.rule_podium"), I18n.t("event.rule_elim")]
 	else:
 		rules = [I18n.t("event.rule_win"), I18n.t("event.rule_podium"), I18n.t("event.rule_finish")]
 	for i: int in RULE_LINES:
@@ -370,8 +411,6 @@ func _on_back() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not MSTheme.phone:
-		return
 	var down: bool = event.is_action_pressed("ui_down")
 	if not (down or event.is_action_pressed("ui_up")):
 		return
@@ -444,6 +483,15 @@ func _paint_board(c: Control) -> void:
 		_row_info[i].pos = Vector2(nx, top + _row_name[i].height())
 		_row_lock[i].pos = Vector2(right - _row_lock[i].width(), r.position.y + (r.size.y - _row_lock[i].height()) * 0.5)
 
+	# Chapter headers: each text sits at the bottom of the spacer above its first row.
+	for i: int in _header_slots.keys():
+		var slot: Control = _header_slots[i]
+		var ht: HudText = _header_texts[i]
+		ht.visible = slot.visible
+		if slot.visible:
+			var hr: Rect2 = _local_rect(slot)
+			ht.pos = Vector2(hr.position.x + MSTheme.BUTTON_PAD_X + ACCENT_W, hr.end.y - ht.height())
+
 	# Detail panel: title, stars, then caption left and value right on one line each.
 	var pad: float = MSTheme.BUTTON_PAD_X * 1.5
 	var rx: float = detail.position.x + pad
@@ -486,7 +534,7 @@ func _paint_board(c: Control) -> void:
 		if i == _sel:
 			ResultsScreen._fill_skewed(c, Rect2(r2.position, Vector2(ACCENT_W, r2.size.y)), MSTheme.CYAN if open else MSTheme.MUTED)
 		if open:
-			draw_stars(c, star_rights[i], r2.position.y + r2.size.y * 0.5, STAR_R * k, GameState.event_stars(EventCatalog.id_at(i)), STAR_STEP * k)
+			draw_stars(c, star_rights[i], _row_name[i].pos.y + _row_name[i].height() * 0.5, STAR_R * k, GameState.event_stars(EventCatalog.id_at(i)), STAR_STEP * k)
 	if GameState.is_event_unlocked(get_selected_id()):
 		draw_stars(c, rx + star_r * 2.0 + star_r * 2.4 * 2.0, star_y, star_r, GameState.event_stars(get_selected_id()), star_r * 2.4)
 	for b: Button in _buttons:

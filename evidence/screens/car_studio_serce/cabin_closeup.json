@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.964,
+  "luma_min": 0.0,
+  "name": "cabin_closeup",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 49,
+    "draw_calls_min": 49,
+    "driver": "vulkan",
+    "fps": 688.871,
+    "frame_ms_avg": 1.452,
+    "frame_ms_p95": 1.617,
+    "frame_ms_p99": 1.652,
+    "frames": 60,
+    "objects": 49,
+    "os": "Windows",
+    "primitives": 148192,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 492.231,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetD/evidence/screens/car_studio_serce/cabin_closeup.png",
+  "preset": "high",
+  "scenario": "car_studio_serce"
+}

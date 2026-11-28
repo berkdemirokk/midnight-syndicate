@@ -10,7 +10,7 @@ func _path(tag: String) -> String:
 
 
 func _wipe(path: String) -> void:
-	for p: String in [path, path + ".bak", path + ".tmp"]:
+	for p: String in [path, path + ".bak", path + ".tmp", path + ".bak.tmp"]:
 		if FileAccess.file_exists(p):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(p))
 
@@ -186,7 +186,7 @@ func test_record_result_keeps_best_time() -> void:
 	_wipe(path)
 	var gs: Node = _open(path)
 	var r1: Dictionary = gs.record_result("ev_harbor", 42.5, 2)
-	check(r1["cash"] == 600, "2nd place pays 600")
+	check(r1["cash"] == 4704, "2nd place pays 4704")
 	check(r1["new_best"] == true, "first run is a new best")
 	check(r1["stars"] == 2, "2nd place earns 2 stars")
 
@@ -215,4 +215,51 @@ func test_record_result_keeps_best_time() -> void:
 	var saved: Dictionary = again.profile["career"]["ev_harbor"]
 	check(is_equal_approx(saved["best_time"], 40.0), "best time survives reload")
 	_close(again)
+	_wipe(path)
+
+
+## A blocked backup path skips the backup but still commits the verified new save.
+func test_blocked_backup_preserves_primary() -> void:
+	var path := _path("blocked_backup")
+	var blocked: String = ProjectSettings.globalize_path(path + ".bak")
+	if DirAccess.dir_exists_absolute(blocked):
+		DirAccess.remove_absolute(blocked)
+	_wipe(path)
+	var gs: Node = _open(path)
+	gs.add_rep(7)
+	var original: String = FileAccess.get_file_as_string(path)
+	check(DirAccess.make_dir_absolute(blocked) == OK, "backup obstruction created")
+	gs.profile["rep"] = 99
+	check(gs.save_profile(), "save succeeds when the backup path is blocked")
+	check(FileAccess.get_file_as_string(path) != original, "primary holds the new save")
+	check(not FileAccess.file_exists(path + ".tmp"), "save moves its staging file into place")
+	check(DirAccess.dir_exists_absolute(blocked), "backup obstruction is not deleted")
+	_close(gs)
+	var restored: Node = _open(path)
+	check(restored.get_rep() == 99, "new save is readable after reload")
+	_close(restored)
+	DirAccess.remove_absolute(blocked)
+	_wipe(path)
+
+
+## Failure staging the next backup must retain BOTH previously valid copies.
+func test_blocked_backup_stage_preserves_both_copies() -> void:
+	var path := _path("blocked_backup_stage")
+	var blocked: String = ProjectSettings.globalize_path(path + ".bak.tmp")
+	if DirAccess.dir_exists_absolute(blocked):
+		DirAccess.remove_absolute(blocked)
+	_wipe(path)
+	var gs: Node = _open(path)
+	gs.add_rep(7)
+	gs.add_rep(2)
+	var original: String = FileAccess.get_file_as_string(path)
+	var backup: String = FileAccess.get_file_as_string(path + ".bak")
+	check(not original.is_empty() and not backup.is_empty(), "both valid copies exist")
+	check(DirAccess.make_dir_absolute(blocked) == OK, "backup staging obstruction created")
+	gs.profile["rep"] = 99
+	check(gs.save_profile(), "save succeeds when backup staging is blocked")
+	check(FileAccess.get_file_as_string(path) != original, "primary holds the new save")
+	check(FileAccess.get_file_as_string(path + ".bak") == backup, "previous backup unchanged")
+	_close(gs)
+	DirAccess.remove_absolute(blocked)
 	_wipe(path)

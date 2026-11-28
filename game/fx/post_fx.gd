@@ -8,10 +8,16 @@ const BLUR_FROM_KMH: float = 110.0
 const BLUR_FULL_KMH: float = 260.0
 const NITRO_BLUR: float = 0.35  ## extra blur while the nitro burns
 const BLUR_RATE: float = 4.0  ## 1/s smoothing so the blur does not pop
+const BURST_PEAK: float = 0.5  ## blur added on the frame nitro ignites
+const BURST_DECAY: float = 6.0  ## 1/s, the ignition burst is gone in about half a second
+const BLUR_TAPS: Dictionary = {"low": 0, "medium": 3, "high": 5}  ## extra blur samples by graphics preset
 
 var _rect: ColorRect = ColorRect.new()
 var _blur: float = 0.0
 var _target: float = 0.0
+var _burst: float = 0.0  ## decaying ignition blur
+var _was_nitro: bool = false
+var _taps: int = 5
 
 
 func _ready() -> void:
@@ -33,15 +39,32 @@ func _exit_tree() -> void:
 
 func _on_settings_changed(_section: String) -> void:
 	visible = Settings.get_preset_id() != "low"
+	_taps = blur_taps_for(Settings.get_preset_id(), Settings.reduced_motion)
+	(_rect.material as ShaderMaterial).set_shader_parameter("blur_taps", _taps)
+	if _taps == 0:
+		_blur = 0.0
+		_burst = 0.0
 
 
 func _process(delta: float) -> void:
 	_blur = lerpf(_blur, _target, 1.0 - exp(-BLUR_RATE * delta))
-	(_rect.material as ShaderMaterial).set_shader_parameter("blur", _blur)
+	_burst *= exp(-BURST_DECAY * delta)
+	(_rect.material as ShaderMaterial).set_shader_parameter("blur", clampf(_blur + _burst, 0.0, 1.0))
 
 
 func set_speed(kmh: float, nitro: bool) -> void:
-	_target = clampf(blur_for(kmh, nitro), 0.0, 1.0)
+	if nitro and not _was_nitro and _taps > 0:
+		_burst = BURST_PEAK
+	_was_nitro = nitro
+	_target = clampf(blur_for(kmh, nitro), 0.0, 1.0) if _taps > 0 else 0.0
+
+
+## Blur samples for a graphics preset and a reduced_motion level: off 0, low at most 3, high as the preset.
+static func blur_taps_for(preset_id: String, motion: String) -> int:
+	if motion == "off":
+		return 0
+	var taps: int = int(BLUR_TAPS.get(preset_id, 5))
+	return mini(taps, 3) if motion == "low" else taps
 
 
 static func blur_for(kmh: float, nitro: bool) -> float:

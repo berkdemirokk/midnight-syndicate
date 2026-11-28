@@ -1,0 +1,77 @@
+[gd_resource type="Resource" script_class="CarSpec" format=3]
+
+[ext_resource type="Script" path="res://vehicles/car_spec.gd" id="1_spec"]
+
+[sub_resource type="Curve" id="Curve_force"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.2, 0.92), 0.0, 0.0, 0, 0, Vector2(0.4, 0.75), 0.0, 0.0, 0, 0, Vector2(0.6, 0.5), 0.0, 0.0, 0, 0, Vector2(0.8, 0.42), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
+
+[resource]
+script = ExtResource("1_spec")
+display_name = "Noctra Volta"
+mass_kg = 1700.0
+wheelbase = 2.9
+track_front = 1.6
+track_rear = 1.62
+wheel_radius_front = 0.345
+wheel_radius_rear = 0.36
+center_of_mass_height = 0.34
+weight_front = 0.53
+body_size = Vector3(1.95, 0.5, 4.6)
+mount_height = -0.2
+suspension_rest = 0.32
+suspension_travel = 0.16
+spring_stiffness = 72000.0
+spring_damping = 5200.0
+anti_roll = 9000.0
+bump_stop_stiffness = 250000.0
+max_spring_force = 25000.0
+top_speed_kmh = 300.0
+engine_force = 16000.0
+engine_force_curve = SubResource("Curve_force")
+reverse_speed_kmh = 45.0
+reverse_force_share = 0.5
+reverse_engage_ms = 0.5
+brake_force = 22000.0
+brake_front_share = 0.62
+engine_brake = 1300.0
+gear_count = 6
+gear_dip_s = 0.15
+gear_dip_mult = 0.6
+drag = 0.115
+rolling_resistance = 180.0
+grip_front = 1.45
+grip_rear = 1.5
+lateral_stiffness = 1.0
+peak_slip_deg = 8.0
+downforce = 1.1
+steer_angle_low_deg = 30.0
+steer_angle_high_deg = 4.8
+steer_speed = 5.0
+yaw_damping = 1.6
+drift_rear_grip_mult = 0.46
+drift_entry_speed_kmh = 50.0
+drift_entry_slip_deg = 24.0
+drift_min_angle_deg = 9.0
+drift_max_angle_deg = 48.0
+drift_exit_time = 0.35
+counter_steer_assist = 1.0
+counter_steer_start = 0.5
+drift_yaw_damp_mult = 10.0
+drift_throttle_grip = 0.5
+drift_score_rate = 12.0
+drift_score_slip_norm_deg = 10.0
+drift_score_speed_norm_kmh = 100.0
+drift_min_speed_ms = 1.0
+drift_stop_fraction = 0.5
+nitro_force_mult = 1.55
+nitro_top_speed_mult = 1.16
+nitro_capacity_s = 3.2
+nitro_refill_passive = 0.035
+nitro_refill_drift = 0.16
+nitro_min_to_start = 0.15
+airborne_gravity_mult = 1.6
+air_control_torque = 1700.0
+upright_stiffness = 16000.0
+upright_damping = 3400.0
+hit_min_impulse = 1500.0
+max_contacts_reported = 8

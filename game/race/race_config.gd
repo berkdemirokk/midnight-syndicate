@@ -40,6 +40,15 @@ extends Resource
 @export var rival_mix: bool = false  ## rivals drive a mix of the available car models (CarCatalog), else the player's model
 @export var rival_class: String = ""  ## with rival_mix: only rival models of this catalog class ("street", ...); empty = every rival model
 @export var force_nitro_above_kmh: float = -1.0  ## capture only: autopilot nitro gate opens above this speed; 0 or less = off
+@export var net_hold_grid: bool = false  ## online race (net/): the grid waits for the server start message; no AI opponents are spawned
+@export var pursuit: bool = false  ## police pursuit (race/pursuit/PursuitMode); only with PursuitMode.ENABLED, normal races never add it
+const MODE_RACE: String = "race"  ## finish the laps, placed by finish order
+const MODE_DRIFT: String = "drift"  ## timed solo run, scored by the drift chains (time_limit_s, no rivals)
+const MODE_ELIMINATION: String = "elimination"  ## last car out at the end of each lap; laps = cars - 1
+@export var mode: String = MODE_RACE  ## MODE_RACE, MODE_DRIFT or MODE_ELIMINATION (see RaceManager)
+@export var time_limit_s: float = 0.0  ## drift: race time limit in seconds; 0 = not timed
+@export var reverse_route: bool = false  ## the track runs the other way: Track.set_reversed (grid and racing line mirrored)
+@export var pursuit_event: bool = false  ## set by an event that opts in (EventCatalog "pursuit": true); the gate accepts it without ENABLED
 
 
 ## Opponent paint by index, cycling through the list. Falls back to the player colour when no list is set.

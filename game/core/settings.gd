@@ -9,8 +9,11 @@ const SECTION_AUDIO: String = "audio"
 const SECTION_CONTROLS: String = "controls"
 const SECTION_GENERAL: String = "general"
 const PRESET_IDS: PackedStringArray = ["low", "medium", "high"]
-const STEERING_MODES: PackedStringArray = ["buttons", "tilt"]
+const STEERING_MODES: PackedStringArray = ["buttons", "tilt", "assist"]
 const LANGUAGES: PackedStringArray = ["tr", "en"]
+const REDUCED_MOTION_LEVELS: PackedStringArray = ["off", "low", "high"]
+## Frame rate caps offered in the settings screen (Engine.max_fps).
+const FPS_CAPS: PackedInt32Array = [30, 60]
 ## Settings key -> AudioServer bus name. Missing buses are created at startup.
 const AUDIO_BUSES: Dictionary = {"master": "Master", "music": "Music", "sfx": "SFX", "engine": "Engine", "ui": "UI"}
 const DEFAULT_VOLUMES: Dictionary = {"master": 1.0, "music": 0.8, "sfx": 1.0, "engine": 1.0, "ui": 1.0}
@@ -33,12 +36,17 @@ var steering_mode: String = "buttons"
 var auto_accelerate: bool = true
 var haptics: bool = true
 var camera_shake: float = 0.6
+var reduced_motion: String = "high"  ## off: no speed blur, speed shake or nitro FOV kick; low: half shake and kick, 3 blur taps
 var language: String = "en"
+## Frame-time card (ui/hud/perf_card.gd). Default on only in TestFlight builds (export feature "testflight").
+## No settings-screen row yet: set [general] perf_card in settings.cfg to turn it on elsewhere.
+var perf_card: bool = OS.has_feature("testflight")
 
 var _presets: Dictionary = {}
 var _preset_id: String = "medium"
 var _dynamic_resolution: bool = false
 var _scale: float = 0.85
+var fps_cap: int = 60
 var _since_step: float = 0.0
 var _volumes: Dictionary = {}
 var _viewport: Viewport = null
@@ -55,6 +63,7 @@ func _init() -> void:
 func _ready() -> void:
 	ensure_audio_buses()
 	load_settings()
+	Engine.max_fps = fps_cap
 	for key: String in AUDIO_BUSES:
 		_apply_bus(key)
 	_apply_renderer()
@@ -82,6 +91,20 @@ func get_render_scale() -> float:
 
 func get_dynamic_resolution() -> bool:
 	return _dynamic_resolution
+
+
+func get_fps_cap() -> int:
+	return fps_cap
+
+
+## Caps the frame rate through Engine.max_fps. Only values in FPS_CAPS are accepted.
+func set_fps_cap(fps: int) -> bool:
+	if not FPS_CAPS.has(fps):
+		return false
+	fps_cap = fps
+	Engine.max_fps = fps
+	_changed(SECTION_GRAPHICS)
+	return true
 
 
 func set_preset(id: String) -> bool:
@@ -116,6 +139,7 @@ func attach_viewport(vp: Viewport) -> void:
 
 func apply_to_viewport(vp: Viewport) -> void:
 	vp.msaa_3d = get_preset().msaa_3d
+	vp.screen_space_aa = get_preset().screen_space_aa
 	vp.scaling_3d_scale = _scale
 
 
@@ -159,6 +183,7 @@ func _select_preset(id: String) -> void:
 
 func _apply_renderer() -> void:
 	RenderingServer.directional_shadow_atlas_set_size(get_preset().directional_shadow_size, false)
+	RenderingServer.directional_soft_shadow_filter_set_quality(get_preset().shadow_filter)
 
 
 # --- audio ------------------------------------------------------------------
@@ -219,12 +244,25 @@ func set_camera_shake(amount: float) -> void:
 	_changed(SECTION_CONTROLS)
 
 
+func set_reduced_motion(level: String) -> bool:
+	if not REDUCED_MOTION_LEVELS.has(level):
+		return false
+	reduced_motion = level
+	_changed(SECTION_CONTROLS)
+	return true
+
+
 func set_language(lang: String) -> bool:
 	if not LANGUAGES.has(lang):
 		return false
 	language = lang
 	_changed(SECTION_GENERAL)
 	return true
+
+
+func set_perf_card(on: bool) -> void:
+	perf_card = on
+	_changed(SECTION_GENERAL)
 
 
 ## Emits changed, and writes config_path first unless autosave is off or a load is in progress.
@@ -240,13 +278,16 @@ func save_settings() -> bool:
 	var cfg := ConfigFile.new()
 	cfg.set_value(SECTION_GRAPHICS, "preset", _preset_id)
 	cfg.set_value(SECTION_GRAPHICS, "dynamic_resolution", _dynamic_resolution)
+	cfg.set_value(SECTION_GRAPHICS, "fps_cap", fps_cap)
 	for key: String in AUDIO_BUSES:
 		cfg.set_value(SECTION_AUDIO, key, _volumes[key])
 	cfg.set_value(SECTION_CONTROLS, "steering_mode", steering_mode)
 	cfg.set_value(SECTION_CONTROLS, "auto_accelerate", auto_accelerate)
 	cfg.set_value(SECTION_CONTROLS, "haptics", haptics)
 	cfg.set_value(SECTION_CONTROLS, "camera_shake", camera_shake)
+	cfg.set_value(SECTION_CONTROLS, "reduced_motion", reduced_motion)
 	cfg.set_value(SECTION_GENERAL, "language", language)
+	cfg.set_value(SECTION_GENERAL, "perf_card", perf_card)
 	var ok: bool = cfg.save(config_path) == OK
 	if not ok:
 		push_warning("Settings: cannot write %s" % config_path)
@@ -261,6 +302,7 @@ func load_settings() -> bool:
 	_loading = true
 	set_preset(_read_string(cfg, SECTION_GRAPHICS, "preset", _preset_id, PRESET_IDS))
 	set_dynamic_resolution(_read_bool(cfg, SECTION_GRAPHICS, "dynamic_resolution", _dynamic_resolution))
+	set_fps_cap(_read_fps(cfg))
 	for key: String in AUDIO_BUSES:
 		_volumes[key] = _read_float(cfg, SECTION_AUDIO, key, _volumes[key], 0.0, 1.0)
 		_apply_bus(key)
@@ -268,11 +310,20 @@ func load_settings() -> bool:
 	auto_accelerate = _read_bool(cfg, SECTION_CONTROLS, "auto_accelerate", auto_accelerate)
 	haptics = _read_bool(cfg, SECTION_CONTROLS, "haptics", haptics)
 	camera_shake = _read_float(cfg, SECTION_CONTROLS, "camera_shake", camera_shake, 0.0, 1.0)
+	reduced_motion = _read_string(cfg, SECTION_CONTROLS, "reduced_motion", reduced_motion, REDUCED_MOTION_LEVELS)
 	language = _read_string(cfg, SECTION_GENERAL, "language", language, LANGUAGES)
+	perf_card = _read_bool(cfg, SECTION_GENERAL, "perf_card", perf_card)
 	_loading = false
 	for section: String in [SECTION_GRAPHICS, SECTION_AUDIO, SECTION_CONTROLS, SECTION_GENERAL]:
 		changed.emit(section)
 	return true
+
+
+func _read_fps(cfg: ConfigFile) -> int:
+	var v: Variant = cfg.get_value(SECTION_GRAPHICS, "fps_cap", fps_cap)
+	if (v is int or v is float) and FPS_CAPS.has(int(v)):
+		return int(v)
+	return fps_cap
 
 
 func _read_bool(cfg: ConfigFile, section: String, key: String, fallback: bool) -> bool:

@@ -18,11 +18,11 @@ const UPGRADE_PARTS: PackedStringArray = ["engine", "tires", "nitro", "weight"]
 ## Upgrade from level n to n+1 costs base * (n + 1).
 const UPGRADE_BASE_COST: Dictionary = {"engine": 800, "tires": 500, "nitro": 1200, "weight": 900}
 ## Rewards by finishing position (index 0 = 1st). Positions past the table earn nothing.
-const REWARD_CASH: PackedInt32Array = [1000, 600, 300, 100]
+const REWARD_CASH: PackedInt32Array = [7840, 4704, 2352, 784]  ## x1.4 again on 2026-11-28 for the 24-car roster (6 classic Bosfor cars): owning everything stays 1.5-2.0 careers (tools/economy_sim.py)
 const REWARD_REP: PackedInt32Array = [100, 60, 30, 10]
 const REWARD_STARS: PackedInt32Array = [3, 2, 1]
-const DEFAULT_PAINT: String = "#8e0f1e"  ## candy red, the starter car colour in docs/art/CAR_01_BRIEF.md
-const DEFAULT_RIM: String = "#c0c0c0"
+const DEFAULT_PAINT: String = "8e0f1e"  ## candy red, the starter car colour in docs/art/CAR_01_BRIEF.md. Stored without # like every saved colour.
+const DEFAULT_RIM: String = "c0c0c0"
 
 var save_path: String = "user://save.json"
 var profile: Dictionary = {}
@@ -50,6 +50,8 @@ func default_profile() -> Dictionary:
 		"car_setups": {STARTER_CAR: _default_setup()},
 		"career": {},
 		"stats": {"races": 0, "wins": 0, "cash_earned": 0},
+		"onboarded": false,  ## the first-launch flow ran (saves from before it existed count as onboarded: see _sanitize)
+		"hints_done": false,  ## the three first-race hints were shown or skipped
 	}
 
 
@@ -72,7 +74,7 @@ func add_cash(amount: int) -> void:
 	if amount < 0:
 		push_warning("GameState: add_cash with negative amount")
 		return
-	profile["cash"] = mini(get_cash() + amount, MAX_CASH)
+	profile["cash"] = get_cash() + mini(amount, MAX_CASH - get_cash())
 	_commit()
 
 
@@ -89,7 +91,7 @@ func add_rep(amount: int) -> void:
 	if amount < 0:
 		push_warning("GameState: add_rep with negative amount")
 		return
-	profile["rep"] = mini(get_rep() + amount, MAX_CASH)
+	profile["rep"] = get_rep() + mini(amount, MAX_CASH - get_rep())
 	_commit()
 
 
@@ -178,21 +180,34 @@ func upgrade(car_id: String, part: String) -> bool:
 
 ## Records a finished event and returns the rewards: {cash, rep, stars, new_best}.
 ## Rewards scale with the event's multiplier and stars follow its rule (EventCatalog); other ids use position only.
+## score: the drift score of a drift event (score events take their stars from it); -1 for every other event.
 ## Returns an empty dictionary for a bad event id, time or position.
-func record_result(event_id: String, time_s: float, position: int) -> Dictionary:
+func record_result(event_id: String, time_s: float, position: int, score: float = -1.0) -> Dictionary:
 	# Written as a positive test so NaN (every comparison false) and infinity are rejected too.
 	if event_id.is_empty() or not (time_s > 0.0 and time_s <= MAX_TIME_S) or position < 1:
 		push_warning("GameState: bad result for event '%s'" % event_id)
 		return {}
 	var mult: float = EventCatalog.reward_multiplier(event_id)
-	var cash_reward: int = roundi(_reward(REWARD_CASH, position) * mult)
-	var rep_reward: int = roundi(_reward(REWARD_REP, position) * mult)
-	var stars: int = EventCatalog.stars_for(event_id, time_s, position)
+	var stars: int = EventCatalog.stars_for(event_id, time_s, position, score)
+	# A solo time trial or drift session always finishes in position 1. Pay by achieved star tier instead,
+	# using the existing 1st/2nd/3rd reward table, so a slow lap or a low score does not earn the top prize.
+	var by_stars: bool = EventCatalog.is_time_event(event_id) or EventCatalog.is_score_event(event_id)
+	var reward_position: int = (MAX_STARS - stars + 1) if by_stars else position
+	var cash_reward: int = roundi(_reward(REWARD_CASH, reward_position) * mult)
+	var rep_reward: int = roundi(_reward(REWARD_REP, reward_position) * mult)
 	var career: Dictionary = profile["career"]
-	var rec: Dictionary = career.get(event_id, {"best_time": 0.0, "best_position": 0, "stars": 0})
-	var new_best: bool = float(rec["best_time"]) <= 0.0 or time_s < float(rec["best_time"])
+	var rec: Dictionary = career.get(event_id, {"best_time": 0.0, "best_position": 0, "stars": 0, "best_score": 0.0, "car": ""})
+	# Drift sessions always last the time limit and an early elimination is short: only race mode keeps a best time.
+	var keeps_best: bool = EventCatalog.mode_of(event_id) == RaceConfig.MODE_RACE
+	var new_best: bool = keeps_best and (float(rec["best_time"]) <= 0.0 or time_s < float(rec["best_time"]))
 	if new_best:
 		rec["best_time"] = time_s
+	var new_score: bool = score >= 0.0 and EventCatalog.is_score_event(event_id) and score > float(rec["best_score"])
+	if new_score:
+		rec["best_score"] = minf(score, float(MAX_CASH))
+	# The car of the best result is the one the record screen shows. Keeps the first car until a result improves.
+	if new_best or new_score or str(rec["car"]).is_empty():
+		rec["car"] = get_selected_car()
 	var best_pos: int = int(rec["best_position"])
 	rec["best_position"] = position if best_pos <= 0 else mini(best_pos, position)
 	rec["stars"] = maxi(int(rec["stars"]), stars)
@@ -200,12 +215,39 @@ func record_result(event_id: String, time_s: float, position: int) -> Dictionary
 	profile["cash"] = mini(get_cash() + cash_reward, MAX_CASH)
 	profile["rep"] = mini(get_rep() + rep_reward, MAX_CASH)
 	var stats: Dictionary = profile["stats"]
-	stats["races"] = int(stats["races"]) + 1
-	if position == 1:
-		stats["wins"] = int(stats["wins"]) + 1
-	stats["cash_earned"] = int(stats["cash_earned"]) + cash_reward
+	stats["races"] = mini(int(stats["races"]) + 1, MAX_CASH)
+	if reward_position == 1:
+		stats["wins"] = mini(int(stats["wins"]) + 1, MAX_CASH)
+	stats["cash_earned"] = mini(int(stats["cash_earned"]) + cash_reward, MAX_CASH)
 	_commit()
 	return {"cash": cash_reward, "rep": rep_reward, "stars": stars, "new_best": new_best}
+
+
+## Personal record of an event: best_time, best_position, stars, best_score, car. Empty when never finished.
+func career_record(event_id: String) -> Dictionary:
+	var rec: Variant = (profile["career"] as Dictionary).get(event_id)
+	return (rec as Dictionary).duplicate(true) if rec is Dictionary else {}
+
+
+## True once the first-launch flow ran (or the save predates it). Drives the onboarding screen.
+func is_onboarded() -> bool:
+	return bool(profile["onboarded"])
+
+
+func set_onboarded() -> void:
+	profile["onboarded"] = true
+	_commit()
+
+
+func hints_done() -> bool:
+	return bool(profile["hints_done"])
+
+
+func mark_hints_done() -> void:
+	if hints_done():
+		return
+	profile["hints_done"] = true
+	_commit()
 
 
 ## Best stars earned on an event (0 = never finished).
@@ -256,12 +298,16 @@ func save_profile() -> bool:
 	var g_tmp: String = ProjectSettings.globalize_path(tmp_path)
 	var g_bak: String = ProjectSettings.globalize_path(bak_path)
 	if _read_file(save_path) != null:
-		if FileAccess.file_exists(bak_path):
-			DirAccess.remove_absolute(g_bak)
-		if DirAccess.copy_absolute(g_main, g_bak) != OK:
-			push_warning("GameState: backup of %s failed" % save_path)
-	if FileAccess.file_exists(save_path):
-		DirAccess.remove_absolute(g_main)
+		# Stage the backup without deleting the last known-good backup or primary.
+		var g_bak_tmp: String = g_bak + ".tmp"
+		if DirAccess.dir_exists_absolute(g_bak) or DirAccess.dir_exists_absolute(g_bak_tmp):
+			push_warning("GameState: backup path blocked for %s; saving without a new backup" % save_path)
+		var copied: bool = DirAccess.copy_absolute(g_main, g_bak_tmp) == OK
+		if not copied or _read_file(bak_path + ".tmp") == null or DirAccess.rename_absolute(g_bak_tmp, g_bak) != OK:
+			push_warning("GameState: backup of %s failed; saving without a new backup" % save_path)
+			if FileAccess.file_exists(bak_path + ".tmp"):
+				DirAccess.remove_absolute(g_bak_tmp)
+	# Godot supports replacing an existing file by rename. Do not remove the primary first.
 	var renamed: bool = DirAccess.rename_absolute(g_tmp, g_main) == OK
 	if not renamed:
 		push_error("GameState: cannot move %s into place" % tmp_path)
@@ -302,6 +348,10 @@ func _sanitize(raw: Dictionary) -> Dictionary:
 	var out: Dictionary = default_profile()
 	out["cash"] = _as_int(data.get("cash"), STARTER_CASH, 0, MAX_CASH)
 	out["rep"] = _as_int(data.get("rep"), 0, 0, MAX_CASH)
+	# Added with the first-launch flow. A save without these fields was written before it: treat it as onboarded
+	# with the hints already done, so an old player never sees the tutorial. Only a new profile starts with false.
+	out["onboarded"] = data.get("onboarded") if data.get("onboarded") is bool else true
+	out["hints_done"] = data.get("hints_done") if data.get("hints_done") is bool else true
 
 	var owned: Array = []
 	var raw_owned: Variant = data.get("owned_cars")
@@ -331,6 +381,8 @@ func _sanitize(raw: Dictionary) -> Dictionary:
 					"best_time": _as_float(rec.get("best_time"), 0.0, 0.0, MAX_TIME_S),
 					"best_position": _as_int(rec.get("best_position"), 0, 0, 1000),
 					"stars": _as_int(rec.get("stars"), 0, 0, MAX_STARS),
+					"best_score": _as_float(rec.get("best_score"), 0.0, 0.0, float(MAX_CASH)),
+					"car": _as_car_id(rec.get("car")),
 				}
 	out["career"] = career
 
@@ -393,6 +445,10 @@ func _as_color_html(v: Variant, fallback: String) -> String:
 	if v is String:
 		base = Color.from_string(v, base)
 	return base.to_html(false)
+
+
+func _as_car_id(v: Variant) -> String:
+	return v if v is String and (v as String).length() <= 64 else ""
 
 
 func _as_int(v: Variant, fallback: int, lo: int, hi: int) -> int:

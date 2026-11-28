@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.961,
+  "luma_min": 0.0,
+  "name": "tail_closeup",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 55,
+    "draw_calls_min": 55,
+    "driver": "vulkan",
+    "fps": 992.539,
+    "frame_ms_avg": 1.008,
+    "frame_ms_p95": 1.098,
+    "frame_ms_p99": 1.141,
+    "frames": 60,
+    "objects": 55,
+    "os": "Windows",
+    "primitives": 75054,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 461.459,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetF/evidence/screens/car_studio_lale/tail_closeup.png",
+  "preset": "high",
+  "scenario": "car_studio_lale"
+}

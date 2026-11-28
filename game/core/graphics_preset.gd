@@ -14,7 +14,11 @@ extends Resource
 @export_range(0.0, 2.0, 0.01) var glow_intensity: float = 0.6
 @export var directional_shadow_size: int = 1024
 @export_range(0.0, 1.0, 0.01) var particle_amount_scale: float = 0.7
-@export var max_dynamic_lights: int = 8
+## Soft directional shadow filter (RenderingServer.directional_soft_shadow_filter_set_quality).
+@export var shadow_filter: RenderingServer.ShadowQuality = RenderingServer.SHADOW_QUALITY_SOFT_LOW
+## Post AA on the 3D pass. Off on every preset until FXAA is measured on a phone (docs/perf/GPU_PASS_2026-11-28.md).
+@export var screen_space_aa: Viewport.ScreenSpaceAA = Viewport.SCREEN_SPACE_AA_DISABLED
+## city_builder.gd builds the reflection probes at track load only when this is on.
 @export var reflection_probes_enabled: bool = true
 @export var rain_enabled: bool = true
 ## Requested dynamic resolution. Settings only enables it when scaling_confirmed_on_device is true.
@@ -30,8 +34,8 @@ static func build(preset_id: String) -> GraphicsPreset:
 			p.scaling_3d_scale = 0.67
 			p.glow_intensity = 0.35
 			p.particle_amount_scale = 0.4
-			p.max_dynamic_lights = 4
 			p.reflection_probes_enabled = false
+			p.shadow_filter = RenderingServer.SHADOW_QUALITY_HARD
 			p.rain_enabled = false
 			p.dynamic_resolution = true
 		"high":
@@ -40,9 +44,9 @@ static func build(preset_id: String) -> GraphicsPreset:
 			p.glow_intensity = 0.8
 			p.directional_shadow_size = 2048
 			p.particle_amount_scale = 1.0
-			p.max_dynamic_lights = 16
+			p.shadow_filter = RenderingServer.SHADOW_QUALITY_SOFT_LOW
 		_:
-			pass # "medium" keeps the defaults above
+			pass # "medium" keeps the defaults above (engine soft shadow filter, no post AA).
 	return p
 
 

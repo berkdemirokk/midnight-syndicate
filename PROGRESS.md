@@ -238,3 +238,77 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 1. Gate items below 7: car canopy/side glass, pack-race traffic avoidance, speed-line HUD mask,
    waterfront light. 2. M2 game loop: career, audio (needs CC0 download approval), onboarding.
 3. Owner decisions: export templates (Windows .exe), macOS/Xcode access for iOS.
+
+## Session 9 — night of 2026-11-27 to 28 (overnight release candidate)
+- Owner briefs: graphics first, then the overnight studio brief (docs/status/OVERNIGHT_MASTER.md) and the full-game override.
+  Lead Opus 5.5; workers Haiku 5.5 in their own worktrees; every package reviewed by a Haiku reviewer and an Opus lead
+  reviewer before the lead merged it. Branch `release/rc-2026-11-28`, draft PR https://github.com/berkdemirokk/midnight-syndicate/pull/9.
+- PR #8 (ChatGPT gameplay integration) verified (CI green, 355 tests locally) and merged once into the RC.
+- Lead: day/sunset look (ACES white 6, afternoon sun, 2-split shadow, depth fog, clear sky, dark lower sky, warm car
+  fill), dry/wet road per hour, patchy wet mirror, mirror 5 taps, rims/tyres, sea, plaster tone, before/after tooling.
+- Merged packages: drive telemetry, GPU pass, photo-row architecture, LAN online (+ in-game fixes by the lead), AI churn,
+  start-hitch attempts (findings only), net polish (Bosphorus, standings, TR/EN), UX, camera, pursuit, night diet +
+  Asphalt-style framing, roadblock barriers, soak, smooth dome, drift + elimination modes, private lobby code, escape
+  event, persistence check, onboarding + records, economy x4, touch survival, stone plinth, polish, release-review fixes
+  (7 verified defects), car validation.
+- Evidence: final full suite and checks in docs/status/RELEASE_CANDIDATE_2026-11-28.md; iOS compile check ios-check-5
+  green (no upload). Dev PC numbers only; no iPhone test.
+- Not done: 30 cars (owner approval for downloads), car LOD0 draw calls 59 vs budget 20 per car (needs a mesh/material
+  merge pass), real-device test, App Store submission, internet multiplayer, the ~40 s frame spike, human playtest of
+  modes/economy, sound by ear. Full list: docs/status/MASTER_CHECKLIST.md.
+
+## Fleet C (wp/fleetC), 2026-11-28
+- Budget blocker fixed: test_car_licensed test_budgets now passes (14/14). Only decimation ratios changed in
+  assets_src/pipeline/vehicle_configs/{noctra_volta,noctra_regent,noctra_sovereign,noctra_monarch,noctra_titan}.json,
+  then rebuilt with rebuild_vehicles.py (one Blender run under gpu_run). Godot LOD tris after: volta 88095/25196/6855,
+  regent 79001/25628/6692, sovereign 77738/25089/6420, monarch 86228/24323/6092, titan 66999/19141/6797 (budgets 90000/28000/7000).
+  LOD0 materials 12-13 and surfaces 22-23 (ratchet unchanged). Known floor: body/trim LOD2 ratios stopped reducing faces, wheel ratio did.
+- Full suite 555 tests, 0 failed (before and after this fix only the budget test changed).
+- Economy: NOT applied. Five cars are not in car_catalog.gd. tools/economy_sim.py currently gives 1.56 (10 buyable cars); the
+  +five-car estimate was 2.04 against a 1.5-2.0 band. Owner decision needed (see BLOCKERS B13).
+- Quality: titan proportions fail (B14), volta front red glow open (B15). Studio renders refreshed: evidence/screens/car_studio_{volta,regent,sovereign,monarch,titan}/.
+- Lead review (Opus), 2026-11-28: dropped noctra_regent (same vinish.dev body as noctra_sovereign, only the wing differs)
+  and noctra_monarch (same body as the catalogued noctra_meridian) with all their files and records. Front plates of
+  volta, sovereign and titan were mirrored or clipped, so they are blanked like the other cars (front_plate_material
+  M_Trim) and the three cars were rebuilt. Godot tris volta 88094/25196/6855, sovereign 77737/25089/6420,
+  titan 66997/19141/6797. Studio renders of the three re-captured (16 shots each, errors=0) and looked at; a titan
+  race capture on the city track was looked at (rear plate legible, reads as an SUV). B14 and B15 closed. Full suite
+  555 tests, 0 failed. asset_factory validate: 682 records, 0 failing. Economy and catalog entries still wait on B13.
+## WP-B6 Shader Baker (wp/b6baker)
+- Changed: `game/export_presets.cfg` iOS preset `shader_baker/enabled=true` (3c3720d4); new test `game/tests/test_export_shader_baker.gd` (a4008e03) checks the key is on for iOS and nowhere else.
+- Key confirmed as a string in the Godot 4.7.2 binary. Effect on first launch: not measured (headless export may skip the bake).
+- CI iOS compile check: OPEN, no run id (build-ios.yml runs on `ios-check-*` tags only; the worker did not push).
+- Lead review (Opus): key `shader_baker/enabled` found 4x in Godot_v4.7.2-stable_win64.exe. Local headless `--export-release "iOS"` with a dummy team id (as CI's sed does) finished with warnings only (`.ipa` needs macOS; pre-existing boot_splash warning), no Shader Baker error, so the CI headless export is not broken by the key; the bake itself is likely skipped headless. Full suite 572 tests, 0 failed, exit 0. Preset edit approved by the lead.
+
+## Session 10 — 2026-11-28 (quality rescue, research sprint, production sprint)
+
+Owner rejected the RC quality. Director Opus 5.5, Haiku 5.5 workers in sparse worktrees, Haiku review + Opus gate per package.
+Branch release/rc-2026-11-28, head after this session in git log (pushed). Dev PC numbers only (RTX 5060 Ti).
+
+What really changed (all merged after review, full suite green at each checkpoint):
+- Environment (lead): 3D storefronts replace the photo shop band on all three tracks (7bfe241, per-shop night light
+  eb6abcd); brick/concrete side walls on Wharf/Maslak (f433e35); CC0 Poly Haven street furniture in front of the rows
+  (2528ba8, 035fe81); erguvan (Judas tree) rows on the Ortakoy pavements and the MultiMesh-at-origin cull bug fixed
+  (8537f42f); erguvan petals (759e5f0a); night interior parallax on photo facades (162e6af3); capture runs never
+  auto-pause (6ec3ce4).
+- Cars: 11 -> 24 licensed vinish.dev CC BY 4.0 cars (fleetD 4, fleetC 3, fleetF 6 classics); 9 candidates rejected as
+  re-skins of shipped bodies (geometry screen docs/design/FLEET_SCREEN_ROUND2.md); 3 police cars; brake disc+caliper
+  merged (LOD0 21-23 surfaces); day paint deeper red (1395367d); panorama slides over the clear coat (ea254937).
+- Gameplay: speed feel (182 km/h at 8 s, was 159), AI racing line/overtake/defence on, 10 reverse events + chapters,
+  pursuit menu/aggression/hiding spots, touch steer 4 ticks to lock (was 11), steer-assist mode, drift exit push,
+  reduced-motion setting, denser drift smoke.
+- UI/audio: main menu with 3D car + loading screen, HUD, results, settings (5 tabs), layered engine wired, per-wheel
+  tyre audio, CC0 siren, music ducking (0e182fc3).
+- Perf/release: perf card for iPhone sessions, pipeline warm-up, iOS Shader Baker, App Store metadata draft;
+  ios-check-7 and ios-check-8 green (build only).
+- Research: docs/research/lookdev/ (10 sourced notes + PRODUCTION_PLAN.md, Opus-audited).
+- Economy: reward table x1.96 overall (7840/4704/2352/784) for the 24-car roster; economy_sim 1.58 (band 1.5-2.0).
+
+Evidence: full suite 601 tests, 0 failed (after fleetF); asset manifest 734 records, 0 failing; final pass
+(tod_tracks 3x3, ortakoy_benchmark, 6 car studios, 3 reels, draw_breakdown 3 presets x 2 tracks, garage/HUD/menu)
+0 errors except one blank LOD2 frame in car_studio_kartal. Bogaz High peak 411 draws / 427k primitives (budget 500/450k).
+
+Not done / blockers: 30 cars (24; vinish.dev has no more distinct realistic bodies; the rest needs owner Sketchfab
+downloads or modelling); internet multiplayer (needs an owner account: EOS, Game Center or Cloudflare); no iPhone
+measurement; nobody listened to the audio; no human playtest; Noctra Tayfun/Cyclon silhouette resembles a famous
+rear-engine sports car (owner to judge brand risk); quality is clearly better but not proven equal to NFS/Asphalt.

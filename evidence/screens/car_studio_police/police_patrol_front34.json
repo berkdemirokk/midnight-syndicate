@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.965,
+  "luma_min": 0.0,
+  "name": "police_patrol_front34",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 59,
+    "draw_calls_min": 59,
+    "driver": "vulkan",
+    "fps": 919.921,
+    "frame_ms_avg": 1.087,
+    "frame_ms_p95": 1.232,
+    "frame_ms_p99": 1.275,
+    "frames": 60,
+    "objects": 59,
+    "os": "Windows",
+    "primitives": 175938,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 494.168,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-fleetP/evidence/screens/car_studio_police/police_patrol_front34.png",
+  "preset": "high",
+  "scenario": "car_studio_police"
+}

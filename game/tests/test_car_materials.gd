@@ -104,3 +104,32 @@ func test_surface_materials_set_properties() -> void:
 	var chrome: StandardMaterial3D = _material(car, "M_Chrome")
 	check(chrome == null or chrome.metallic == 1.0, "chrome is not metallic")
 	car.free()
+
+
+func test_look_constants_in_range() -> void:
+	# carpaint pass: a sharper street mirror and a glass tint that lets the interior show (alpha is opacity).
+	check(CarMaterials.REFLECTION_BLUR_MAX > 0.0 and CarMaterials.REFLECTION_BLUR_MAX <= 2.0, "reflection blur cap out of range")
+	check(CarMaterials.GLASS_TINT.a >= 0.5 and CarMaterials.GLASS_TINT.a <= 0.7, "glass opacity out of range")
+
+
+func test_reflection_blur_cap_reaches_mirror_shader() -> void:
+	# the carpaint sharpening is only real if the capped value is what the mirror shader reads
+	var car: CarLod = _car()
+	CarMaterials.apply(car)
+	var tex := ImageTexture.create_from_image(Image.create(4, 4, false, Image.FORMAT_RGB8))
+	CarMaterials.set_reflection(car, tex, 0.5, 2.5, 0.0)
+	var paint: StandardMaterial3D = _material(car, "M_Paint")
+	var mirror: ShaderMaterial = paint.next_pass as ShaderMaterial if paint != null else null
+	check(mirror != null, "paint has no mirror pass")
+	if mirror != null:
+		check(is_equal_approx(float(mirror.get_shader_parameter("blur")), CarMaterials.REFLECTION_BLUR_MAX), "mirror blur not capped")
+	car.free()
+
+
+func test_glass_tint_and_specular_reach_glass_material() -> void:
+	var car: CarLod = _car()
+	CarMaterials.apply(car)
+	var glass: StandardMaterial3D = _material(car, "M_Glass")
+	check(glass != null and is_equal_approx(glass.albedo_color.a, CarMaterials.GLASS_TINT.a), "glass alpha is not GLASS_TINT.a")
+	check(glass != null and is_equal_approx(glass.metallic_specular, CarMaterials.GLASS_SPECULAR), "glass specular is not GLASS_SPECULAR")
+	car.free()

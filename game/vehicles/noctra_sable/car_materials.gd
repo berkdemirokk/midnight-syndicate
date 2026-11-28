@@ -11,15 +11,16 @@ const KNOWN: PackedStringArray = [
 	"M_BrakeDisc", "M_Caliper", "M_Trim", "M_Chrome", "M_Interior", "M_Plate",
 ]
 const DEFAULT_PAINT: Color = Color(0.557, 0.059, 0.118)  ## #8E0F1E candy red from the brief
-const DEFAULT_RIM: Color = Color(0.314, 0.333, 0.369)  ## gunmetal, the GLB source albedo (was 0.08: read as black)
-const GLASS_TINT: Color = Color(0.035, 0.05, 0.06, 0.8)  ## smoked glass, a little lighter than the old near-black slab; alpha = opacity
-const GLASS_SPECULAR: float = 0.08  ## was 0.25; grazing Fresnel dominates, so the grey comes mostly from alpha (see WORLD_MATERIALS.md)
+const DEFAULT_RIM: Color = Color(0.40, 0.40, 0.41)  ## neutral gunmetal-silver (0.314, 0.333, 0.369 had a blue bias baked in; 0.08 read as black)
+const GLASS_TINT: Color = Color(0.035, 0.05, 0.06, 0.62)  ## smoked glass, a little lighter than the old near-black slab; alpha = opacity
+const REFLECTION_BLUR_MAX: float = 1.6  ## mip cap on the street mirror: 2.5 smeared the paint reflections into flat bands (2026-11-28 carpaint)
+const GLASS_SPECULAR: float = 0.2  ## was 0.08 (carpaint 2026-11-28): real window reflections (0.25 read as a white plate)
 const GLASS_RIM: float = 0.9  ## rim light on the edges of the glass: the Fresnel edge that hints the interior (0.45 was barely visible)
 const FINISH_SOLID: int = 0
 const FINISH_METALLIC: int = 1
 const FINISH_PEARL: int = 2
 const DEFAULT_FINISH: int = FINISH_METALLIC
-const PAINT_METALLIC: float = 0.55  ## metallic finish; solid uses 0.0, pearl PAINT_PEARL_METALLIC
+const PAINT_METALLIC: float = 0.32  ## metallic finish; solid uses 0.0, pearl PAINT_PEARL_METALLIC
 const PAINT_PEARL_METALLIC: float = 0.6
 const PAINT_PEARL_RIM: float = 0.35  ## pearl sheen at grazing angles (no iridescence in StandardMaterial3D on Godot 4.7)
 const PAINT_ROUGHNESS: float = 0.3  ## base; the flake roughness map (0.67..1.0 red) gives 0.16..0.24: a tight lobe, so night lamps make crisp highlights instead of a pink wash
@@ -31,7 +32,7 @@ const PAINT_FLAKE_TILING: float = 48.0  ## fine tiling of the 512 px flake norma
 const RAIN_BEAD_SCALE: float = 0.2  ## bead normal strength on wet paint (0.4 glittered like sand in the race view)
 const RAIN_BEAD_TILING: float = 1.5  ## repeats per metre: beads of 5 to 20 mm (2.4 read as sand)
 const RAIN_PAINT_ROUGHNESS: float = 0.16  ## a wet clear coat is glossier than a dry one
-const RIM_ROUGHNESS: float = 0.34  ## times the brushed map (0.55..1.0): streaked satin metal
+const RIM_ROUGHNESS: float = 0.28  ## times the brushed map (0.55..1.0): streaked satin metal, a crisper streak
 const RIM_ANISOTROPY: float = 0.75  ## stretched highlight across the brushing
 const TIRE_ROUGHNESS: float = 0.92  ## rubber: matte, with sidewall variation from the map
 const TRIM_ROUGHNESS: float = 0.42  ## satin black plastic
@@ -46,7 +47,8 @@ const CARBON_CLEAR: float = 0.6
 const CARBON_CLEAR_ROUGHNESS: float = 0.2
 const CARBON_TILING: float = 10.0  ## repeats per metre of the 16-tow weave: a tow of 6 mm, twice life size so it reads at 3 m
 const CARBON_WEAVE_SCALE: float = 0.6  ## weave normal strength under the clear coat
-const REAR_REST: float = 1.8  ## rear lamp emission multiplier at rest: above the glow threshold (1.3), so running lights bloom at night
+const REAR_REST: float = 1.4  ## rear lamp emission multiplier at rest: just above the glow threshold (1.3), so running lights bloom at night
+const LENS_SMOKE: Color = Color(0.42, 0.42, 0.44)  ## tail lens albedo: unlit LED segments read as smoked plastic, lit ones add the glow
 const REAR_BRAKE: float = 5.0  ## rear lamp emission multiplier while braking
 ## Surfaces of these materials use the mesh's vertex colours when it has them: the licensed cars carry every part's
 ## own colour there (assets_src/pipeline/prepare_vehicle.py, VC_TARGETS), so one material shows chrome, amber lamps,
@@ -142,7 +144,7 @@ static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5, bl
 			mirror.shader = load("res://shaders/car_reflection.gdshader")
 			mirror.set_shader_parameter("pano", pano)
 			mirror.set_shader_parameter("strength", spec[1])
-			mirror.set_shader_parameter("blur", spec[2])
+			mirror.set_shader_parameter("blur", minf(spec[2], REFLECTION_BLUR_MAX))
 			mirror.set_shader_parameter("highlight", highlight)
 			m.next_pass = mirror)
 
@@ -190,7 +192,7 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.normal_scale = TRIM_GRAIN_SCALE
 		"M_Rim":
 			m.albedo_color = DEFAULT_RIM
-			m.metallic = 0.5  # full metal mirrored the day sky: rims read bright blue (0.8 still did, day capture 2026-11-27)
+			m.metallic = 0.75  # 0.5 since the day sky mirrored blue; the day ground half is street-dark now (2026-11-28)
 			m.roughness = RIM_ROUGHNESS
 			m.roughness_texture = _tex_file("car_brushed_roughness.png")
 			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
@@ -226,7 +228,7 @@ static func _build(nm: String, src: StandardMaterial3D, paint: Color, finish: in
 			m.emission = Color(1.0, 0.102, 0.102)
 			m.emission_energy_multiplier = REAR_REST
 			if tail_atlas:  # day picture as albedo, the lit picture times the red as the glow
-				m.albedo_color = Color.WHITE
+				m.albedo_color = LENS_SMOKE
 				m.albedo_texture = _tex_file("tail_atlas_day.jpg")
 				m.emission_texture = _tex_file("tail_atlas_lit.jpg")
 				m.emission_operator = BaseMaterial3D.EMISSION_OP_MULTIPLY
@@ -275,6 +277,7 @@ static func _tyre_photo(m: StandardMaterial3D, diameter: float) -> StandardMater
 	m.normal_enabled = true
 	m.normal_texture = _tex_file("car_tyre_face_normal.png")
 	m.normal_scale = 1.0
+	m.metallic_specular = 0.25  # the dusty grey-blue sheen on day sidewalls was grazing specular, not the albedo
 	m.uv1_triplanar = true
 	m.uv1_triplanar_sharpness = 8.0  # hard switch between sidewall and tread projections
 	var k: float = 1.0 / maxf(diameter, 0.1)

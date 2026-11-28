@@ -4,7 +4,8 @@ extends "res://tests/test_case.gd"
 
 const TRACK: String = "res://world/istanbul_bogaz/istanbul_bogaz.tscn"
 const ROAD_HALF_WIDTH_M: float = 7.0
-const HOUSE_MAX_TRIS: int = 24
+const HOUSE_MAX_TRIS: int = 130  ## 24 for the photo body plus about 100 for the 3D Storefront (frames, mullions, door, reveals)
+const ROW_MAX_SURFACES: int = 5  ## up to 2 pictures, the storefront glass of each, and one stone/metal trim
 
 
 func _populate(tod: String) -> Array:
@@ -33,11 +34,35 @@ func test_houses_fill_the_frontages_outside_the_corridor() -> void:
 			tris += (mi.mesh.surface_get_arrays(s)[Mesh.ARRAY_VERTEX] as PackedVector3Array).size() / 3
 		houses += int(row.get_meta("houses"))
 		check(tris <= HOUSE_MAX_TRIS * int(row.get_meta("houses")), "%s has %d triangles" % [row.name, tris])
-		check(mi.mesh.get_surface_count() <= 2, "%s has %d surfaces" % [row.name, mi.mesh.get_surface_count()])
+		check(mi.mesh.get_surface_count() <= ROW_MAX_SURFACES, "%s has %d surfaces" % [row.name, mi.mesh.get_surface_count()])
 		check(absf(track.get_lateral_offset(row.global_position)) >= ROAD_HALF_WIDTH_M,
 				"%s stands in the race corridor" % row.name)
 	metric("rows", pf._buildings.size())
 	metric("houses", houses)
+	await cleanup([track])
+
+
+## Every row has a 3D ground floor: storefront glass (room behind it) and stone/metal trim, and the photo face starts
+## above the shop band.
+func test_rows_have_3d_storefronts() -> void:
+	var made: Array = await _populate("day")
+	var track: Track = made[0]
+	var pf: PhotoFronts = made[1]
+	var glass_rows: int = 0
+	var trim_rows: int = 0
+	for row: Node3D in pf._buildings:
+		var mesh: Mesh = (row as MeshInstance3D).mesh
+		for s: int in mesh.get_surface_count():
+			var m: ShaderMaterial = mesh.surface_get_material(s) as ShaderMaterial
+			if m != null and m.shader == PhotoFronts.GLASS_SHADER_3D:
+				glass_rows += 1
+				check((mesh.surface_get_arrays(s)[Mesh.ARRAY_TEX_UV2] as PackedVector2Array).size() > 0, "%s glass has no window size (UV2)" % row.name)
+			elif m != null and m.shader == PhotoFronts.TRIM_SHADER:
+				trim_rows += 1
+	check(glass_rows >= pf._buildings.size(), "only %d glass surfaces for %d rows" % [glass_rows, pf._buildings.size()])
+	check(trim_rows == pf._buildings.size(), "trim on %d of %d rows" % [trim_rows, pf._buildings.size()])
+	for gl: ShaderMaterial in pf._shop_glass:
+		check(is_equal_approx(float(gl.get_shader_parameter("night")), 0.0), "shop interiors use the night picture by day")
 	await cleanup([track])
 
 

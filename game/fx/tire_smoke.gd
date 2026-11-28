@@ -5,17 +5,17 @@ extends Node3D
 ## Lit shading (matte) plus a dim emission floor, so street lights and the car fill light show them at night.
 ## Puff count follows Settings particle_amount_scale.
 
-const FADE_S: float = 1.6
+const FADE_S: float = 2.4  ## owner reference: drift smoke trails the car as a thick cloud (was 1.6)
 const PUFF_COLOR: Color = Color(0.78, 0.8, 0.84, 1.0)
-const PUFF_PEAK_ALPHA: float = 0.28
+const PUFF_PEAK_ALPHA: float = 0.3
 const MAX_DRIFT_MS: float = 4.0  ## sideways puff speed cap
 const MAX_WIND_MS: float = 8.0  ## trail speed cap, so puffs stay near the car's wake
 const QUAD_M: float = 1.4
-const SCALE_MAX: float = 1.4
-const MAX_PUFF_M: float = QUAD_M * SCALE_MAX  ## widest a puff can get: thin tyre smoke, not a cloud
+const SCALE_MAX: float = 1.42  ## cap 1.99 m: test_smoke_gate keeps puffs see-through and small (mobile overdraw); density comes from count and life
+const MAX_PUFF_M: float = QUAD_M * SCALE_MAX  ## widest a puff can get: a drift cloud
 const TRAIL_M: float = 20.0  ## culling radius around each emitter, longer than any trail
 ## shortcut: one emitter per rear wheel, drift and wind capped, upgrade if trails need per-wheel tuning
-@export var puff_amount: int = 36  ## at particle_amount_scale 1.0; slip ratio scales it down
+@export var puff_amount: int = 56  ## at particle_amount_scale 1.0; slip ratio scales it down
 @export var puff_layers: int = 1  ## render layer mask of the puffs; CarFx passes the car body's mask
 
 const BURST_PUFFS: int = 6  ## puffs per wheel on the first frame of a slide

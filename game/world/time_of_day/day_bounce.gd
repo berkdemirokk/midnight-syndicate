@@ -151,7 +151,7 @@ func _kerbs(track: Track) -> void:
 ## Warm shadowless fill from the side opposite the sun, low, so shaded walls get warm bounce instead of flat blue.
 func _fill(sun_dir: Vector3) -> void:
 	var sw: Vector3 = sun_dir
-	var dir: Vector3 = Vector3(-sw.x, -0.35, -sw.z).normalized()
+	var dir: Vector3 = Vector3(sw.x, -0.35, sw.z).normalized()  # travels toward the sun side: lands on the faces turned away from it
 	var fill := DirectionalLight3D.new()
 	fill.name = "DayFill"
 	fill.light_color = FILL_COLOUR

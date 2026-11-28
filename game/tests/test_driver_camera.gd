@@ -191,7 +191,8 @@ func test_chase_camera_behind_car_after_five_seconds() -> void:
 	var to_car: Vector3 = (car_p - cam_p).normalized()
 	var view: Vector3 = -_cam.global_transform.basis.z
 	var angle_deg: float = rad_to_deg(acos(clampf(to_car.dot(view), -1.0, 1.0)))
-	check_range(angle_deg, 0.0, 10.0, "car angle from view centre (deg)")
+	# 2026-11-28 night diet: look_ahead 9 m puts the car about 11 deg off centre; 12 deg still keeps it on screen
+	check_range(angle_deg, 0.0, 12.0, "car angle from view centre (deg)")
 	metric("speed_kmh_after_5s", _car.speed_kmh)
 	metric("camera_distance_m", dist)
 	metric("camera_height_above_car_m", cam_p.y - car_p.y)
@@ -221,6 +222,7 @@ func test_fov_grows_with_speed_and_nitro() -> void:
 	var fov_kick: float = _cam.fov - _cam.compute_base_fov()
 	metric("fov_nitro_kick_deg", fov_kick)
 	check(fov_kick > 4.0, "FOV rises further while nitro is active (deg)")
+	check(_cam.fov <= _cam.fov_cap_deg() + 0.001, "FOV stays under the phone cap at speed plus nitro")
 	Input.action_release("nitro")
 	await frames(180)
 	check(_cam.nitro_kick < 0.05, "nitro kick returns to 0 after nitro release")
@@ -466,16 +468,16 @@ func test_nitro_ignition_kicks_camera_back_and_eases_out() -> void:
 	_car.nitro_started.emit()
 	await frames(1)
 	metric("kick_back_at_ignition_m", _cam.kick_back_m)
-	check_range(_cam.kick_back_m, 0.39, 0.41, "nitro ignition pushes the camera back 0.4 m")
-	await frames(24)  # 0.4 s is half of nitro_kick_back_s
+	check_range(_cam.kick_back_m, 0.84, 0.86, "nitro ignition pushes the camera back 0.85 m")
+	await frames(24)  # 0.4 s is about 0.36 of nitro_kick_back_s
 	metric("kick_back_at_half_m", _cam.kick_back_m)
-	check_range(_cam.kick_back_m, 0.15, 0.25, "push-back is half eased at half the time")
+	check_range(_cam.kick_back_m, 0.56, 0.63, "push-back eases on a smoothstep (0.3 eased at 0.36 of its time)")
 	await frames(60)
 	check(absf(_cam.kick_back_m) < 0.001, "push-back fully eased after nitro_kick_back_s")
 	await _finish()
 
 
-func test_speed_lowers_camera_and_adds_shake_above_180() -> void:
+func test_speed_lowers_camera_and_adds_shake_above_150() -> void:
 	_rig(true)
 	await _settle()
 	await frames(2)
@@ -500,7 +502,7 @@ func test_speed_lowers_camera_and_adds_shake_above_180() -> void:
 	mean /= SHAKE_SAMPLES
 	metric("speed_shake_mean_m", mean)
 	metric("speed_shake_peak_m", peak)
-	check(mean > 0.002, "speed shake is visible above 180 km/h without trauma")
+	check(mean > 0.002, "speed shake is visible above 150 km/h without trauma")
 	check(peak <= _cam.speed_shake_m * 1.2 + 0.0005, "speed shake stays subtle (peak %.4f m)" % peak)
 	await _finish()
 
@@ -532,6 +534,23 @@ func test_side_wall_limits_camera_swing() -> void:
 	var xf: Transform3D = _car.get_global_transform_interpolated()
 	var lateral: float = (_cam.global_position - xf.origin).dot(xf.basis.x)
 	check(lateral < 1.05, "camera is not inside the side wall (lateral %.2f m)" % lateral)
+	await _finish()
+
+
+func test_nitro_ignition_bursts_post_blur_then_settles() -> void:
+	var fx := PostFx.new()
+	_nodes.append(add(fx))
+	await frames(2)
+	fx.set_speed(0.0, false)
+	await frames(2)
+	fx.set_speed(0.0, true)
+	await frames(1)
+	var mat: ShaderMaterial = fx._rect.material as ShaderMaterial
+	var shown: float = mat.get_shader_parameter("blur")
+	metric("blur_at_ignition", shown)
+	check(shown > fx.get_blur() + 0.3, "nitro ignition adds a blur burst on top of the eased blur")
+	await frames(60)
+	check(absf(float(mat.get_shader_parameter("blur")) - fx.get_blur()) < 0.01, "blur burst gone about 1 s after ignition")
 	await _finish()
 
 

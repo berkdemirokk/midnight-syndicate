@@ -8,12 +8,13 @@ const SPEC_PATH: String = "res://vehicles/specs/noctra_sable.tres"
 var SKILLS: PackedFloat32Array = PackedFloat32Array([1.0, 0.97, 0.94, 0.91, 0.88, 0.85, 0.9, 0.87])
 const HIST_TICKS: int = 180  ## last 3 s at 60 Hz
 const MAX_TICKS: int = 60 * 200
+const STATE_FINISHED: int = 3  ## RaceManager.State.FINISHED, untyped to keep race_manager.gd out of the compile
 const OUT_REL: String = "../evidence/logs/stuck_events.json"
 
 
 class Monitor extends Node:
-	var city: CityBuilder
-	var manager: RaceManager
+	var city: Node  ## untyped: a typed CityBuilder compiles city_builder.gd before the Settings autoload exists
+	var manager: Node
 	var cars: Array[ArcadeCar] = []
 	var drivers: Array[AIDriver] = []
 	var hist: Array = []
@@ -76,7 +77,7 @@ class Monitor extends Node:
 				last_stuck[i] = st
 				events.append(_stuck_event(i))
 		touching = now_touch
-		if manager.state == RaceManager.State.FINISHED or tick >= MAX_TICKS:
+		if manager.state == STATE_FINISHED or tick >= MAX_TICKS:
 			_finish_run()
 
 	func _stuck_event(i: int) -> Dictionary:
@@ -132,7 +133,7 @@ class Monitor extends Node:
 	func _finish_run() -> void:
 		done = true
 		var summary: Dictionary = {
-			"ticks": tick, "race_time_s": snappedf(manager.race_time, 0.01), "finished_state": manager.state == RaceManager.State.FINISHED,
+			"ticks": tick, "race_time_s": snappedf(manager.race_time, 0.01), "finished_state": manager.state == STATE_FINISHED,
 			"stuck_events": events.size(), "car_contacts": contacts.size(), "teleports_over_5m_per_tick": teleports,
 			"min_upright_y": snappedf(min_up_y, 0.0001), "laps": laps, "results": results,
 			"stuck_per_car": Array(last_stuck),
@@ -174,9 +175,9 @@ func _start() -> void:
 			set_args.append(a.trim_prefix("--set="))
 		if a == "--order=b":
 			reversed_order = true
-	var city: CityBuilder = (load(SCENE_PATH) as PackedScene).instantiate() as CityBuilder
+	var city: Node = (load(SCENE_PATH) as PackedScene).instantiate()
 	root.add_child(city)
-	var manager := RaceManager.new()
+	var manager: Node = load("res://race/race_manager.gd").new()
 	manager.total_laps = 1
 	root.add_child(manager)
 	var cars: Array[ArcadeCar] = []

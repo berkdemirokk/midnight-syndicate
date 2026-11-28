@@ -1,0 +1,26 @@
+{
+  "listen": "192.168.111.15:24711",
+  "server": "192.168.111.15:24710",
+  "one_way_delay_ms": 40.0,
+  "jitter_ms": 0.0,
+  "loss": 0.0,
+  "dup": 0.0,
+  "clients_seen": 2,
+  "max_queue": 13,
+  "directions": {
+    "to_server": {
+      "in": 2284,
+      "sent": 2284,
+      "lost": 0,
+      "duplicated": 0,
+      "bytes_in": 406148
+    },
+    "to_client": {
+      "in": 2706,
+      "sent": 2706,
+      "lost": 0,
+      "duplicated": 0,
+      "bytes_in": 491788
+    }
+  }
+}
