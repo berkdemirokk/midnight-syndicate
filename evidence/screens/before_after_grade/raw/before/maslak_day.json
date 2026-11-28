@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 0.999,
+  "luma_min": 0.0,
+  "name": "maslak_day",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 326,
+    "draw_calls_min": 302,
+    "driver": "vulkan",
+    "fps": 303.062,
+    "frame_ms_avg": 3.3,
+    "frame_ms_p95": 4.278,
+    "frame_ms_p99": 4.63,
+    "frames": 60,
+    "objects": 19226,
+    "os": "Windows",
+    "primitives": 315914,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 725.027,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-grade/evidence/screens/tod_tracks/maslak_day.png",
+  "preset": "high",
+  "scenario": "tod_tracks"
+}

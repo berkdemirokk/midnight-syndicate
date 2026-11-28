@@ -286,6 +286,7 @@ func _build_race() -> void:
 	_collect_road()
 	_tag_mirror_skipped()
 	_ensure_environment()
+	TrackGrade.apply_to_world(_world, config_used.track_scene, tod.id)  # per-track colour grade on the hour's preset
 	_spawn_cars()
 	race = RaceManager.new()
 	race.name = "RaceManager"

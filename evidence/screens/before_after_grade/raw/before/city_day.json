@@ -1,0 +1,33 @@
+{
+  "image_size": [
+    1920,
+    1061
+  ],
+  "luma_max": 1.0,
+  "luma_min": 0.0,
+  "name": "city_day",
+  "perf": {
+    "adapter": "NVIDIA GeForce RTX 5060 Ti",
+    "draw_calls": 373,
+    "draw_calls_min": 372,
+    "driver": "vulkan",
+    "fps": 304.147,
+    "frame_ms_avg": 3.288,
+    "frame_ms_p95": 4.045,
+    "frame_ms_p99": 4.604,
+    "frames": 60,
+    "objects": 18689,
+    "os": "Windows",
+    "primitives": 355031,
+    "renderer": "mobile",
+    "scaling_3d_scale": 1.0,
+    "video_mem_mb": 729.132,
+    "viewport_size": [
+      1920,
+      1061
+    ]
+  },
+  "png": "C:/Users/berk/car race/.claude/worktrees/wp-grade/evidence/screens/tod_tracks/city_day.png",
+  "preset": "high",
+  "scenario": "tod_tracks"
+}
