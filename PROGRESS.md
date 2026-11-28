@@ -280,8 +280,41 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - CI iOS compile check: OPEN, no run id (build-ios.yml runs on `ios-check-*` tags only; the worker did not push).
 - Lead review (Opus): key `shader_baker/enabled` found 4x in Godot_v4.7.2-stable_win64.exe. Local headless `--export-release "iOS"` with a dummy team id (as CI's sed does) finished with warnings only (`.ipa` needs macOS; pre-existing boot_splash warning), no Shader Baker error, so the CI headless export is not broken by the key; the bake itself is likely skipped headless. Full suite 572 tests, 0 failed, exit 0. Preset edit approved by the lead.
 
+## Session 10 — 2026-11-28 (quality rescue, research sprint, production sprint)
 
-## Session 10 — 2026-11-28 (STREET EMPIRE brand and UI overhaul, separate UI studio session)
+Owner rejected the RC quality. Director Opus 5.5, Haiku 5.5 workers in sparse worktrees, Haiku review + Opus gate per package.
+Branch release/rc-2026-11-28, head after this session in git log (pushed). Dev PC numbers only (RTX 5060 Ti).
+
+What really changed (all merged after review, full suite green at each checkpoint):
+- Environment (lead): 3D storefronts replace the photo shop band on all three tracks (7bfe241, per-shop night light
+  eb6abcd); brick/concrete side walls on Wharf/Maslak (f433e35); CC0 Poly Haven street furniture in front of the rows
+  (2528ba8, 035fe81); erguvan (Judas tree) rows on the Ortakoy pavements and the MultiMesh-at-origin cull bug fixed
+  (8537f42f); erguvan petals (759e5f0a); night interior parallax on photo facades (162e6af3); capture runs never
+  auto-pause (6ec3ce4).
+- Cars: 11 -> 24 licensed vinish.dev CC BY 4.0 cars (fleetD 4, fleetC 3, fleetF 6 classics); 9 candidates rejected as
+  re-skins of shipped bodies (geometry screen docs/design/FLEET_SCREEN_ROUND2.md); 3 police cars; brake disc+caliper
+  merged (LOD0 21-23 surfaces); day paint deeper red (1395367d); panorama slides over the clear coat (ea254937).
+- Gameplay: speed feel (182 km/h at 8 s, was 159), AI racing line/overtake/defence on, 10 reverse events + chapters,
+  pursuit menu/aggression/hiding spots, touch steer 4 ticks to lock (was 11), steer-assist mode, drift exit push,
+  reduced-motion setting, denser drift smoke.
+- UI/audio: main menu with 3D car + loading screen, HUD, results, settings (5 tabs), layered engine wired, per-wheel
+  tyre audio, CC0 siren, music ducking (0e182fc3).
+- Perf/release: perf card for iPhone sessions, pipeline warm-up, iOS Shader Baker, App Store metadata draft;
+  ios-check-7 and ios-check-8 green (build only).
+- Research: docs/research/lookdev/ (10 sourced notes + PRODUCTION_PLAN.md, Opus-audited).
+- Economy: reward table x1.96 overall (7840/4704/2352/784) for the 24-car roster; economy_sim 1.58 (band 1.5-2.0).
+
+Evidence: full suite 601 tests, 0 failed (after fleetF); asset manifest 734 records, 0 failing; final pass
+(tod_tracks 3x3, ortakoy_benchmark, 6 car studios, 3 reels, draw_breakdown 3 presets x 2 tracks, garage/HUD/menu)
+0 errors except one blank LOD2 frame in car_studio_kartal. Bogaz High peak 411 draws / 427k primitives (budget 500/450k).
+
+Not done / blockers: 30 cars (24; vinish.dev has no more distinct realistic bodies; the rest needs owner Sketchfab
+downloads or modelling); internet multiplayer (needs an owner account: EOS, Game Center or Cloudflare); no iPhone
+measurement; nobody listened to the audio; no human playtest; Noctra Tayfun/Cyclon silhouette resembles a famous
+rear-engine sports car (owner to judge brand risk); quality is clearly better but not proven equal to NFS/Asphalt.
+
+
+## Session 10-UI — 2026-11-28 (STREET EMPIRE brand and UI overhaul, parallel UI studio session)
 - Owner brief: rename the product to **STREET EMPIRE — RULE THE CITY** and redesign every player-facing screen.
   Branch `feature/street-empire-ui-overhaul` (own worktree), draft PR https://github.com/berkdemirokk/midnight-syndicate/pull/10.
   Lead Opus 5.5; Haiku workers (HUD, garage, career, remaining screens) with lead review rounds and one independent
