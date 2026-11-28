@@ -886,6 +886,9 @@ func _on_race_finished(results: Array[Dictionary]) -> void:
 		if bool(r.get("is_player", false)):
 			rewards = GameState.record_result(config_used.event_id, float(r.get("total_time", 0.0)), int(r.get("position", 0)), float(r.get("score", -1.0)))
 	rewards["mode"] = config_used.mode  # the results screen labels the mode and shows the drift score
+	var pursuit_node: PursuitMode = _world.get_node_or_null("PursuitMode") as PursuitMode
+	if pursuit_node != null and pursuit_node.evade_bonus() > 0:
+		rewards["evade_bonus"] = pursuit_node.evade_bonus()  # cash already paid on ESCAPED: shown, not added again
 	if player_ai != null:
 		player_ai.set_racing(false)
 	if camera != null:

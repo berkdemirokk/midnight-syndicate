@@ -43,7 +43,7 @@ func reset() -> void:
 
 ## Negative or invalid distance is ignored, not treated as a nearby officer.
 ## INF means no active police is within sensing range.
-func tick(delta: float, nearest_police_m: float, player_speed_kmh: float) -> void:
+func tick(delta: float, nearest_police_m: float, player_speed_kmh: float, cooldown_mult: float = 1.0) -> void:
 	if phase != Phase.CHASE and phase != Phase.COOLDOWN:
 		return
 	if not is_finite(delta) or delta <= 0.0 or is_nan(nearest_police_m) or nearest_police_m < 0.0 or not is_finite(player_speed_kmh):
@@ -56,7 +56,7 @@ func tick(delta: float, nearest_police_m: float, player_speed_kmh: float) -> voi
 		phase = Phase.CHASE
 		cooldown_s = 0.0
 	if phase == Phase.COOLDOWN:
-		cooldown_s += delta
+		cooldown_s += delta * maxf(cooldown_mult, 0.0)  ## a hiding spot fills the escape gauge faster
 		if cooldown_s >= ESCAPE_TIME_S:
 			phase = Phase.ESCAPED
 		return

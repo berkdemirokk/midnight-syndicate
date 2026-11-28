@@ -272,6 +272,8 @@ func show_results(results: Array[Dictionary], rewards: Dictionary) -> void:
 	_mode = str(rewards.get("mode", RaceConfig.MODE_RACE))
 	_title.set_text(I18n.t("results.title") if _mode == RaceConfig.MODE_RACE else "%s · %s" % [I18n.t("results.title"), I18n.t("mode.%s" % _mode)])
 	_subtitle.set_text(I18n.t("results.won") if player_won else I18n.t("results.done"))
+	if int(rewards.get("evade_bonus", 0)) > 0:
+		_subtitle.set_text("%s  ·  %s" % [_subtitle.text, I18n.t("pursuit.evade") % int(rewards["evade_bonus"])])
 	for row: Array in _row_texts:
 		for t: HudText in row:
 			_all_texts.erase(t)

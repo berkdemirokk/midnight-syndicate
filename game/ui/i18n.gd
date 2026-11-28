@@ -278,6 +278,12 @@ const DICT: Dictionary = {
 	"pursuit.goal.survive": {"tr": "AYAKTA KAL %d:%02d", "en": "SURVIVE %d:%02d"},
 	"pursuit.gauge.bust": {"tr": "YAKALANMA", "en": "BUST"},
 	"pursuit.gauge.escape": {"tr": "KAÇIŞ", "en": "ESCAPE"},
+	"menu.pursuit": {"tr": "POLİS TAKİBİ", "en": "POLICE PURSUIT"},
+	"pursuit.select.title": {"tr": "POLİS TAKİBİ", "en": "POLICE PURSUIT"},
+	"pursuit.select.sub": {"tr": "POLİS PEŞİNDE  -  KAÇ VEYA AYAKTA KAL", "en": "POLICE ON YOUR TAIL  -  ESCAPE OR SURVIVE"},
+	"pursuit.hide.on": {"tr": "SAKLANMA NOKTASI: KAÇIŞ x2", "en": "HIDING SPOT: ESCAPE x2"},
+	"pursuit.hide.seen": {"tr": "SAKLANMA NOKTASI: POLİS GÖRÜYOR", "en": "HIDING SPOT: POLICE IN SIGHT"},
+	"pursuit.evade": {"tr": "KAÇIŞ BONUSU +%d", "en": "EVADE BONUS +%d"},
 }
 
 const ORDINAL_SUFFIX_KEYS: Dictionary = {1: "ord.st", 2: "ord.nd", 3: "ord.rd"}

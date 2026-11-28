@@ -8,6 +8,8 @@ const EVENT_SELECT_SCENE: String = "res://ui/menus/event_select.tscn"
 const GARAGE_SCENE: String = "res://ui/garage/garage.tscn"
 const SETTINGS_SCENE: String = "res://ui/menus/settings_menu.tscn"
 const RECORDS_SCENE: String = "res://ui/menus/records_screen.tscn"
+const PURSUIT_SELECT_SCENE: String = "res://race/pursuit/pursuit_select.tscn"
+const PURSUIT_TOUCH_H: float = 88.0  ## touch target of the pursuit button
 const ONBOARDING_SCENE: String = "res://ui/menus/onboarding.tscn"
 const TAGLINE_PX: int = 20
 const VERSION_PX: int = 16
@@ -28,6 +30,7 @@ var _holder: Control
 var _backdrop: MenuBackdrop
 var _race_btn: Button
 var _garage_btn: Button
+var _pursuit_btn: Button
 var _records_btn: Button
 var nav: Callable = Router.goto  ## scene change; tests swap in a recorder so the runner scene stays
 var _settings_btn: Button
@@ -110,6 +113,8 @@ func _build_foreground() -> void:
 	_race_btn = _menu_button(menu, "menu.race", _on_race)
 	_race_btn.theme_type_variation = &"PrimaryButton"
 	_garage_btn = _menu_button(menu, "menu.garage", _on_garage)
+	_pursuit_btn = _menu_button(menu, "menu.pursuit", _on_pursuit)
+	_pursuit_btn.custom_minimum_size.y = maxf(PURSUIT_TOUCH_H, MSTheme.button_h())
 	_records_btn = _menu_button(menu, "menu.records", _on_records)
 	_settings_btn = _menu_button(menu, "menu.settings", _on_settings)
 	# Experimental LAN online: only with NetConfig.ENABLED or --experimental-online (see docs/design/ONLINE_LAN.md).
@@ -189,7 +194,7 @@ func _menu_button(parent: Container, key: String, handler: Callable) -> Button:
 
 ## The column slides in from the left, button by button (skipped when the tree is not running a real frame loop).
 func _play_intro() -> void:
-	var items: Array[Control] = [_race_btn, _garage_btn, _records_btn, _settings_btn, _quit_btn]
+	var items: Array[Control] = [_race_btn, _garage_btn, _pursuit_btn, _records_btn, _settings_btn, _quit_btn]
 	for i: int in items.size():
 		var b: Control = items[i]
 		b.modulate.a = 0.0
@@ -247,6 +252,11 @@ func _on_race() -> void:
 
 func _on_garage() -> void:
 	_open(GARAGE_SCENE)
+
+
+## Police pursuit runs: the select screen lists the open pursuit runs.
+func _on_pursuit() -> void:
+	_open(PURSUIT_SELECT_SCENE)
 
 
 func _on_online() -> void:

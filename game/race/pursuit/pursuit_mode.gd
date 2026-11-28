@@ -34,6 +34,13 @@ const ROADBLOCK_AHEAD_M: PackedFloat32Array = [150.0, 175.0, 200.0]
 const ROADBLOCK_COOLDOWN_S: float = 30.0
 const ROADBLOCK_PASSED_M: float = 40.0  ## the player this far past the barriers removes them
 const ESCAPE_REWARD_PER_HEAT: int = 200  ## cash on ESCAPED, through GameState.add_cash
+const BOXERS_HEAT: int = 4  ## from this heat, the first two police cars box the player (one each side, ahead)
+const BOX_AHEAD_M: float = 12.0  ## m in front of the player the boxing cars hold
+const RAM_HEAT: int = 5  ## from this heat, a police car directly behind may ram
+const RAM_RANGE_M: float = 6.0  ## a police car this close behind the player can ram
+const RAM_LATERAL_M: float = 2.5  ## and no further than one car width to the side: an adjacent lane does not ram
+const RAM_COOLDOWN_S: float = 6.0
+const RAM_DELTA_V_MS: float = 3.0  ## a ram adds this much speed to the player's car, as an impulse (no teleport)
 
 var state: PursuitState = PursuitState.new()
 var police: Array[ArcadeCar] = []
@@ -56,6 +63,8 @@ var _flash_t: float = 0.0
 var _hints: Dictionary = {}  ## police car -> last track progress, search hint
 var _had_police: bool = false  ## a police car existed in this chase: no cooldown or escape before that
 var _survive_s: float = 0.0  ## survive goal of this race (EventCatalog "survive_s"); 0 = escape goal
+var _ram_cd: float = 0.0  ## s until the next ram is allowed
+var _box: Array[ArcadeCar] = [null, null]  ## boxing cars [left, right], by reference: a cull on one side keeps the other
 
 
 ## Police cars allowed at a heat level: 1 / 2 / 2 / 3 / 3 for heat 1..5, none at heat 0.
@@ -68,6 +77,24 @@ static func max_police_for_heat(heat: int) -> int:
 		4, 5:
 			return 3
 	return 0
+
+
+## Police cars that box the player at a heat level: 2 from BOXERS_HEAT, else none.
+static func boxers_for_heat(heat: int) -> int:
+	return 2 if heat >= BOXERS_HEAT else 0
+
+
+## Box side of the police car at this index in the police list: -1 left, +1 right, 0 chases.
+static func boxer_side(heat: int, index: int) -> int:
+	if index >= boxers_for_heat(heat):
+		return 0
+	return -1 if index == 0 else 1
+
+
+## A ram needs heat 5, the cooldown done, the car directly behind the player (behind = true), within RAM_RANGE_M and
+## within RAM_LATERAL_M to the side (lateral_m = metres off the player's centre line).
+static func can_ram(heat: int, cooldown_s: float, dist_m: float, behind: bool, lateral_m: float) -> bool:
+	return heat >= RAM_HEAT and cooldown_s <= 0.0 and behind and dist_m > 0.0 and dist_m <= RAM_RANGE_M and absf(lateral_m) <= RAM_LATERAL_M
 
 
 func setup(track: Track, race_player: ArcadeCar, race_cars: Array[ArcadeCar], race: RaceManager) -> void:
@@ -91,8 +118,10 @@ func start() -> void:
 	_active = true
 	state.start(1, _survive_s)
 	_spawn_t = 0.0
+	_ram_cd = 0.0
 	_roadblock_cd = 0.0
 	_had_police = false
+	_box = [null, null]
 	_update_hud()
 
 
@@ -110,6 +139,7 @@ func step(delta: float) -> void:
 		return
 	_spawn_t = maxf(_spawn_t - delta, 0.0)
 	_roadblock_cd = maxf(_roadblock_cd - delta, 0.0)
+	_ram_cd = maxf(_ram_cd - delta, 0.0)
 	_player_s = _track.get_progress(player.global_position, _player_s)
 	cull()
 	# Spawn before the rules tick, so the first police car exists when the chase is judged (no false escape on GO).
@@ -121,22 +151,48 @@ func step(delta: float) -> void:
 	var nearest: float = INF
 	for c: ArcadeCar in police:
 		nearest = minf(nearest, c.global_position.distance_to(player.global_position))
-	state.tick(delta, nearest, player.speed_kmh)
+	var spot: int = HidingSpots.index_at(_track_scene(), _player_s, _track.length)
+	state.tick(delta, nearest, player.speed_kmh, HidingSpots.cooldown_mult(spot >= 0, _police_in_view()))
 	if state.phase == PursuitState.Phase.BUSTED or state.phase == PursuitState.Phase.ESCAPED:
 		_finish()
 		return
+	_assign_boxers()
 	for c: ArcadeCar in police:
 		var drv: PoliceDriver = c.get_node_or_null(DRIVER_NAME) as PoliceDriver
 		if drv != null:
 			drv.heat = state.heat
 			drv.skill = SKILL_BASE + SKILL_PER_HEAT * float(state.heat)
 			drv.player_s = _player_s
+			drv.box_side = _box_side_of(c)
+			drv.box_ahead_m = BOX_AHEAD_M
+	_try_ram()
 	if roadblock != null and _wrap(_player_s - roadblock.progress) > ROADBLOCK_PASSED_M:
 		roadblock.queue_free()
 		roadblock = null
 	if state.can_request_roadblock() and roadblock == null and _roadblock_cd <= 0.0:
 		try_roadblock()
 	_update_hud()
+
+
+## Keeps the boxing cars: a left and a right car while heat allows, each kept until it leaves the chase. A new car
+## fills only an empty side, so removing one car never moves the other one to the other side.
+func _assign_boxers() -> void:
+	var need: int = boxers_for_heat(state.heat)
+	for i: int in 2:
+		if i >= need or _box[i] == null or not is_instance_valid(_box[i]) or not police.has(_box[i]):
+			_box[i] = null
+	for c: ArcadeCar in police:
+		if _box[0] == null and need > 0 and c != _box[1]:
+			_box[0] = c
+		elif _box[1] == null and need > 1 and c != _box[0]:
+			_box[1] = c
+
+
+## Box side of a police car from its boxing slot: -1 left, +1 right, 0 chases.
+func _box_side_of(c: ArcadeCar) -> int:
+	if c == _box[0] and c != null:
+		return -1
+	return 1 if c == _box[1] and c != null else 0
 
 
 ## Spawns police until the heat cap is reached (no interval). Returns how many were spawned.
@@ -206,6 +262,8 @@ func cull() -> int:
 		if absf(_wrap(_progress_of(c) - _player_s)) > DESPAWN_M:
 			police.remove_at(i)
 			_hints.erase(c)
+			if _box.has(c):
+				_box[_box.find(c)] = null
 			c.queue_free()
 			removed += 1
 	return removed
@@ -224,6 +282,46 @@ func try_roadblock() -> bool:
 			_roadblock_cd = ROADBLOCK_COOLDOWN_S
 			return true
 	return false
+
+
+## A police car directly behind the player rams it at heat 5: an impulse on the player's body, then a cooldown.
+func _try_ram() -> void:
+	if state.heat < RAM_HEAT or _ram_cd > 0.0 or player == null:
+		return
+	var fwd: Vector3 = -player.global_transform.basis.z
+	fwd.y = 0.0
+	var right: Vector3 = player.global_transform.basis.x
+	right.y = 0.0
+	for c: ArcadeCar in police:
+		var off: Vector3 = player.global_position - c.global_position
+		var flat: Vector3 = Vector3(off.x, 0.0, off.z)
+		if can_ram(state.heat, _ram_cd, flat.length(), flat.dot(fwd) > 0.0, absf(flat.dot(right.normalized()))):
+			player.apply_central_impulse(flat.normalized() * player.mass * RAM_DELTA_V_MS)
+			_ram_cd = RAM_COOLDOWN_S
+			return
+
+
+## True when a police car is inside the camera frustum (the view the player has). No camera means no sight.
+func _police_in_view() -> bool:
+	if not is_inside_tree():
+		return false
+	var view: Camera3D = get_viewport().get_camera_3d()
+	if view == null:
+		return false
+	for c: ArcadeCar in police:
+		if view.is_position_in_frustum(c.global_position):
+			return true
+	return false
+
+
+## Track scene of the race this node runs in ("" for a test race with no RaceScene).
+func _track_scene() -> String:
+	var n: Node = get_parent()
+	while n != null and not (n is RaceScene):
+		n = n.get_parent()
+	if n == null or (n as RaceScene).config_used == null:
+		return ""
+	return (n as RaceScene).config_used.track_scene
 
 
 func _stop_chase() -> void:
@@ -259,9 +357,15 @@ func _update_hud() -> void:
 	else:
 		_hud.set_banner("")
 	_hud.set_goal(_goal_text())
+	_hud.set_hint(_hint_text())
 	var bust: float = state.bust_s / PursuitState.BUST_TIME_S
 	var escape: float = state.cooldown_s / PursuitState.ESCAPE_TIME_S if state.phase == PursuitState.Phase.COOLDOWN else 0.0
 	_hud.set_gauges(bust, escape, _radar_points())
+
+
+## Evade bonus of this chase: the cash paid on ESCAPED (0 until then). The results screen line reads it.
+func evade_bonus() -> int:
+	return escape_reward
 
 
 ## Survive goal of the event this race runs. The race scene keeps the RaceConfig; walk up to it (no RaceScene edit).
@@ -282,6 +386,13 @@ func _event_data() -> Dictionary:
 	if n == null or (n as RaceScene).config_used == null:
 		return {}
 	return EventCatalog.find((n as RaceScene).config_used.event_id)
+
+
+## Hiding spot hint: shown while the player is inside one. "x2" only when no police car is in view.
+func _hint_text() -> String:
+	if _track == null or HidingSpots.index_at(_track_scene(), _player_s, _track.length) < 0:
+		return ""
+	return I18n.t("pursuit.hide.seen" if _police_in_view() else "pursuit.hide.on")
 
 
 func _goal_text() -> String:
