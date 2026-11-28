@@ -203,7 +203,7 @@
       "trim": 0.6,
       "interior": 0.6,
       "underbody": 0.5,
-      "body": 0.9
+      "body": 0.8
     },
     "1": {
       "body": 0.25,

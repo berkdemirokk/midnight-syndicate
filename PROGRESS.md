@@ -256,3 +256,14 @@ Short status lives in `evidence/PROGRESS.md` (rescue package format); this is th
 - Not done: 30 cars (owner approval for downloads), car LOD0 draw calls 59 vs budget 20 per car (needs a mesh/material
   merge pass), real-device test, App Store submission, internet multiplayer, the ~40 s frame spike, human playtest of
   modes/economy, sound by ear. Full list: docs/status/MASTER_CHECKLIST.md.
+
+## Fleet C (wp/fleetC), 2026-11-28
+- Budget blocker fixed: test_car_licensed test_budgets now passes (14/14). Only decimation ratios changed in
+  assets_src/pipeline/vehicle_configs/{noctra_volta,noctra_regent,noctra_sovereign,noctra_monarch,noctra_titan}.json,
+  then rebuilt with rebuild_vehicles.py (one Blender run under gpu_run). Godot LOD tris after: volta 88095/25196/6855,
+  regent 79001/25628/6692, sovereign 77738/25089/6420, monarch 86228/24323/6092, titan 66999/19141/6797 (budgets 90000/28000/7000).
+  LOD0 materials 12-13 and surfaces 22-23 (ratchet unchanged). Known floor: body/trim LOD2 ratios stopped reducing faces, wheel ratio did.
+- Full suite 555 tests, 0 failed (before and after this fix only the budget test changed).
+- Economy: NOT applied. Five cars are not in car_catalog.gd. tools/economy_sim.py currently gives 1.56 (10 buyable cars); the
+  +five-car estimate was 2.04 against a 1.5-2.0 band. Owner decision needed (see BLOCKERS B13).
+- Quality: titan proportions fail (B14), volta front red glow open (B15). Studio renders refreshed: evidence/screens/car_studio_{volta,regent,sovereign,monarch,titan}/.

@@ -2,9 +2,9 @@
  "car_id": "noctra_regent",
  "source": "assets_src/third_party/vinish_cars/incoming2/four-door-super-saloon.glb",
  "lod0": {
-  "tris": 87603,
+  "tris": 79091,
   "tris_by_node": {
-   "body": 25393,
+   "body": 20197,
    "brake_FL": 2280,
    "brake_FR": 2280,
    "brake_RL": 2215,
@@ -12,11 +12,11 @@
    "col_body": 90,
    "exhaust": 3576,
    "glass": 4996,
-   "interior": 8236,
+   "interior": 6955,
    "lights_front": 1424,
    "lights_rear": 1106,
    "plate_rear": 4,
-   "trim": 13082,
+   "trim": 11047,
    "underbody": 1710,
    "wheel_FL": 4749,
    "wheel_FR": 4749,
@@ -214,23 +214,23 @@
   "tail_pipes": 0
  },
  "lod2": {
-  "tris": 7914,
+  "tris": 6782,
   "tris_by_node": {
    "body": 2828,
-   "brake_FL": 43,
-   "brake_FR": 43,
-   "brake_RL": 36,
-   "brake_RR": 36,
+   "brake_FL": 22,
+   "brake_FR": 22,
+   "brake_RL": 18,
+   "brake_RR": 18,
    "col_body": 90,
-   "glass": 398,
+   "glass": 248,
    "interior": 406,
    "lights_front": 80,
    "lights_rear": 130,
    "trim": 2016,
-   "wheel_FL": 452,
-   "wheel_FR": 452,
-   "wheel_RL": 452,
-   "wheel_RR": 452
+   "wheel_FL": 226,
+   "wheel_FR": 226,
+   "wheel_RL": 226,
+   "wheel_RR": 226
   },
   "slots_by_node": {
    "body": [

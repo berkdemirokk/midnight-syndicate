@@ -200,10 +200,10 @@
   "decimate": {
     "0": {
       "wheel": 0.6,
-      "trim": 0.45,
-      "interior": 0.45,
+      "trim": 0.38,
+      "interior": 0.38,
       "underbody": 0.5,
-      "body": 0.88
+      "body": 0.7
     },
     "1": {
       "body": 0.2,
@@ -214,12 +214,12 @@
       "default": 0.5
     },
     "2": {
-      "body": 0.065,
-      "wheel": 0.06,
-      "trim": 0.03,
-      "glass": 0.08,
+      "body": 0.05,
+      "wheel": 0.03,
+      "trim": 0.02,
+      "glass": 0.05,
       "default": 0.12,
-      "interior": 0.05
+      "interior": 0.02
     }
   },
   "tail_cell": 5,

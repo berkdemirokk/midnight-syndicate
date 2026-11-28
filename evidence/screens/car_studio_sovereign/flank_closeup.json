@@ -3,7 +3,7 @@
     1920,
     1061
   ],
-  "luma_max": 0.965,
+  "luma_max": 0.962,
   "luma_min": 0.0,
   "name": "flank_closeup",
   "perf": {
@@ -11,17 +11,17 @@
     "draw_calls": 49,
     "draw_calls_min": 49,
     "driver": "vulkan",
-    "fps": 569.638,
-    "frame_ms_avg": 1.755,
-    "frame_ms_p95": 1.971,
-    "frame_ms_p99": 2.13,
+    "fps": 544.875,
+    "frame_ms_avg": 1.835,
+    "frame_ms_p95": 2.107,
+    "frame_ms_p99": 2.27,
     "frames": 60,
     "objects": 49,
     "os": "Windows",
-    "primitives": 195328,
+    "primitives": 157058,
     "renderer": "mobile",
     "scaling_3d_scale": 1.0,
-    "video_mem_mb": 495.671,
+    "video_mem_mb": 494.859,
     "viewport_size": [
       1920,
       1061

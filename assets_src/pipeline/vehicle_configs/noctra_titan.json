@@ -200,27 +200,28 @@
   "wheel_fill_lod2": "M_Tire",
   "decimate": {
     "0": {
-      "wheel": 0.6,
-      "trim": 0.45,
-      "interior": 0.45,
+      "wheel": 0.5,
+      "trim": 0.3,
+      "interior": 0.3,
       "underbody": 0.5,
-      "body": 0.7
+      "body": 0.5,
+      "exhaust": 0.6
     },
     "1": {
       "body": 0.15,
       "wheel": 0.12,
-      "interior": 0.2,
-      "trim": 0.15,
+      "interior": 0.12,
+      "trim": 0.12,
       "glass": 0.2,
       "default": 0.4
     },
     "2": {
-      "body": 0.04,
-      "wheel": 0.06,
-      "trim": 0.03,
-      "glass": 0.1,
+      "body": 0.03,
+      "wheel": 0.03,
+      "trim": 0.02,
+      "glass": 0.08,
       "default": 0.08,
-      "interior": 0.05
+      "interior": 0.03
     }
   },
   "tail_cell": 5,

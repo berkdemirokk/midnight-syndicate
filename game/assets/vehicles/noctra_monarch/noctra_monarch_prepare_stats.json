@@ -2,9 +2,9 @@
  "car_id": "noctra_monarch",
  "source": "assets_src/third_party/vinish_cars/incoming2/v12-grand-tourer.glb",
  "lod0": {
-  "tris": 88805,
+  "tris": 86318,
   "tris_by_node": {
-   "body": 22374,
+   "body": 19887,
    "brake_FL": 2280,
    "brake_FR": 2280,
    "brake_RL": 2215,

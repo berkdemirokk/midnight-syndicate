@@ -212,21 +212,21 @@
   "tail_pipes": 0
  },
  "lod2": {
-  "tris": 7449,
+  "tris": 6945,
   "tris_by_node": {
    "body": 2784,
-   "brake_FL": 36,
-   "brake_FR": 36,
-   "brake_RL": 37,
-   "brake_RR": 37,
+   "brake_FL": 20,
+   "brake_FR": 20,
+   "brake_RL": 21,
+   "brake_RR": 21,
    "col_body": 90,
    "glass": 502,
    "lights_rear": 182,
    "trim": 1817,
-   "wheel_FL": 482,
-   "wheel_FR": 482,
-   "wheel_RL": 482,
-   "wheel_RR": 482
+   "wheel_FL": 372,
+   "wheel_FR": 372,
+   "wheel_RL": 372,
+   "wheel_RR": 372
   },
   "slots_by_node": {
    "body": [
@@ -281,7 +281,7 @@
    [
     -1.0502861738204956,
     -2.230743169784546,
-    -0.011294007301330566
+    0.007605135440826416
    ],
    [
     1.048580288887024,
@@ -292,10 +292,10 @@
   "stray_verts_moved": {
    "body": 2,
    "trim": 40,
-   "wheel_FL": 1,
-   "wheel_FR": 1,
-   "wheel_RL": 1,
-   "wheel_RR": 1
+   "wheel_FL": 8,
+   "wheel_FR": 8,
+   "wheel_RL": 8,
+   "wheel_RR": 8
   },
   "tail_pipes": 0
  }

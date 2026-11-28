@@ -2,26 +2,26 @@
  "car_id": "noctra_titan",
  "source": "assets_src/third_party/vinish_cars/incoming2/super-suv.glb",
  "lod0": {
-  "tris": 88431,
+  "tris": 67089,
   "tris_by_node": {
-   "body": 24376,
-   "brake_FL": 1300,
-   "brake_FR": 1300,
-   "brake_RL": 1236,
-   "brake_RR": 1236,
+   "body": 17412,
+   "brake_FL": 1084,
+   "brake_FR": 1084,
+   "brake_RL": 1030,
+   "brake_RR": 1030,
    "col_body": 90,
-   "exhaust": 5280,
+   "exhaust": 3168,
    "glass": 6060,
-   "interior": 12392,
+   "interior": 8262,
    "lights_front": 996,
    "lights_rear": 2470,
    "plate_rear": 4,
-   "trim": 13920,
+   "trim": 9280,
    "underbody": 1851,
-   "wheel_FL": 3980,
-   "wheel_FR": 3980,
-   "wheel_RL": 3980,
-   "wheel_RR": 3980
+   "wheel_FL": 3317,
+   "wheel_FR": 3317,
+   "wheel_RL": 3317,
+   "wheel_RR": 3317
   },
   "slots_by_node": {
    "body": [
@@ -102,7 +102,7 @@
    [
     -1.177018642425537,
     -2.4511218070983887,
-    0.00022149085998535156
+    0.00023031234741210938
    ],
    [
     1.177018642425537,
@@ -114,15 +114,15 @@
   "tail_pipes": 2
  },
  "lod1": {
-  "tris": 22629,
+  "tris": 19231,
   "tris_by_node": {
    "body": 5220,
    "col_body": 90,
    "glass": 1211,
-   "interior": 5507,
+   "interior": 3302,
    "lights_front": 468,
    "lights_rear": 988,
-   "trim": 5961,
+   "trim": 4768,
    "wheel_FL": 796,
    "wheel_FR": 796,
    "wheel_RL": 796,
@@ -193,18 +193,18 @@
   "tail_pipes": 0
  },
  "lod2": {
-  "tris": 7760,
+  "tris": 6887,
   "tris_by_node": {
    "body": 2963,
    "col_body": 90,
-   "glass": 605,
+   "glass": 484,
    "interior": 448,
    "lights_rear": 197,
    "trim": 1957,
-   "wheel_FL": 375,
-   "wheel_FR": 375,
-   "wheel_RL": 375,
-   "wheel_RR": 375
+   "wheel_FL": 187,
+   "wheel_FR": 187,
+   "wheel_RL": 187,
+   "wheel_RR": 187
   },
   "slots_by_node": {
    "body": [
@@ -261,7 +261,11 @@
   "stray_verts_moved": {
    "body": 6,
    "interior": 52,
-   "trim": 35
+   "trim": 35,
+   "wheel_FL": 1,
+   "wheel_FR": 1,
+   "wheel_RL": 1,
+   "wheel_RR": 1
   },
   "tail_pipes": 0
  }

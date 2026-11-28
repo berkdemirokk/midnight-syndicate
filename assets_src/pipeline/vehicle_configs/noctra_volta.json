@@ -213,9 +213,9 @@
       "default": 0.5
     },
     "2": {
-      "body": 0.08,
-      "wheel": 0.06,
-      "trim": 0.06,
+      "body": 0.065,
+      "wheel": 0.035,
+      "trim": 0.04,
       "glass": 0.1,
       "default": 0.12
     }
