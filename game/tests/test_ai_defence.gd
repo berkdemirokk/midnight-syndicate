@@ -36,7 +36,9 @@ func _place(track: Track, car: ArcadeCar, o: float, lateral: float, speed: float
 	car.linear_velocity = t * speed
 
 
-func test_defender_moves_once_toward_attacker() -> void:
+## Checks the COMMAND only. The lane clamp (_clamp_lane) cancels the physical move while the attacker is within 7 m,
+## so the car does not move sideways here; see docs/design/AI_RIVALS_2026-11-28.md. The switch stays off.
+func test_defender_commands_one_move_toward_attacker() -> void:
 	var track: Track = TestTrack.build()
 	add(track)
 	var defender: ArcadeCar = _make_car(0.8, 0.0, 4)
@@ -67,5 +69,31 @@ func test_defender_moves_once_toward_attacker() -> void:
 	metric("defence_car_lateral_m", snappedf(max_lateral, 0.01))
 	check(max_toward >= MIN_DEFENCE_M, "defender did not command a move toward the attacker: %.2f m" % max_toward)
 	check(not contact, "defender touched the attacker during the defence move")
+	var nodes: Array[Node] = [defender, attacker, track]
+	await cleanup(nodes)
+
+
+func test_defence_is_off_by_default() -> void:
+	var track: Track = TestTrack.build()
+	add(track)
+	var defender: ArcadeCar = _make_car(0.8, 0.0, 4)
+	var attacker: ArcadeCar = _make_car(1.0, ATTACKER_LANE_M, 5)
+	var defender_driver: AIDriver = defender.get_node("AIDriver") as AIDriver
+	var attacker_driver: AIDriver = attacker.get_node("AIDriver") as AIDriver
+	var traffic: Array[ArcadeCar] = [defender, attacker]
+	defender_driver.setup(track)
+	defender_driver.set_traffic(traffic)
+	attacker_driver.setup(track)
+	attacker_driver.set_traffic(traffic)
+	_place(track, defender, DEFENDER_O, 0.0, DEFENDER_SPEED_MS)
+	_place(track, attacker, DEFENDER_O - ATTACKER_GAP_M, ATTACKER_LANE_M, ATTACKER_SPEED_MS)
+	defender_driver.set_racing(true)
+	attacker_driver.set_racing(true)
+	attacker_driver.enabled = false
+	var max_command: float = 0.0
+	for i: int in roundi(WINDOW_S * HZ):
+		await frames(1)
+		max_command = maxf(max_command, absf(defender_driver.get_defence_shift()))
+	check(max_command == 0.0, "defence is off by default but commanded %.2f m" % max_command)
 	var nodes: Array[Node] = [defender, attacker, track]
 	await cleanup(nodes)

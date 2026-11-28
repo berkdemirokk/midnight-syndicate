@@ -472,7 +472,7 @@ func _update_shift(s: float, v: float, delta: float) -> void:
 					_pass_anchor = _lat_me
 					_pass_t = 0.0
 					want = float(side) * overtake_shift
-	if _pass_side == SIDE_NONE:
+	if _pass_side == SIDE_NONE and defence_shift > 0.0:  # off by default: the base path does no defence work
 		want = _defence_shift(v, delta)
 	# Moving out of the lane is damped by the bend curvature (none here: the pass is refused above);
 	# returning to the lane is always at full rate, so a shift is never held into a bend.
