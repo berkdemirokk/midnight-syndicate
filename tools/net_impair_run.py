@@ -1,12 +1,12 @@
-"""One impaired LAN race: 1 server + 3 clients (Godot headless) with a UDP impairment relay between them.
+"""One impaired LAN race: 1 server + 2 clients, Ada and Bo (Godot headless) with a UDP impairment relay between them.
 
 Starts the server on ADDRESS:PORT, the relay on ADDRESS:PORT+1 (clients connect there, the relay forwards to the
-server), then three clients. Scenarios:
-  plain       all three finish the race.
+server), then the two clients (a third is refused: the countdown starts at 2 ready). Scenarios:
+  plain       both finish the race.
   kill_rejoin Bo is killed KILL_AFTER s after GO (no BYE) and relaunched at once with the same name and join code.
               The server hands Bo's seat back with the car's last accepted state; Bo continues and finishes.
-  leave_gone  Cy leaves cleanly (BYE) LEAVE_AFTER s after GO and never comes back. The server holds the seat for
-              the grace period, then Cy is DNF with reason disconnected.
+  leave_gone  Bo leaves cleanly (BYE) LEAVE_AFTER s after GO and never comes back. The server holds the seat for
+              the grace period, then Bo is DNF with reason disconnected.
 Checks, metrics and the per-run summary go to evidence/net_impair/<run>/summary.json. The join code is random per run
 and is passed on the command line only. Exit code 0 only when every check passes.
 

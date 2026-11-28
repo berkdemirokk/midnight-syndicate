@@ -185,7 +185,7 @@ PC's Wi-Fi LAN address). Not a phone, not a second device, not internet. Two rac
 
 ### Measured runs (2 racers, 1 lap, Ada and Bo, through the relay unless marked)
 Finish times are the server clock from GO. "Lost" is the relay's count of dropped datagrams, to the server / to the
-clients. "Accepted" is the server's count of accepted car states for that racer. Server rejects: 0 in every run.
+clients. "Accepted" is the server's count of accepted car states for that racer. Server rejects: 0 in every wp* run; the two lead re-runs had some (see their rows).
 Client RTT is the average of both clients (ping/pong).
 
 | run | impairment | result | Ada / Bo finish (s) | lost (to server / to clients) | accepted Ada / Bo | client RTT avg (ms) |
@@ -202,6 +202,8 @@ Client RTT is the average of both clients (ping/pong).
 | wp4_kill_rejoin | 80 ms; Bo killed 12 s after GO, relaunched with same name and code | PASS | 47.68 / 51.60 (Bo resumed) | 0 / 0 | 921 / 957 | not summarised |
 | wp3_leave_gone | 80 ms; Bo sends BYE 12 s after GO, never returns | PASS: Ada finishes 48.82 s, Bo DNF after the 20 s grace | 48.82 / DNF | 0 / 0 | Bo 240, Ada 929 (Bo was pid 1 in this run) | not summarised |
 | wp_plain_v3 (earlier) | relay only | PASS | 47.53 / 47.93 | 0 / 0 | 921 / 929 | not summarised |
+| lead_kill_rejoin (lead re-run) | 150 ms, 5 % loss; Bo killed 12 s after GO, relaunched | PASS, order agrees; 10 teleport rejects for Bo right after the resume | 47.53 / 57.41 (Bo resumed) | 142 of 2689 / 145 of 2864 | see summary.json | Bo resumed 166.9 |
+| lead_leave_gone (lead re-run) | 250 ms, 20 ms jitter, 10 % loss, seed 7; Bo sends BYE 12 s after GO | PASS: Ada 47.71 s, Bo DNF after the 20 s grace; 1 "sequence not increasing" reject (jitter reorders packets) | 47.71 / DNF | 154 of 1572 / see summary.json | see summary.json | Ada 277.6 |
 
 Pre-fix failures kept as evidence: `evidence/net_impair/wp2_kill_rejoin` and `wp2_leave_gone` (the relay died when a
 client exited; the other client then timed out). `r_rtt80_fg` is the earlier 80 ms foreground run.
@@ -215,12 +217,18 @@ Reading the numbers:
   judged by eye (no rendered run with an impaired link).
 - The relay adds about 2 to 12 ms to the configured RTT (ping/pong), so treat the RTT labels as +/- 15 ms.
 - The finish-time gap between the two racers was 0.3 to 0.9 s in every run. It says nothing about position error.
+- Both kill_rejoin runs went through the live same-address takeover (ENet had not yet noticed the killed process),
+  not the held-seat path. The held-seat claim after ENet times out is covered by unit tests only.
+- lead_kill_rejoin (150 ms, 5 % loss): right after the resume the server refused Bo's next 10 states (about 0.6 s)
+  as teleports of 5.8 to 6.8 m from the first state the resumed client sent; then it accepted them again and Bo
+  finished. Cause not found. Bo finished 9.9 s after Ada (kill, Godot boot and reconnect over the impaired link).
+  Must be understood before rejoin is enabled in the rendered game.
 - kill_rejoin: Bo finished 3.9 s after Ada. The car does not drive while its client is down, so most of that gap is
   probably the time the seat was empty. Not measured separately.
 
 ### Not measured or not done (honest limits)
 - Position error and rubber-banding are NOT measured. The server has no ground truth for a client's own car. The
-  rejects by reason (teleport, sequence, projection) are the only proxy: 0 in every run.
+  rejects by reason (teleport, sequence, projection) are the only proxy: 0 in every wp* run.
 - Three racers were not run. The start rule begins the countdown when 2 players are ready, so a third client that
   readies a moment later is refused "a race is running". A lobby window before the countdown would fix it.
   OWNER DECISION: the window length, and whether the game rule changes.
