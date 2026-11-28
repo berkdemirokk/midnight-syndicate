@@ -1,34 +1,49 @@
 class_name SettingsMenu
 extends Control
-## Settings screen. Reads and writes the Settings autoload directly; no copy of the values lives here.
-## Two cards (graphics + audio, controls + language), every row at least 44 pt tall on a phone, whole rows focusable.
+## Settings screen in five tabs: GRAPHICS, CONTROLS, AUDIO, LANGUAGE, ABOUT. Reads and writes the Settings autoload directly.
+## Every control is a touch target of TOUCH_PX (MSTheme scales it on the phone layout).
 ## overlay = false: BACK goes to the main menu. overlay = true (pause menu): BACK emits closed and frees itself.
 
 signal closed
 
 const MAIN_MENU_SCENE: String = "res://ui/menus/main_menu.tscn"
+const TOUCH_PX: float = 88.0  ## base px; MSTheme.px() gives 132 px (44 pt) on the phone layout
 const TITLE_PX: int = 44
 const SECTION_PX: int = 18
 const ROW_LABEL_PX: int = 24
 const VALUE_PX: int = 24
-const CONTROL_W: float = 300.0
+const DESC_PX: int = 20
+const CONTROL_W: float = 360.0
 const VALUE_W: float = 84.0
-const ROW_H: float = 56.0
+const BACK_W: float = 220.0
 const EDGE_PX: float = 96.0
 const EDGE_Y_PX: float = 48.0
-const ROW_GAP_PX: int = 6
+const ROW_GAP_PX: int = 8
 const SECTION_GAP_PX: int = 24
-const CARD_PAD_PX: int = 28
 const VOLUME_PERCENT: float = 100.0
+
+const TAB_TEXT_KEYS: Array[String] = ["settings.graphics", "settings.controls", "settings.audio", "settings.language", "settings.about"]
+const VOLUME_KEYS: Array[String] = ["master", "music", "sfx", "engine", "ui"]
+const VOLUME_LABEL_KEYS: Dictionary = {
+	"master": "settings.master", "music": "settings.music", "sfx": "settings.sfx", "engine": "settings.engine",
+	"ui": "settings.ui"}
+const PRESET_KEYS: Array[String] = ["settings.preset_low", "settings.preset_medium", "settings.preset_high"]
+const PRESET_DESC_KEYS: Array[String] = ["settings.preset_desc_low", "settings.preset_desc_medium", "settings.preset_desc_high"]
+const STEER_KEYS: Array[String] = ["settings.steer_buttons", "settings.steer_tilt"]
+const LANG_KEYS: Array[String] = ["settings.lang_tr", "settings.lang_en"]
 
 @export var overlay: bool = false
 
 var _title: Label
 var _back_btn: Button
-var _section_labels: Dictionary = {}  ## section key -> [Label, text key]
-var _row_labels: Dictionary = {}  ## row key -> [Label or Button, text key]
+var _tabs: Array[Button] = []
+var _pages: Array[Control] = []
+var _scroll: ScrollContainer
+var _texts: Dictionary = {}  ## Label or Button -> text key
+var _options: Dictionary = {}  ## OptionButton -> Array of text keys, one per item
 var _preset_opt: OptionButton
-var _dynres: CheckButton
+var _preset_desc: Label
+var _fps_opt: OptionButton
 var _steer_opt: OptionButton
 var _auto_accel: CheckButton
 var _haptics: CheckButton
@@ -37,19 +52,8 @@ var _shake_val: Label
 var _lang_opt: OptionButton
 var _volume_sliders: Dictionary = {}  ## bus key -> HSlider
 var _volume_vals: Dictionary = {}  ## bus key -> Label
+var _credits: CreditsPanel
 var _syncing: bool = false
-
-const VOLUME_KEYS: Array[String] = ["master", "music", "sfx", "engine", "ui"]
-const VOLUME_LABEL_KEYS: Dictionary = {
-	"master": "settings.master", "music": "settings.music", "sfx": "settings.sfx", "engine": "settings.engine",
-	"ui": "settings.ui"}
-const PRESET_KEYS: Array[String] = ["settings.preset_low", "settings.preset_medium", "settings.preset_high"]
-const STEER_KEYS: Array[String] = ["settings.steer_buttons", "settings.steer_tilt"]
-const LANG_KEYS: Array[String] = ["settings.lang_tr", "settings.lang_en"]
-
-
-const CREDITS_PATH: String = "res://ui/credits_third_party.txt"  ## one credit line per CC BY asset
-const CREDITS_PX: int = 13
 
 
 func _ready() -> void:
@@ -73,11 +77,7 @@ func _ready() -> void:
 	_sync_from_settings()
 	Settings.changed.connect(_on_settings_changed)
 	_refresh_text()
-	_back_btn.grab_focus()
-
-
-func _row_h() -> float:
-	return MSTheme.button_h() if MSTheme.phone else ROW_H
+	show_tab(0)
 
 
 func _build() -> void:
@@ -95,60 +95,51 @@ func _build() -> void:
 
 	var head := HBoxContainer.new()
 	col.add_child(head)
-	_title = MSTheme.make_label("", "bold", TITLE_PX, MSTheme.TEXT)
+	_title = MSTheme.make_label("", "bold", MSTheme.px(TITLE_PX), MSTheme.TEXT)
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(_title)
+	_texts[_title] = "settings.title"
 	_back_btn = Button.new()
-	_back_btn.custom_minimum_size = Vector2(MSTheme.BUTTON_MIN_W * 0.6, MSTheme.button_h())
+	_back_btn.custom_minimum_size = Vector2(MSTheme.px(BACK_W), MSTheme.px(TOUCH_PX))
 	_back_btn.pressed.connect(func() -> void: UiSounds.click())
 	_back_btn.pressed.connect(_on_back)
 	head.add_child(_back_btn)
+	_texts[_back_btn] = "common.back"
 
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.follow_focus = true
-	col.add_child(scroll)
-	var cols := HBoxContainer.new()
-	cols.add_theme_constant_override("separation", SECTION_GAP_PX)
-	cols.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(cols)
+	var tab_bar := HBoxContainer.new()
+	tab_bar.add_theme_constant_override("separation", MSTheme.GRID_PX)
+	col.add_child(tab_bar)
+	var group := ButtonGroup.new()
+	for i: int in TAB_TEXT_KEYS.size():
+		var b := Button.new()
+		b.toggle_mode = true
+		b.button_group = group
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.custom_minimum_size = Vector2(0.0, MSTheme.px(TOUCH_PX))
+		b.toggled.connect(_on_tab.bind(i))
+		tab_bar.add_child(b)
+		_tabs.append(b)
+		_texts[b] = TAB_TEXT_KEYS[i]
 
-	var left: VBoxContainer = _card(cols)
-	_section(left, "graphics", "settings.graphics")
-	_preset_opt = _option()
-	_row(left, "preset", "settings.preset", _preset_opt)
-	_dynres = _toggle(left, "dynres", "settings.dynres")
-	_section(left, "audio", "settings.audio")
-	for key: String in VOLUME_KEYS:
-		var v: Label = _value_label()
-		var s: HSlider = _slider(v)
-		s.value_changed.connect(_on_volume.bind(key))
-		_volume_sliders[key] = s
-		_volume_vals[key] = v
-		_row(left, "vol_" + key, VOLUME_LABEL_KEYS[key], _slider_box(s, v))
+	_scroll = ScrollContainer.new()
+	_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_scroll.follow_focus = true
+	col.add_child(_scroll)
+	var stack := VBoxContainer.new()
+	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stack.add_theme_constant_override("separation", SECTION_GAP_PX)
+	_scroll.add_child(stack)
 
-	var right: VBoxContainer = _card(cols)
-	_section(right, "controls", "settings.controls")
-	_steer_opt = _option()
-	_row(right, "steering", "settings.steering", _steer_opt)
-	_auto_accel = _toggle(right, "auto_accel", "settings.auto_accel")
-	_haptics = _toggle(right, "haptics", "settings.haptics")
-	_shake_val = _value_label()
-	_shake = _slider(_shake_val)
-	_row(right, "shake", "settings.camera_shake", _slider_box(_shake, _shake_val))
-	_lang_opt = _option()
-	_row(right, "lang", "settings.language", _lang_opt)
-	# Third-party models under CC BY 4.0 need their credit shown in the game.
-	if FileAccess.file_exists(CREDITS_PATH):
-		_section(right, "credits", "settings.credits")
-		var credits: Label = MSTheme.make_label(FileAccess.get_file_as_string(CREDITS_PATH).strip_edges(), "bold", MSTheme.px(CREDITS_PX), MSTheme.TEXT)
-		credits.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		right.add_child(credits)
+	_build_graphics(_page(stack))
+	_build_controls(_page(stack))
+	_build_audio(_page(stack))
+	_build_language(_page(stack))
+	_build_about(_page(stack))
 
 	_preset_opt.item_selected.connect(_on_preset)
-	_dynres.toggled.connect(_on_dynres)
+	_fps_opt.item_selected.connect(_on_fps)
 	_steer_opt.item_selected.connect(_on_steering)
 	_auto_accel.toggled.connect(_on_auto_accel)
 	_haptics.toggled.connect(_on_haptics)
@@ -156,45 +147,109 @@ func _build() -> void:
 	_lang_opt.item_selected.connect(_on_language)
 
 
-## A backing card; returns the column rows go into.
-func _card(parent: Container) -> VBoxContainer:
-	var panel := PanelContainer.new()
-	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	panel.add_theme_stylebox_override("panel", MSTheme.card(MSTheme.PLATE_BG, MSTheme.BORDER))
-	parent.add_child(panel)
-	var pad := MarginContainer.new()
-	for side: String in ["left", "right", "top", "bottom"]:
-		pad.add_theme_constant_override("margin_" + side, CARD_PAD_PX)
-	panel.add_child(pad)
+func _build_graphics(p: VBoxContainer) -> void:
+	_section(p, "settings.graphics")
+	_preset_opt = _option(PRESET_KEYS)
+	_row(p, "settings.preset", _preset_opt)
+	_preset_desc = MSTheme.make_label("", "bold", MSTheme.px(DESC_PX), MSTheme.MUTED)
+	_preset_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	p.add_child(_preset_desc)
+	_section(p, "settings.perf_group")
+	_fps_opt = _option([])
+	for fps: int in Settings.FPS_CAPS:
+		_fps_opt.add_item("%d FPS" % fps)
+	_row(p, "settings.fps_cap", _fps_opt)
+
+
+func _build_controls(p: VBoxContainer) -> void:
+	_section(p, "settings.controls")
+	_steer_opt = _option(STEER_KEYS)
+	_row(p, "settings.steering", _steer_opt)
+	_auto_accel = _toggle(p, "settings.auto_accel")
+	_haptics = _toggle(p, "settings.haptics")
+	_shake_val = _value_label()
+	_shake = _slider()
+	_row(p, "settings.camera_shake", _slider_box(_shake, _shake_val))
+
+
+func _build_audio(p: VBoxContainer) -> void:
+	_section(p, "settings.audio")
+	for key: String in VOLUME_KEYS:
+		var v: Label = _value_label()
+		var s: HSlider = _slider()
+		s.value_changed.connect(_on_volume.bind(key))
+		_volume_sliders[key] = s
+		_volume_vals[key] = v
+		_row(p, VOLUME_LABEL_KEYS[key], _slider_box(s, v))
+
+
+func _build_language(p: VBoxContainer) -> void:
+	_section(p, "settings.language")
+	_lang_opt = _option(LANG_KEYS)
+	_row(p, "settings.language", _lang_opt)
+
+
+func _build_about(p: VBoxContainer) -> void:
+	_section(p, "settings.credits")
+	var hint: Label = MSTheme.make_label("", "bold", MSTheme.px(DESC_PX), MSTheme.MUTED)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	p.add_child(hint)
+	_texts[hint] = "settings.credits_hint"
+	_credits = CreditsPanel.new()
+	p.add_child(_credits)
+
+
+## One tab page. Pages are stacked inside the scroll; show_tab() shows exactly one.
+func _page(parent: Container) -> VBoxContainer:
 	var v := VBoxContainer.new()
+	v.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	v.add_theme_constant_override("separation", ROW_GAP_PX)
-	pad.add_child(v)
+	parent.add_child(v)
+	_pages.append(v)
 	return v
 
 
-func _option() -> OptionButton:
+## Shows one tab page, marks its tab as pressed and scrolls to the top.
+func show_tab(index: int) -> void:
+	for i: int in _pages.size():
+		_pages[i].visible = i == index
+	_tabs[index].button_pressed = true
+	_tabs[index].grab_focus()  # keep the focus ring on the shown tab, not on a stale one
+	_scroll.scroll_vertical = 0
+
+
+func _on_tab(on: bool, index: int) -> void:
+	if on:
+		show_tab(index)
+
+
+func _option(keys: Array) -> OptionButton:
 	var o := OptionButton.new()
-	o.custom_minimum_size = Vector2(CONTROL_W + VALUE_W, _row_h())
+	o.custom_minimum_size = Vector2(MSTheme.px(CONTROL_W + VALUE_W), MSTheme.px(TOUCH_PX))
 	o.fit_to_longest_item = false
 	o.get_popup().add_theme_constant_override("v_separation", MSTheme.px(14.0))
+	for _k: String in keys:
+		o.add_item("")
+	if not keys.is_empty():
+		_options[o] = keys
 	return o
 
 
 func _value_label() -> Label:
 	var v: Label = MSTheme.make_label("", "digits", MSTheme.px(VALUE_PX), MSTheme.CYAN)
-	v.custom_minimum_size = Vector2(VALUE_W, 0.0)
+	v.custom_minimum_size = Vector2(MSTheme.px(VALUE_W), 0.0)
 	v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	v.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	return v
 
 
-func _slider(_value_lbl: Label) -> HSlider:
+func _slider() -> HSlider:
 	var s := HSlider.new()
 	s.min_value = 0.0
 	s.max_value = 1.0
 	s.step = 0.01
-	s.custom_minimum_size = Vector2(CONTROL_W, _row_h())
+	s.custom_minimum_size = Vector2(MSTheme.px(CONTROL_W), MSTheme.px(TOUCH_PX))
+	s.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	return s
 
 
@@ -207,23 +262,24 @@ func _slider_box(s: HSlider, v: Label) -> HBoxContainer:
 
 
 ## Section header with a hairline under it.
-func _section(parent: Container, key: String, text_key: String) -> void:
+func _section(parent: Container, text_key: String) -> void:
 	if parent.get_child_count() > 0:
 		var gap := Control.new()
 		gap.custom_minimum_size = Vector2(0.0, SECTION_GAP_PX)
 		parent.add_child(gap)
 	var l: Label = MSTheme.make_label("", "tracked", MSTheme.px(SECTION_PX), MSTheme.CYAN)
 	parent.add_child(l)
+	_texts[l] = text_key
 	var rule := ColorRect.new()
 	rule.color = MSTheme.tint(MSTheme.CYAN, 0.35)
 	rule.custom_minimum_size = Vector2(0.0, 2.0)
 	parent.add_child(rule)
-	_section_labels[key] = [l, text_key]
 
 
-func _row(parent: Container, key: String, text_key: String, control: Control) -> void:
+## One setting: label left, control right, the whole row at least TOUCH_PX tall.
+func _row(parent: Container, text_key: String, control: Control) -> void:
 	var line := HBoxContainer.new()
-	line.custom_minimum_size = Vector2(0.0, _row_h())
+	line.custom_minimum_size = Vector2(0.0, MSTheme.px(TOUCH_PX))
 	line.add_theme_constant_override("separation", MSTheme.GRID_PX * 2)
 	var l: Label = MSTheme.make_label("", "bold", MSTheme.px(ROW_LABEL_PX), MSTheme.TEXT)
 	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -232,81 +288,64 @@ func _row(parent: Container, key: String, text_key: String, control: Control) ->
 	control.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	line.add_child(control)
 	parent.add_child(line)
-	_row_labels[key] = [l, text_key]
+	_texts[l] = text_key
 
 
-## A toggle whose whole row is the touch target and the focus target: label left, switch right.
-func _toggle(parent: Container, key: String, text_key: String) -> CheckButton:
+## A switch whose whole row is the touch and focus target: label left, switch right.
+func _toggle(parent: Container, text_key: String) -> CheckButton:
 	var c := CheckButton.new()
-	c.custom_minimum_size = Vector2(0.0, _row_h())
+	c.custom_minimum_size = Vector2(0.0, MSTheme.px(TOUCH_PX))
 	c.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	c.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	parent.add_child(c)
-	_row_labels[key] = [c, text_key]
+	_texts[c] = text_key
 	return c
 
 
 func _sync_from_settings() -> void:
 	_syncing = true
-	_preset_opt.clear()
-	for _k: String in PRESET_KEYS:
-		_preset_opt.add_item("")
 	_preset_opt.select(maxi(Settings.PRESET_IDS.find(Settings.get_preset_id()), 0))
-	_dynres.set_pressed_no_signal(Settings.get_dynamic_resolution())
+	_fps_opt.select(maxi(Settings.FPS_CAPS.find(Settings.get_fps_cap()), 0))
 	for key: String in VOLUME_KEYS:
 		var v: float = Settings.get_volume(key)
 		(_volume_sliders[key] as HSlider).set_value_no_signal(v)
 		(_volume_vals[key] as Label).text = _percent(v)
-	_steer_opt.clear()
-	for _k: String in STEER_KEYS:
-		_steer_opt.add_item("")
 	_steer_opt.select(maxi(Settings.STEERING_MODES.find(Settings.steering_mode), 0))
 	_auto_accel.set_pressed_no_signal(Settings.auto_accelerate)
 	_haptics.set_pressed_no_signal(Settings.haptics)
 	_shake.set_value_no_signal(Settings.camera_shake)
 	_shake_val.text = _percent(Settings.camera_shake)
-	_lang_opt.clear()
-	for _k: String in LANG_KEYS:
-		_lang_opt.add_item("")
 	_lang_opt.select(maxi(Settings.LANGUAGES.find(Settings.language), 0))
 	_syncing = false
 
 
 func _refresh_text() -> void:
-	_title.text = I18n.t("settings.title")
-	_back_btn.text = I18n.t("common.back")
-	for key: String in _section_labels:
-		var pair: Array = _section_labels[key]
-		(pair[0] as Label).text = I18n.t(pair[1])
-	for key: String in _row_labels:
-		var pair: Array = _row_labels[key]
-		(pair[0] as Control).set("text", I18n.t(pair[1]))
-	for i: int in PRESET_KEYS.size():
-		_preset_opt.set_item_text(i, I18n.t(PRESET_KEYS[i]))
-	for i: int in STEER_KEYS.size():
-		_steer_opt.set_item_text(i, I18n.t(STEER_KEYS[i]))
-	for i: int in LANG_KEYS.size():
-		_lang_opt.set_item_text(i, I18n.t(LANG_KEYS[i]))
+	for node: Object in _texts:
+		node.set("text", I18n.t(_texts[node]))
+	for opt: OptionButton in _options:
+		var keys: Array = _options[opt]
+		for i: int in keys.size():
+			opt.set_item_text(i, I18n.t(keys[i]))
+	var idx: int = maxi(Settings.PRESET_IDS.find(Settings.get_preset_id()), 0)
+	_preset_desc.text = I18n.t(PRESET_DESC_KEYS[idx])
 
 
 func _percent(v: float) -> String:
 	return "%d%%" % roundi(v * VOLUME_PERCENT)
 
 
-func _on_settings_changed(section: String) -> void:
-	if section == Settings.SECTION_GENERAL:
-		_refresh_text()
+func _on_settings_changed(_section: String) -> void:
+	_refresh_text()
 
 
 func _on_preset(index: int) -> void:
-	if _syncing:
-		return
-	Settings.set_preset(Settings.PRESET_IDS[index])
-
-
-func _on_dynres(on: bool) -> void:
 	if not _syncing:
-		Settings.set_dynamic_resolution(on)
+		Settings.set_preset(Settings.PRESET_IDS[index])
+
+
+func _on_fps(index: int) -> void:
+	if not _syncing:
+		Settings.set_fps_cap(Settings.FPS_CAPS[index])
 
 
 func _on_volume(value: float, key: String) -> void:
