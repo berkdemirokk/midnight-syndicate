@@ -104,3 +104,9 @@ func test_surface_materials_set_properties() -> void:
 	var chrome: StandardMaterial3D = _material(car, "M_Chrome")
 	check(chrome == null or chrome.metallic == 1.0, "chrome is not metallic")
 	car.free()
+
+
+func test_look_constants_in_range() -> void:
+	# carpaint pass: a sharper street mirror and a glass tint that lets the interior show (alpha is opacity).
+	check(CarMaterials.REFLECTION_BLUR_MAX > 0.0 and CarMaterials.REFLECTION_BLUR_MAX <= 2.0, "reflection blur cap out of range")
+	check(CarMaterials.GLASS_TINT.a >= 0.5 and CarMaterials.GLASS_TINT.a <= 0.7, "glass opacity out of range")

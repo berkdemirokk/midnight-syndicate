@@ -12,7 +12,8 @@ const KNOWN: PackedStringArray = [
 ]
 const DEFAULT_PAINT: Color = Color(0.557, 0.059, 0.118)  ## #8E0F1E candy red from the brief
 const DEFAULT_RIM: Color = Color(0.40, 0.40, 0.41)  ## neutral gunmetal-silver (0.314, 0.333, 0.369 had a blue bias baked in; 0.08 read as black)
-const GLASS_TINT: Color = Color(0.035, 0.05, 0.06, 0.8)  ## smoked glass, a little lighter than the old near-black slab; alpha = opacity
+const GLASS_TINT: Color = Color(0.035, 0.05, 0.06, 0.62)  ## smoked glass, a little lighter than the old near-black slab; alpha = opacity
+const REFLECTION_BLUR_MAX: float = 1.6  ## mip cap on the street mirror: 2.5 smeared the paint reflections into flat bands (2026-11-28 carpaint)
 const GLASS_SPECULAR: float = 0.08  ## was 0.25; grazing Fresnel dominates, so the grey comes mostly from alpha (see WORLD_MATERIALS.md)
 const GLASS_RIM: float = 0.9  ## rim light on the edges of the glass: the Fresnel edge that hints the interior (0.45 was barely visible)
 const FINISH_SOLID: int = 0
@@ -142,7 +143,7 @@ static func set_reflection(car: Node, pano: Texture2D, strength: float = 0.5, bl
 			mirror.shader = load("res://shaders/car_reflection.gdshader")
 			mirror.set_shader_parameter("pano", pano)
 			mirror.set_shader_parameter("strength", spec[1])
-			mirror.set_shader_parameter("blur", spec[2])
+			mirror.set_shader_parameter("blur", minf(spec[2], REFLECTION_BLUR_MAX))
 			mirror.set_shader_parameter("highlight", highlight)
 			m.next_pass = mirror)
 
