@@ -186,7 +186,7 @@ func test_record_result_keeps_best_time() -> void:
 	_wipe(path)
 	var gs: Node = _open(path)
 	var r1: Dictionary = gs.record_result("ev_harbor", 42.5, 2)
-	check(r1["cash"] == 600, "2nd place pays 600")
+	check(r1["cash"] == 2400, "2nd place pays 2400")
 	check(r1["new_best"] == true, "first run is a new best")
 	check(r1["stars"] == 2, "2nd place earns 2 stars")
 

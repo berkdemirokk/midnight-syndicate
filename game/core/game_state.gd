@@ -18,7 +18,7 @@ const UPGRADE_PARTS: PackedStringArray = ["engine", "tires", "nitro", "weight"]
 ## Upgrade from level n to n+1 costs base * (n + 1).
 const UPGRADE_BASE_COST: Dictionary = {"engine": 800, "tires": 500, "nitro": 1200, "weight": 900}
 ## Rewards by finishing position (index 0 = 1st). Positions past the table earn nothing.
-const REWARD_CASH: PackedInt32Array = [1000, 600, 300, 100]
+const REWARD_CASH: PackedInt32Array = [4000, 2400, 1200, 400]
 const REWARD_REP: PackedInt32Array = [100, 60, 30, 10]
 const REWARD_STARS: PackedInt32Array = [3, 2, 1]
 const DEFAULT_PAINT: String = "8e0f1e"  ## candy red, the starter car colour in docs/art/CAR_01_BRIEF.md. Stored without # like every saved colour.
