@@ -71,27 +71,42 @@ func test_reverse_grid_faces_new_direction() -> void:
 	var track: Track = await _load_track()
 	var slots: int = track.get_node("StartGrid").get_child_count()
 	var len: float = track.length
+	# authored slot i: progress s, lateral offset, and the authored line point at the mirror distance d = -s
 	var auth_s := PackedFloat32Array()
+	var auth_lat := PackedFloat32Array()
+	var auth_mirror_pt: Array[Vector3] = []
 	var fwd_ok: int = 0
 	for xf: Transform3D in _grid_transforms(track):
 		var s: float = track.get_progress(xf.origin)
 		auth_s.append(s)
+		auth_lat.append(track.get_lateral_offset(xf.origin))
+		auth_mirror_pt.append(track.get_point_at(fposmod(-s, len)))
 		if (-xf.basis.z).dot(track.get_tangent_at(s)) > FACE_DOT_MIN:
 			fwd_ok += 1
 	check(fwd_ok == slots, "authored grid: only %d of %d slots face the line" % [fwd_ok, slots])
+	metric("authored_grid_progress_first_m", snappedf(auth_s[0], 0.1))
+	metric("authored_grid_progress_last_m", snappedf(auth_s[slots - 1], 0.1))
 	track.set_reversed(true)
 	var rev_ok: int = 0
+	var progress_worst: float = 0.0
 	var mirror_worst: float = 0.0
 	var i: int = 0
 	for xf: Transform3D in _grid_transforms(track):
 		var s: float = track.get_progress(xf.origin)
-		# a slot at authored progress p sits at len - p in the reversed line, facing the reversed tangent
-		mirror_worst = maxf(mirror_worst, absf(s - (len - auth_s[i])) if absf(s - (len - auth_s[i])) < len * 0.5 else 0.0)
+		# mirror keeps the numeric progress: the reversed line at s is the authored line at len - s
+		var ds: float = absf(wrapf(s - auth_s[i], -len * 0.5, len * 0.5))
+		progress_worst = maxf(progress_worst, ds)
+		# slot sits on the authored mirror point, offset by its lateral distance from the road centre
+		var c: Vector3 = auth_mirror_pt[i]
+		var planar: float = Vector2(xf.origin.x - c.x, xf.origin.z - c.z).length()
+		mirror_worst = maxf(mirror_worst, absf(planar - absf(auth_lat[i])))
 		if (-xf.basis.z).dot(track.get_tangent_at(s)) > FACE_DOT_MIN:
 			rev_ok += 1
 		i += 1
+	metric("reverse_grid_progress_error_max_m", snappedf(progress_worst, 0.01))
 	metric("reverse_grid_mirror_error_max_m", snappedf(mirror_worst, 0.01))
 	check(rev_ok == slots, "reversed grid: only %d of %d slots face the new direction" % [rev_ok, slots])
+	check(progress_worst < GRID_TOL_M, "reversed slots moved %.2f m of progress" % progress_worst)
 	check(mirror_worst < GRID_TOL_M, "reversed slots are %.2f m off the mirror of the authored grid" % mirror_worst)
 	track.set_reversed(false)
 	await cleanup([track])
