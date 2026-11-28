@@ -68,3 +68,77 @@ Read with `ProjectSettings` in the editor build of Godot 4.7.2:
 ## Next step if this is reopened
 
 Find the light or shadow state change behind the SPECIALIZATION compiles, with a per-frame log of light visibility and shadow toggles next to the counters. Then decide whether a warm-up on the lighting state is worth it.
+
+---
+
+# Attempt 2 (hitch2, 2026-11-28): where the spikes are, with measurements
+
+Machine and rules as above: Windows 11, Ryzen 5 7600, RTX 5060 Ti 8 GB, Godot 4.7.2, Forward Mobile, rendered under the GPU lock. Not a phone. No game behaviour changed. Probe: `game/devtools/scenarios/hitch_probe.gd` + `hitch_probe_run.gd` (new, committed with this doc).
+
+## Verdict
+
+No fix accepted. Nothing to measure a reduction against:
+- The race start window (0 to 5 s after GO) had **0 frames over 25 ms in all 19 rendered runs** (15 with the mirror on, 4 with it off; the max frame in the window was 19.7 to 23.3 ms). The start itself is clean on this PC.
+- The periodic 37 ms / 73 ms spikes every ~1.5 s from attempt 1 did **not** reproduce. In 15 runs of 60 s after GO there is no periodic pattern.
+- What does recur is one isolated spike at about 40.2 to 41.2 s after GO (26 to 54 ms, 8 of 15 runs). It sits at the same track point in each run. Its cause is **not** identified.
+- Hypothesis (2), that light toggles cause the SPECIALIZATION compiles, is **not supported**.
+
+## How it was measured
+
+`hitch_probe_run.gd` runs the same race as `drive_telemetry --mode=hitch` (bogaz, Tayfun, grid 8, rendered), but records from the grid to GO + 60 s. Per frame: frame delta, process and physics time, draw calls and primitives, pipeline compile counters (surface, draw, specialization), node count, viewport 3D scale, the number of nodes added, race state and the player's x, z and speed. Events, stamped in ms: node added or removed, Timer timeouts, AudioStreamPlayer start and stop, Light3D visibility or shadow change, lap completion, race finish. On a spike frame (dt > 25 ms) it also lists the nearest visible nodes that are not the player's own car. The scan runs after the frame is timed.
+
+Runs were 1 to 15 with the mirror on, 16 to 19 with `--no-mirror` (an experiment that stops every SubViewport after countdown). Raw JSON is in the scratchpad, not in the repo.
+
+### Counts (mirror on, 15 runs, 60 s after GO)
+
+| metric | result |
+|---|---|
+| frames > 25 ms, 0 to 5 s after GO | 0 in all 15 runs (max 19.7 to 23.3 ms) |
+| frames > 25 ms, 0 to 60 s after GO | 0 in 6 runs, 1 to 2 in 9 runs |
+| frames > 33 ms, 0 to 60 s after GO | 0 in 10 runs, 1 in 5 runs |
+| spike near 40.2 to 41.2 s after GO | 8 of 15 runs, 26 to 54 ms |
+| other spikes | 6.5 s (26 ms, run 2), 26.7 s (303 ms, run 4), 29 ms at 41.2 s (run 11) |
+| median frame, 60 s | 16.66 ms in every run |
+| TIME_PROCESS / TIME_PHYSICS during racing | about 9 to 11 ms / 1 to 3 ms |
+
+The 303 ms frame at 26.7 s in run 4 happened once and had no logged event in its window. Its cause is unknown.
+
+### Mirror off (4 runs, experiment)
+
+The spike near 40.5 to 40.9 s is still there in 3 of 4 runs (25 to 32 ms). Its size is a little smaller and the sample is small, but the wet-road mirror is not its main source. Start window: still 0 frames over 25 ms.
+
+### Hypothesis 1: source of the periodic spikes
+
+Checked and ruled out for the window after GO (none of these lines up with the spikes):
+- **Node churn.** No node is added or removed after GO. The node count stays at 4461 through the race (`node_added` events are only the MusicPlayer at GO).
+- **Timers.** No Timer timeout event fired in 60 s (the probe hooks every Timer, including those added later).
+- **Audio.** About 5 AudioStreamPlayer3D starts and stops a second come from the car engines. Their timing does not match the spikes. MusicPlayer and UI sounds start at GO with no hitch in the window.
+- **Dynamic resolution.** The 3D scale stays at 1.0 (`scaling_confirmed_on_device` is false on this preset), so no step happens.
+- **Lap events.** Lap completions are at 47 to 60 s, not at the spike.
+- **Mirror.** Mostly ruled out, see above.
+- **Shader compiles.** No compile count jump on the spike frames (the spike frames show spec delta 0 in most runs).
+
+Not ruled out: the spike is tied to a track position (the car reaches about x -241 to -255, z -193 to -235, at 185 to 200 km/h, at 40.2 to 41.2 s in every run where it happens). Nearby non-car nodes on those frames: street lamp `OmniLight3D` (`lamp_head_054`, about 7 m), `Rain` `GPUParticles3D` (about 8 m), `ChaseCamera` fill and rim lights (about 8 m). Any of these, or the lamp lights as a group, is a candidate. Not tested.
+
+### Hypothesis 2: SPECIALIZATION compiles and light toggles
+
+- The car `CarFx` `OmniLight3D` nodes toggle visibility 135 to 181 times per 60 s race (mostly nitro and underglow flicker). Compiles do not follow them: mean specialization compiles per frame are 0.13 to 0.20 in frames with a toggle and 0.18 to 0.19 in frames without one.
+- Compiles keep arriving through the race at about 0.18 per frame (about 11 per second) with no toggle in the frame. The big batch (about 120) comes in the grid beat, before countdown, as already measured in attempt 1. So compiles are not only at GO.
+- Shadow state changes were not seen in the probe (no `shadow_enabled` flips).
+
+Reading: compiles after GO are spread out, one or two per frame, and cost little. They do not explain the spikes.
+
+## Project settings (not changed)
+
+No `project.godot` change is proposed from this evidence. Attempt 1 checked the pipeline cache and shader cache (both on, default). No ubershader setting was found in this build. Cold-cache first launch still was not measured.
+
+## Next step if this is reopened
+
+1. Bisect the 40 s spike: with a per-run flag, turn off the street lamp lights (`lamp_head_*`, `floodlight_*`) and then the rain emitter, and count spikes over at least 4 runs each. Only then consider a fix, in one file.
+2. Measure a cold cache with a separate user data folder (the probe's `--out` plus a `user://` override).
+3. The 303 ms frame at 26.7 s (run 4) is not explained. Repeat it before chasing it.
+
+## Files
+
+- `game/devtools/scenarios/hitch_probe.gd` and `hitch_probe_run.gd` (new): the probe. Usage in the file header. Rendered only, under the GPU lock.
+- No change to `game/` outside devtools. `game/project.godot` untouched.
