@@ -11,6 +11,7 @@ signal paint_previewed(colour: Color)
 signal paint_committed(colour: Color)
 signal rim_pressed(colour: Color)
 signal upgrade_pressed(part: String)
+signal preview_requested(part: String)  ## a BUY row was touched or hovered: its gain shows on the stat bars
 signal car_step_pressed(dir: int)  ## carousel: -1 previous car, +1 next car
 signal car_action_pressed  ## BUY, SELECT
 
@@ -26,6 +27,7 @@ const RIM_COLOURS: Array[Color] = [
 ]
 const PARTS: PackedStringArray = ["engine", "tires", "nitro", "weight"]
 const PART_KEYS: Dictionary = {"engine": "garage.part_engine", "tires": "garage.part_tires", "nitro": "garage.part_nitro", "weight": "garage.part_weight"}
+const GHOST_COL: Color = Color(0.706, 0.361, 1.0)  ## violet: the gain is not owned yet, cyan is what the car has now
 const STATS: PackedStringArray = ["speed", "accel", "handling", "nitro"]
 const STAT_KEYS: Dictionary = {"speed": "garage.stat_speed", "accel": "garage.stat_accel", "handling": "garage.stat_handling", "nitro": "garage.stat_nitro"}
 const VIEWS: PackedStringArray = ["front", "side", "rear34", "overview"]
@@ -60,6 +62,7 @@ var _cash_caption: Label
 var _cash_value: Label
 var _stat_labels: Dictionary = {}
 var _bars: Dictionary = {}
+var _ghosts: Dictionary = {}  ## stat -> ProgressBar under the live bar, shows the gain of the previewed upgrade
 var _tabs: Dictionary = {}
 var _pages: Dictionary = {}
 var _rim_buttons: Array[Button] = []
@@ -211,12 +214,26 @@ func _build_stats(ins: Vector4, m: float) -> void:
 		var lab: Label = _keyed_label(STAT_KEYS[s], "tracked", 18, MSTheme.TEXT)
 		lab.custom_minimum_size = Vector2(STAT_LABEL_W, 0.0)
 		row.add_child(lab)
+		# the live bar sits on top of a ghost bar that carries the track and, in preview, the gain
+		var holder := Control.new()
+		holder.custom_minimum_size = Vector2(BAR_W, 14.0)
+		holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var ghost := ProgressBar.new()
+		ghost.show_percentage = false
+		ghost.max_value = 1.0
+		ghost.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		holder.add_child(ghost)
 		var bar := ProgressBar.new()
 		bar.show_percentage = false
 		bar.max_value = 1.0
-		bar.custom_minimum_size = Vector2(BAR_W, 14.0)
-		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		row.add_child(bar)
+		bar.add_theme_stylebox_override("background", StyleBoxEmpty.new())
+		bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		holder.add_child(bar)
+		row.add_child(holder)
+		_ghosts[s] = ghost
 		box.add_child(row)
 		_stat_labels[s] = lab
 		_bars[s] = bar
@@ -366,6 +383,9 @@ func _build_upgrades_page() -> Control:
 		row.add_child(price)
 		var buy: Button = _button("garage.buy", Vector2(120.0, TOUCH_H))
 		buy.pressed.connect(func() -> void: upgrade_pressed.emit(part))
+		buy.mouse_entered.connect(func() -> void: preview_requested.emit(part))
+		buy.button_down.connect(func() -> void: preview_requested.emit(part))
+		buy.mouse_exited.connect(func() -> void: preview_requested.emit(""))  ## the ghost leaves with the pointer
 		row.add_child(buy)
 		page.add_child(row)
 		_rows[part] = {"pips": pip_list, "price": price, "buy": buy}
@@ -389,6 +409,15 @@ func _build_views(ins: Vector4, m: float) -> void:
 
 # --- public API used by garage.gd -------------------------------------------
 
+## Violet fill for the gain when previewing, an empty style otherwise so the ghost adds nothing to the live bar.
+func _ghost_fill(on: bool) -> StyleBox:
+	if not on:
+		return StyleBoxEmpty.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = GHOST_COL
+	return sb
+
+
 ## Shows the car's data. state keys: name, cash, stats (dict), levels (dict part -> int),
 ## costs (dict part -> next cost, -1 at max), paint (Color), rim (Color), can_afford (dict part -> bool).
 func refresh(state: Dictionary) -> void:
@@ -399,6 +428,10 @@ func refresh(state: Dictionary) -> void:
 	var stats: Dictionary = state.get("stats", {})
 	for s: String in STATS:
 		(_bars[s] as ProgressBar).value = float(stats.get(s, 0.0))
+		var preview: Dictionary = state.get("preview", {})
+		var ghost: ProgressBar = _ghosts[s]
+		ghost.value = float(preview.get(s, stats.get(s, 0.0)))
+		ghost.add_theme_stylebox_override("fill", _ghost_fill(preview.has(s)))
 	var levels: Dictionary = state.get("levels", {})
 	var costs: Dictionary = state.get("costs", {})
 	var afford: Dictionary = state.get("can_afford", {})

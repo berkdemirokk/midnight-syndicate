@@ -64,6 +64,7 @@ var _touches: Dictionary = {}
 var _pinch_px: float = 0.0
 var _last_tap_ms: int = -100000
 var _last_tap_px: Vector2 = Vector2.ZERO
+var _preview_part: String = ""  ## upgrade row under the finger or cursor: its gain shows on the stat bars
 
 
 func _ready() -> void:
@@ -226,6 +227,7 @@ func state() -> Dictionary:
 		"name": spec.display_name if spec != null else car_id,
 		"cash": GameState.get_cash(),
 		"stats": GarageStats.compute(spec, upgrades),
+		"preview": _upgrade_preview(upgrades),
 		"levels": levels,
 		"costs": costs,
 		"can_afford": afford,
@@ -402,8 +404,25 @@ func _build_hud() -> void:
 	_hud.paint_committed.connect(commit_paint)
 	_hud.rim_pressed.connect(commit_rim)
 	_hud.upgrade_pressed.connect(buy_upgrade)
+	_hud.preview_requested.connect(_on_preview_requested)
 	_hud.car_step_pressed.connect(step_car)
 	_hud.car_action_pressed.connect(car_action)
+	_refresh_hud()
+
+
+## Stats after one more level of the previewed part; empty when nothing is previewed or the part is maxed.
+func _upgrade_preview(upgrades: Dictionary) -> Dictionary:
+	if _preview_part.is_empty() or spec == null:
+		return {}
+	if int(upgrades.get(_preview_part, 0)) >= GameState.MAX_UPGRADE_LEVEL:
+		return {}
+	return GarageStats.preview_next(spec, upgrades, _preview_part)
+
+
+func _on_preview_requested(part: String) -> void:
+	if part == _preview_part:
+		return
+	_preview_part = part
 	_refresh_hud()
 
 
