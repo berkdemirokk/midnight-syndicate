@@ -78,7 +78,6 @@ func _ready() -> void:
 	Settings.changed.connect(_on_settings_changed)
 	_refresh_text()
 	show_tab(0)
-	_tabs[0].grab_focus()
 
 
 func _build() -> void:
@@ -215,6 +214,7 @@ func show_tab(index: int) -> void:
 	for i: int in _pages.size():
 		_pages[i].visible = i == index
 	_tabs[index].button_pressed = true
+	_tabs[index].grab_focus()  # keep the focus ring on the shown tab, not on a stale one
 	_scroll.scroll_vertical = 0
 
 
