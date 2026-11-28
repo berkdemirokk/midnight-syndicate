@@ -7,7 +7,6 @@ extends "res://devtools/capture_scenario.gd"
 ## --track=city|bogaz (default city). Output: evidence/screens/draw_breakdown/<preset>_<moment>.json, one baseline shot per moment, rows on stdout.
 
 const SCENE: String = "res://race/race_scene.tscn"
-const CITY_SCENE: String = "res://world/city_01/city_01.tscn"
 const TRACKS: Dictionary = {
 	"city": "res://world/city_01/city_01.tscn",
 	"bogaz": "res://world/istanbul_bogaz/istanbul_bogaz.tscn",
