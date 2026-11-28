@@ -155,20 +155,21 @@ Same machine, rules and probe as attempt 2 (`hitch_probe_run.gd`, GPU lock, rend
 
 ## Verdict
 
-No cause found. No variant removed the spike in 3 of 3 runs while the baseline showed it, so no fix was made. Only `devtools/` was changed. No `game/` code is touched.
+No cause found, and this attempt has no valid comparison: the retained baseline files show no spike at all (0 of 3, see the provenance note below), so no variant result can show a removal. No fix was made. No `game/` code or `project.godot` changed; only the probe script and this doc.
 
 ## Results (frames over 25 ms, 36 to 44 s after GO)
 
 | variant | run 1 | run 2 | run 3 |
 |---|---|---|---|
-| baseline | 44.2 ms at 41.07 s (+30.4 at 41.10) | 28.7 ms at 40.77 s (+26.2 at 40.80) | none |
+| baseline (retained files) | none (max 21.4 ms) | none (max 24.2 ms) | none (max 21.2 ms) |
+| baseline (first launch, not retained) | 44.2 ms at 41.07 s (unverified) | 28.7 ms at 40.77 s (unverified) | same file as above |
 | (a) street lamps off | storm: 54 frames over 25 ms, 235 ms at 36.06 s, 45.7 ms at 37.83 s | 43.9 ms at 40.67 s | none |
 | (b) rain off | 27.6 ms at 41.21 s | none | none |
 | (c) traffic off | not run: `traffic_enabled = false` is already set in the probe, so the baseline has no traffic | | |
 | (d) mirror off | not re-run: attempt 2 (4 runs) already measured it, and 3 of 4 runs still spiked | | |
 | (e) audio off | not run: the probe already uses `--audio-driver Dummy` | | |
 
-Max frame over 0 to 60 s: baseline 44.2, 28.7, 21.2 ms. Lamps off: 398.6 (run 1, see below), 43.9, 25.0 ms. Rain off: 27.6, 23.8, 24.0 ms.
+Max frame over 0 to 60 s: baseline (retained) 21.4, 24.2, 21.2 ms. Lamps off: 398.6 (run 1, see below), 43.9, 25.0 ms. Rain off: 27.6, 23.8, 24.0 ms.
 
 ## What was ruled out or checked
 
@@ -179,8 +180,9 @@ Max frame over 0 to 60 s: baseline 44.2, 28.7, 21.2 ms. Lamps off: 398.6 (run 1,
 
 ## Caveats
 
-- The baseline rate is low in this sample: 2 of 3 runs here, 8 of 15 in attempt 2. With a roughly 50 % rate, a 3 of 3 absence happens by chance in about 1 run in 8, so no single-variant result can be called a removal. Two of the three variants gave one spike each, so neither is clearly better or worse than the baseline.
-- Hiding the lamps (run 1 of the lamps set) produced a long storm of 25 to 240 ms frames from 36 s on, with 54 spikes in 60 s. It is not clear whether that is the cause of hiding Light3D nodes at the mid-race (forward light cluster changes or shader compiles), or noise from the probe. It was not investigated. Do not read it as a result for the lamps.
+- **Provenance (lead review).** The variant loop was launched twice by mistake and both launches wrote the same file names. The first launch finished all 9 runs (base 1-3, lamps 1-3, rain 1-3, about 04:59 to 05:09). The second launch then overwrote `base_1.json` (05:10) and `base_2.json` (05:11) and was still running base 3 at review time. So the lamps and rain files and `base_3.json` are from the first launch, while `base_1.json` and `base_2.json` are from the second. The two baseline spikes first reported (44.2 ms and 28.7 ms) came from the overwritten first-launch files and cannot be checked. The retained baseline files have zero frames over 25 ms in 0 to 60 s. A snapshot of the files as reviewed is in the scratchpad folder `hitch3_snapshot_0513`.
+- The baseline rate is low: 0 of 3 in the retained files (2 of 5 if the unverified first-launch numbers are counted), 8 of 15 in attempt 2. With a roughly 50 % rate, a 3 of 3 absence happens by chance in about 1 run in 8, so no single-variant result can be called a removal. Two of the three variants gave one spike each, so neither is clearly better or worse than the baseline.
+- Hiding the lamps (run 1 of the lamps set) produced a storm of 25 to 400 ms frames across the whole run (54 frames over 25 ms, in bursts at about 2, 3, 7, 12, 36, 38 and 48 s; worst 398.6 ms at 1.96 s), not only near 40 s. Runs 2 and 3 of the same variant had no storm. It is not clear whether that is the cost of hiding Light3D nodes at countdown (forward light cluster changes or shader compiles), or noise from the probe. It was not investigated. Do not read it as a result for the lamps.
 - ResourceLoader loads were not logged (the probe hooks nodes and timers, not loads). Not checked.
 
 ## Next step if reopened
