@@ -1,5 +1,5 @@
 extends "res://tests/test_case.gd"
-## Per-track grade (world/time_of_day/track_grade.gd): track keys, a complete table with no ambient multiplier above 1.1,
+## Per-track grade (world/time_of_day/track_grade.gd): track keys, a complete table with no ambient multiplier above 1.2,
 ## an absolute and repeatable environment grade (no stacking across races), and no change for an ungraded track.
 
 const CITY_TRACK: String = "res://world/city_01/city_01.tscn"

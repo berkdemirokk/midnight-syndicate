@@ -109,7 +109,12 @@ Frame time, average ms, runs in order (before / after):
 - bogaz night (3 runs each): 3.95, 4.13, 3.57 / 4.18, 3.65, 3.36. Median 3.95 / 3.65. No slower.
 - maslak night (3 runs each): 4.11, 4.48, 4.18 / 7.04, 7.74, 3.97. Median 4.18 / 7.04. Two of three after runs are slower
   and this is not explained by draw calls. Not resolved: other sessions were using the GPU at the same time, so this is
-  not a clean measurement. Treat Maslak night as NOT shown to be free until re-measured on an idle GPU.
+  not a clean measurement. 
+  Lead re-check (2026-11-28, same PC, runs interleaved before / after under the GPU lock, `raw/lead_recheck/`):
+  before 3.52, 3.90, 4.68 / after 3.23, 5.12, 4.11 ms; median 3.90 / 4.11, draw calls 362-366 both. The 7 ms runs did
+  not come back; the difference is inside the run-to-run noise. Night now turns the Environment adjustments on (they
+  were off at night); in Godot they run inside the existing tonemap pass, so no extra draw or pass is expected.
+  Not measured on a phone.
 - city night (1 run each): 4.87 / 4.76.
 
 Clipping: luma_max in the capture JSON. Bogaz day 1.000 / 1.000, bogaz sunset 0.997 / 0.997, bogaz night 1.0 / 1.0, city day
