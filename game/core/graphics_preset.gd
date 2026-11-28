@@ -15,8 +15,8 @@ extends Resource
 @export var directional_shadow_size: int = 1024
 @export_range(0.0, 1.0, 0.01) var particle_amount_scale: float = 0.7
 ## Soft directional shadow filter (RenderingServer.directional_soft_shadow_filter_set_quality).
-@export var shadow_filter: RenderingServer.ShadowQuality = RenderingServer.SHADOW_QUALITY_SOFT_VERY_LOW
-## Post AA on the 3D pass. High keeps MSAA only: FXAA on top would just blur it.
+@export var shadow_filter: RenderingServer.ShadowQuality = RenderingServer.SHADOW_QUALITY_SOFT_LOW
+## Post AA on the 3D pass. Off on every preset until FXAA is measured on a phone (docs/perf/GPU_PASS_2026-11-28.md).
 @export var screen_space_aa: Viewport.ScreenSpaceAA = Viewport.SCREEN_SPACE_AA_DISABLED
 ## city_builder.gd builds the reflection probes at track load only when this is on.
 @export var reflection_probes_enabled: bool = true
@@ -46,8 +46,7 @@ static func build(preset_id: String) -> GraphicsPreset:
 			p.particle_amount_scale = 1.0
 			p.shadow_filter = RenderingServer.SHADOW_QUALITY_SOFT_LOW
 		_:
-			# "medium" keeps the defaults above, plus FXAA: it had no AA and rails and cables crawl at speed.
-			p.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
+			pass # "medium" keeps the defaults above (engine soft shadow filter, no post AA).
 	return p
 
 
