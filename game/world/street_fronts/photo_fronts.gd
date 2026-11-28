@@ -16,12 +16,12 @@ const SETS: Dictionary = {
 	"istanbul_bogaz": {"layout": "res://assets/world/istanbul_bogaz/istanbul_bogaz_layout.json", "groups": [
 		{"match": [], "atlases": ["facade_row_01", "facade_row_02"], "w": 5.4, "h": 14.4, "depth": 7.0, "roof": 1.7, "textured": true, "shop": 0.22, "stone": Color(0.62, 0.57, 0.5)}]},
 	"istanbul_maslak": {"layout": "res://assets/world/istanbul_maslak/istanbul_maslak_layout.json", "groups": [
-		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0, "shop": 0.12, "stone": Color(0.36, 0.36, 0.37), "stone_tex": "marble_01"},
-		{"match": [], "atlases": ["modern_row_01", "neon_row_01"], "w": 8.0, "h": 21.3, "depth": 9.0, "roof": 0.0, "shop": 0.22, "stone": Color(0.45, 0.44, 0.43), "stone_tex": "marble_01"}]},
+		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0, "textured": true, "wall_tex": "concrete_wall_006", "roof_tex": "bitumen", "wall": Color(0.6, 0.6, 0.6), "wall_sat": 0.5, "wall_gain": 1.9, "wall_uv": 3.0, "shop": 0.12, "stone": Color(0.36, 0.36, 0.37), "stone_tex": "marble_01"},
+		{"match": [], "atlases": ["modern_row_01", "neon_row_01"], "w": 8.0, "h": 21.3, "depth": 9.0, "roof": 0.0, "textured": true, "wall_tex": "concrete_wall_006", "roof_tex": "bitumen", "wall": Color(0.6, 0.6, 0.6), "wall_sat": 0.5, "wall_gain": 1.9, "wall_uv": 3.0, "shop": 0.22, "stone": Color(0.45, 0.44, 0.43), "stone_tex": "marble_01"}]},
 	"city_01": {"layout": "res://assets/world/city_01/city_01_layout.json", "groups": [
-		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0, "shop": 0.12, "stone": Color(0.36, 0.36, 0.37), "stone_tex": "marble_01"},
+		{"match": ["bld_downtown"], "atlases": ["tower_row_01"], "w": 25.0, "h": 66.7, "depth": 20.0, "roof": 0.0, "textured": true, "wall_tex": "concrete_wall_006", "roof_tex": "bitumen", "wall": Color(0.6, 0.6, 0.6), "wall_sat": 0.5, "wall_gain": 1.9, "wall_uv": 3.0, "shop": 0.12, "stone": Color(0.36, 0.36, 0.37), "stone_tex": "marble_01"},
 		{"match": ["bld_waterfront", "bld_parking"], "atlases": [], "w": 1.0, "h": 1.0, "depth": 1.0, "roof": 0.0},
-		{"match": [], "atlases": ["neon_row_01", "market_row_01"], "w": 6.6, "h": 17.6, "depth": 8.0, "roof": 0.0, "shop": 0.22, "stone": Color(0.5, 0.46, 0.42)}]},
+		{"match": [], "atlases": ["neon_row_01", "market_row_01"], "w": 6.6, "h": 17.6, "depth": 8.0, "roof": 0.0, "textured": true, "wall_tex": "brick_wall_006", "roof_tex": "bitumen", "wall": Color(0.62, 0.6, 0.58), "wall_sat": 0.75, "wall_gain": 1.5, "wall_uv": 1.6, "shop": 0.22, "stone": Color(0.5, 0.46, 0.42)}]},
 }
 const EAVE_M: float = 0.8  ## a pitched roof comes this far out over the street face
 const FASCIA_M: float = 0.22  ## the board under the roof front edge; the soffit runs back from it under the eave
@@ -117,9 +117,13 @@ func _load_groups(groups: Array) -> void:
 				facade.set_shader_parameter("albedo_tex", load(ATLAS_DIR + String(atlas_name) + ".jpg"))
 				facade.set_shader_parameter("textured_walls", textured)
 				if textured:
-					facade.set_shader_parameter("wall_tex", load(WALL_TEX))
-					facade.set_shader_parameter("wall_nrm", load(WALL_NRM))
-					facade.set_shader_parameter("roof_tex", load(ROOF_TEX))
+					var wt: String = String(group.get("wall_tex", ""))
+					facade.set_shader_parameter("wall_tex", load(WALL_TEX if wt == "" else STONE_DIR + wt + "/basecolor.jpg"))
+					facade.set_shader_parameter("wall_nrm", load(WALL_NRM if wt == "" else STONE_DIR + wt + "/normal.jpg"))
+					var rt: String = String(group.get("roof_tex", ""))
+					facade.set_shader_parameter("roof_tex", load(ROOF_TEX if rt == "" else STONE_DIR + rt + "/basecolor.jpg"))
+					facade.set_shader_parameter("wall_saturation", float(group.get("wall_sat", 0.3)))
+					facade.set_shader_parameter("wall_gain", float(group.get("wall_gain", 2.6)))
 				var night_path: String = ATLAS_DIR + String(atlas_name) + "_night.jpg"
 				if ResourceLoader.exists(night_path):
 					facade.set_shader_parameter("night_tex", load(night_path))
@@ -293,9 +297,10 @@ func _house_mesh(index: int, group: Dictionary) -> ArrayMesh:
 			[Vector2(u0, 0.0), Vector2(u1, 0.0), Vector2(u1, 1.0 - frac), Vector2(u0, 1.0 - frac)], Vector3(0.0, 0.0, -1.0), Color.WHITE)
 	# the plaster and tile band (roof alpha, lifted wall colour) is for the textured groups only; other tracks keep the plain look
 	var textured: bool = bool(group.get("textured", false))
-	var wall := Color(WALL_COLOUR if textured else PLAIN_WALL_COLOUR, 0.0)
+	var wall := Color(group.get("wall", WALL_COLOUR) if textured else PLAIN_WALL_COLOUR, 0.0)
+	var wall_uv_m: float = float(group.get("wall_uv", WALL_UV_M))
 	var roof := Color(ROOF_COLOUR if rise > 0.0 else FLAT_ROOF_COLOUR, ROOF_ALPHA if textured else 0.0)
-	var wall_uv := func(p: Vector3) -> Vector2: return Vector2(p.x + p.z, -p.y) / WALL_UV_M
+	var wall_uv := func(p: Vector3) -> Vector2: return Vector2(p.x + p.z, -p.y) / wall_uv_m
 	var roof_uv := func(p: Vector3) -> Vector2: return Vector2(p.x, Vector2(p.y - ridge, p.z - d / 2.0).length()) / ROOF_UV_M
 	var side_r: Array = [Vector3(w, h, 0.0), Vector3(w, h, d), Vector3(w, 0.0, d), Vector3(w, 0.0, 0.0)]
 	_quad(st, side_r, _uvs(side_r, wall_uv), Vector3(1.0, 0.0, 0.0), wall)

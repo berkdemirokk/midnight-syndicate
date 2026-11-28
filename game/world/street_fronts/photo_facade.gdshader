@@ -14,6 +14,8 @@ uniform bool textured_walls = false;
 uniform float relief = 0.0;  // 0 when no relief map is set
 uniform float night = 0.0;
 uniform vec3 tint = vec3(1.0);
+uniform float wall_saturation = 0.3;  // the CC0 clay plaster is ochre: most of its hue goes; brick keeps its own
+uniform float wall_gain = 2.6;
 
 varying float wall_height;
 
@@ -37,8 +39,8 @@ void fragment() {
 			float grime = mix(0.6, 1.0, smoothstep(0.0, 2.5, wall_height));  // grime and shade at the foot of a wall
 			// the CC0 clay plaster is ochre: keep its grain, take most of its hue out so the vertex colour sets the paint
 			vec3 wt = texture(wall_tex, UV).rgb;
-			wt = mix(vec3(dot(wt, vec3(0.2126, 0.7152, 0.0722))), wt, 0.3);
-			plain = COLOR.rgb * wt * 2.6 * grime;
+			wt = mix(vec3(dot(wt, vec3(0.2126, 0.7152, 0.0722))), wt, wall_saturation);
+			plain = COLOR.rgb * wt * wall_gain * grime;
 			NORMAL_MAP = texture(wall_nrm, UV).rgb;
 			NORMAL_MAP_DEPTH = 0.8;
 		}
