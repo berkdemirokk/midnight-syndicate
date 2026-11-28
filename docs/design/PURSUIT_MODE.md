@@ -35,9 +35,9 @@ Status: opt-in. `PursuitMode.ENABLED` is `false` in every build, and `RaceConfig
 - Event `bogaz_escape` is open from the start, so it never locks and never gates the ladder. The Next button after the last ladder event skips open events, so it does not offer this one.
 - It races on istanbul_bogaz at night, 2 laps, against 3 street-class rivals (skills 0.90, 0.88, 0.86), with police pursuit on.
 - Escaped: the ESCAPED banner shows and the cash reward is paid. The race goes on to its finish, which pays the normal reward.
-- Busted: the BUSTED banner shows, the race stops for the player, and 3 s later the results screen shows no standings, no stars, no cash and no record. The event can be retried.
+- Busted: the BUSTED banner shows, the race stops for the player, and 3 s later the results screen shows no standings, no cash and no record; no stars are awarded (the star row shows three dim stars). The event can be retried.
 - Strings are in `game/ui/i18n.gd` (tr and en): `event.bogaz_escape.name`, `pursuit.heat`, `pursuit.busted`, `pursuit.escaped`, `pursuit.busted.result`.
-- Test: `game/tests/test_escape_event.gd` (reachable and localized, other events police-free, the event flag passes the gate with the kill switch off, and an autopilot run to a finish or a bust with the result checked).
+- Test: `game/tests/test_escape_event.gd` (reachable and localized, other events police-free, the event flag passes the gate with the kill switch off, and a forced bust on the real event scene with no standings, stars, cash or record and a later finish ignored, and an autopilot run to a finish or a bust with the result checked).
 
 ## Not done or known limits
 
@@ -48,4 +48,4 @@ Status: opt-in. `PursuitMode.ENABLED` is `false` in every build, and `RaceConfig
 - Not checked on a phone. Desktop numbers are not phone numbers.
 - The roadblock is a barrier line, not a navigation or AI avoidance problem. The AI is not tuned to avoid it.
 - `ENABLED` is a static var rather than a const, so tests and capture can flip it for one run. Normal builds leave it false.
-- The busted run keeps the car physically moving for the 3 s banner while the race clock is paused.
+- On BUSTED only the RaceManager stops (race clock and lap counting) and the autopilot is switched off; the car body is not frozen, so it coasts (or a human player can still steer) behind the banner and the results screen, as after a normal finish. Not covered by a test.

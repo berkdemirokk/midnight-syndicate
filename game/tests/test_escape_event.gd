@@ -68,6 +68,47 @@ func test_event_flag_opens_gate_with_kill_switch_off() -> void:
 	PursuitMode.ENABLED = was
 
 
+## Deterministic bust on the real event scene: the result screen comes up with no standings, stars, cash or record,
+## and a later race_finished is ignored.
+func test_bust_shows_result_without_reward() -> void:
+	var was: bool = PursuitMode.ENABLED
+	PursuitMode.ENABLED = false
+	var old: Dictionary = {"path": GameState.save_path, "profile": GameState.profile.duplicate(true)}
+	GameState.open_profile(TEMP_SAVE)
+	GameState.reset_profile()
+	var cash_before: int = GameState.get_cash()
+	var cfg: RaceConfig = EventCatalog.config_for(EVENT_ID)
+	cfg.autopilot = true
+	var scene: RaceScene = _make_scene(cfg)
+	await frames(30)
+	var pm: PursuitMode = scene.find_child("PursuitMode", true, false) as PursuitMode
+	check(pm != null, "the event starts the pursuit")
+	if pm != null:
+		pm.state.phase = PursuitState.Phase.BUSTED
+		pm._finish()
+		check(scene._pursuit_busted, "race_scene takes the bust")
+		check(not scene.race.is_physics_processing(), "the race stops for the player")
+		check(not scene.results_screen.visible, "the BUSTED banner shows first")
+		await frames(int(ceil((scene.PURSUIT_BUST_SHOW_S + 0.5) / STEP_S)))
+		check(scene.results_screen.visible, "a bust shows the results screen")
+		check(scene.last_results.is_empty(), "a bust has no race standings")
+		check(scene.results_screen._subtitle.text == I18n.t("pursuit.busted.result"), "a bust says no reward, retry")
+		var fake: Array[Dictionary] = [{"car": scene.player, "name": "p", "position": 1, "total_time": 60.0, "best_lap": 30.0, "is_player": true}]
+		scene.race.race_finished.emit(fake)
+		await frames(2)
+		check(scene.last_results.is_empty(), "a race_finished after the bust is ignored")
+		check(GameState.event_stars(EVENT_ID) == 0, "a bust records no stars")
+		check(GameState.get_cash() == cash_before, "a bust pays no reward")
+	await cleanup([scene])
+	GameState.save_path = str(old["path"])
+	GameState.profile = old["profile"]
+	var abs_path: String = ProjectSettings.globalize_path(TEMP_SAVE)
+	for suffix: String in ["", ".bak", ".tmp"]:
+		if FileAccess.file_exists(TEMP_SAVE + suffix):
+			DirAccess.remove_absolute(abs_path + suffix)
+	PursuitMode.ENABLED = was
+
+
 func test_escape_event_runs_to_a_result() -> void:
 	var was: bool = PursuitMode.ENABLED
 	PursuitMode.ENABLED = false  # the event alone switches pursuit on

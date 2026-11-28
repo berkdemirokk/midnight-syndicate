@@ -800,6 +800,8 @@ func _on_pursuit_busted() -> void:
 		return
 	_pursuit_busted = true
 	race.set_physics_process(false)
+	if player_ai != null:
+		player_ai.set_racing(false)  # autopilot stops with the race, as on a finish
 	get_tree().create_timer(PURSUIT_BUST_SHOW_S).timeout.connect(_show_busted)
 
 

@@ -337,7 +337,7 @@ func test_escape_pays_cash() -> void:
 	check(pm.state.phase == PursuitState.Phase.ESCAPED, "police out of range for 8 s should escape, phase %d" % pm.state.phase)
 	check(pm.escape_reward == PursuitMode.ESCAPE_REWARD_PER_HEAT, "escape reward %d" % pm.escape_reward)
 	check(GameState.get_cash() == cash_before + PursuitMode.ESCAPE_REWARD_PER_HEAT, "escape cash not added")
-	check((pm._hud as PursuitHud)._banner.text.begins_with(I18n.t("pursuit.escaped").get_slice("%", 0).strip_edges()), "ESCAPED banner missing")
+	check((pm._hud as PursuitHud)._banner.text == I18n.t("pursuit.escaped") % PursuitMode.ESCAPE_REWARD_PER_HEAT, "ESCAPED banner missing")
 	await cleanup([scene])
 	_restore_profile(old)
 	PursuitMode.ENABLED = was
