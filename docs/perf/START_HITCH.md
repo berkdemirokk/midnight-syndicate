@@ -146,3 +146,47 @@ No `project.godot` change is proposed from this evidence. Attempt 1 checked the 
 - No change to `game/` outside devtools. `game/project.godot` untouched.
 - Note: running the test suite rewrites `evidence/test_results.json`. Restore it with `git checkout -- evidence/test_results.json` after each run so the worktree stays clean.
 - Counts in this section were recomputed from the raw probe JSON in lead review (2026-11-28) and corrected where the first draft was wrong.
+
+---
+
+# Attempt 3 (wp-spike, 2026-11-28): bisect of the 40 s spike, no fix
+
+Same machine, rules and probe as attempt 2 (`hitch_probe_run.gd`, GPU lock, rendered, 60 s after GO, desktop only). Two new probe flags: `--no-lamps` (hides every `lamp_head_*` and `floodlight_*` Light3D after countdown) and `--no-rain` (stops and hides every GPUParticles3D whose path contains "rain" after countdown). Raw JSON is in the scratchpad, not in the repo.
+
+## Verdict
+
+No cause found, and this attempt has no valid comparison: the retained baseline files show no spike at all (0 of 3, see the provenance note below), so no variant result can show a removal. No fix was made. No `game/` code or `project.godot` changed; only the probe script and this doc.
+
+## Results (frames over 25 ms, 36 to 44 s after GO)
+
+| variant | run 1 | run 2 | run 3 |
+|---|---|---|---|
+| baseline (retained files) | none (max 21.4 ms) | none (max 24.2 ms) | none (max 21.2 ms) |
+| baseline (first launch, not retained) | 44.2 ms at 41.07 s (unverified) | 28.7 ms at 40.77 s (unverified) | same file as above |
+| (a) street lamps off | storm: 54 frames over 25 ms, 235 ms at 36.06 s, 45.7 ms at 37.83 s | 43.9 ms at 40.67 s | none |
+| (b) rain off | 27.6 ms at 41.21 s | none | none |
+| (c) traffic off | not run: `traffic_enabled = false` is already set in the probe, so the baseline has no traffic | | |
+| (d) mirror off | not re-run: attempt 2 (4 runs) already measured it, and 3 of 4 runs still spiked | | |
+| (e) audio off | not run: the probe already uses `--audio-driver Dummy` | | |
+
+Max frame over 0 to 60 s: baseline (retained) 21.4, 24.2, 21.2 ms. Lamps off: 398.6 (run 1, see below), 43.9, 25.0 ms. Rain off: 27.6, 23.8, 24.0 ms.
+
+## What was ruled out or checked
+
+- **Lap boundary.** Lap completions for every car land at 46.7 s and later in all 9 runs, never at 36 to 44 s. The spike is not a lap event.
+- **Node churn and timers.** Zero `node_added`, `node_removed` or Timer timeout events between 0 and 60 s after GO in any run. Node count is flat.
+- **Nearby nodes at spike frames (baseline runs 1 and 2).** The nearest visible non-car nodes are the rain `GPUParticles3D`, the lamp `OmniLight3D` (`lamp_head_054`), the ChaseCamera fill and rim lights, and car wheel-spray and CarFx particles. The same set is present in every run, so the list alone does not single out one cause.
+- **Probe echo.** The spike-frame scan lands in the next frame (see attempt 2). The first frame of each cluster is the one counted.
+
+## Caveats
+
+- **Provenance (lead review).** The variant loop was launched twice by mistake and both launches wrote the same file names. The first launch finished all 9 runs (base 1-3, lamps 1-3, rain 1-3, about 04:59 to 05:09). The second launch then overwrote `base_1.json` (05:10) and `base_2.json` (05:11) and was still running base 3 at review time. So the lamps and rain files and `base_3.json` are from the first launch, while `base_1.json` and `base_2.json` are from the second. The two baseline spikes first reported (44.2 ms and 28.7 ms) came from the overwritten first-launch files and cannot be checked. The retained baseline files have zero frames over 25 ms in 0 to 60 s. A snapshot of the files as reviewed is in the scratchpad folder `hitch3_snapshot_0513`.
+- The baseline rate is low: 0 of 3 in the retained files (2 of 5 if the unverified first-launch numbers are counted), 8 of 15 in attempt 2. With a roughly 50 % rate, a 3 of 3 absence happens by chance in about 1 run in 8, so no single-variant result can be called a removal. Two of the three variants gave one spike each, so neither is clearly better or worse than the baseline.
+- Hiding the lamps (run 1 of the lamps set) produced a storm of 25 to 400 ms frames across the whole run (54 frames over 25 ms, in bursts at about 2, 3, 7, 12, 36, 38 and 48 s; worst 398.6 ms at 1.96 s), not only near 40 s. Runs 2 and 3 of the same variant had no storm. It is not clear whether that is the cost of hiding Light3D nodes at countdown (forward light cluster changes or shader compiles), or noise from the probe. It was not investigated. Do not read it as a result for the lamps.
+- ResourceLoader loads were not logged (the probe hooks nodes and timers, not loads). Not checked.
+
+## Next step if reopened
+
+1. Run 6 or more baseline runs to pin the rate, then 6 runs per variant. A variant needs 0 spikes in at least 6 of 6 while the baseline shows them.
+2. Log ResourceLoader calls (wrap `ResourceLoader.load` through a probe hook, or count `Resource` creation) in the 36 to 44 s window.
+3. Repeat the lamp storm with `--no-lamps` alone, no other variant, to see whether hiding lights mid-race is itself costly.

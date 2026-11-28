@@ -15,6 +15,8 @@ const MACHINE_NOTE: String = "Windows 11 dev PC, NVIDIA RTX 5060 Ti 8 GB, Godot 
 
 var _out_path: String = ""
 var _no_mirror: bool = false  ## experiment: the SubViewports (planar wet-road mirror) stop updating
+var _no_lamps: bool = false  ## experiment: street lamp and floodlight Light3D hidden from countdown on
+var _no_rain: bool = false  ## experiment: rain GPUParticles3D stopped and hidden from countdown on
 var _length_s: float = 60.0
 var _events: Array = []  ## [t_ms, kind, detail]
 var _added_this_frame: int = 0
@@ -32,6 +34,10 @@ func _ready() -> void:
 			_out_path = a.trim_prefix("--out=")
 		elif a == "--no-mirror":
 			_no_mirror = true
+		elif a == "--no-lamps":
+			_no_lamps = true
+		elif a == "--no-rain":
+			_no_rain = true
 		elif a.begins_with("--length="):
 			_length_s = a.trim_prefix("--length=").to_float()
 	get_node("/root/GameState").call("open_profile", "user://hitch_probe_save.json")
@@ -131,6 +137,15 @@ func _run() -> void:
 				_hook_timer(n as Timer)
 			for n: Node in get_tree().root.find_children("*", "Light3D", true, false):
 				_light_state[(n as Light3D).get_path()] = _light_key(n as Light3D)
+			if _no_lamps:
+				for n: Node in get_tree().root.find_children("*", "Light3D", true, false):
+					if n.name.begins_with("lamp_head_") or n.name.begins_with("floodlight_"):
+						(n as Light3D).visible = false
+			if _no_rain:
+				for n: Node in get_tree().root.find_children("*", "GPUParticles3D", true, false):
+					if str(n.get_path()).to_lower().contains("rain"):
+						(n as GPUParticles3D).emitting = false
+						(n as GPUParticles3D).visible = false
 		if _armed:
 			_poll_events()
 			if _no_mirror:
@@ -195,7 +210,7 @@ func _player_xz(scene: RaceScene) -> Array:
 func _write(cd_ms: float, go_ms: float, frames: Array, scene: RaceScene) -> void:
 	var data: Dictionary = {"machine": MACHINE_NOTE, "mode": "hitch_probe", "length_s": _length_s,
 "adapter": RenderingServer.get_video_adapter_name(),
-		"no_mirror": _no_mirror, "countdown_ms": snappedf(cd_ms, 0.1), "go_ms": snappedf(go_ms, 0.1),
+		"no_mirror": _no_mirror, "no_lamps": _no_lamps, "no_rain": _no_rain, "countdown_ms": snappedf(cd_ms, 0.1), "go_ms": snappedf(go_ms, 0.1),
 		"frame_fields": ["t_ms", "dt_ms", "proc_ms", "phys_ms", "draws", "primitives", "spec_cum", "surf_cum",
 			"draw_cum", "nodes", "scale", "nodes_added", "race_state", "player_xz_speed"],
 		"frames": frames, "events": _events}
