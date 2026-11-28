@@ -5,7 +5,7 @@ Status words: DONE (verified tonight or earlier with evidence), PARTIAL, MISSING
 
 | # | item | status | evidence / blocker |
 |---|---|---|---|
-| 1 | AAA-level graphics on the flagship Ortakoy segment | PARTIAL | big day/night/sunset improvement (before_after_2026-11-28); not equal to the references: stylised licensed cars, flat photo rows at grazing angles, simple bridge |
+| 1 | AAA-level graphics on the flagship Ortakoy segment | PARTIAL (improved) | big day/night/sunset improvement (before_after_2026-11-28); not equal to the references: stylised licensed cars, flat photo rows at grazing angles, simple bridge |
 | 2 | 30 distinct premium vehicles | BLOCKED | 11 licensed CC BY cars ship. More need the owner's yes to download licensed models (CLAUDE.md rule) or many days of modelling; generating low-quality cars to fill a count is ruled out by the brief |
 | 3 | Detailed Istanbul environments | PARTIAL | Ortakoy/Bosphorus, Maslak, Neon Wharf tracks exist; quality gate passed only partly (Ortakoy best) |
 | 4 | Career, >= 30 events | DONE | PR #8: 30 events, TR/EN names (test_events) |
@@ -22,14 +22,17 @@ Status words: DONE (verified tonight or earlier with evidence), PARTIAL, MISSING
 | 15 | Intelligent opponents | PARTIAL | AI churn fix tonight (stuck -42 %, teleports -61 %); overtaking not tuned |
 | 16 | Traffic | DONE | TrafficSystem (earlier session) |
 | 17 | Sound design | PARTIAL | 25 synthesised sounds; never judged by ear |
-| 18 | Menus and HUD | PARTIAL | UX package running |
+| 18 | Menus and HUD | PARTIAL | UX pass merged: TR results footer, phone event list, garage SATIN AL fit (test_ux_footer); BUY buttons 64 px tall (< 88 px target) |
 | 19 | TR/EN localisation | PARTIAL | i18n exists; completeness test in the UX package |
 | 20 | Onboarding | PARTIAL | hints exist; first-run flow to check |
 | 21 | Persistent progression across restarts | PARTIAL | save v2, backup, PR #8 save safety; cross-process restart test to add |
 | 22 | Offline play | DONE | the game needs no network; online is opt-in |
-| 23 | Mobile performance | PARTIAL | budgets met on the dev PC; no phone number exists (B2) |
+| 23 | Mobile performance | PARTIAL | budgets met on the dev PC (night gameplay 409 draws / 441k primitives); soak: 10 headless races flat memory after the first, 8 rendered races 61,388 frames, 23 > 33 ms, video memory flat (docs/perf/SOAK_2026-11-28.md); no phone number exists (B2) |
 | 24 | iOS build compiles | DONE | tag ios-check-5 on the RC (3b71618 + docs): GitHub Actions run 46086560575 success, build only, no upload |
 | 25 | Real-device test | BLOCKED | needs the owner's iPhone (B1/B2) |
 | 26 | App Store readiness | BLOCKED | needs device numbers, owner decisions (price, bundle id, age rating) and owner-only submission |
 | 27 | Race-start hitch | MISSING | warm-up attempt gave no measurable gain (START_HITCH.md) |
 | 28 | No unauthorised assets | DONE | asset manifest validate (657 records, 0 failing); nothing downloaded tonight |
+
+| 29 | Asphalt-style chase framing | DONE | lower, longer-look camera landed after the night mirror diet (docs/perf/NIGHT_DIET_2026-11-28.md) |
+| 30 | Integration PR | DONE (draft) | https://github.com/berkdemirokk/midnight-syndicate/pull/9 |
