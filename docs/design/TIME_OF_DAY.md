@@ -51,3 +51,40 @@ Daylight clean-ups (each a preset field, all restored at night from values store
 `--casters` (prints the shadow casters per group), `--flow` (a one-lap race, then grid intro, results and replay shots
 as `<track>_<tod>_grid|results|replay`), `--preset=low|medium|high` (the capture harness flag; the shot gets a suffix),
 `--red [--px=x,y]` (diagnostic: lists every mesh whose projected bounds cover a screen pixel).
+
+## Per-track grade
+
+`TrackGrade` (game/world/time_of_day/track_grade.gd) adds a colour grade per track on top of the hour's preset.
+`RaceScene._build_race` calls `TrackGrade.apply_to_world` once the environment exists (one line). The table is keyed by
+the track scene file: `city_01` (Neon Wharf), `istanbul_maslak`, `istanbul_bogaz` (Ortakoy/Bogaz). The dev circuit and
+unknown tracks are not graded.
+
+| Track | Day | Sunset | Night |
+|---|---|---|---|
+| Neon Wharf (city) | teal ambient in shade, cool fog | teal ambient, cool-grey fog | teal ambient, saturation 1.10, teal fog |
+| Maslak | steel-blue ambient, saturation 0.86 | steel-blue ambient, saturation 0.90 | cool ambient, saturation 0.84 |
+| Ortakoy/Bogaz | golden ambient, saturation 1.14 | golden ambient, saturation 1.16, amber fog | warm ambient, saturation 1.08 |
+
+Each entry sets exposure, contrast, saturation (Environment adjustments), the ambient light colour (rgb multiplier,
+at most 1.2) and the depth fog colour (mixed in by `fog_mix`). Values are absolute: the first call stores the
+environment's own values in meta, so a second race in the same process starts from the same base.
+
+Limits, stated plainly:
+
+- Split toning is shade only. A procedural 16x16x16 LUT on `adjustment_color_correction` was tried first and drew
+  heavy coloured noise on the Godot 4.7 Mobile renderer, so it was removed. Highlight tints and the magenta night
+  highlights of Neon Wharf are not done.
+- The shift is modest on the sunlit frames (see the before/after sheets in evidence/screens/before_after_grade):
+  the sky and the sun are untouched.
+
+## Car contact shadow
+
+Already in place before this grade: `ContactShadow` (game/fx/contact_shadow.gd) gives every race car a blob that follows
+the road (`attach(car, true)`), traffic cars a child blob and parked cars one MultiMesh per cell, strength by hour
+(0.92 day, 0.7 sunset, 0.95 night). It is not duplicated. Covered by test_contact_shadow.gd.
+
+## Grade evidence
+
+`evidence/screens/before_after_grade/`: nine track x hour sheets (`city_*`, `maslak_*`, `bogaz_*`, BEFORE | AFTER,
+`--capture=tod_tracks`) and three Ortakoy day sheets (`bench_day_car34`, `bench_day_hero`, `bench_day_street`).
+Base 49cd221 vs wp/grade. luma_max in the capture JSON stays at 1.0 or below; the largest rise is 0.002 (bogaz_day), so nothing new clips.
