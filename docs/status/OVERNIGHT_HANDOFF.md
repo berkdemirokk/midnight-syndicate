@@ -21,20 +21,22 @@ Brief: `docs/status/OVERNIGHT_MASTER.md`. Lead: Opus 5.5. Release candidate bran
 - Online in-game path verified (9d11983): tools/net_ingame_check.py, rendered client + headless client + server on
   127.0.0.1; fixed two real bugs (remote cars were static walls; clients stopped sending at the local finish -> DNF).
 
-## In progress
-- Lead: day/sunset lighting (ACES white 6, real depth fog, hazy sky, street-dark ground half, warm car fill/rim,
-  day fill direction bug), dry asphalt and kerb specular per hour, mirror blur 9 -> 5 taps, sea colours per hour,
-  neutral rims, tyre sheen, paint street reflection per hour.
-- Haiku packages (worktrees `.claude/worktrees/wp-<key>`, branches `wp/<key>`), each reviewed by a Haiku reviewer and
-  an Opus lead reviewer: arch (photo rows: textured party walls, roofs, eaves, glass gloss, bridge), camera (framing,
-  orbit, FOV cap, nitro punch), online (LAN race, disabled by default), pursuit (opt-in mode, disabled by default),
-  drive (telemetry report, no physics change), perf (mirror diet, probes off on Low, shadow filter, Medium FXAA).
+## Final state (05:35)
+- release/rc-2026-11-28 at 84bf82c (+ doc commits): 467 tests, 0 failed; asset manifest 657/0; restart_check 21/21;
+  net_smoke PASS and rendered online check (both cars finished) on the merged RC; iOS compile ios-check-5 green,
+  ios-check-6 started on the final RC.
+- Draft PR #9 to feature/vertical-slice. Nothing merged into feature/vertical-slice or main; ChatGPT branches untouched.
+- Full status: docs/status/MASTER_CHECKLIST.md and docs/status/RELEASE_CANDIDATE_2026-11-28.md.
+
+## Continue from here
+1. Owner: review PR #9 (draft); merge into feature/vertical-slice when happy (it was never merged by the lead).
+2. Owner: install the next TestFlight build (push tag ios-release-2 on the PR head) and report phone model, fps, heat.
+3. Next work packages: car mesh/material merge to reach 20 objects per car at LOD0; the ~40 s spike (6+ runs per arm,
+   log ResourceLoader); human playtest of drift/elimination thresholds and the economy; overtaking AI; Maslak/Neon Wharf
+   look pass; more cars only after the owner approves downloads.
+4. Worktrees wp-* under .claude/worktrees are merged; remove them when the owner agrees (disk).
 
 ## Commands
 - Tests: `godot --headless --audio-driver Dummy --fixed-fps 60 --path game -s res://tests/run_tests.gd`
-- Benchmark shots: `godot --path game --audio-driver Dummy --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark`
-- Godot can hang at exit after a capture has finished (seen 2026-11-28 00:20); the capture line `[CAPTURE] ... exit=N`
-  is the result.
-
-## Pending
-- Merge reviewed packages into the RC, combined tests and captures, integration PR, final report.
+- Benchmark: `godot --path game --audio-driver Dummy --resolution 1920x1080 --position 20000,0 res://devtools/capture_boot.tscn -- --capture=ortakoy_benchmark`
+- Online: `py -3.10 tools/net_smoke.py`, `py -3.10 tools/net_ingame_check.py`; persistence: `py -3.10 tools/restart_check.py`
